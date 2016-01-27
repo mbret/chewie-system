@@ -1,0 +1,9 @@
+.tmp
+config.local.js
+node_modules
+
+data/*.db
+npm-debug.log*
+
+.idea
+.idea_modules/

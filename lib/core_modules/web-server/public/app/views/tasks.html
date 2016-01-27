@@ -1,0 +1,60 @@
+<div class="container-fluid">
+    <div class="row">
+        <h1 class="page-header">Tâches planifiées</h1>
+        <uib-tabset>
+            <uib-tab heading="User modules">
+                <div ng-repeat="(module, tasks) in modules">
+                    <h2>Module {{module}}</h2>
+                    <table class="table">
+                        <thead class="thead-default">
+                            <tr>
+                                <th>#processus</th>
+                                <th>Méthode</th>
+                                <th>Quand</th>
+                                <th>Message par</th>
+                                <th>Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="task in tasks">
+                                <th scope="row">{{task.id}}</th>
+                                <td scope="row">
+                                    <span class="badge">{{task.schedule.method}}</span>
+                                </td>
+                                <td>
+                                    <span ng-if="task.schedule.method === 'interval'">{{task.schedule.interval | interval}}</span>
+                                    <span ng-if="task.schedule.method === 'moment'">{{task.schedule.when | when}}</span>
+                                </td>
+                                <td>{{task.messageAdapters}}</td>
+                                <td>{{task.options}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </uib-tab>
+            <uib-tab heading="Core modules">
+                <div ng-repeat="scheduler in schedules.coreModules">
+                    <h2>Module {{scheduler.moduleName}}</h2>
+                    <table class="table">
+                        <thead class="thead-default">
+                            <tr>
+                                <th>#processus</th>
+                                <th>Méthode</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="schedule in scheduler.schedules">
+                                <th scope="row"><span ng-if="schedule.processId">{{schedule.processId}}</span></th>
+                                <td scope="row">{{schedule.method}}</td>
+                                <td>
+                                    <span ng-if="schedule.method === 'interval'">Tout les {{schedule.interval | interval}}</span>
+                                    <span ng-if="schedule.method === 'moment'">{{schedule.when | when}}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </uib-tab>
+        </uib-tabset>
+    </div>
+</div>

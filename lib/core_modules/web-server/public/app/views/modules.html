@@ -1,0 +1,28 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Modules</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>Modules</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <h1 class="page-header">Modules</h1>
+
+        <uib-accordion close-others="true">
+            <uib-accordion-group heading="{{module.name}}" is-open="$first" ng-repeat="module in modules">
+                <p><a class="btn btn-primary" ng-click="addInstantTask('lg', module)">Executer une tâche</a></p>
+                <p><a class="btn btn-primary" ng-click="addScheduledTask('lg', module)">Ajouter une tâche programmée</a></p>
+                <p><a class="btn btn-primary" ng-click="addVoiceCommandTask" >Ajouter une commande vocale</a></p>
+                <p><a class="btn btn-primary" ng-click="addMovementCommandedTask('lg', module)" >Ajouter une commande sur détection de mouvement</a></p>
+            </uib-accordion-group>
+        </uib-accordion>
+    </div>
+</div>

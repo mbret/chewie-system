@@ -1,0 +1,15 @@
+{
+  "name": "my-buddy-joke",
+  "version": "0.0.1",
+  "dependencies": {
+    "html-entities": "^1.2.0",
+    "i18n": "^0.5.0",
+    "lodash": "^3.10.1"
+  },
+  "readme": "ERROR: No README data found!",
+  "_id": "my-buddy-joke@0.0.1",
+  "scripts": {},
+  "_shasum": "919522888157f2063bb13714ed68390f0312ef3d",
+  "_from": "node_modules\\my-buddy-joke",
+  "_resolved": "file:node_modules\\my-buddy-joke"
+}

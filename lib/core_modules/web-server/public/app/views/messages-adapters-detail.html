@@ -1,0 +1,8 @@
+<h1 class="page-header">{{adapter.name}}</h1>
+{{a}}
+<form name="form" ng-submit="submit()">
+    {{adapter.config.options}}
+    <message-adapter-options options="adapter.options"></message-adapter-options>
+
+    <input class="btn btn-primary" type="submit" value="Valider"/>
+</form>

@@ -1,0 +1,34 @@
+<div class="row  border-bottom white-bg dashboard-header">
+    <div class="col-sm-4">
+        <h2>Bienvenue Maxime</h2>
+        <small>Cela fais plaisir de vous revoir par ici !</small>
+    </div>
+    <div class="col-sm-5">
+
+    </div>
+    <div class="col-sm-3">
+        <div class="statistic-box">
+            <h4>
+                Système
+            </h4>
+            <p>
+                Actif depuis {{activeSince | friendlyDate}}
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content ng-scope">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <h5 class="m-b-md">Actions</h5>
+                    <button class="btn btn-primary" ng-click="restart()" type="button">Restart the buddy</button>
+                    <button class="btn btn-primary" ng-click="shutdown()" type="button">Shutdown the buddy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

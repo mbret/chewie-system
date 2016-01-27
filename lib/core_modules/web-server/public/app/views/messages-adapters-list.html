@@ -1,0 +1,7 @@
+<h1 class="page-header">Messages adapters</h1>
+
+<div ng-repeat="adapter in adapters">
+    <p>
+        <a class="btn btn-primary" ui-sref="messagesAdapters.detail({ id: adapter.name })">{{adapter.displayName}}</a>
+    </p>
+</div>
