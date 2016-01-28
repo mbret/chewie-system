@@ -46,14 +46,8 @@ module.exports = {
 
     tasks: [
          //direct
-        {
-            type: 'direct',
-            module: 'my-buddy-say',
-            messageAdapters: ['messenger-adapter-speak'],
-            options: {
-                text: 'Démarre mon pc'
-            }
-        },
+        //
+
         //{
         //    type: 'movement-command',
         //    module: 'my-buddy-say',

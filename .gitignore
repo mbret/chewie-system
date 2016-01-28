@@ -6,4 +6,4 @@ data/storage/*.db
 npm-debug.log*
 
 .idea
-.idea_modules/
+.idea_modules

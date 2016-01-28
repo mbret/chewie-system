@@ -14,7 +14,7 @@ var MyBuddySystem   = require('./index.js');
 var config          = {};
 
 // Use your own custom plugins repository
-MyBuddySystem.registerNewPluginDirectory(__dirname + '/_plugins');
+MyBuddySystem.registerNewPluginDirectory(__dirname + '/_dev_plugins');
 
 // Use your own config
 MyBuddySystem.registerNewConfig(config);
