@@ -27,16 +27,16 @@ module.exports = {
 
     // Override default user module path
     // By default, the module loader will lookup by module name
-    externalModuleRepository: __dirname + '/external_plugins',
+    externalModuleRepositories: [],
 
     // User modules to load
     loadPlugins: [
         'messenger-adapter-write',
         'messenger-adapter-mail',
         'messenger-adapter-speak',
-        'my-buddy-say'
+        'my-buddy-say',
         //"my-buddy-joke",
-        //"my-buddy-time",
+        "my-buddy-time",
         //"my-buddy-weather",
     ],
 

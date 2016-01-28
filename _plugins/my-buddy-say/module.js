@@ -1,7 +1,7 @@
 'use strict';
 
 var _       = require('lodash');
-var config  = require('./config.js');
+var config  = require('./config.js').module;
 var EventEmitter = require('events').EventEmitter;
 
 /**
@@ -42,16 +42,7 @@ class Module extends EventEmitter{
      * @returns {object}
      */
     getConfig(){
-        return {
-            options: [
-                {
-                    name: 'text',
-                    label: 'Texte',
-                    type: 'text',
-                    required: true,
-                }
-            ]
-        };
+        return config;
     }
 
     /**
@@ -62,7 +53,7 @@ class Module extends EventEmitter{
     say(task){
         var self = this;
         if(!_.isString(task.options.text)){
-            logger.warn('Invalid task received [options=%s]', task.options);
+            self.helper.notify('warn', 'Invalid task received [' + JSON.stringify(task.options) + ']');
         }
         else{
             var text = task.options.text;

@@ -1,0 +1,2 @@
+{"type":"ScheduledTask","schedule":{"method":"interval","interval":60000},"options":{"text":"zblaa"},"module":"my-buddy-say","messageAdapters":["messenger-adapter-write"],"_id":"19918190-c550-11e5-aab7-fb75ef05cce7","id":"19918190-c550-11e5-aab7-fb75ef05cce7"}
+{"type":"ScheduledTask","schedule":{"method":"interval","interval":10000},"options":{"text":"coucou"},"module":"my-buddy-say","messageAdapters":["messenger-adapter-write"],"_id":"ba2d3000-c54f-11e5-82e9-7fb240fd7c76","id":"ba2d3000-c54f-11e5-82e9-7fb240fd7c76"}

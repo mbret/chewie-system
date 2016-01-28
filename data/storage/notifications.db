@@ -1,10 +1,5 @@
-{"type":"error","message":"The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1451338498362},"_id":"7blTSPk9SaTqCu5I"}
-{"type":"error","message":"The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1451338699376},"_id":"IVBAyUWUssEBsWTp"}
-{"type":"error","message":"The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1451338664594},"_id":"Kj6ipCZniQ4pvZBG"}
-{"type":"error","message":"The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1451338729452},"_id":"Kyg75ko4spyQ6wwT"}
-{"type":"error","message":"The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1451338622198},"_id":"P4TNn6FtaDEVPON9"}
-{"type":"error","message":"The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1451338742607},"_id":"Qj1plrxxIG57YOWA"}
-{"type":"error","message":"The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1451338919715},"_id":"cDQDt9Zd121ZQd2V"}
-{"type":"error","message":"The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1451341596849},"_id":"hFtwifiLJY3i6aDr"}
-{"type":"error","message":"The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1451341602133},"_id":"tFrwBv8rv7XmFfIv"}
-{"type":"error","message":"The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1451338939072},"_id":"upYBSYTvd7y9IdJV"}
+{"type":"error","message":"The module my-buddy-say says: The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1453938223919},"_id":"ectcwPbixeJZUc2E"}
+{"type":"error","message":"The module my-buddy-say says: The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1453938422014},"_id":"hXKQgtPL6vqFD3gu"}
+{"type":"error","message":"The module my-buddy-say says: The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1453938294475},"_id":"l1NoWaScWXpYJ89q"}
+{"type":"error","message":"The module my-buddy-say says: The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1453938443949},"_id":"yj1FDv3Guqt0RRPL"}
+{"type":"error","message":"The module my-buddy-say says: The message adapter messenger-adapter-speak does not seems to be loaded. Unable to execute message","createdAt":{"$$date":1453939156542},"_id":"Iz9jQb3HYhLXOscn"}

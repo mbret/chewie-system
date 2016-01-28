@@ -1,60 +1,72 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Tâches planifiées</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>Tâches planifiées</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
 <div class="container-fluid">
     <div class="row">
-        <h1 class="page-header">Tâches planifiées</h1>
-        <uib-tabset>
-            <uib-tab heading="User modules">
-                <div ng-repeat="(module, tasks) in modules">
-                    <h2>Module {{module}}</h2>
-                    <table class="table">
-                        <thead class="thead-default">
-                            <tr>
-                                <th>#processus</th>
-                                <th>Méthode</th>
-                                <th>Quand</th>
-                                <th>Message par</th>
-                                <th>Options</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="task in tasks">
-                                <th scope="row">{{task.id}}</th>
-                                <td scope="row">
-                                    <span class="badge">{{task.schedule.method}}</span>
-                                </td>
-                                <td>
-                                    <span ng-if="task.schedule.method === 'interval'">{{task.schedule.interval | interval}}</span>
-                                    <span ng-if="task.schedule.method === 'moment'">{{task.schedule.when | when}}</span>
-                                </td>
-                                <td>{{task.messageAdapters}}</td>
-                                <td>{{task.options}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </uib-tab>
-            <uib-tab heading="Core modules">
-                <div ng-repeat="scheduler in schedules.coreModules">
-                    <h2>Module {{scheduler.moduleName}}</h2>
-                    <table class="table">
-                        <thead class="thead-default">
-                            <tr>
-                                <th>#processus</th>
-                                <th>Méthode</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="schedule in scheduler.schedules">
-                                <th scope="row"><span ng-if="schedule.processId">{{schedule.processId}}</span></th>
-                                <td scope="row">{{schedule.method}}</td>
-                                <td>
-                                    <span ng-if="schedule.method === 'interval'">Tout les {{schedule.interval | interval}}</span>
-                                    <span ng-if="schedule.method === 'moment'">{{schedule.when | when}}</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </uib-tab>
-        </uib-tabset>
+        <h1 class="page-header">Tâches</h1>
+
+        <div class="tabs-container">
+            <uib-tabset class="tabs-left">
+                <uib-tab heading="Direct tasks">
+                    <div class="panel-body">
+                        <strong>Only tasks that are set in config appears here. Direct tasks executed during runtime are executed once and are not saved.</strong>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="Scheduled tasks" active="true">
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead class="thead-default">
+                                <tr>
+                                    <th>#processus</th>
+                                    <th>Module</th>
+                                    <th>Method</th>
+                                    <th>When?</th>
+                                    <th>Message par</th>
+                                    <th>Options</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="task in tasks">
+                                    <td scope="row">{{task.id}}</td>
+                                    <td scope="row">{{task.module}}</td>
+                                    <td scope="row">
+                                        <span class="badge">{{task.schedule.method}}</span>
+                                    </td>
+                                    <td>
+                                        <span ng-if="task.schedule.method === 'interval'">{{task.schedule.interval | friendlyInterval}}</span>
+                                        <span ng-if="task.schedule.method === 'moment'">{{task.schedule.when | when}}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" ng-repeat="adapter in task.messageAdapters">{{adapter}}</span>
+                                    </td>
+                                    <td>{{task.options}}</td>
+                                    <td>
+                                        <a href=""><i class="fa fa-remove text-warning"></i></a>
+                                        &nbsp;<a href=""><i class="fa fa-edit text-navy"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="Others">
+                    <div class="panel-body">
+                        nothing
+                    </div>
+                </uib-tab>
+            </uib-tabset>
+        </div>
     </div>
 </div>

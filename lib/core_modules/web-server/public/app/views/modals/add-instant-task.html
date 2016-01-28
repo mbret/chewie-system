@@ -4,8 +4,7 @@
 <div class="modal-body">
     <form novalidate name="form" >
 
-        {{form.$valid}}
-        <task-options module="module" options="task.options" ></task-options>
+        <task-options config-options="module.config.options" options="task.options" ></task-options>
 
         <div class="form-group">
             <label>Actions</label>

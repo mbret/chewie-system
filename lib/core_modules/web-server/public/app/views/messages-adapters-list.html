@@ -1,7 +1,21 @@
-<h1 class="page-header">Messages adapters</h1>
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Messages adapters</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>Messages adapters</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<h1 class="page-header">Adapters</h1>
 
 <div ng-repeat="adapter in adapters">
     <p>
-        <a class="btn btn-primary" ui-sref="messagesAdapters.detail({ id: adapter.name })">{{adapter.displayName}}</a>
+        <a class="btn btn-primary" ui-sref="dashboard.messagesAdapters.detail({ id: adapter.name })">{{adapter.displayName}}</a>
     </p>
 </div>

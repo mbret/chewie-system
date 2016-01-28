@@ -31,7 +31,6 @@ util.inherits(module.exports, events.EventEmitter);
  */
 module.exports.prototype.play = function () {
     this.stopped = false;
-    console.log(executable, [ this.filename ]);
     this.process = spawn(executable, [ this.filename ]);
     var self = this;
 
