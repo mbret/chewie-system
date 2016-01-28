@@ -2,7 +2,7 @@
 config.local.js
 node_modules
 
-data/*.db
+data/storage/*.db
 npm-debug.log*
 
 .idea
