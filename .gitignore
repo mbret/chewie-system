@@ -2,7 +2,9 @@
 config.local.js
 node_modules
 
-data/storage/*.db
+data/storage/*
+!data/storage/.gitkeep
+
 npm-debug.log*
 
 .idea
