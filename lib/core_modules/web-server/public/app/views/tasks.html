@@ -38,7 +38,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="task in tasks">
+                                <tr ng-repeat="task in scheduledTasks">
                                     <td scope="row">{{task.id}}</td>
                                     <td scope="row">{{task.module}}</td>
                                     <td scope="row">
@@ -53,7 +53,7 @@
                                     </td>
                                     <td>{{task.options}}</td>
                                     <td>
-                                        <a href=""><i class="fa fa-remove text-warning"></i></a>
+                                        <a href="" ng-click="removeTask(task.id)"><i class="fa fa-remove text-warning"></i></a>
                                         &nbsp;<a href=""><i class="fa fa-edit text-navy"></i></a>
                                     </td>
                                 </tr>

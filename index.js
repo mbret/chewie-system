@@ -6,7 +6,6 @@ process.chdir(__dirname);
 
 global.LIB_DIR = __dirname + "/lib";
 var cluster = require('cluster');
-var sync = require('synchronize');
 var _ = require('lodash');
 var configHandler = require('./lib/config-handler.js');
 var config = configHandler.loadConfig(__dirname, __dirname);
