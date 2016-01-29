@@ -31,12 +31,13 @@ module.exports = {
 
     // User modules to load
     loadPlugins: [
-        'messenger-adapter-write',
-        'messenger-adapter-mail',
-        'messenger-adapter-speak',
-        'my-buddy-say',
+        //'messenger-adapter-write',
+        //'messenger-adapter-mail',
+        //'messenger-adapter-speak',
+        //'my-buddy-say',
         //"my-buddy-joke",
-        "my-buddy-time",
+        //"my-buddy-time",
+        "voxygen-speaker",
         //"my-buddy-weather",
     ],
 
