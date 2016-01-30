@@ -22,7 +22,7 @@ class Module{
         // Set system config
         this.helper.setConfig(this.config.adapter);
 
-        this.helper.onUserConfigChange(function(){
+        this.helper.onUserOptionsChange(function(){
             self.userConfig = helper.getUserConfig();
             // update transporter
             self.transporter = self._createTransporter();

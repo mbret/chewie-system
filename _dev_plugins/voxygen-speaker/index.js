@@ -1,6 +1,6 @@
 'use strict';
 
-var myModule = require('./module.js');
+var myModule = require('./lib/core-module.js');
 
 function plugin(pluginName, helper){
     helper.registerCoreModule(myModule);

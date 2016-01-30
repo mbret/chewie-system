@@ -4,15 +4,15 @@
  */
 module.exports = {
 
-    coreModules: [
+    //coreModules: [
         //"messenger-adapter-speak",
         //"im-awake",
         //"sleep-time",
         //"email",
-        "api-server",
+        //"api-server",
         //"messenger-adapter-write",
-        "web-server"
-    ],
+        //"web-server"
+    //],
 
     /**
      * Define your sleep time
@@ -35,6 +35,7 @@ module.exports = {
         //'messenger-adapter-mail',
         //'messenger-adapter-speak',
         //'my-buddy-say',
+        //'my-buddy-basic',
         //"my-buddy-joke",
         //"my-buddy-time",
         "voxygen-speaker",
