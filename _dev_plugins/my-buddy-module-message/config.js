@@ -9,7 +9,7 @@ module.exports = {
 
     // The config relative to the module
     module: {
-        description: 'Un simple module pour parler',
+        description: 'A simple module to create message task',
         options: [
             {
                 name: 'text',
