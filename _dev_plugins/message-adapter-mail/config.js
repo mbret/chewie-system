@@ -10,6 +10,7 @@ module.exports = {
     // Config for system
     adapter: {
 
+        description: 'Send mail with your tasks',
         displayName: 'Mail',
 
         options: [

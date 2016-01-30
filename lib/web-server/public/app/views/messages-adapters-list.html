@@ -12,10 +12,23 @@
     </div>
 </div>
 
-<h1 class="page-header">Adapters</h1>
+<div class="container-fluid">
+    <h1 class="page-header">Adapters</h1>
 
-<div ng-repeat="adapter in adapters">
-    <p>
-        <a class="btn btn-primary" ui-sref="dashboard.messagesAdapters.detail({ id: adapter.name })">{{adapter.displayName}}</a>
-    </p>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="tabs-container">
+                <uib-tabset class="tabs-left">
+                    <uib-tab heading="{{module.name}}" ng-repeat="module in adapters">
+                        <div class="panel-body">
+                            <p>
+                                <strong>About: </strong>{{ module.config.description || "No description" }}
+                            </p>
+                            <p><a class="btn btn-primary" ui-sref="dashboard.messagesAdapters.detail({ id: module.id })">Configuration</a></p>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
 </div>

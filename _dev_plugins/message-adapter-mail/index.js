@@ -5,7 +5,7 @@ var config = require('./config.js').plugin;
 
 function MyModule(moduleName, daemon, scheduler, logger, helper)
 {
-    helper.setConfig(config);
+    //helper.setConfig(config);
     helper.registerMessageAdapter(Adapter);
 }
 

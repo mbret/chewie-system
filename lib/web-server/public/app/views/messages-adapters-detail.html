@@ -1,8 +1,35 @@
-<h1 class="page-header">{{adapter.name}}</h1>
-{{a}}
-<form name="form" ng-submit="submit()">
-    {{adapter.config.options}}
-    <plugin-options options="adapter.options"></plugin-options>
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Message adapters</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>sdf</strong>
+            </li>
+        </ol>
+    </div>
+</div>
 
-    <input class="btn btn-primary" type="submit" value="Valider"/>
-</form>
+<div class="container-fluid">
+    <h1 class="page-header">{{ adapter.name }}</h1>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Configuration</h5>
+                    <div class="ibox-tools"></div>
+                </div>
+                <div class="ibox-content">
+                    <form method="get" class="" ng-submit="submit()">
+                        <plugin-options options="adapter.config.options"></plugin-options>
+
+                        <input class="btn btn-primary" type="submit" value="Valider"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
