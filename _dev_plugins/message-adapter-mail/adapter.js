@@ -42,35 +42,36 @@ class Module{
             }
         });
 
+        this.helper.onNewMessage(function(message){
+
+            if(self.transporter === null){
+                self._notifyInvalidOptions();
+                return;
+            }
+
+            var mailOptions = {
+                from: 'My buddy',
+                to: self.userOptions.mailTo,
+                subject: 'Nouveau message !',
+                html: '<b>' + message + '</b>'
+            };
+
+            console.log(mailOptions);
+
+            self.transporter.sendMail(mailOptions, function(error, info){
+                if(error){
+                    self.helper.notify('error', error);
+                    return;
+                }
+                self.helper.notify('info', 'Mail sent to ' + mailOptions.to);
+            });
+        });
+
         return cb();
     }
 
     getConfig(){
         return this.config;
-    }
-
-    execute(message){
-        var self = this;
-
-        if(this.transporter === null){
-            this._notifyInvalidOptions();
-            return;
-        }
-
-        var mailOptions = {
-            from: 'My buddy',
-            to: self.userOptions.mailTo,
-            subject: 'Nouveau message !',
-            html: '<b>' + message + '</b>'
-        };
-
-        this.transporter.sendMail(mailOptions, function(error, info){
-            if(error){
-                self.helper.notify('error', error);
-                return;
-            }
-            self.helper.notify('info', 'Mail sent to ' + mailOptions.to);
-        });
     }
 
     _createTransporter(){
