@@ -4,16 +4,6 @@
  */
 module.exports = {
 
-    //coreModules: [
-        //"messenger-adapter-speak",
-        //"im-awake",
-        //"sleep-time",
-        //"email",
-        //"api-server",
-        //"messenger-adapter-write",
-        //"web-server"
-    //],
-
     /**
      * Define your sleep time
      * Sleep time is a period when you can avoid some actions
@@ -36,10 +26,6 @@ module.exports = {
         'my-buddy-basics',
         "voxygen-speaker",
     ],
-
-    userModulesConfig: {
-
-    },
 
     tasks: [
          //direct
@@ -111,7 +97,7 @@ module.exports = {
      * ex: "19 10:50" will be repeated for day 19 of each month of each year
      *
      */
-    modules: {
+    //modules: {
 
         //"my-buddy-say": {
         //    tasks: [
@@ -207,6 +193,6 @@ module.exports = {
         //        }
         //    ]
         //}
-    }
+    //}
 
 };
