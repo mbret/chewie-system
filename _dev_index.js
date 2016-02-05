@@ -9,9 +9,7 @@
 
 var cluster         = require('cluster');
 var MyBuddySystem   = require('./index.js');
-
-// Custom config
-var config          = {};
+var config          = require('./_dev_config.js');
 
 // Use your own custom plugins repository
 MyBuddySystem.registerNewPluginDirectory(__dirname + '/_dev_plugins');

@@ -19,14 +19,6 @@ module.exports = {
     // By default, the module loader will lookup by module name
     externalModuleRepositories: [],
 
-    // User modules to load
-    loadPlugins: [
-        'message-adapter-mail',
-        'my-buddy-module-message',
-        'my-buddy-basics',
-        "voxygen-speaker",
-    ],
-
     tasks: [
          //direct
         //
