@@ -17,11 +17,13 @@ class MessageAdapterConsole{
 
     initialize(cb)
     {
-        return cb();
-    }
+        var self = this;
 
-    execute(message){
-        this.helper.getLogger().info(message);
+        this.helper.onNewMessage(function(message){
+            self.helper.getLogger().info(message);
+        });
+
+        return cb();
     }
 }
 

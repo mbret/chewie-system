@@ -4,27 +4,43 @@ module.exports = {
 
     // User modules to load
     loadPlugins: [
-        'message-adapter-mail',
+        //'message-adapter-mail',
         'my-buddy-module-message',
         'my-buddy-basics',
-        "voxygen-speaker",
-        'weather'
+        //"voxygen-speaker",
+        //'weather',
+        'button-dummy'
     ],
 
     tasks: [
+        //{
+        //    module: 'weather',
+        //    type: 'direct',
+        //    messageAdapters: [
+        //        'MessageAdapterConsole',
+        //        'MessageAdapterSpeak'
+        //    ],
+        //    options: {
+        //        latitude : 48.6843900,
+        //        longitude : 6.1849600,
+        //        city: 'Nancy'
+        //    }
+        //},
         {
-            module: 'weather',
-            type: 'direct',
+            module: 'my-buddy-module-message',
+            type: 'trigger',
+            trigger: 'button-dummy',
             messageAdapters: [
                 'MessageAdapterConsole',
-                'MessageAdapterSpeak'
             ],
             options: {
-                latitude : 48.6843900,
-                longitude : 6.1849600,
-                city: 'Nancy'
+                text: 'coucou'
             }
-        }
+        },
+        // Task on command
+        //{
+        //    type: ''
+        //}
         //{
         //    type: 'movement-command',
         //    module: 'my-buddy-say',

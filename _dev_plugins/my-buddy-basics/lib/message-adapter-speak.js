@@ -19,12 +19,13 @@ class Module{
 
     initialize(cb)
     {
-        return cb();
-    }
-
-    execute(message){
         var self = this;
-        self.helper.getSpeaker().play(message);
+
+        this.helper.onNewMessage(function(message){
+            self.helper.getSpeaker().play(message);
+        });
+
+        return cb();
     }
 }
 

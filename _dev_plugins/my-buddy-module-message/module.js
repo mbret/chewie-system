@@ -31,7 +31,6 @@ class Module extends EventEmitter{
 
         // Listen for new task on module
         this.helper.onNewTask(function(task){
-            console.log('coucou');
             self.say(task);
         });
 
