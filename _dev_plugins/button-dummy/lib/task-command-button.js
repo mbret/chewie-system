@@ -11,11 +11,15 @@ class Module{
      */
     constructor(helper){
         this.helper = helper;
+        this.button = null;
     }
 
     initialize(cb)
     {
         var self = this;
+
+        // create gpio entity
+        this.button = this.helper.gpio(17, 'out');
 
         // new task registered with this command plugin
         this.helper.onNewTaskToTrigger(function(task, cb){
@@ -33,7 +37,6 @@ class Module{
 
     getConfig(){
         return {
-            description: '',
             options: [
                 {
                     name: 'text',

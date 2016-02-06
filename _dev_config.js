@@ -7,9 +7,10 @@ module.exports = {
         //'message-adapter-mail',
         'my-buddy-module-message',
         'my-buddy-basics',
-        //"voxygen-speaker",
+        "voxygen-speaker",
+        "voice-dummy",
         //'weather',
-        'button-dummy'
+        //'button-dummy'
     ],
 
     tasks: [
@@ -26,15 +27,29 @@ module.exports = {
         //        city: 'Nancy'
         //    }
         //},
+        //{
+        //    module: 'my-buddy-module-message',
+        //    type: 'trigger',
+        //    trigger: 'button-dummy',
+        //    messageAdapters: [
+        //        'MessageAdapterConsole',
+        //    ],
+        //    options: {
+        //        text: 'coucou'
+        //    }
+        //},
         {
             module: 'my-buddy-module-message',
             type: 'trigger',
-            trigger: 'button-dummy',
+            trigger: 'voice',
             messageAdapters: [
                 'MessageAdapterConsole',
             ],
+            triggerOptions: {
+                command: 'Say something'
+            },
             options: {
-                text: 'coucou'
+                text: 'Ok I say something'
             }
         },
         // Task on command
