@@ -41,7 +41,10 @@ module.exports = {
         {
             module: 'my-buddy-module-message',
             type: 'trigger',
-            trigger: 'voice',
+            trigger: {
+                id: 'voice',
+                pluginId: 'voice-dummy'
+            },
             messageAdapters: [
                 'MessageAdapterConsole',
             ],

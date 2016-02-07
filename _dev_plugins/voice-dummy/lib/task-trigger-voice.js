@@ -21,7 +21,7 @@ class Module{
         // new task registered with this command plugin
         this.helper.onNewTaskToTrigger(function(task, cb){
 
-            console.log(task.triggerOptions, task.options);
+            //console.log(task.triggerOptions, task.options);
 
             // register command and listen for execution
             MyBuddy.speechHandler.registerNewCommand(task.triggerOptions.command, function onExecuted(){
@@ -36,7 +36,15 @@ class Module{
 
     getConfig(){
         return {
-
+            displayName: 'Voice',
+            options: [
+                {
+                    name: 'command',
+                    label: 'Speech text',
+                    type: 'text',
+                    required: true,
+                }
+            ]
         };
     }
 }

@@ -26,28 +26,12 @@
                             </p>
                             <p><a class="btn btn-primary" ng-click="addInstantTask('lg', module)">Execute new task</a></p>
                             <p><a class="btn btn-primary" ng-click="addScheduledTask('lg', module)">Create new scheduled task</a></p>
-                            <p><a class="btn btn-primary" ng-click="addVoiceCommandTask" >Ajouter une commande vocale</a></p>
-                            <p><a class="btn btn-primary" ng-click="addMovementCommandedTask('lg', module)" >Ajouter une commande sur détection de mouvement</a></p>
+                            <p><a class="btn btn-primary" ng-click="addTriggerTask('lg', module)" >Create a new triggered task</a></p>
+                            <p><a class="btn btn-primary" ng-click="addMovementTriggeredTask('lg', module)" >Ajouter une commande sur détection de mouvement</a></p>
                         </div>
                     </uib-tab>
                 </uib-tabset>
             </div>
         </div>
-
-        <!--<uib-accordion close-others="true">-->
-            <!--<uib-accordion-group heading="{{module.name}}" is-open="$first" ng-repeat="module in modules">-->
-                <!--<div class="list-group">-->
-                    <!--<a class="list-group-item" href="">-->
-                        <!--<p class="list-group-item-text">-->
-                            <!--A simple module-->
-                        <!--</p>-->
-                    <!--</a>-->
-                <!--</div>-->
-                <!--<p><a class="btn btn-primary" ng-click="addInstantTask('lg', module)">Executer une tâche</a></p>-->
-                <!--<p><a class="btn btn-primary" ng-click="addScheduledTask('lg', module)">Ajouter une tâche programmée</a></p>-->
-                <!--<p><a class="btn btn-primary" ng-click="addVoiceCommandTask" >Ajouter une commande vocale</a></p>-->
-                <!--<p><a class="btn btn-primary" ng-click="addMovementCommandedTask('lg', module)" >Ajouter une commande sur détection de mouvement</a></p>-->
-            <!--</uib-accordion-group>-->
-        <!--</uib-accordion>-->
     </div>
 </div>

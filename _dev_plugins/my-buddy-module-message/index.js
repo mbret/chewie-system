@@ -11,7 +11,7 @@ var Module = require('./module.js');
  * @param logger
  * @param PluginHelper helper
  */
-function buddyModule(moduleName, daemon, scheduler, logger, helper)
+function buddyModule(moduleName, daemon, logger, helper)
 {
     //helper.setConfig(config.plugin);
 
@@ -20,6 +20,6 @@ function buddyModule(moduleName, daemon, scheduler, logger, helper)
     helper.registerModule(Module);
 }
 
-buddyModule.require = ['daemon', 'scheduler', 'logger', 'helper'];
+buddyModule.require = ['daemon', 'logger', 'helper'];
 
 module.exports = buddyModule;

@@ -18,4 +18,10 @@ Task:
     - command
         - vocal
         - write
+        
+# Technical vocabulary
+- Module: Core module, User module, .. are all module.
+    - User modules:
+        - Task
+- Plugin: The plugin is an external plugable component which deal with modules.
     
