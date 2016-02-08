@@ -60,9 +60,6 @@ class Module extends EventEmitter{
             // handle what user want (mail, voice, etc)
             this.helper.executeMessage(task, text);
         }
-
-        // possible gpio action
-        this.helper.executeGpio(task, null);
     }
 
 }

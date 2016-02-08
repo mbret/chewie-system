@@ -1,5 +1,5 @@
 'use strict';
-// Custom config
+
 module.exports = {
 
     // User modules to load
