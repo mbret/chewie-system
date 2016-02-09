@@ -19,6 +19,7 @@
     "chalk": "^1.1.1",
     "ejs": "^2.3.4",
     "express": "^4.13.3",
+    "googleapis": "^2.1.7",
     "gulp": "^3.9.0",
     "gulp-install": "^0.6.0",
     "less-middleware": "^2.0.1",
