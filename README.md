@@ -25,3 +25,7 @@ Task:
         - Task
 - Plugin: The plugin is an external plugable component which deal with modules.
     
+    
+#todo
+- check constructor params
+- separate several class in same files
