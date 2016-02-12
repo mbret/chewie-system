@@ -15,16 +15,6 @@ module.exports = {
     // By default, the module loader will lookup by module name
     externalModuleRepositories: [],
 
-    externalServices: {
-        google: {
-            auth: {
-                // Should be provided in config local
-                clientId: null,
-                clientSecret: null
-            }
-        }
-    },
-
     tmpDir: '.tmp',
 
     log: {
