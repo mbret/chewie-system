@@ -23,16 +23,11 @@
                     <div class="ibox-tools"></div>
                 </div>
                 <div class="ibox-content">
-                    <form method="get" name="googleForm" ng-submit="submitGoogle(googleForm)">
+                    <form method="get" name="configForm" ng-submit="submitConfigForm(configForm)">
 
                         <div class="form-group">
-                            <label for="clientId">Client ID</label>
-                            <input id="clientId" type="text" class="form-control" ng-required="false" ng-model="googleConfig.clientId" />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="clientSecret">Client secret</label>
-                            <input id="clientSecret" type="text" class="form-control" ng-required="false" ng-model="googleConfig.clientSecret" />
+                            <label for="foo">foo</label>
+                            <input id="foo" type="text" class="form-control" ng-required="false" ng-model="config.foo" />
                         </div>
 
                         <input class="btn btn-primary" type="submit" value="Valider"/>

@@ -7,8 +7,10 @@ process.chdir(__dirname);
 global.LIB_DIR = __dirname + "/lib";
 var cluster = require('cluster');
 var _ = require('lodash');
-var configHandler = require('./lib/config-handler.js');
-var config = configHandler.loadConfig(__dirname, __dirname);
+
+// Get static config handler
+var ConfigHandler = require('./lib/config-handler.js');
+var config = ConfigHandler.loadConfig(__dirname);
 
 // Logger require config to be loaded
 var Logger = require('./lib/logger.js');

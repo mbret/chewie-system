@@ -21,6 +21,8 @@ module.exports = {
         level: 'debug'
     },
 
+    foo: 'bar',
+
     //coreModulesPath: '/lib/core_modules',
 
     // User modules to activate
