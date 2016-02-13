@@ -16,7 +16,6 @@ MyBuddySystem.registerNewPluginDirectory(__dirname + '/_dev_plugins');
 
 // Use your own config
 MyBuddySystem.registerNewConfig(config);
-MyBuddySystem.registerNewConfig(require('./config.local.js'));
 
 // Start the system
 // You don't need anything else after this point.
