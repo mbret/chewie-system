@@ -1,3 +1,8 @@
+'use strict';
+
+var os = require('os');
+var path = require('path');
+
 /**
  * This is the user config.
  *
@@ -15,7 +20,8 @@ module.exports = {
     // By default, the module loader will lookup by module name
     externalModuleRepositories: [],
 
-    tmpDir: '.tmp',
+    tmpDir: path.join(os.tmpdir(), 'myBuddy'),
+    dataDir: path.join(process.env.LOCALAPPDATA, 'myBuddy', '.data'),
 
     log: {
         level: 'debug'
@@ -40,10 +46,10 @@ module.exports = {
 
     tasks: [],
 
-    // Persistance relative
-    persistancePath: '/data/storage',
-    databasePath: 'persistence.db',
-    taskDatabase: 'tasks.db',
+    //persistenceDir: path.join(process.env.LOCALAPPDATA, 'myBuddy', '.storage'),
+    persistenceDir: path.join(__dirname, 'data/storage'),
+    //databasePath: 'persistence.db',
+    //taskDatabase: 'tasks.db',
     //messagesAdaptersDb: 'messagesAdapters.db',
-    notificationsDb: 'notifications.db'
+    //notificationsDb: 'notifications.db'
 };
