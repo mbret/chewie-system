@@ -48,11 +48,13 @@
                             <tr ng-repeat="service in externalServicesStatus">
                                 <td>{{ service.name }}</td>
                                 <td>
-                                    <span class="label" ng-class="{'label-warning': service.status == 'NOT_CONNECTED'}">{{ service.status }}</span>
+                                    <span class="label" ng-class="{'label-warning': service.status == 'NOT_CONNECTED', 'label-success': service.status == 'CONNECTED'}">{{ service.status }}</span>
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a class="btn btn-white" href="/auth/{{service.name}}"><i class="fa fa-thumbs-up"></i> Connect</a>
+                                        <a class="btn btn-white" href="/auth/{{service.name}}" ng-hide="service.status == 'CONNECTED'">
+                                            <i class="fa fa-thumbs-up"></i> Connect
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
