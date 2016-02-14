@@ -16,22 +16,24 @@ var config = ConfigHandler.loadConfig(__dirname);
 var Logger = require('./lib/logger.js');
 global.LOGGER = new Logger(config);
 var logger = LOGGER.getLogger('buddy');
-var Daemon = require('./lib/daemon.js');
 
-exports.registerNewPluginDirectory = function(path){
-    config.externalModuleRepositories.push(path);
-};
+if (cluster.isMaster) {
 
-exports.registerNewConfig = function(newConfig){
-    config = _.merge(config, newConfig);
-};
+    exports.registerNewPluginDirectory = function(){
+        // dummy
+    };
 
-exports.start = function(){
+    exports.registerNewConfig = function(){
+        // dummy
+    };
 
-    // Master cluster
-    // The first one running
-    if (cluster.isMaster) {
-        logger.info('Start daemon');
+    /**
+     *
+     */
+    exports.start = function(){
+
+        // Master cluster
+        // The first one running
         cluster.fork();
 
         cluster.on('exit', function(worker, code, signal) {
@@ -43,14 +45,35 @@ exports.start = function(){
                 logger.info('Daemon shutted down');
             }
         });
-    }
-    else {
-        // do nothing
-    }
-
-};
+    };
+}
 
 // Once cluster is created, run system
 if (cluster.isWorker) {
-    var daemon = new Daemon(config);
+
+    var Daemon = require('./lib/daemon.js');
+
+    /**
+     *
+     * @param path
+     */
+    exports.registerNewPluginDirectory = function(path){
+        config.externalModuleRepositories.push(path);
+    };
+
+    /**
+     *
+     * @param entry
+     */
+    exports.registerNewConfig = function(entry){
+        config = _.merge(config, entry);
+    };
+
+    /**
+     *
+     */
+    exports.start = function(){
+        logger.info('Start daemon');
+        var daemon = new Daemon(config);
+    };
 }

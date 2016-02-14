@@ -1,6 +1,10 @@
 <div class="form-group" ng-repeat="option in options">
+
     <label for="{{option.name}}">{{option.label}}</label>
+    <span class="help-block m-b-none">{{option.description}}</span>
+
     <div ng-switch="option.type">
+
         <div ng-switch-when="select">
             <select id="{{option.name}}" class="form-control" ng-model="options[option.name]" ng-required="{{option.required}}" >
                 <option value="{{value.value}}" ng-repeat="value in option.values">{{value.label}}</option>

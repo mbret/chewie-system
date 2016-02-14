@@ -3,7 +3,7 @@
 var _           = require('lodash');
 var Forecast    = require('forecast');
 var moment      = require('moment');
-var config      = require('../config.js').module;
+var config      = require('../config.js');
 var i18n        = require("i18n");
 
 class Module{
@@ -27,7 +27,7 @@ class Module{
 
         i18n.configure({
             locales:['fr', 'en'],
-            directory: __dirname + '/locales',
+            directory: config.localesDir + '/locales',
             defaultLocale: 'fr',
             updateFiles: true
         });
@@ -44,7 +44,15 @@ class Module{
     }
 
     getConfig(){
-        return config;
+        // set task options default values
+        var tmp = config.module;
+        var userOptions = this.helper.getUserOptions();
+        tmp.taskOptions.forEach(function(option){
+            if(userOptions[option.name]){
+                option.default = userOptions[option.name];
+            }
+        });
+        return tmp;
     }
 
     /**
@@ -55,12 +63,13 @@ class Module{
         var options = task.options;
 
         if(!this._checkOptions(options)){
+            self.helper.notify('warn', 'Please configure the module before using it');
             return;
         }
 
         self._retrieveWeather(options.latitude, options.longitude, function(err, weather){
             if(err){
-                self.logger.error(err);
+                self.helper.notify('error', err);
                 return;
             }
 

@@ -10,7 +10,7 @@ module.exports = {
     // The config relative to the module
     module: {
         description: 'A simple module to create message task',
-        options: [
+        taskOptions: [
             {
                 name: 'text',
                 label: 'Texte',

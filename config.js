@@ -22,6 +22,7 @@ module.exports = {
 
     tmpDir: path.join(os.tmpdir(), 'myBuddy'),
     dataDir: path.join(process.env.LOCALAPPDATA, 'myBuddy', '.data'),
+    persistenceDir: path.join(process.env.LOCALAPPDATA, 'myBuddy', '.storage'),
 
     log: {
         level: 'debug'
@@ -45,11 +46,4 @@ module.exports = {
     },
 
     tasks: [],
-
-    //persistenceDir: path.join(process.env.LOCALAPPDATA, 'myBuddy', '.storage'),
-    persistenceDir: path.join(__dirname, 'data/storage'),
-    //databasePath: 'persistence.db',
-    //taskDatabase: 'tasks.db',
-    //messagesAdaptersDb: 'messagesAdapters.db',
-    //notificationsDb: 'notifications.db'
 };
