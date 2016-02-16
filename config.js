@@ -28,9 +28,6 @@ module.exports = {
         level: 'debug'
     },
 
-    foo: 'bar',
-
-    //coreModulesPath: '/lib/core_modules',
 
     // User modules to activate
     // Handled by app
@@ -46,4 +43,21 @@ module.exports = {
     },
 
     tasks: [],
+    apiPort: 3001,
+    webServerPort: 3000,
+
+    // **************************************************
+    //                                                  *
+    //  These attributes can be stored for user.        *
+    //  They are availables only on runtime.            *
+    //                                                  *
+    // **************************************************
+    foo: 'bar',
+
+    // **************************************************
+    //                                                  *
+    //  These attributes are provided on system runtime *
+    //                                                  *
+    // **************************************************
+    realIp: null,
 };
