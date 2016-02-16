@@ -21,6 +21,7 @@
     "express": "^4.13.3",
     "googleapis": "^2.1.7",
     "gulp": "^3.9.0",
+    "gulp-angular-filesort": "^1.1.1",
     "gulp-install": "^0.6.0",
     "less-middleware": "^2.0.1",
     "lodash": "^3.10.1",
@@ -38,5 +39,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "mocha"
+  },
+  "devDependencies": {
+    "gulp-inject": "^3.0.0"
   }
 }
