@@ -1,1 +1,0 @@
-{"type":"TriggeredTask","options":{"city":"Nancy","latitude":"48.6843900","longitude":"6.1849600"},"module":"weather","messageAdapters":["MessageAdapterConsole"],"id":"0a721470-d349-11e5-8de6-732c791213a7","_id":"0a721470-d349-11e5-8de6-732c791213a7","trigger":{"pluginId":"voice-dummy","id":"voice"},"triggerOptions":{"command":"weather"}}
