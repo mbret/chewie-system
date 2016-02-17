@@ -17,7 +17,7 @@
         <h1 class="page-header">Tâches</h1>
 
         <div class="tabs-container">
-            <uib-tabset class="tabs-left">
+            <uib-tabset class="">
                 <uib-tab heading="Direct tasks">
                     <div class="panel-body">
                         <strong>Only tasks that are set in config appears here. Direct tasks executed during runtime are executed once and are not saved.</strong>
@@ -28,11 +28,11 @@
                         <table class="table">
                             <thead class="thead-default">
                                 <tr>
-                                    <th>#processus</th>
+                                    <th>#pid</th>
                                     <th>Module</th>
                                     <th>Method</th>
                                     <th>When?</th>
-                                    <th>Message par</th>
+                                    <th>Message adapters</th>
                                     <th>Options</th>
                                     <th>Actions</th>
                                 </tr>
@@ -41,9 +41,7 @@
                                 <tr ng-repeat="task in scheduledTasks">
                                     <td scope="row">{{task.id}}</td>
                                     <td scope="row">{{task.module}}</td>
-                                    <td scope="row">
-                                        <span class="badge">{{task.schedule.method}}</span>
-                                    </td>
+                                    <td scope="row"><span class="badge">{{task.schedule.method}}</span></td>
                                     <td>
                                         <span ng-if="task.schedule.method === 'interval'">{{task.schedule.interval | friendlyInterval}}</span>
                                         <span ng-if="task.schedule.method === 'moment'">{{task.schedule.when | when}}</span>
@@ -65,30 +63,25 @@
                     <div class="panel-body">
                         <table class="table">
                             <thead class="thead-default">
-                            <tr>
-                                <th>#processus</th>
-                                <th>Module</th>
-                                <th>Method</th>
-                                <th>When?</th>
-                                <th>Message par</th>
-                                <th>Options</th>
-                                <th>Actions</th>
-                            </tr>
+                                <tr>
+                                    <th>#processus</th>
+                                    <th>Module</th>
+                                    <th>Message adapters</th>
+                                    <th>Trigger</th>
+                                    <th>Trigger options</th>
+                                    <th>Task options</th>
+                                    <th>Actions</th>
+                                </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="task in triggeredTasks">
-                                <td scope="row">{{task.id}}</td>
-                                <td scope="row">{{task.module}}</td>
-                                <td scope="row">
-                                    <span class="badge">{{task.schedule.method}}</span>
-                                </td>
-                                <td>
-                                    <span ng-if="task.schedule.method === 'interval'">{{task.schedule.interval | friendlyInterval}}</span>
-                                    <span ng-if="task.schedule.method === 'moment'">{{task.schedule.when | when}}</span>
-                                </td>
+                                <td scope="row" title="{{task.id}}">{{task.id|truncate:10}}</td>
+                                <td scope="row"><span class="badge">{{task.module}}</span></td>
                                 <td>
                                     <span class="badge" ng-repeat="adapter in task.messageAdapters">{{adapter}}</span>
                                 </td>
+                                <td><span class="badge">{{task.trigger.id}}</span> from <span class="badge">{{task.trigger.pluginId}}</span></td>
+                                <td>{{task.triggerOptions}}</td>
                                 <td>{{task.options}}</td>
                                 <td>
                                     <a href="" ng-click="removeTask(task.id)"><i class="fa fa-remove text-warning"></i></a>
