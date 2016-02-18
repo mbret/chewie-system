@@ -1,5 +1,6 @@
 .tmp
 .storage
+.my-buddy
 config.local.js
 node_modules
 
