@@ -6,14 +6,19 @@
                     <h5>New screen</h5>
                 </div>
                 <div class="ibox-content">
-                    <form method="get" class="form-horizontal ng-pristine ng-valid">
-                        <div class="hr-line-dashed"></div>
+                    <form method="get" class="" novalidate name="newForm" ng-submit="submitForm()">
                         <div class="form-group">
-                            <div class="col-sm-4 col-sm-offset-2">
-                                <button class="btn btn-white" type="submit">Cancel</button>
-                                <button class="btn btn-primary" type="submit">Create</button>
-                            </div>
+                            <label for="name">Name</label>
+                            <input id="name" name="name" type="text" class="form-control" required ng-model="screen.name" />
+                            <form-errors form="newForm" field="newForm.name"></form-errors>
                         </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <input id="description" type="text" class="form-control" ng-model="screen.description" />
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <button class="btn btn-white" type="submit">Cancel</button>
+                        <button class="btn btn-primary" type="submit" >Create</button>
                     </form>
                 </div>
             </div>
