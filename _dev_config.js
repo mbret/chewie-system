@@ -199,33 +199,4 @@ module.exports = {
     //        },
     //    ],
     //},
-
-    // Weather module
-    //"my-buddy-weather": {
-    //    say: [
-    //        {
-    //            // Used for speech only
-    //            city: "Nancy",
-    //            // Used to fetch weather information
-    //            latitude: 48.6843900,
-    //            longitude: 6.1849600,
-    //            schedule: [
-    //                {
-    //                    method: 'interval',
-    //                    interval: 3 * 1000 // 1h
-    //                },
-    //                {
-    //                    method: 'moment',
-    //                    when: [
-    //                        ["09:00", "HH:mm"],
-    //                        ["12:00", "HH:mm"],
-    //                        ["18:00", "HH:mm"],
-    //                        ["20:00", "HH:mm"]
-    //                    ]
-    //                }
-    //            ]
-    //        }
-    //    ]
-    //}
-    //}
 };

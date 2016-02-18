@@ -3,6 +3,8 @@
 var os = require('os');
 var path = require('path');
 
+var localAppDataDir = os.platform() === 'win32' || os.platform() === 'win64' ? process.env.LOCALAPPDATA : os.homedir();
+
 /**
  * This is the user config.
  *
@@ -20,9 +22,9 @@ module.exports = {
     // By default, the module loader will lookup by module name
     externalModuleRepositories: [],
 
-    tmpDir: path.join(os.tmpdir(), 'myBuddy'),
-    dataDir: path.join(process.env.LOCALAPPDATA, 'myBuddy', '.data'),
-    persistenceDir: path.join(process.env.LOCALAPPDATA, 'myBuddy', '.storage'),
+    tmpDir: path.join(os.tmpdir(), '.myBuddy'),
+    dataDir: path.join(localAppDataDir, '.myBuddy', '.data'),
+    persistenceDir: path.join(localAppDataDir, '.myBuddy', '.storage'),
 
     log: {
         level: 'debug'

@@ -24,6 +24,7 @@
     "gulp-angular-filesort": "^1.1.1",
     "gulp-inject": "^3.0.0",
     "gulp-install": "^0.6.0",
+    "ip": "^1.1.0",
     "less-middleware": "^2.0.1",
     "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",

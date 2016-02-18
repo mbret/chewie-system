@@ -4,9 +4,11 @@
 // no matter where we actually start from.
 process.chdir(__dirname);
 
-global.LIB_DIR = __dirname + "/lib";
-var cluster = require('cluster');
-var _ = require('lodash');
+global.LIB_DIR      = __dirname + "/lib";
+var cluster         = require('cluster');
+var async           = require('async');
+var childProcess    = require('child_process');
+var _               = require('lodash');
 
 // Get static config handler
 var ConfigHandler = require('./lib/config-handler.js');
@@ -73,7 +75,39 @@ if (cluster.isWorker) {
      *
      */
     exports.start = function(){
+
         logger.info('Start daemon');
-        var daemon = new Daemon(config);
+
+        checkRequiredModules(function(err, missingModules){
+            if(err) throw err;
+            if(missingModules.length > 0){
+                logger.error('It seems that some required global modules are not installed. Please verify these modules: ' + missingModules.join(', ') );
+                process.exit(0);
+            }
+
+            new Daemon(config);
+        });
+
     };
+}
+
+/**
+ * Check for required global modules.
+ * @param cb
+ */
+function checkRequiredModules(cb){
+    var missingModules = [];
+
+    async.parallel([
+        function(done){
+            childProcess.exec('gulp -v', function(err){
+                if(err){
+                    missingModules.push('gulp');
+                }
+                return done();
+            });
+        },
+    ], function(err){
+        return cb(null, missingModules);
+    });
 }

@@ -1,3 +1,7 @@
+# Install node.js on raspberry
+- https://nodejs.org/dist/
+- rasp2 -> arm7l.tar
+
 # Install on Windows
 - npm install
 

@@ -28,7 +28,15 @@ class Module{
         // Create speaker adapter and register it!
         var adapter = new Adapter(this.helper);
         adapter.init(function(err){
-            if(err) return cb(err);
+            if(err){
+                // Some errors are not internal but require some user actions
+                if(err.code === "LIBRARY_NOT_FOUND"){
+                    self.helper.notify('error', 'Unable to register speak adapter: ' + err.message);
+                    return cb();
+                }
+                return cb(err);
+            }
+
             self.helper.registerSpeakAdapter(adapter);
             return cb();
         });

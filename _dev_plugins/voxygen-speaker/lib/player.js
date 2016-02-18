@@ -22,18 +22,6 @@ class Player{
             this.execPath = path.normalize(config.binaryPath);
         }
 
-        //if(OS.platform() === "linux"){
-        //    logger.verbose('Sound player for Linux loaded');
-        //    this.player = this.Linux();
-        //}
-        //else if(OS.platform() === "win32"){
-        //    logger.verbose('Sound player for Windows loaded');
-        //    this.player =  this.Windows();
-        //}
-        //else{
-        //    throw new Error('Platform not supported for player');
-        //}
-
         // This boolean avoid to play song when queue is empty but a song is still playing.
         // It's then useful only in this particular situation
         this.playing = false;
@@ -168,13 +156,16 @@ class Player{
             .pipe(fs.createWriteStream(fileName));
     }
 
+    /**
+     *
+     * @param helper
+     * @param config
+     * @param cb
+     */
     static create(helper, config, cb){
         var instance = new Player(helper, config);
         Player.checkLibrary(instance.execPath, function(err){
-            if(err){
-                return cb(err);
-            }
-            return cb(null, instance);
+            return cb(err, instance);
         });
     }
 
@@ -199,13 +190,19 @@ class Player{
     }
 
     static checkLibrary(execPath, cb){
-        var spawn = childProcess.spawn;
-        var ls = spawn(path.normalize(execPath), ['-?']);
+        const spawn = childProcess.spawn;
+        const ls = spawn(path.normalize(execPath), ['-?']);
+
         ls.on('error', function(code){
-            console.log(code);
-            return cb(new Error('Please install mpg123 or set the config. Current mpg123 executable path is [' + execPath + ']'));
+            // needed otherwise it throw exception
         });
-        ls.on('close', function(){
+
+        ls.on('close', function(code){
+            if(code !== 0){
+                var error = new Error('Please install mpg123 or set the config. Current mpg123 executable path is [' + execPath + ']');
+                error.code = "LIBRARY_NOT_FOUND";
+                return cb(error);
+            }
             return cb();
         })
     }
