@@ -4,9 +4,9 @@ var path = require('path');
 
 module.exports = {
 
-    tmpDir: path.join(__dirname, '.tmp'),
-    dataDir: path.join(__dirname, '.data'),
-    persistenceDir: path.join(__dirname, '.storage'),
+    //tmpDir: path.join(__dirname, '.tmp'),
+    //dataDir: path.join(__dirname, '.data'),
+    //persistenceDir: path.join(__dirname, '.storage'),
 
     // User modules to load
     loadPlugins: [

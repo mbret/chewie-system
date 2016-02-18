@@ -22,9 +22,9 @@ module.exports = {
     // By default, the module loader will lookup by module name
     externalModuleRepositories: [],
 
-    tmpDir: path.join(os.tmpdir(), '.myBuddy'),
-    dataDir: path.join(localAppDataDir, '.myBuddy', '.data'),
-    persistenceDir: path.join(localAppDataDir, '.myBuddy', '.storage'),
+    tmpDir: path.join(os.tmpdir(), '.my-buddy'),
+    dataDir: path.join(localAppDataDir, '.my-buddy', 'data'),
+    persistenceDir: path.join(localAppDataDir, '.my-buddy', 'storage'),
 
     log: {
         level: 'debug'
