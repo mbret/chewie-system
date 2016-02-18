@@ -52,6 +52,9 @@
             <li ui-sref-active="active">
                 <a ui-sref="dashboard.config"><i class="fa fa-th-large"></i> <span class="nav-label">Configuration</span></a>
             </li>
+            <li ui-sref-active-if="dashboard.screens">
+                <a ui-sref="dashboard.screens.list"><i class="fa fa-th-large"></i> <span class="nav-label">Screens</span></a>
+            </li>
         </ul>
     </div>
 </nav>
