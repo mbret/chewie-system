@@ -5,8 +5,7 @@ var taskTrigger = require('./lib/task-trigger-voice.js');
 
 function MyModule(moduleName, helper)
 {
-    //helper.registerCoreModule(CoreModule);
-    helper.registerTaskTrigger('voice', taskTrigger);
+    helper.registerTaskTrigger(taskTrigger);
 }
 
 MyModule.require = ['helper'];

@@ -16,7 +16,7 @@ module.exports = {
         "voxygen-speaker",
         "voice-dummy",
         'weather',
-        //'button-dummy'
+        'task-trigger-button'
     ],
 
     tasks: [
@@ -49,7 +49,7 @@ module.exports = {
             type: 'trigger',
             trigger: {
                 id: 'voice',
-                pluginId: 'voice-dummy'
+                pluginId: 'voice-dummys'
             },
             messageAdapters: [
                 'MessageAdapterConsole',

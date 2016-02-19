@@ -1,6 +1,7 @@
 'use strict';
 
 var _           = require('lodash');
+var config = require('./config.js');
 
 class Module{
 
@@ -20,18 +21,18 @@ class Module{
         //var button = this.helper.gpio(17, 'out');
 
         // Listen for press
-        button.watch(function(err, value) {
-            this.helper.getLogger().info('button pressed');
+        //button.watch(function(err, value) {
+        //    this.helper.getLogger().info('button pressed');
 
             // process all task
-            self.helper.executeTask();
-        });
+            //self.helper.executeTask();
+        //});
 
         return cb();
     }
 
     getConfig(){
-        return {};
+        return config.taskTrigger;
     }
 }
 

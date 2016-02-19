@@ -6,10 +6,6 @@ var fs = require('fs');
 
 class Module{
 
-    /**
-     *
-     * @param helper
-     */
     constructor(helper){
         this.helper = helper;
     }
@@ -18,10 +14,8 @@ class Module{
     {
         var self = this;
 
-        // new task registered with this command plugin
+        // A new task has been registered with this module
         this.helper.onNewTaskToTrigger(function(task, cb){
-
-            //console.log(task.triggerOptions, task.options);
 
             // register command and listen for execution
             MyBuddy.speechHandler.registerNewCommand(task.triggerOptions.command, function onExecuted(){
@@ -35,17 +29,7 @@ class Module{
     }
 
     getConfig(){
-        return {
-            displayName: 'Voice',
-            options: [
-                {
-                    name: 'command',
-                    label: 'Speech text',
-                    type: 'text',
-                    required: true,
-                }
-            ]
-        };
+        return config.taskTriggerVoice;
     }
 }
 
