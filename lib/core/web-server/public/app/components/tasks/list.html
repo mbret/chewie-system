@@ -31,7 +31,8 @@
                                     <th>#pid</th>
                                     <th>Module</th>
                                     <th>Method</th>
-                                    <th>When?</th>
+                                    <th>Schedule</th>
+                                    <th>Next tick</th>
                                     <th>Message adapters</th>
                                     <th>Options</th>
                                     <th>Actions</th>
@@ -39,12 +40,15 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="task in scheduledTasks">
-                                    <td scope="row">{{task.id}}</td>
+                                    <td scope="row">{{task.id|truncate:10}}</td>
                                     <td scope="row">{{task.module}}</td>
                                     <td scope="row"><span class="badge">{{task.schedule.method}}</span></td>
                                     <td>
                                         <span ng-if="task.schedule.method === 'interval'">{{task.schedule.interval | friendlyInterval}}</span>
                                         <span ng-if="task.schedule.method === 'moment'">{{task.schedule.when | when}}</span>
+                                    </td>
+                                    <td>
+                                        {{task.nextTick|date:'yyyy-MM-dd HH:mm:ss'}}
                                     </td>
                                     <td>
                                         <span class="badge" ng-repeat="adapter in task.messageAdapters">{{adapter}}</span>

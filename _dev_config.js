@@ -86,7 +86,22 @@ module.exports = {
             ],
             schedule: {
                 method: "interval",
-                interval: 3000
+                interval: 10000
+            },
+            options: {
+                text: 'zblaa'
+            }
+        },
+        {
+            module: 'my-buddy-module-message',
+            pluginId: 'my-buddy-module-message',
+            type: 'schedule',
+            messageAdapters: [
+                'messenger-adapter-write'
+            ],
+            schedule: {
+                method: "moment",
+                when: ['12:46', 'HH:mm']
             },
             options: {
                 text: 'zblaa'
