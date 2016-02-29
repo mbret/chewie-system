@@ -38,13 +38,16 @@
                 <a ui-sref="dashboard.newTask"><i class="fa fa-plus-square"></i> <span class="nav-label">New task</span></a>
             </li>
             <li ui-sref-active-if="dashboard.modules">
-                <a ui-sref="dashboard.modules.list"><i class="fa fa-trophy"></i> <span class="nav-label">My modules</span></a>
+                <a ui-sref="dashboard.modules.list"><i class="fa fa-trophy"></i> <span class="nav-label">My task modules</span></a>
             </li>
             <li ui-sref-active-if="dashboard.coreModules">
                 <a ui-sref="dashboard.coreModules.list"><i class="fa fa-th-large"></i> <span class="nav-label">Core modules</span></a>
             </li>
             <li ui-sref-active-if="dashboard.messagesAdapters">
                 <a ui-sref="dashboard.messagesAdapters.list"><i class="fa fa-th-large"></i> <span class="nav-label">{{ 'Messages adapters' | translate }}</span></a>
+            </li>
+            <li ui-sref-active-if="dashboard.taskTriggers">
+                <a ui-sref="dashboard.taskTriggers.list"><i class="fa fa-th-large"></i> <span class="nav-label">Task triggers</span></a>
             </li>
             <li ui-sref-active="active">
                 <a ui-sref="dashboard.plugins"><i class="fa fa-th-large"></i> <span class="nav-label">{{ 'Plugins' | translate }}</span></a>

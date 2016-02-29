@@ -1,6 +1,6 @@
 'use strict';
 
-var myModule = require('./trigger.js');
+var myModule = require('./task-trigger.js');
 
 function plugin(pluginName, helper){
     helper.registerTaskTrigger(myModule);

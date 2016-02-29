@@ -1,8 +1,7 @@
 module.exports = {
-
-    taskTriggerVoice: {
-        displayName: 'Voice',
-        taskOptions: [
+    taskTrigger: {
+        description: 'Coucou',
+        options: [
             {
                 name: 'command',
                 label: 'Speech text',
