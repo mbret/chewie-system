@@ -11,11 +11,11 @@ module.exports = {
     // User modules to load
     loadPlugins: [
         //'message-adapter-mail',
-        'my-buddy-module-message',
-        'my-buddy-basics',
-        "voxygen-speaker",
-        "voice-dummy",
-        'weather',
+        //'my-buddy-module-message',
+        //'my-buddy-basics',
+        //"voxygen-speaker",
+        //"voice-dummy",
+        //'weather',
         //'button-dummy'
     ],
 

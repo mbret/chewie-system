@@ -5,17 +5,19 @@
 process.chdir(__dirname);
 
 global.LIB_DIR      = __dirname + "/lib";
+global.MODULES_DIR  = __dirname + "/lib/modules";
+global.CORE_DIR     = __dirname + "/lib/core";
 var cluster         = require('cluster');
 var async           = require('async');
 var childProcess    = require('child_process');
 var _               = require('lodash');
 
 // Get static config handler
-var ConfigHandler = require('./lib/config-handler.js');
+var ConfigHandler = require('./lib/core/config-handler.js');
 var config = ConfigHandler.loadConfig(__dirname);
 
 // Logger require config to be loaded
-var Logger = require('./lib/logger.js');
+var Logger = require('./lib/core/logger.js');
 global.LOGGER = new Logger(config);
 var logger = LOGGER.getLogger('buddy');
 
@@ -53,7 +55,7 @@ if (cluster.isMaster) {
 // Once cluster is created, run system
 if (cluster.isWorker) {
 
-    var Daemon = require('./lib/daemon.js');
+    var Daemon = require('./lib/core/daemon.js');
 
     /**
      *
