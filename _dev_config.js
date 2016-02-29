@@ -11,7 +11,7 @@ module.exports = {
     // User modules to load
     loadPlugins: [
         //'message-adapter-mail',
-        //'my-buddy-module-message',
+        'my-buddy-module-message',
         //'my-buddy-basics',
         //"voxygen-speaker",
         //"voice-dummy",
@@ -44,23 +44,23 @@ module.exports = {
         //        text: 'coucou'
         //    }
         //},
-        {
-            module: 'my-buddy-module-message',
-            type: 'trigger',
-            trigger: {
-                id: 'voice',
-                pluginId: 'voice-dummy'
-            },
-            messageAdapters: [
-                'MessageAdapterConsole',
-            ],
-            triggerOptions: {
-                command: 'Say something'
-            },
-            options: {
-                text: 'Ok I say something'
-            }
-        },
+        //{
+        //    module: 'my-buddy-module-message',
+        //    type: 'trigger',
+        //    trigger: {
+        //        id: 'voice',
+        //        pluginId: 'voice-dummy'
+        //    },
+        //    messageAdapters: [
+        //        'MessageAdapterConsole',
+        //    ],
+        //    triggerOptions: {
+        //        command: 'Say something'
+        //    },
+        //    options: {
+        //        text: 'Ok I say something'
+        //    }
+        //},
         // Task on command
         //{
         //    type: ''
@@ -77,20 +77,21 @@ module.exports = {
         //    }
         //},
         // schedule
-        //{
-        //    module: 'my-buddy-say',
-        //    type: 'schedule',
-        //    messageAdapters: [
-        //        'messenger-adapter-write'
-        //    ],
-        //    schedule: {
-        //        method: "interval",
-        //        interval: 10000
-        //    },
-        //    options: {
-        //        text: 'zblaa'
-        //    }
-        //}
+        {
+            module: 'my-buddy-module-message',
+            pluginId: 'my-buddy-module-message',
+            type: 'schedule',
+            messageAdapters: [
+                'messenger-adapter-write'
+            ],
+            schedule: {
+                method: "interval",
+                interval: 3000
+            },
+            options: {
+                text: 'zblaa'
+            }
+        }
     ],
 
     /**
