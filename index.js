@@ -55,7 +55,7 @@ if (cluster.isMaster) {
 // Once cluster is created, run system
 if (cluster.isWorker) {
 
-    var Daemon = require('./lib/core/daemon.js');
+    var Daemon = require('./lib/index.js');
 
     /**
      *

@@ -92,21 +92,22 @@ module.exports = {
         //        text: 'zblaa'
         //    }
         //},
-        //{
-        //    module: 'my-buddy-module-message',
-        //    pluginId: 'my-buddy-module-message',
-        //    type: 'schedule',
-        //    messageAdapters: [
-        //        'messenger-adapter-write'
-        //    ],
-        //    schedule: {
-        //        method: "moment",
-        //        when: ['12:46', 'HH:mm']
-        //    },
-        //    options: {
-        //        text: 'zblaa'
-        //    }
-        //},
+        {
+            moduleId: 'simple-message',
+            pluginId: 'simple-message',
+            //type: 'schedule',
+            //messageAdapters: [
+            //    'messenger-adapter-write'
+            //],
+            //schedule: {
+            //    method: "moment",
+            //    when: ['12:46', 'HH:mm']
+            //},
+            options: {
+                name: 'task 1',
+                text: 'zblaa'
+            }
+        },
 
         // alarm clock
         //{
