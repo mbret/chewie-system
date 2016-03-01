@@ -24,7 +24,10 @@
                             <p>
                                 <strong>About: </strong>{{ module.config.description || "No description" }}
                             </p>
-                            <p><a class="btn btn-primary" ui-sref="dashboard.tasks.createForm.step1({pluginId: module.pluginId, moduleId: module.id})">Create a new task</a></p>
+                            <p><a class="btn btn-primary" ng-click="addInstantTask('lg', module)">Execute new task</a></p>
+                            <p><a class="btn btn-primary" ng-click="addScheduledTask('lg', module)">Create new scheduled task</a></p>
+                            <p><a class="btn btn-primary" ng-click="addTriggerTask('lg', module)" >Create a new triggered task</a></p>
+                            <p><a class="btn btn-primary" ng-click="addMovementTriggeredTask('lg', module)" >Ajouter une commande sur détection de mouvement</a></p>
                         </div>
                     </uib-tab>
                 </uib-tabset>

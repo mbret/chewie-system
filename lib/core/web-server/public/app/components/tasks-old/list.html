@@ -1,0 +1,107 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Tâches planifiées</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>Tâches planifiées</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <h1 class="page-header">Tâches</h1>
+
+        <div class="tabs-container">
+            <uib-tabset class="">
+                <uib-tab heading="Direct tasks">
+                    <div class="panel-body">
+                        <strong>Only tasks that are set in config appears here. Direct tasks executed during runtime are executed once and are not saved.</strong>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="Scheduled tasks ({{scheduledTasks.length}})" active="true">
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead class="thead-default">
+                                <tr>
+                                    <th>#pid</th>
+                                    <th>Module</th>
+                                    <th>Method</th>
+                                    <th>Schedule</th>
+                                    <th>Next tick</th>
+                                    <th>Message adapters</th>
+                                    <th>Options</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="task in scheduledTasks">
+                                    <td scope="row">{{task.id|truncate:10}}</td>
+                                    <td scope="row">{{task.module}}</td>
+                                    <td scope="row"><span class="badge">{{task.schedule.method}}</span></td>
+                                    <td>
+                                        <span ng-if="task.schedule.method === 'interval'">{{task.schedule.interval | friendlyInterval}}</span>
+                                        <span ng-if="task.schedule.method === 'moment'">{{task.schedule.when | when}}</span>
+                                    </td>
+                                    <td>
+                                        {{task.nextTick|date:'yyyy-MM-dd HH:mm:ss'}}
+                                    </td>
+                                    <td>
+                                        <span class="badge" ng-repeat="adapter in task.messageAdapters">{{adapter}}</span>
+                                    </td>
+                                    <td>{{task.options}}</td>
+                                    <td>
+                                        <a href="" ng-click="removeTask(task.id)"><i class="fa fa-remove text-warning"></i></a>
+                                        &nbsp;<a href=""><i class="fa fa-edit text-navy"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="Triggered tasks ({{triggeredTasks.length}})">
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead class="thead-default">
+                                <tr>
+                                    <th>#processus</th>
+                                    <th>Module</th>
+                                    <th>Message adapters</th>
+                                    <th>Trigger</th>
+                                    <th>Trigger options</th>
+                                    <th>Task options</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="task in triggeredTasks">
+                                <td scope="row" title="{{task.id}}">{{task.id|truncate:10}}</td>
+                                <td scope="row"><span class="badge">{{task.module}}</span></td>
+                                <td>
+                                    <span class="badge" ng-repeat="adapter in task.messageAdapters">{{adapter}}</span>
+                                </td>
+                                <td><span class="badge">{{task.trigger.id}}</span> from <span class="badge">{{task.trigger.pluginId}}</span></td>
+                                <td>{{task.triggerOptions}}</td>
+                                <td>{{task.options}}</td>
+                                <td>
+                                    <a href="" ng-click="removeTask(task.id)"><i class="fa fa-remove text-warning"></i></a>
+                                    &nbsp;<a href=""><i class="fa fa-edit text-navy"></i></a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </uib-tab>
+                <uib-tab heading="Others">
+                    <div class="panel-body">
+                        nothing
+                    </div>
+                </uib-tab>
+            </uib-tabset>
+        </div>
+    </div>
+</div>

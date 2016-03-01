@@ -31,11 +31,11 @@
             <li ui-sref-active="active">
                 <a ui-sref="dashboard.usersConfig"><i class="fa fa-th-large"></i> <span class="nav-label">My preferences</span></a>
             </li>
-            <li ui-sref-active="active">
-                <a ui-sref="dashboard.tasks"><i class="fa fa-tasks"></i> <span class="nav-label">My tasks</span></a>
+            <li ui-sref-active-if="dashboard.tasks.list">
+                <a ui-sref="dashboard.tasks.list"><i class="fa fa-tasks"></i> <span class="nav-label">My tasks</span></a>
             </li>
-            <li ui-sref-active="active">
-                <a ui-sref="dashboard.newTask"><i class="fa fa-plus-square"></i> <span class="nav-label">New task</span></a>
+            <li ui-sref-active-if="dashboard.tasks.create">
+                <a ui-sref="dashboard.tasks.create"><i class="fa fa-plus-square"></i> <span class="nav-label">New task</span></a>
             </li>
             <li ui-sref-active-if="dashboard.modules">
                 <a ui-sref="dashboard.modules.list"><i class="fa fa-trophy"></i> <span class="nav-label">My task modules</span></a>

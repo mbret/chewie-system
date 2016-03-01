@@ -1,0 +1,23 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Modules</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>Modules</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <h1 class="page-header">{{module.name}}</h1>
+
+    <ui-view></ui-view>
+
+    <pre>
+        {{ formData }}
+    </pre>
+</div>
