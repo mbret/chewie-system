@@ -4,14 +4,14 @@ var path = require('path');
 
 module.exports = {
 
-    tmpDir: path.join(__dirname, '.my-buddy/tmp'),
-    dataDir: path.join(__dirname, '.my-buddy/data'),
+    tmpDir:         path.join(__dirname, '.my-buddy/tmp'),
+    dataDir:        path.join(__dirname, '.my-buddy/data'),
     persistenceDir: path.join(__dirname, '.my-buddy/storage'),
 
     // User modules to load
     loadPlugins: [
         //'message-adapter-mail',
-        'my-buddy-module-message',
+        'simple-message',
         //'my-buddy-basics',
         //"voxygen-speaker",
         //"voice-dummy",
