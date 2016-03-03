@@ -25,6 +25,12 @@ module.exports = {
             triggers: [
                 {
                     type: 'direct',
+                    options: {
+                        text: 'hello'
+                    },
+                    messageAdapters: [
+                        'MessageAdapterConsole',
+                    ]
                 }
             ],
             // task options

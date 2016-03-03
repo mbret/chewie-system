@@ -24,8 +24,9 @@ class Module extends EventEmitter{
         var self = this;
 
         // Listen for new task on module
-        this.helper.onNewTask(function(task, options){
-            self.say(task, options);
+        this.helper.onNewTask(function(context){
+            console.log(context);
+            self.say(context);
         });
 
         return cb();
@@ -44,15 +45,15 @@ class Module extends EventEmitter{
      * @param task
      * @private
      */
-    say(task, options){
+    say(context){
         var self = this;
-        if(!_.isString(options.text)){
-            self.helper.notify('warn', 'Invalid task options received [' + JSON.stringify(options) + ']');
+        if(!_.isString(context.options.text)){
+            self.helper.notify('warn', 'Invalid task options received [' + JSON.stringify(context.options) + ']');
         }
         else{
-            var text = options.text;
+            var text = context.options.text;
             // handle what user want (mail, voice, etc)
-            this.helper.executeMessage(task, text);
+            this.helper.executeMessage(context, text);
         }
     }
 
