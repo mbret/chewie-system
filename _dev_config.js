@@ -20,6 +20,19 @@ module.exports = {
     ],
 
     tasks: [
+        {
+            moduleId: 'simple-message',
+            pluginId: 'simple-message',
+            triggers: [
+                {
+                    type: 'direct',
+                }
+            ],
+            // task options
+            options: {
+                name: 'Task 1'
+            }
+        },
         //{
         //    module: 'weather',
         //    type: 'direct',
@@ -92,22 +105,22 @@ module.exports = {
         //        text: 'zblaa'
         //    }
         //},
-        {
-            moduleId: 'simple-message',
-            pluginId: 'simple-message',
-            //type: 'schedule',
-            //messageAdapters: [
-            //    'messenger-adapter-write'
-            //],
-            //schedule: {
-            //    method: "moment",
-            //    when: ['12:46', 'HH:mm']
-            //},
-            options: {
-                name: 'task 1',
-                text: 'zblaa'
-            }
-        },
+        //{
+        //    moduleId: 'simple-message',
+        //    pluginId: 'simple-message',
+        //    type: 'schedule',
+        //    messageAdapters: [
+        //        'messenger-adapter-write'
+        //    ],
+        //    schedule: {
+        //        method: "moment",
+        //        when: ['12:46', 'HH:mm']
+        //    },
+        //    options: {
+        //        name: 'task 1',
+        //        text: 'zblaa'
+        //    }
+        //},
 
         // alarm clock
         //{
