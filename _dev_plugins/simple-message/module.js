@@ -12,12 +12,6 @@ var EventEmitter = require('events').EventEmitter;
  */
 class Module extends EventEmitter{
 
-    /**
-     *
-     * @param daemon
-     * @param userConfig
-     * @param scheduler
-     */
     constructor(helper){
         super();
         this.helper = helper;
@@ -30,8 +24,8 @@ class Module extends EventEmitter{
         var self = this;
 
         // Listen for new task on module
-        this.helper.onNewTask(function(task){
-            self.say(task);
+        this.helper.onNewTask(function(task, options){
+            self.say(task, options);
         });
 
         return cb();
@@ -50,13 +44,13 @@ class Module extends EventEmitter{
      * @param task
      * @private
      */
-    say(task){
+    say(task, options){
         var self = this;
-        if(!_.isString(task.options.text)){
-            self.helper.notify('warn', 'Invalid task received [' + JSON.stringify(task.options) + ']');
+        if(!_.isString(options.text)){
+            self.helper.notify('warn', 'Invalid task options received [' + JSON.stringify(options) + ']');
         }
         else{
-            var text = task.options.text;
+            var text = options.text;
             // handle what user want (mail, voice, etc)
             this.helper.executeMessage(task, text);
         }

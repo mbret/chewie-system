@@ -21,8 +21,7 @@ module.exports = {
 
     tasks: [
         {
-            moduleId: 'simple-message',
-            pluginId: 'simple-message',
+            moduleId: 'simple-message:simple-message',
             triggers: [
                 {
                     type: 'direct',
