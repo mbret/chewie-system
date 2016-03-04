@@ -15,7 +15,7 @@ module.exports = {
         //'my-buddy-basics',
         //"voxygen-speaker",
         //"voice-task-trigger",
-        "keypress-trigger",
+        //"keypress-trigger",
         //'weather',
         //'button-dummy'
     ],
@@ -75,34 +75,6 @@ module.exports = {
         //        latitude : 48.6843900,
         //        longitude : 6.1849600,
         //        city: 'Nancy'
-        //    }
-        //},
-        //{
-        //    module: 'my-buddy-module-message',
-        //    type: 'trigger',
-        //    trigger: 'button-dummy',
-        //    messageAdapters: [
-        //        'MessageAdapterConsole',
-        //    ],
-        //    options: {
-        //        text: 'coucou'
-        //    }
-        //},
-        //{
-        //    module: 'my-buddy-module-message',
-        //    type: 'trigger',
-        //    trigger: {
-        //        id: 'voice',
-        //        pluginId: 'voice-dummy'
-        //    },
-        //    messageAdapters: [
-        //        'MessageAdapterConsole',
-        //    ],
-        //    triggerOptions: {
-        //        command: 'Say something'
-        //    },
-        //    options: {
-        //        text: 'Ok I say something'
         //    }
         //},
         // Task on command
