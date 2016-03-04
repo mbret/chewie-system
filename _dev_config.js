@@ -31,6 +31,19 @@ module.exports = {
                     messageAdapters: [
                         'MessageAdapterConsole',
                     ]
+                },
+                {
+                    type: 'schedule',
+                    schedule: {
+                        method: "interval",
+                        interval: 1000
+                    },
+                    options: {
+                        text: 'you'
+                    },
+                    messageAdapters: [
+                        'MessageAdapterConsole',
+                    ]
                 }
             ],
             // task options

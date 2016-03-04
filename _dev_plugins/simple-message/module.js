@@ -25,7 +25,6 @@ class Module extends EventEmitter{
 
         // Listen for new task on module
         this.helper.onNewTask(function(context){
-            console.log(context);
             self.say(context);
         });
 
