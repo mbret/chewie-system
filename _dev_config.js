@@ -14,7 +14,8 @@ module.exports = {
         'simple-message',
         //'my-buddy-basics',
         //"voxygen-speaker",
-        //"voice-dummy",
+        //"voice-task-trigger",
+        "keypress-trigger",
         //'weather',
         //'button-dummy'
     ],
@@ -23,27 +24,39 @@ module.exports = {
         {
             moduleId: 'simple-message:simple-message',
             triggers: [
+                //{
+                //    type: 'direct',
+                //    options: {
+                //        text: 'hello'
+                //    },
+                //    messageAdapters: [
+                //        'MessageAdapterConsole',
+                //    ]
+                //},
+                //{
+                //    type: 'schedule',
+                //    schedule: {
+                //        method: "interval",
+                //        interval: 1000
+                //    },
+                //    options: {
+                //        text: 'you'
+                //    },
+                //    messageAdapters: [
+                //        'MessageAdapterConsole',
+                //    ]
+                //},
                 {
-                    type: 'direct',
+                    type: 'trigger',
                     options: {
-                        text: 'hello'
+                        text: 'bitch'
                     },
-                    messageAdapters: [
-                        'MessageAdapterConsole',
-                    ]
-                },
-                {
-                    type: 'schedule',
-                    schedule: {
-                        method: "interval",
-                        interval: 1000
-                    },
-                    options: {
-                        text: 'you'
-                    },
-                    messageAdapters: [
-                        'MessageAdapterConsole',
-                    ]
+                    trigger: {
+                        options: {
+                            key: 'i'
+                        },
+                        id: 'keypress-trigger'
+                    }
                 }
             ],
             // task options
@@ -107,39 +120,6 @@ module.exports = {
         //        text: 'dehors'
         //    }
         //},
-        // schedule
-        //{
-        //    module: 'my-buddy-module-message',
-        //    pluginId: 'my-buddy-module-message',
-        //    type: 'schedule',
-        //    messageAdapters: [
-        //        'messenger-adapter-write'
-        //    ],
-        //    schedule: {
-        //        method: "interval",
-        //        interval: 10000
-        //    },
-        //    options: {
-        //        text: 'zblaa'
-        //    }
-        //},
-        //{
-        //    moduleId: 'simple-message',
-        //    pluginId: 'simple-message',
-        //    type: 'schedule',
-        //    messageAdapters: [
-        //        'messenger-adapter-write'
-        //    ],
-        //    schedule: {
-        //        method: "moment",
-        //        when: ['12:46', 'HH:mm']
-        //    },
-        //    options: {
-        //        name: 'task 1',
-        //        text: 'zblaa'
-        //    }
-        //},
-
         // alarm clock
         //{
         //    schedules: [
@@ -151,18 +131,4 @@ module.exports = {
         //    ]
         //}
     ],
-
-    // Joke module
-    //"my-buddy-joke": {
-    //    say: [
-    //        {
-    //            type: "chuck",
-    //            "schedule": {
-    //                "method": "chance", // chance
-    //                // in second
-    //                interval: [1, 6], // I want to get possible joke between now and next 60s
-    //            }
-    //        }
-    //    ]
-    //},
 };

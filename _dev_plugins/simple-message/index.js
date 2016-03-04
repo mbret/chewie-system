@@ -11,13 +11,11 @@ var Module = require('./module.js');
  * @param logger
  * @param PluginHelper helper
  */
-function buddyModule(moduleName, daemon, logger, helper)
+function buddyModule(moduleName, helper)
 {
     // Register module (using same module package name)
     // Pass the module config
     helper.registerModule(Module);
 }
-
-buddyModule.require = ['daemon', 'logger', 'helper'];
 
 module.exports = buddyModule;
