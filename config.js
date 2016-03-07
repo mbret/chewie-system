@@ -35,15 +35,6 @@ module.exports = {
     // Handled by app
     activeModules: [],
 
-    // The list of actions a task can do.
-    // This list will be filled dynamically with core module
-    // For example a core module can add the action [mail].
-    // Then a task can be created with action [mail]. The core module
-    // will listen for [mail] event and do things ...
-    taskActions: {
-
-    },
-
     tasks: [],
     apiPort: 3001,
     webServerPort: 3000,

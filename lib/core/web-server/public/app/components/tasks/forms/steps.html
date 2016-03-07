@@ -15,7 +15,24 @@
 <div class="container-fluid">
     <h1 class="page-header">{{module.name}}</h1>
 
-    <ui-view></ui-view>
+    <form novalidate name="form">
+
+        <h3>General</h3>
+        <div class="form-group">
+            <label>Name</label>
+            <div>
+                <input type="text" class="form-control" ng-required="true" ng-model="formData.name" />
+            </div>
+        </div>
+
+        <h3>General options</h3>
+        <task-options config-options="module.config.options" ng-model="formData.options" ></task-options>
+
+        <h3>Specify an action when the task is executed</h3>
+        <task-actions ng-model="formData.actions"></task-actions>
+
+        <button class="btn btn-primary" type="button" ng-click="processForm(form)">Create</button>
+    </form>
 
     <pre>
         {{ formData }}

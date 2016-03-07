@@ -24,7 +24,7 @@
                             <p>
                                 <strong>About: </strong>{{ module.config.description || "No description" }}
                             </p>
-                            <p><a class="btn btn-primary" ui-sref="dashboard.tasks.createForm.step1({pluginId: module.pluginId, moduleId: module.id})">Create a new task</a></p>
+                            <p><a class="btn btn-primary" ui-sref="dashboard.tasks.createForm({id: module.id})">Create a new task</a></p>
                         </div>
                     </uib-tab>
                 </uib-tabset>

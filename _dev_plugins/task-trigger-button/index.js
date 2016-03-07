@@ -3,7 +3,7 @@
 var myModule = require('./task-trigger.js');
 
 function plugin(pluginName, helper){
-    helper.registerTaskTrigger(myModule);
+    helper.registerTrigger(myModule);
 }
 
 plugin.require = ['helper'];
