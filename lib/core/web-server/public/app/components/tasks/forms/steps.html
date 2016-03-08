@@ -15,24 +15,63 @@
 <div class="container-fluid">
     <h1 class="page-header">{{module.name}}</h1>
 
-    <form novalidate name="form">
-
-        <h3>General</h3>
-        <div class="form-group">
-            <label>Name</label>
-            <div>
-                <input type="text" class="form-control" ng-required="true" ng-model="formData.name" />
-            </div>
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>Create your new task</h5>
         </div>
+        <div class="ibox-content">
+            <form novalidate name="form">
 
-        <h3>General options</h3>
-        <task-options config-options="module.config.options" ng-model="formData.options" ></task-options>
+                <h3>General</h3>
+                <div class="form-group">
+                    <label>Name</label>
+                    <div>
+                        <input type="text" name="name" class="form-control" ng-required="true" ng-model="formData.name" />
+                        <form-errors form="form" field="form.name"></form-errors>
+                    </div>
+                </div>
 
-        <h3>Specify an action when the task is executed</h3>
-        <task-actions ng-model="formData.actions"></task-actions>
+                <h3>General options</h3>
+                <task-options config-options="module.config.options" ng-model="formData.options" ></task-options>
 
-        <button class="btn btn-primary" type="button" ng-click="processForm(form)">Create</button>
-    </form>
+                <h3>Your triggers</h3>
+                <div ng-repeat="trigger in formData.triggers">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            Trigger: {{trigger.type}}
+                        </div>
+                        <div class="panel-body">
+
+                            <h4>Specify the type of the trigger</h4>
+                            <div class="form-group">
+                                <div class="btn-group">
+                                    <label class="btn btn-default" ng-model="trigger.type" uib-btn-radio="'direct'">Direct</label>
+                                    <label class="btn btn-default" ng-model="trigger.type" uib-btn-radio="'schedule'">Scheduled</label>
+                                </div>
+                            </div>
+
+                            <h3>Options</h3>
+                            <task-options config-options="module.config.taskOptions" ng-model="trigger.options" prefix="'trigger[' + $index + ']'"></task-options>
+
+                            <h4>Specify an action when the trigger is executed</h4>
+                            <div class="form-group">
+                                <div>
+                                    <task-actions actions="trigger.actions"></task-actions>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" type="button" ng-click="removeTrigger($index)">Remove</button>
+
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" type="button" ng-click="addTrigger()">Add a trigger</button>
+
+                <button class="btn btn-primary" type="button" ng-click="processForm(form)">Create</button>
+            </form>
+        </div>
+    </div>
 
     <pre>
         {{ formData }}

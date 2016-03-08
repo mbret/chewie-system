@@ -9,7 +9,8 @@
         </div>
 
         <div ng-switch-when="text">
-            <input type="text" class="form-control" ng-required="{{option.required}}" ng-model="option.value" />
+            <input type="text" name="{{prefix}}.options.{{option.name}}" class="form-control" ng-required="{{option.required}}" ng-model="option.value" />
+            <form-errors form="form" field="form[prefix + '.options.' + option.name]"></form-errors>
         </div>
 
     </div>
