@@ -23,6 +23,7 @@ module.exports = {
     tasks: [
         {
             moduleId: 'simple-message:simple-message',
+            name: 'Task 1',
             triggers: [
                 //{
                 //    type: 'direct',
@@ -61,7 +62,7 @@ module.exports = {
             ],
             // task options
             options: {
-                name: 'Task 1'
+
             }
         },
         //{
