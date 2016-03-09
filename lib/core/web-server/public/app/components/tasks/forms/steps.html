@@ -66,6 +66,16 @@
 
                             <!-----------------------------
 
+                                Trigger Triggered part
+
+                            -------------------------------->
+                            <div ng-show="trigger.type === 'trigger'">
+                                <h3>Trigger</h3>
+                                <trigger-options config-options="module.config.taskOptions" ng-model="trigger.options" ></trigger-options>
+                            </div>
+
+                            <!-----------------------------
+
                                 Trigger Schedule part
 
                             -------------------------------->

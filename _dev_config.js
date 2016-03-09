@@ -15,7 +15,7 @@ module.exports = {
         //'my-buddy-basics',
         //"voxygen-speaker",
         //"voice-task-trigger",
-        //"keypress-trigger",
+        "keypress-trigger",
         //'weather',
         //'button-dummy'
     ],
