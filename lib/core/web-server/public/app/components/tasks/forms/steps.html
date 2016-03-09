@@ -71,7 +71,14 @@
                             -------------------------------->
                             <div ng-show="trigger.type === 'trigger'">
                                 <h3>Trigger</h3>
-                                <trigger-options config-options="module.config.taskOptions" ng-model="trigger.options" ></trigger-options>
+                                <div class="form-group">
+                                    <div class="radio radio-info radio-inline" ng-repeat="trig in triggers">
+                                        <input id="inlineRadio1" type="radio" value="interval" name="trig.id" ng-model="trigger.trigger.id" ng-required="true">
+                                        <label for="inlineRadio1">{{trig.id}}</label>
+                                    </div>
+                                    <!--<form-errors form="form" field="form['trigger.schedule.method']"></form-errors>-->
+                                </div>
+                                <!--<trigger-options config-options="module.config.taskOptions" ng-model="trigger.triggerOptions"></trigger-options>-->
                             </div>
 
                             <!-----------------------------
@@ -131,7 +138,6 @@
 
                                 </div>
                             </div>
-
 
                             <!-----------------------------
 

@@ -6,6 +6,7 @@ module.exports = {
 
     module: {
         description: 'Get the weather easier',
+
         taskOptions: [
             {
                 name: 'city',

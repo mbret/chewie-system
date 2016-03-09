@@ -53,7 +53,32 @@ class Trigger{
     }
 
     getConfig(){
-        return {};
+        return {
+
+            // module scope
+            // for global run
+            // available in instance scope
+            options: [
+                {
+                    name: 'test',
+                    label: 'One option',
+                    type: 'text',
+                    required: true
+                },
+            ],
+
+            // trigger scope
+            // every run
+            // only available on new watch
+            triggerOptions: [
+                {
+                    name: 'key',
+                    label: 'Key to press',
+                    type: 'text',
+                    required: true
+                },
+            ]
+        };
     }
 
 }
