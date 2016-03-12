@@ -7,18 +7,16 @@
  * written here will be called twice.
  */
 
-var cluster         = require('cluster');
-var config          = require(__dirname + '/_dev_config.js');
-
-var MyBuddySystem   = require('./index.js');
+var config  = require(__dirname + '/_dev_config.js');
+var system  = require('./index.js');
 
 // Use your own custom plugins repository
-MyBuddySystem.registerNewPluginDirectory(__dirname + '/_dev_plugins');
+system.registerNewPluginDirectory(__dirname + '/_dev_plugins');
 
 // Use your own config
-MyBuddySystem.registerNewConfig(config);
+system.registerNewConfig(config);
 
 // Start the system
 // You don't need anything else after this point.
 // The system handle itself completely.
-MyBuddySystem.start();
+system.start();
