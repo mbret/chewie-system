@@ -19,7 +19,7 @@
         <div class="col-lg-12">
             <div class="tabs-container">
                 <uib-tabset class="tabs-left">
-                    <uib-tab heading="{{module.name}}" ng-repeat="module in modules">
+                    <uib-tab heading="{{module.config.name}}" ng-repeat="module in modules">
                         <div class="panel-body">
                             <p>
                                 <strong>About: </strong>{{ module.config.description || "No description" }}

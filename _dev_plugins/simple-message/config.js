@@ -9,6 +9,7 @@ module.exports = {
 
     // The config relative to the module
     module: {
+        name: 'Simple message',
         description: 'A simple module to create message task',
 
         options: [
