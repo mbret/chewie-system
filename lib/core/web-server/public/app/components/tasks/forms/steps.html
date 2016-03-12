@@ -13,7 +13,7 @@
 </div>
 
 <div class="container-fluid">
-    <h1 class="page-header">{{module.name}}</h1>
+    <h1 class="page-header">{{module.config.name}}</h1>
 
     <div class="ibox float-e-margins">
         <div class="ibox-title">
@@ -32,13 +32,13 @@
                 </div>
 
                 <h3>General options</h3>
-                <task-options config-options="module.config.options" ng-model="formData.options" ></task-options>
+                <module-form-options config-options="module.config.options" ng-model="formData.options" prefix="'task'"></module-form-options>
 
                 <h3>Your triggers</h3>
-                <div ng-repeat="trigger in formData.triggers">
+                <div ng-repeat="taskTrigger in formData.triggers" ng-init="fieldPrefix = 'taskTrigger[' + $index + ']'">
                     <div class="panel panel-success">
                         <div class="panel-heading">
-                            Trigger: {{trigger.type}}
+                            Trigger: {{taskTrigger.type}}
                         </div>
                         <div class="panel-body">
 
@@ -50,10 +50,10 @@
                             <h4>Specify the type of the trigger</h4>
                             <div class="form-group">
                                 <div class="btn-group">
-                                    <label class="btn btn-default" ng-model="trigger.type" uib-btn-radio="'direct'">Direct</label>
-                                    <label class="btn btn-default" ng-model="trigger.type" uib-btn-radio="'schedule'">Scheduled</label>
-                                    <label class="btn btn-default" ng-model="trigger.type" uib-btn-radio="'trigger'">Triggered</label>
-                                    <label class="btn btn-default" ng-model="trigger.type" uib-btn-radio="'manual'">Manual</label>
+                                    <label class="btn btn-default" ng-model="taskTrigger.type" uib-btn-radio="'direct'">Direct</label>
+                                    <label class="btn btn-default" ng-model="taskTrigger.type" uib-btn-radio="'schedule'">Scheduled</label>
+                                    <label class="btn btn-default" ng-model="taskTrigger.type" uib-btn-radio="'trigger'">Triggered</label>
+                                    <label class="btn btn-default" ng-model="taskTrigger.type" uib-btn-radio="'manual'">Manual</label>
                                 </div>
                             </div>
 
@@ -63,23 +63,25 @@
 
                             -------------------------------->
                             <h3>Options</h3>
-                            <task-options config-options="module.config.taskOptions" ng-model="trigger.options" prefix="'trigger[' + $index + ']'"></task-options>
+                            <module-form-options config-options="module.config.taskOptions" ng-model="taskTrigger.options" prefix="'taskTrigger[' + $index + ']'"></module-form-options>
 
                             <!-----------------------------
 
                                 Trigger Triggered part
 
                             -------------------------------->
-                            <div ng-show="trigger.type === 'trigger'">
+                            <div ng-if="taskTrigger.type === 'trigger'">
                                 <h3>Trigger</h3>
-                                <div class="form-group">
-                                    <div class="radio radio-info radio-inline" ng-repeat="trig in triggers">
-                                        <!--<input id="inlineRadio1" type="radio" value="interval" name="trig.id" ng-model="trigger.trigger.id" ng-required="true">-->
-                                        <label for="inlineRadio1">{{trig.id}}</label>
+                                <div ng-repeat="trig in triggers" ng-init="fieldId = fieldPrefix + '.triggers[' + trig.id + ']'">
+                                    <div class="form-group">
+                                        <div class="radio radio-info radio-inline">
+                                            <input id="{{fieldId}}" type="radio" name="{{fieldId}}" value="{{trig.id}}" ng-model="taskTrigger.trigger.id" ng-required="true">
+                                            <label for="{{fieldId}}">{{trig.id}}</label>
+                                        </div>
+                                        <form-errors form="form" field="form[fieldId]"></form-errors>
                                     </div>
-                                    <!--<form-errors form="form" field="form['trigger.schedule.method']"></form-errors>-->
+                                    <module-form-options config-options="trig.config.triggerOptions" ng-model="taskTrigger.trigger.options" prefix="fieldPrefix + '.trigger'"></module-form-options>
                                 </div>
-                                <!--<trigger-options config-options="module.config.taskOptions" ng-model="trigger.triggerOptions"></trigger-options>-->
                             </div>
 
                             <!-----------------------------
@@ -87,65 +89,65 @@
                                 Trigger Schedule part
 
                             -------------------------------->
-                            <!--<div ng-show="trigger.type === 'schedule'">-->
-                                <!--<h3>Schedule</h3>-->
-                                <!--<div class="form-group">-->
-                                    <!--<div class="radio radio-info radio-inline">-->
-                                        <!--<input id="inlineRadio1" type="radio" value="interval" name="trigger.schedule.method" checked="checked" ng-model="trigger.schedule.method" ng-required="true">-->
-                                        <!--<label for="inlineRadio1">Interval</label>-->
-                                    <!--</div>-->
-                                    <!--<div class="radio radio-info radio-inline">-->
-                                        <!--<input id="inlineRadio2" type="radio" value="moment" name="trigger.schedule.method" ng-model="trigger.schedule.method" ng-required="true">-->
-                                        <!--<label for="inlineRadio2">Moment</label>-->
-                                    <!--</div>-->
-                                    <!--<div class="radio radio-info radio-inline">-->
-                                        <!--<input id="inlineRadio3" type="radio" value="range" name="trigger.schedule.method" ng-model="trigger.schedule.method" ng-required="true">-->
-                                        <!--<label for="inlineRadio3">Range</label>-->
-                                    <!--</div>-->
-                                    <!--<form-errors form="form" field="form['trigger.schedule.method']"></form-errors>-->
-                                <!--</div>-->
+                            <div ng-if="taskTrigger.type === 'schedule'">
+                                <h3>Schedule</h3>
+                                <div class="form-group">
+                                    <div class="radio radio-info radio-inline">
+                                        <input id="inlineRadio1" type="radio" value="interval" name="taskTrigger.schedule.method" checked="checked" ng-model="taskTrigger.schedule.method" ng-required="true">
+                                        <label for="inlineRadio1">Interval</label>
+                                    </div>
+                                    <div class="radio radio-info radio-inline">
+                                        <input id="inlineRadio2" type="radio" value="moment" name="taskTrigger.schedule.method" ng-model="taskTrigger.schedule.method" ng-required="true">
+                                        <label for="inlineRadio2">Moment</label>
+                                    </div>
+                                    <div class="radio radio-info radio-inline">
+                                        <input id="inlineRadio3" type="radio" value="range" name="taskTrigger.schedule.method" ng-model="taskTrigger.schedule.method" ng-required="true">
+                                        <label for="inlineRadio3">Range</label>
+                                    </div>
+                                    <form-errors form="form" field="form['taskTrigger.schedule.method']"></form-errors>
+                                </div>
 
-                                <!--<div class="form-group" ng-show="schedule.method === 'interval'">-->
-                                    <!--<label for="interval">Intervalle (en secondes)</label>-->
-                                    <!--<input id="interval" type="text" class="form-control" ng-required="schedule.method === 'interval'" ng-model="schedule.interval" />-->
-                                <!--</div>-->
+                                <div class="form-group" ng-show="schedule.method === 'interval'">
+                                    <label for="interval">Intervalle (en secondes)</label>
+                                    <input id="interval" type="text" class="form-control" ng-required="schedule.method === 'interval'" ng-model="schedule.interval" />
+                                </div>
 
-                                <!--<div ng-show="schedule.method === 'moment'">-->
+                                <div ng-show="schedule.method === 'moment'">
 
-                                    <!--<h4>Type de moment</h4>-->
+                                    <h4>Type de moment</h4>
 
-                                    <!--<div class="form-group" >-->
-                                        <!--<div class="btn-group">-->
-                                            <!--<label class="btn btn-default" ng-model="schedule.subMoment" uib-btn-radio="'date'" uncheckable>Date</label>-->
-                                            <!--<label class="btn btn-default" ng-model="schedule.subMoment" uib-btn-radio="'hours'" uncheckable>Heure</label>-->
-                                        <!--</div>-->
-                                    <!--</div>-->
+                                    <div class="form-group" >
+                                        <div class="btn-group">
+                                            <label class="btn btn-default" ng-model="schedule.subMoment" uib-btn-radio="'date'" uncheckable>Date</label>
+                                            <label class="btn btn-default" ng-model="schedule.subMoment" uib-btn-radio="'hours'" uncheckable>Heure</label>
+                                        </div>
+                                    </div>
 
-                                    <!--<div class="form-group" ng-show="schedule.subMoment === 'date'">-->
-                                        <!--<label >Intervalle</label>-->
-                                        <!--<input type="text" class="form-control" date-range-picker ng-model="schedule.date" options="dateRangePickerOptions" />-->
-                                    <!--</div>-->
+                                    <div class="form-group" ng-show="schedule.subMoment === 'date'">
+                                        <label >Intervalle</label>
+                                        <input type="text" class="form-control" date-range-picker ng-model="schedule.date" options="dateRangePickerOptions" />
+                                    </div>
 
-                                    <!--<div ng-show="schedule.subMoment === 'hours'">-->
-                                        <!--<div class="form-group" >-->
-                                            <!--<label >Jours</label>-->
-                                            <!--<select size="7" class="form-control" ng-required="schedule.method === 'hours'" multiple ng-multiple="true" ng-model="schedule.selectedDays" ng-options="day.name for day in schedule.days"></select>-->
-                                        <!--</div>-->
-                                        <!--<div class="form-group" ng-show="schedule.subMoment === 'hours'">-->
-                                            <!--<label >Heure</label>-->
-                                            <!--<input type="time" min="00:00" ng-model="schedule.hours" class="form-control" ng-required="schedule.method === 'hours'"/>-->
-                                        <!--</div>-->
-                                    <!--</div>-->
+                                    <div ng-show="schedule.subMoment === 'hours'">
+                                        <div class="form-group" >
+                                            <label >Jours</label>
+                                            <select size="7" class="form-control" ng-required="schedule.method === 'hours'" multiple ng-multiple="true" ng-model="schedule.selectedDays" ng-options="day.name for day in schedule.days"></select>
+                                        </div>
+                                        <div class="form-group" ng-show="schedule.subMoment === 'hours'">
+                                            <label >Heure</label>
+                                            <input type="time" min="00:00" ng-model="schedule.hours" class="form-control" ng-required="schedule.method === 'hours'"/>
+                                        </div>
+                                    </div>
 
-                                <!--</div>-->
-                            <!--</div>-->
+                                </div>
+                            </div>
 
                             <!-----------------------------
 
                                 Trigger Manual part
 
                             -------------------------------->
-                            <div ng-show="trigger.type === 'manual'">
+                            <div ng-if="taskTrigger.type === 'manual'">
 
                             </div>
 
@@ -157,7 +159,7 @@
                             <h4>Specify an action when the trigger is executed</h4>
                             <div class="form-group">
                                 <div>
-                                    <task-actions actions="trigger.actions"></task-actions>
+                                    <task-actions actions="taskTrigger.actions"></task-actions>
                                 </div>
                             </div>
 

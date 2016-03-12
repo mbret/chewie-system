@@ -30,7 +30,7 @@ class Trigger{
         });
     }
 
-    initialize(cb)
+    initialize(done)
     {
         var self = this;
 
@@ -43,13 +43,14 @@ class Trigger{
             stdin.on( 'data', function( key ){
 
                 if(key === options.key){
+                    self.helper.getLogger().info('You have pressed the key %s', key);
                     return cb();
                 }
 
             });
         });
 
-        return cb();
+        return done();
     }
 
     getConfig(){
