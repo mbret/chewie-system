@@ -10,6 +10,7 @@ module.exports = {
 
     // User modules to load
     loadPlugins: [
+        'joke',
         //'message-adapter-mail',
         'simple-message',
         'my-buddy-basics',
