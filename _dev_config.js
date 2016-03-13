@@ -16,6 +16,7 @@ module.exports = {
         //"voxygen-speaker",
         //"voice-task-trigger",
         "keypress-trigger",
+        "keypress-trigger2",
         //'weather',
         //'button-dummy'
     ],
