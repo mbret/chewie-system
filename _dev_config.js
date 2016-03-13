@@ -12,11 +12,10 @@ module.exports = {
     loadPlugins: [
         //'message-adapter-mail',
         'simple-message',
-        //'my-buddy-basics',
+        'my-buddy-basics',
         //"voxygen-speaker",
         //"voice-task-trigger",
         "keypress-trigger",
-        "keypress-trigger2",
         //'weather',
         //'button-dummy'
     ],

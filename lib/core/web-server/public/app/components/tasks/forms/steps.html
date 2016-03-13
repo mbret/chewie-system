@@ -156,13 +156,16 @@
 
                             <!-----------------------------
 
-                                Trigger actions
+                                Trigger output actions
 
                             -------------------------------->
-                            <h4>Specify an action when the trigger is executed</h4>
-                            <div class="form-group">
-                                <div>
-                                    <task-actions actions="taskTrigger.actions"></task-actions>
+                            <div ng-if="module.config.outputSupport">
+                                {{taskTrigger.actions}}
+                                <h4>Specify an output action</h4>
+                                <div class="form-group">
+                                    <div>
+                                        <task-actions ng-model="taskTrigger.actions"></task-actions>
+                                    </div>
                                 </div>
                             </div>
 

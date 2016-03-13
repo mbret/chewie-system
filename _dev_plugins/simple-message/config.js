@@ -12,6 +12,10 @@ module.exports = {
         name: 'Simple message',
         description: 'A simple module to create message task',
 
+        // This module has a support for output. It means that you can
+        // specify several output actions for your task
+        outputSupport: true,
+
         options: [
             {
                 name: 'foo',
