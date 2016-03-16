@@ -31,6 +31,8 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.10.6",
     "nedb": "^1.8.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
     "phantom": "^0.8.0",
     "request": "^2.65.0",
     "require-all": "^2.0.0",

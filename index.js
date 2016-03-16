@@ -5,6 +5,7 @@
 process.chdir(__dirname);
 
 global.LIB_DIR      = __dirname + "/lib";
+global.CONFIG_DIR   = __dirname + '/lib/config';
 global.MODULES_DIR  = __dirname + "/lib/modules";
 global.CORE_DIR     = __dirname + "/lib/core";
 var cluster         = require('cluster');
