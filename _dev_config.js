@@ -18,7 +18,6 @@ module.exports = {
         //"voice-task-trigger",
         "keypress-trigger",
         //'weather',
-        //'button-dummy'
     ],
 
     tasks: [
