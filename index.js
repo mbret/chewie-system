@@ -18,7 +18,7 @@ var ConfigHandler = require('./lib/core/config-handler.js');
 var config = ConfigHandler.loadConfig(__dirname);
 
 // Logger require config to be loaded
-var Logger = require('./lib/core/logger.js');
+var Logger = require('my-buddy-lib').logger.Logger;
 global.LOGGER = new Logger(config);
 var logger = LOGGER.getLogger('buddy');
 

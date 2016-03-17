@@ -10,13 +10,13 @@ module.exports = {
 
     // User modules to load
     loadPlugins: [
-        'joke',
+        //'joke',
         //'message-adapter-mail',
         'simple-message',
-        'my-buddy-basics',
+        //'my-buddy-basics',
         //"voxygen-speaker",
         //"voice-task-trigger",
-        "keypress-trigger",
+        //"keypress-trigger",
         //'weather',
     ],
 
