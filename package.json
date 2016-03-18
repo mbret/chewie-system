@@ -41,7 +41,7 @@
     "stream-series": "^0.1.1",
     "synchronize": "^0.9.15",
     "uuid": "^2.0.1",
-    "validator": "^4.8.0",
+    "validator": "^4.8.0"
   },
   "scripts": {
     "start": "node _dev_index.js",

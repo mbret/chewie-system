@@ -7,11 +7,11 @@
  * written here will be called twice.
  */
 
-var config  = require(__dirname + '/_dev_config.js');
-var system  = require('./index.js');
+var config  = require(__dirname + '/config.js');
+var system  = require('../index.js');
 
 // Use your own custom plugins repository
-system.registerNewPluginDirectory(__dirname + '/_dev_plugins');
+system.registerNewPluginDirectory(__dirname + '/plugins');
 
 // Use your own config
 system.registerNewConfig(config);

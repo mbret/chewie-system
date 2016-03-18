@@ -30,6 +30,7 @@ module.exports = {
         level: 'debug'
     },
 
+    loadPlugins: [],
 
     // User modules to activate
     // Handled by app

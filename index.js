@@ -1,11 +1,8 @@
 'use strict';
 
-// Ensure we're in the project directory, so relative paths work as expected
-// no matter where we actually start from.
-process.chdir(__dirname);
-
+global.ROOT_DIR     = __dirname;
 global.LIB_DIR      = __dirname + "/lib";
-global.CONFIG_DIR   = __dirname + '/lib/config';
+global.CONFIG_DIR   = __dirname + '/config';
 global.MODULES_DIR  = __dirname + "/lib/modules";
 global.CORE_DIR     = __dirname + "/lib/core";
 var cluster         = require('cluster');
@@ -15,7 +12,7 @@ var _               = require('lodash');
 
 // Get static config handler
 var ConfigHandler = require('./lib/core/config-handler.js');
-var config = ConfigHandler.loadConfig(__dirname);
+var config = ConfigHandler.loadConfig(CONFIG_DIR);
 
 // Logger require config to be loaded
 var Logger = require('my-buddy-lib').logger.Logger;
@@ -24,17 +21,10 @@ var logger = LOGGER.getLogger('buddy');
 
 if (cluster.isMaster) {
 
-    exports.registerNewPluginDirectory = function(){
-        // dummy
-    };
+    exports.registerNewPluginDirectory = function(){};
 
-    exports.registerNewConfig = function(){
-        // dummy
-    };
+    exports.registerNewConfig = function(){};
 
-    /**
-     *
-     */
     exports.start = function(){
 
         // Master cluster
@@ -58,25 +48,17 @@ if (cluster.isWorker) {
 
     var Daemon = require('./lib/index.js');
 
-    /**
-     *
-     * @param path
-     */
+    // Register a new plugin directory before startup
     exports.registerNewPluginDirectory = function(path){
         config.externalModuleRepositories.push(path);
     };
 
-    /**
-     *
-     * @param entry
-     */
+    // Add an extra config manually before startup
     exports.registerNewConfig = function(entry){
         config = _.merge(config, entry);
     };
 
-    /**
-     *
-     */
+    // Start the daemon
     exports.start = function(){
 
         logger.info('Start daemon');
