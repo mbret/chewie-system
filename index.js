@@ -9,15 +9,21 @@ var cluster         = require('cluster');
 var async           = require('async');
 var childProcess    = require('child_process');
 var _               = require('lodash');
+var ConfigHandler   = require(CORE_DIR + '/config-handler');
+var Logger          = require('my-buddy-lib').logger.Logger;
 
-// Get static config handler
-var ConfigHandler = require('./lib/core/config-handler.js');
-var config = ConfigHandler.loadConfig(CONFIG_DIR);
+// Read configs + user config
+var config = _.merge(
+    ConfigHandler.loadConfig(CONFIG_DIR),
+    ConfigHandler.loadConfig(process.cwd())
+);
 
-// Logger require config to be loaded
-var Logger = require('my-buddy-lib').logger.Logger;
+// Initialize logger
 global.LOGGER = new Logger(config);
-var logger = LOGGER.getLogger('buddy');
+var logger    = LOGGER.getLogger('buddy');
+
+console.log(LOGGER);
+process.exit();
 
 if (cluster.isMaster) {
 
@@ -50,6 +56,7 @@ if (cluster.isWorker) {
 
     // Register a new plugin directory before startup
     exports.registerNewPluginDirectory = function(path){
+        config.externalModuleRepositories = config.externalModuleRepositories || [];
         config.externalModuleRepositories.push(path);
     };
 
