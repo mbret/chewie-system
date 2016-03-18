@@ -4,9 +4,15 @@ var path = require('path');
 
 module.exports = {
 
-    tmpDir:         path.join(__dirname, '.my-buddy/tmp'),
-    dataDir:        path.join(__dirname, '.my-buddy/data'),
-    persistenceDir: path.join(__dirname, '.my-buddy/storage'),
+    system: {
+        tmpDir:         path.join(process.cwd(), '.my-buddy/tmp'),
+        dataDir:        path.join(process.cwd(), '.my-buddy/data'),
+        persistenceDir: path.join(process.cwd(), '.my-buddy/storage'),
+    },
+
+    plugins: {
+        localRepositories: [process.cwd() + '/plugins']
+    },
 
     // User modules to load
     loadPlugins: [

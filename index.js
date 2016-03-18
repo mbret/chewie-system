@@ -15,15 +15,12 @@ var Logger          = require('my-buddy-lib').logger.Logger;
 // Read configs + user config
 var config = _.merge(
     ConfigHandler.loadConfig(CONFIG_DIR),
-    ConfigHandler.loadConfig(process.cwd())
+    ConfigHandler.loadConfig(process.cwd() + '/config')
 );
 
 // Initialize logger
 global.LOGGER = new Logger(config);
 var logger    = LOGGER.getLogger('buddy');
-
-console.log(LOGGER);
-process.exit();
 
 if (cluster.isMaster) {
 
@@ -52,12 +49,11 @@ if (cluster.isMaster) {
 // Once cluster is created, run system
 if (cluster.isWorker) {
 
-    var Daemon = require('./lib/index.js');
+    var Daemon = require('./lib');
 
     // Register a new plugin directory before startup
     exports.registerNewPluginDirectory = function(path){
-        config.externalModuleRepositories = config.externalModuleRepositories || [];
-        config.externalModuleRepositories.push(path);
+        config.plugins.localRepositories.push(path);
     };
 
     // Add an extra config manually before startup

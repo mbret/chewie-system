@@ -29,7 +29,7 @@ class Player{
         // The garbage clean the tmp folder after some times
         this.garbage = new GarbageCollector();
 
-        this.tmpDirPattern = this.helper.getSystem().config.tmpDir + '/:voice-:text.mp3';
+        this.tmpDirPattern = this.helper.getSystem().config.system.tmpDir + '/:voice-:text.mp3';
 
         this.helper.getLogger().debug('Using [%s] as tmp dir and pattern', this.tmpDirPattern);
 
@@ -124,7 +124,7 @@ class Player{
 
         var textMd5 = crypto.createHash('md5').update(text).digest('hex');
         var url = this.config.voxygenBasePath.replace(':voice', voice).replace(':text', encodeURI(text));
-        var fileName = this.helper.getSystem().config.tmpDir + '/:voice-:text.mp3'.replace(':voice', voice).replace(':text', textMd5);
+        var fileName = this.helper.getSystem().config.system.tmpDir + '/:voice-:text.mp3'.replace(':voice', voice).replace(':text', textMd5);
 
         if(Player.soundExist(fileName)){
             return cb(null, fileName);
