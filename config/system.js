@@ -3,7 +3,6 @@ var path = require('path');
 
 var localAppDataDir = os.platform() === 'win32' || os.platform() === 'win64' ? process.env.LOCALAPPDATA : os.homedir();
 
-
 /**
  * Config relative to plugins.
  *

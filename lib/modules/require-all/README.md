@@ -1,1 +1,0 @@
-Based on https://github.com/felixge/node-require-all but with support of file name.

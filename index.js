@@ -13,6 +13,7 @@ var ConfigHandler   = require(CORE_DIR + '/config-handler');
 var Logger          = require('my-buddy-lib').logger.Logger;
 
 // Read configs + user config
+// ! run twice
 var config = _.merge(
     ConfigHandler.loadConfig(CONFIG_DIR),
     ConfigHandler.loadConfig(process.cwd() + '/config')
