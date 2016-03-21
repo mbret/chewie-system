@@ -111,13 +111,9 @@ module.exports = {
         //}
     ],
 
-    waterline: {
-        connections: {
-            default: {
-                // dbPath: path.join(process.cwd(), '.my-buddy/storage/waterline'),
-                // filePath: path.join(process.cwd(), '.my-buddy/storage/waterline/'),
-                filename: path.join(process.cwd(), '.my-buddy/storage/waterline/') + 'db.sqlite',
-            }
-        },
+    database: {
+        connexion: {
+            storage: path.join(process.cwd(), '.my-buddy/storage/db.sqlite'),
+        }
     }
 };
