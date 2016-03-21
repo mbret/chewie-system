@@ -40,9 +40,9 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="entry in runProfiles">
-                            <td>{{entry.login}}</td>
+                            <td>{{entry.username}}</td>
                             <td>
-                                <button class="btn" ng-click="startProfile(entry._id)" ng-show="runProfile == null">Start</button>
+                                <button class="btn" ng-click="startProfile(entry.id)" ng-show="runProfile == null">Start</button>
                             </td>
                         </tr>
                         </tbody>

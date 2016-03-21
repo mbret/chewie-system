@@ -16,5 +16,7 @@ module.exports.database = {
 
         // SQLite only
         storage: path.join(localAppDataDir, '.my-buddy', 'storage/database.sqlite'),
+
+        dropOnStartup: false
     }
 };

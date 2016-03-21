@@ -114,6 +114,7 @@ module.exports = {
     database: {
         connexion: {
             storage: path.join(process.cwd(), '.my-buddy/storage/db.sqlite'),
+            dropOnStartup: true
         }
     }
 };
