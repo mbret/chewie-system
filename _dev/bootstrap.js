@@ -4,7 +4,7 @@ module.exports = function(system, logger, done){
     system.orm.models.User.findOne({where: {username: 'admin'}})
         .then(function(user){
             // extract plugin
-            return system.localRepository.loadPlugin('simple-message')
+            return system.localRepository.readPluginInfo({name: 'simple-message'})
                 .then(function(module, packageInfo){
                     // create plugin
                     return system.orm.models.Plugins
