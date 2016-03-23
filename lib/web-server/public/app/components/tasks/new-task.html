@@ -22,9 +22,9 @@
                     <uib-tab heading="{{module.config.name || module.name}}" ng-repeat="module in modules">
                         <div class="panel-body">
                             <p>
-                                <strong>About: </strong>{{ module.config.description || "No description" }}
+                                <strong>About: </strong>{{ module.description || "No description" }}
                             </p>
-                            <p><a class="btn btn-primary" ui-sref="dashboard.tasks.createForm({id: module.id})">Create a new task</a></p>
+                            <p><a class="btn btn-primary" ui-sref="dashboard.tasks.createForm({plugin: module.plugin.id, module: module.name})">Create a new task</a></p>
                         </div>
                     </uib-tab>
                 </uib-tabset>

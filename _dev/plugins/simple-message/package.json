@@ -1,14 +1,12 @@
 {
-  "name": "my-buddy-say",
+  "name": "simple-message",
   "version": "0.0.1",
+  "description": "A simple module to create message task",
   "dependencies": {
     "i18n": "^0.5.0",
     "lodash": "^3.10.1"
   },
   "readme": "ERROR: No README data found!",
   "_id": "my-buddy-say@0.0.1",
-  "scripts": {},
-  "_shasum": "3c5f4cfc5d4426277998920daa1b98cef71f6151",
-  "_from": "node_modules\\my-buddy-say",
-  "_resolved": "file:node_modules\\my-buddy-say"
+  "scripts": {}
 }

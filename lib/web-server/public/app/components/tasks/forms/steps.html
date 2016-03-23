@@ -13,7 +13,7 @@
 </div>
 
 <div class="container-fluid">
-    <h1 class="page-header">{{module.config.name}}</h1>
+    <h1 class="page-header">{{module.displayName || module.name}}</h1>
 
     <div class="ibox float-e-margins">
         <div class="ibox-title">
@@ -32,7 +32,7 @@
                 </div>
 
                 <h3>General options</h3>
-                <module-form-options config-options="module.config.options" ng-model="formData.options" prefix="'task'"></module-form-options>
+                <module-form-options config-options="module.options" ng-model="formData.options" prefix="'task'"></module-form-options>
 
                 <h3>Your triggers</h3>
                 <div ng-repeat="taskTrigger in formData.triggers" ng-init="fieldPrefix = 'taskTrigger[' + $index + ']'">
@@ -63,7 +63,7 @@
 
                             -------------------------------->
                             <h3>Options</h3>
-                            <module-form-options config-options="module.config.taskOptions" ng-model="taskTrigger.options" prefix="'taskTrigger[' + $index + ']'"></module-form-options>
+                            <module-form-options config-options="module.taskOptions" ng-model="taskTrigger.options" prefix="'taskTrigger[' + $index + ']'"></module-form-options>
 
                             <!-----------------------------
 
@@ -76,13 +76,13 @@
                                     <div ng-repeat="trig in triggers" ng-init="fieldId = fieldPrefix + '.triggers[' + trig.id + ']'">
                                         <div class="radio radio-info radio-inline">
                                             <input id="{{fieldId}}" type="radio" name="{{fieldId}}" value="{{trig.id}}" ng-model="taskTrigger.trigger.id" ng-required="true">
-                                            <label for="{{fieldId}}">{{trig.id}}</label>
+                                            <label for="{{fieldId}}">{{trig.displayName || trig.name}}</label>
                                         </div>
                                     </div>
                                     <form-errors form="form" field="form[fieldId]"></form-errors>
                                 </div>
                                 <div ng-repeat="trig in triggers" ng-init="fieldId = fieldPrefix + '.trigger'">
-                                    <module-form-options ng-if="trig.id === taskTrigger.trigger.id" config-options="trig.config.triggerOptions" ng-model="taskTrigger.trigger.options" prefix="fieldId"></module-form-options>
+                                    <module-form-options ng-if="trig.id === taskTrigger.trigger.id" config-options="trig.options" ng-model="taskTrigger.trigger.options" prefix="fieldId"></module-form-options>
                                     <form-errors form="form" field="form[fieldId]"></form-errors>
                                 </div>
                             </div>

@@ -3,29 +3,58 @@
 module.exports = function(system, logger, done){
     system.orm.models.User.findOne({where: {username: 'admin'}})
         .then(function(user){
-            // extract plugin
-            return system.localRepository.readPluginInfo({name: 'simple-message'})
-                .then(function(module, packageInfo){
-                    // create plugin
-                    return system.orm.models.Plugins
-                        .findOrCreate({
-                            where: {package:'simple-message'},
-                            defaults: {
-                                package: 'simple-message',
-                                userId: user.id
-                            }
-                        })
-                        // Create module
-                        .then(function(plugin){
-                            return system.orm.models.Modules.findOrCreate({
-                                where: {type: 'task-module', name: 'simple-message', pluginId: plugin[0].id},
+
+            return system.localRepository
+                .readPluginInfo({name: 'simple-message'})
+                .then(function(packages){
+                    var packageJson = packages[0];
+                    var pluginPackage = packages[1];
+                    return system.orm.models.Plugins.findOrCreate({
+                        where: {name:'simple-message', userId: user.id},
+                        defaults: {
+                            modulePackage: packageJson,
+                            pluginPackage: pluginPackage,
+                            version: packageJson.version,
+                            description: packageJson.description,
+                            name: packageJson.name,
+                            userId: user.id
+                        }
+                    });
+                })
+                .then(function(){
+                    return system.localRepository
+                        .readPluginInfo({name: 'keypress-trigger'})
+                        .then(function(packages){
+                            var packageJson = packages[0];
+                            var pluginPackage = packages[1];
+                            // create plugin
+                            return system.orm.models.Plugins.findOrCreate({
+                                where: {name:'keypress-trigger', userId: user.id},
                                 defaults: {
-                                    type: 'task-module',
-                                    name: 'simple-message',
-                                    pluginId: plugin[0].id
+                                    modulePackage: packageJson,
+                                    pluginPackage: pluginPackage,
+                                    version: packageJson.version,
+                                    description: packageJson.description,
+                                    name: packageJson.name,
+                                    userId: user.id
                                 }
-                            })
+                            });
                         });
+                })
+                .then(function(){
+                    // create task
+                    return system.orm.models.Tasks.create({
+                        module: 'simple-message:simple-message',
+                        name: 'task 1',
+                        options: {},
+                        userId: user.id,
+                        triggers: [
+                            {
+                                type: 'direct',
+                                options: {},
+                            }
+                        ]
+                    });
                 });
         })
         .then(function(){
