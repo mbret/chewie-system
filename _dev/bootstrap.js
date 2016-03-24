@@ -5,7 +5,7 @@ module.exports = function(system, logger, done){
         .then(function(user){
 
             return system.localRepository
-                .readPluginInfo({name: 'simple-message'})
+                .getPluginInfo({name: 'simple-message'})
                 .then(function(packages){
                     var packageJson = packages[0];
                     var pluginPackage = packages[1];
@@ -23,7 +23,7 @@ module.exports = function(system, logger, done){
                 })
                 .then(function(){
                     return system.localRepository
-                        .readPluginInfo({name: 'keypress-trigger'})
+                        .getPluginInfo({name: 'keypress-trigger'})
                         .then(function(packages){
                             var packageJson = packages[0];
                             var pluginPackage = packages[1];

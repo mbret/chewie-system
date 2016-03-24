@@ -3,5 +3,7 @@
  *
  */
 module.exports.plugins = {
-    localRepositories: []
+
+    localRepositories: [],
+
 };
