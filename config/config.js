@@ -17,13 +17,10 @@ module.exports = {
         level: 'debug'
     },
 
-    loadPlugins: [],
-
     // User modules to activate
     // Handled by app
     activeModules: [],
 
-    tasks: [],
     apiPort: 3001,
     webServerPort: 3000,
 

@@ -1,5 +1,5 @@
 "use strict";
 
-module.exports = function(name, helper){
+module.exports = function(helper){
     helper.registerTrigger(require('./trigger'));
 };

@@ -14,18 +14,6 @@ module.exports = {
         localRepositories: [process.cwd() + '/plugins']
     },
 
-    // User modules to load
-    loadPlugins: [
-        //'joke',
-        //'message-adapter-mail',
-        'simple-message',
-        //'my-buddy-basics',
-        //"voxygen-speaker",
-        //"voice-task-trigger",
-        //"keypress-trigger",
-        //'weather',
-    ],
-
     tasks: [
         {
             moduleId: 'simple-message:simple-message',
