@@ -1,19 +1,10 @@
 'use strict';
 
-var _       = require('lodash');
-var config  = require('./config.js').module;
-var EventEmitter = require('events').EventEmitter;
+var _ = require('lodash');
 
-/**
- *
- * @param daemon
- * @param scheduler
- * @param logger
- */
-class Module extends EventEmitter{
+class Module {
 
     constructor(helper){
-        super();
         this.helper = helper;
     }
 
@@ -36,21 +27,19 @@ class Module extends EventEmitter{
      * @returns {object}
      */
     getConfig(){
-        return config;
+        return {};
     }
 
     /**
      * This module is simple and only say a message.
-     * @param task
-     * @private
      */
     say(context){
         var self = this;
-        if(!_.isString(context.options.text)){
+        if(!_.isString(context.options['taskOptions.option1'])){
             self.helper.notify('warn', 'Invalid task options received [' + JSON.stringify(context.options) + ']');
         }
         else{
-            var text = context.options.text;
+            var text = context.options['taskOptions.option1'];
             // handle what user want (mail, voice, etc)
             this.helper.executeMessage(context, text);
         }

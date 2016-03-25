@@ -46,12 +46,12 @@ module.exports = function(system, logger, done){
                     return system.orm.models.Tasks.create({
                         module: 'simple-message:simple-message',
                         name: 'task 1',
-                        options: {},
+                        options: { foo: 'bar' },
                         userId: user.id,
                         triggers: [
                             {
                                 type: 'direct',
-                                options: {},
+                                options: { 'taskOptions.option1': 'coucou' },
                             }
                         ]
                     });
