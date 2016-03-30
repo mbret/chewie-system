@@ -43,18 +43,25 @@ module.exports = function(system, logger, done){
                 })
                 .then(function(){
                     // create task
-                    return system.orm.models.Tasks.create({
-                        module: 'simple-message:simple-message',
-                        name: 'task 1',
-                        options: { foo: 'bar' },
-                        userId: user.id,
-                        triggers: [
-                            {
-                                type: 'direct',
-                                options: { 'taskOptions.option1': 'coucou' },
-                            }
-                        ]
-                    });
+                    return Promise.all([
+                        system.orm.models.Tasks.create({
+                            module: 'simple-message:simple-message',
+                            name: 'task 1',
+                            options: { foo: 'bar' },
+                            userId: user.id,
+                            triggers: [
+                                {
+                                    type: 'direct',
+                                    options: {'taskOptions.option1': 'coucou'},
+                                },
+                                {
+                                    type: 'schedule',
+                                    options: {'taskOptions.option1': 'coucou'},
+                                    schedule: {}
+                                }
+                            ]
+                        })
+                    ]);
                 });
         })
         .then(function(){
