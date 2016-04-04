@@ -49,6 +49,22 @@ module.exports = function(system, logger, done){
                     return Promise.all([
                         system.orm.models.Tasks.create({
                             module: 'simple-message:simple-message',
+                            name: 'task 0',
+                            options: { foo: 'bar' },
+                            userId: user.id,
+                            triggers: [
+                                {
+                                    type: 'schedule',
+                                    options: {'taskOptions.option1': 'coucou'},
+                                    schedule: {
+                                        method: 'moment',
+                                        date: new Date()
+                                    }
+                                },
+                            ]
+                        }),
+                        system.orm.models.Tasks.create({
+                            module: 'simple-message:simple-message',
                             name: 'task 1',
                             options: { foo: 'bar' },
                             userId: user.id,
@@ -78,7 +94,8 @@ module.exports = function(system, logger, done){
                                     options: {'taskOptions.option1': 'coucou'},
                                     schedule: {
                                         method: 'moment',
-                                        date: new Date()
+                                        hour: 12,
+                                        minute: 27
                                     }
                                 }
                             ]
