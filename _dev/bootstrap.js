@@ -99,7 +99,27 @@ module.exports = function(system, logger, done){
                                     }
                                 }
                             ]
-                        })
+                        }),
+                        system.orm.models.Tasks.create({
+                            module: 'simple-message:simple-message',
+                            name: 'Reveil',
+                            description: 'Reveil matin',
+                            options: { foo: 'bar' },
+                            userId: user.id,
+                            triggers: [
+                                {
+                                    type: 'schedule',
+                                    options: {'taskOptions.option1': 'coucou'},
+                                    schedule: {
+                                        method: 'moment',
+                                        dayOfWeek: [0,1,3,4,5],
+                                        hour: 9,
+                                        minute: 0,
+                                        second: 0
+                                    }
+                                },
+                            ]
+                        }),
                     ]);
                 });
         })
