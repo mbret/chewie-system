@@ -25,28 +25,30 @@
                 <div class="ibox-title">
                     <h5>Server execution</h5>
                 </div>
-                <div class="ibox-content" lockable="runProfileLock">
-                    <p ng-show="runProfile == null">You do not have any current executing profile.</p>
-                    <div ng-show="runProfile != null">
-                        Your current active profile is {{runProfile.login}}<br>
-                        <button class="btn" ng-click="stopProfile()" >Stop the profile</button>
+                <div class="ibox-content">
+                    <div ng-lockable="runProfileLock">
+                        <p ng-show="runProfile == null">You do not have any current executing profile.</p>
+                        <div ng-show="runProfile != null">
+                            Your current active profile is {{runProfile.login}}<br>
+                            <button class="btn" ng-click="stopProfile()" >Stop the profile</button>
+                        </div>
+                        <table class="table table-hover margin bottom text-left">
+                            <thead>
+                            <tr>
+                                <th>Available profiles</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="entry in runProfiles">
+                                <td>{{entry.username}}</td>
+                                <td>
+                                    <button class="btn" ng-click="startProfile(entry.id)" ng-show="runProfile == null">Start</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <table class="table table-hover margin bottom text-left">
-                        <thead>
-                        <tr>
-                            <th>Available profiles</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="entry in runProfiles">
-                            <td>{{entry.username}}</td>
-                            <td>
-                                <button class="btn" ng-click="startProfile(entry.id)" ng-show="runProfile == null">Start</button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>

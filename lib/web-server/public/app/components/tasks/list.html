@@ -16,36 +16,45 @@
 
     <h1 class="page-header">Tâches</h1>
 
+    <alert2 />
+
     <div class="row">
         <div class="col-lg-12">
             <div class="tabs-container">
                 <uib-tabset class="tabs-left">
-                    <uib-tab heading="{{task.name}}" ng-repeat="task in tasks">
+                    <uib-tab heading="{{task.name}}" ng-repeat="task in tasks" >
                         <div class="panel-body">
-                            <strong>Module:</strong> {{task.module}}<br>
-                            <strong>Created:</strong> {{task.createdAt | date}}<br>
-                            <strong>Description</strong> {{task.description}}<br>
-                            <hr>
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Type</th>
-                                    <th>User</th>
-                                    <th>Next invocation</th>
-                                    <th>Schedule</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="trigger in task.triggers">
-                                    <td title="{{trigger.id}}">{{trigger.id | truncate}}</td>
-                                    <td>{{trigger.type}}</td>
-                                    <td title="{{trigger.options}}">{{trigger.options | json | truncate : 20}}</td>
-                                    <td>{{trigger.nextInvocation | date : 'medium' }}</td>
-                                    <td title="{{trigger.schedule}}">{{trigger.schedule | json | truncate : 20}}</td>
-                                </tr>
-                                </tbody>
-                            </table>
+                            <ng-lockable ng-lockable="task.locked">
+                                <strong>Module:</strong> {{task.module}}<br>
+                                <strong>Created:</strong> {{task.createdAt | date}}<br>
+                                <strong>Description</strong> {{task.description}}<br>
+                                <p class="m-t-sm m-b-sm">
+                                    <span class="label" ng-class="{'label-primary': task.active}">Running</span>
+                                    <button class="btn btn-circle" ng-class="{'btn-primary': !task.active, 'btn-warning': task.active}" type="button" ng-click="toggleTaskActive(task)">
+                                        <i class="fa" ng-class="{'fa-play': !task.active, 'fa-stop': task.active}"></i>
+                                    </button>
+                                </p>
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Type</th>
+                                        <th>User</th>
+                                        <th>Next invocation</th>
+                                        <th>Schedule</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="trigger in task.triggers">
+                                        <td title="{{trigger.id}}">{{trigger.id | truncate}}</td>
+                                        <td>{{trigger.type}}</td>
+                                        <td title="{{trigger.options}}">{{trigger.options | json | truncate : 20}}</td>
+                                        <td>{{trigger.nextInvocation | date : 'medium' }}</td>
+                                        <td title="{{trigger.schedule}}">{{trigger.schedule | json | truncate : 20}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </ng-lockable>
                         </div>
                     </uib-tab>
                 </uib-tabset>
