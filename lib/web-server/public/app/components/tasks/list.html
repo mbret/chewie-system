@@ -27,12 +27,14 @@
                             <ng-lockable ng-lockable="task.locked">
                                 <strong>Module:</strong> {{task.module}}<br>
                                 <strong>Created:</strong> {{task.createdAt | date}}<br>
+                                <strong>Activated:</strong> {{task.active ? 'yes' : 'no'}}<br>
                                 <strong>Description</strong> {{task.description}}<br>
                                 <p class="m-t-sm m-b-sm">
-                                    <span class="label" ng-class="{'label-primary': task.active}">Running</span>
-                                    <button class="btn btn-circle" ng-class="{'btn-primary': !task.active, 'btn-warning': task.active}" type="button" ng-click="toggleTaskActive(task)">
-                                        <i class="fa" ng-class="{'fa-play': !task.active, 'fa-stop': task.active}"></i>
-                                    </button>
+                                    <span class="label label-primary" ng-if="task.running">Running</span>
+                                    <span class="label label-warning" ng-if="!task.running">Stopped</span>
+                                    <a class="btn btn-circle" ng-class="{'btn-primary': !task.running, 'btn-warning': task.running}" type="button" ng-click="toggleTaskActive(task)">
+                                        <i class="fa" ng-class="{'fa-play': !task.running, 'fa-stop': task.running}"></i>
+                                    </a>
                                 </p>
                                 <table class="table table-hover">
                                     <thead>

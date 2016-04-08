@@ -1,0 +1,59 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>System</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>System</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Logs</h5>
+
+                    <div ibox-tools="" class="ng-scope"><div class="ibox-tools dropdown" uib-dropdown="">
+                        <a ng-click="showhide()"> <i class="fa fa-chevron-up"></i></a>
+                        <a href="" uib-dropdown-toggle="" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul uib-dropdown-menu="" class="dropdown-menu">
+                            <li><a href="">Config option 1</a>
+                            </li>
+                            <li><a href="">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a ng-click="closebox()"><i class="fa fa-times"></i></a>
+                    </div></div>
+                </div>
+                <div class="ibox-content font-sm">
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Level</th>
+                            <th>Message</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="log in logs">
+                            <td class="text-nowrap">{{log.createdAt | date : 'medium'}}</td>
+                            <td><span>{{log.level}}</span></td>
+                            <td><span class="text-{{log.level}}">{{log.message}}</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

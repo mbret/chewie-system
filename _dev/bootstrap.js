@@ -47,7 +47,7 @@ module.exports = function(system, logger, done){
                 .then(function(){
                     // create task
                     return Promise.all([
-                        system.orm.models.Tasks.create({
+                        system.orm.models.Task.create({
                             module: 'simple-message:simple-message',
                             name: 'task 0',
                             options: { foo: 'bar' },
@@ -57,13 +57,13 @@ module.exports = function(system, logger, done){
                                     type: 'schedule',
                                     options: {'taskOptions.option1': 'coucou'},
                                     schedule: {
-                                        method: 'moment',
-                                        date: new Date()
+                                        method: 'interval',
+                                        interval: 5000
                                     }
                                 },
                             ]
                         }),
-                        system.orm.models.Tasks.create({
+                        system.orm.models.Task.create({
                             module: 'simple-message:simple-message',
                             name: 'task 1',
                             options: { foo: 'bar' },
@@ -100,7 +100,7 @@ module.exports = function(system, logger, done){
                                 }
                             ]
                         }),
-                        system.orm.models.Tasks.create({
+                        system.orm.models.Task.create({
                             module: 'simple-message:simple-message',
                             name: 'Reveil',
                             description: 'Reveil matin',
