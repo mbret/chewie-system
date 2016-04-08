@@ -20,7 +20,7 @@ var config = _.merge(
 );
 
 // Initialize logger
-global.LOGGER = new Logger(config);
+global.LOGGER = new Logger(config.log);
 var logger    = LOGGER.getLogger('buddy');
 
 if (cluster.isMaster) {
