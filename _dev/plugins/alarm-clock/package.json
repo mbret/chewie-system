@@ -1,0 +1,10 @@
+{
+  "name": "alarm-clock",
+  "version": "0.0.1",
+  "description": "A simple module to create message task",
+  "dependencies": {
+    "i18n": "^0.5.0",
+    "lodash": "^3.10.1"
+  },
+  "scripts": {}
+}

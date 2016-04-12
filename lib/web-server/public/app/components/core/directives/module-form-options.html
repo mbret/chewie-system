@@ -6,20 +6,19 @@
     <div ng-switch="option.type">
 
         <div ng-switch-when="select">
-            <select class="form-control" ng-model="option.value" ng-required="{{option.required}}" >
-                <option value="{{value.value}}" ng-repeat="value in option.values">{{value.label}}</option>
+            <select class="form-control" ng-model="option.value" ng-required="{{option.required}}" id="{{fieldId}}" name="{{fieldId}}">
+                <option value="{{value.value}}" ng-repeat="value in option.choices">{{value.label}}</option>
             </select>
         </div>
 
         <div ng-switch-when="text">
             <input type="text" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{option.required}}" ng-model="option.value" />
-            <form-errors form="form" field="form[fieldId]"></form-errors>
         </div>
 
         <div ng-switch-when="password">
             <input id="{{fieldId}}" name="{{fieldId}}" type="password" class="form-control" ng-required="{{option.required}}" ng-model="option.value" />
-            <form-errors form="form" field="form[fieldId]"></form-errors>
         </div>
 
+        <form-errors form="form" field="form[fieldId]"></form-errors>
     </div>
 </div>

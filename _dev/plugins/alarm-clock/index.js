@@ -1,6 +1,6 @@
 'use strict';
 
-var Module = require('./lib/module.js');
+var Module = require('./module.js');
 var pluginPackage = require('./plugin-package');
 
 function buddyModule(helper) {
