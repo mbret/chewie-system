@@ -6,6 +6,9 @@ class Module {
 
     constructor(helper){
         this.helper = helper;
+
+        // current sound instance
+        this.sound = null;
     }
 
     /**
@@ -17,7 +20,12 @@ class Module {
         // Listen for new task on module
         this.helper.onNewTask(function(context){
 
-            self._startAlarm(context);
+            if(context.options.action === 'start'){
+                self._startAlarm(context);
+            }
+            else{
+                self._stopAlarm(context);
+            }
         });
 
         return cb();
@@ -32,11 +40,18 @@ class Module {
     }
 
     _startAlarm(){
-        this.helper.speaker.playFile('foo.mp3');
+        var self = this;
+        this.sound = this.helper.speaker.playFile('foo.mp3');
+        this.sound.on('stop', function(){
+            self.sound = null;
+        });
     }
 
     _stopAlarm(){
-
+        if(this.sound !== null){
+            this.sound.stop();
+            this.sound = null;
+        }
     }
 }
 
