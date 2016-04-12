@@ -2,21 +2,15 @@
 
 var _ = require('lodash');
 var Adapter = require('./speaker-adapter.js');
-var config = require('../config.js').coreModule;
 
-/**
- *
- */
 class Module{
 
     constructor(helper) {
-        var self = this;
         this.helper = helper;
         this.options = this.helper.getUserOptions();
     }
 
-    initialize(cb)
-    {
+    initialize(cb) {
         var self = this;
 
         // Listen for user option change
@@ -36,13 +30,14 @@ class Module{
                 return cb(err);
             }
 
+            // Register speaker adapter
             self.helper.registerSpeakerAdapter(adapter);
             return cb();
         });
     }
 
     getConfig(){
-        return config;
+        return {};
     }
 }
 

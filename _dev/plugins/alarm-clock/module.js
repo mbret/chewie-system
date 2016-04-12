@@ -42,9 +42,12 @@ class Module {
     _startAlarm(){
         var self = this;
         this.sound = this.helper.speaker.playFile('foo.mp3');
-        this.sound.on('stop', function(){
-            self.sound = null;
+        this.sound.on('error', function(err){
+            self.helper.getLogger().error(err);
         });
+        //this.sound.on('stop', function(){
+        //    self.sound = null;
+        //});
     }
 
     _stopAlarm(){

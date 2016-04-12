@@ -11,7 +11,7 @@ module.exports = function(system, logger, done){
                     var pluginPackage = packages.pluginPackage;
 
                     return system.orm.models.Plugins.findOrCreate({
-                        where: {name:'simple-message', userId: user.id},
+                        where: {name: pluginPackage.name, userId: user.id},
                         defaults: {
                             modulePackage: packageJson,
                             pluginPackage: pluginPackage,
@@ -32,7 +32,7 @@ module.exports = function(system, logger, done){
                             // create plugin
                             return Promise.all([
                                 system.orm.models.Plugins.findOrCreate({
-                                    where: {name:'keypress-trigger', userId: user.id},
+                                    where: {name: pluginPackage.name, userId: user.id},
                                     defaults: {
                                         modulePackage: packageJson,
                                         pluginPackage: pluginPackage,
@@ -55,7 +55,30 @@ module.exports = function(system, logger, done){
                             // create plugin
                             return Promise.all([
                                 system.orm.models.Plugins.findOrCreate({
-                                    where: {name:'alarm-clock', userId: user.id},
+                                    where: {name: pluginPackage.name, userId: user.id},
+                                    defaults: {
+                                        modulePackage: packageJson,
+                                        pluginPackage: pluginPackage,
+                                        version: packageJson.version,
+                                        description: packageJson.description,
+                                        name: packageJson.name,
+                                        userId: user.id
+                                    }
+                                })
+                            ]);
+                        });
+                })
+                .then(function(){
+                    return system.localRepository
+                        .getPluginInfo({name: 'speaker'})
+                        .then(function(packages){
+                            var packageJson = packages.modulePackage;
+                            var pluginPackage = packages.pluginPackage;
+
+                            // create plugin
+                            return Promise.all([
+                                system.orm.models.Plugins.findOrCreate({
+                                    where: {name: pluginPackage.name, userId: user.id},
                                     defaults: {
                                         modulePackage: packageJson,
                                         pluginPackage: pluginPackage,
@@ -133,7 +156,7 @@ module.exports = function(system, logger, done){
                                 {
                                     //type: 'schedule',
                                     type: 'direct',
-                                    options: { action: 'coucou' },
+                                    options: { action: 'start' },
                                     //schedule: {
                                     //    method: 'moment',
                                     //    dayOfWeek: [0,1,3,4,5],

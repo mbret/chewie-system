@@ -2,20 +2,23 @@
 
 var _ = require('lodash');
 var Player  = require('./player.js');
-var config = require('../config.js');
-config = config.speakerAdapter;
 
 class Adapter{
 
     constructor(helper) {
         this.helper = helper;
-        this.config = config;
         this.sound  = null;
+        this.config = {
+            // By default the player will look for mpg123 as PATH executable
+            // You can force the use of specific location
+            //binaryPath: null,
+            binaryPath: 'C:/Program Files/mpg123/mpg123',
+        };
     }
 
     init(cb){
         var self = this;
-        Player.create(this.helper, this.config, function(err, instance){
+        Player.Create(this.helper, this.config, function(err, instance){
             if(err){
                 return cb(err);
             }
@@ -26,12 +29,7 @@ class Adapter{
 
     playFile(filename){
         var self = this;
-        self.sound.playFile(filename, function(err){
-            if(err){
-                self.helper.getLogger().error(err);
-                throw err;
-            }
-        });
+        return self.sound.playFile(filename);
     }
 }
 

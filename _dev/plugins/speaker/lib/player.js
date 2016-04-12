@@ -8,10 +8,48 @@ var path                = require('path');
 var Sound               = require('./node-mpg123.js');
 var childProcess        = require('child_process');
 var GarbageCollector    = require('./garbage-collector.js');
+const EventEmitter      = require('events');
 
-class Player{
+class SoundInstance extends EventEmitter {
+
+    constructor(filename, execPath) {
+        super();
+
+        this.filename = filename;
+        this.execPath = execPath;
+        this.sound = null;
+    }
+
+    start(){
+        var self = this;
+
+        // fire and forget:
+        var music = new Sound(this.filename, this.execPath);
+        music.play();
+
+        // you can also listen for various callbacks:
+        music.on('complete', function () {
+            self.emit('complete');
+        });
+
+        music.on('stop', function(){
+
+        });
+
+        music.on('pause', function(){
+
+        });
+
+        music.on('resume', function(){
+
+        });
+    }
+}
+
+class Player extends EventEmitter {
 
     constructor(helper, config){
+        super();
 
         this.helper = helper;
         this.queue = [];
@@ -28,79 +66,46 @@ class Player{
 
         // The garbage clean the tmp folder after some times
         this.garbage = new GarbageCollector();
-
-        this.tmpDirPattern = this.helper.getSystem().config.system.tmpDir + '/:voice-:text.mp3';
-
-        this.helper.getLogger().debug('Using [%s] as tmp dir and pattern', this.tmpDirPattern);
-
-        // Load voice
-        if(!config.voice || !this.config.voices[config.voice]){
-            this.helper.getLogger().debug('No voice selected, use Melodine by default');
-            this.voice = this.config.voices['Melodine'];
-        }
-        else{
-            this.voice = this.config.voices[config.voice];
-        }
     }
 
-    playFile(filename, cb){
+    playFile(filename){
 
         var self = this;
+
+        // This is what is returned to user
+        var soundInstance = new SoundInstance(filename, this.execPath);
+
         // add element to the start of queue. It will be the next played
-        self.queue.splice(0, 0, filename);
+        self.queue.splice(0, 0, soundInstance);
         console.log('There is now ' + self.queue.length + ' sounds in queue');
+
+        // Start the first element in queue
         if(self.queue.length === 1 && !self.playing){
-            self._play(filename, true, cb);
-        }
-    }
 
-    /**
-     * Play the given song and try to play the next in queue.
-     * @param fileName
-     * @param isFirst
-     * @param cb
-     * @private
-     */
-    _play(fileName, isFirst, cb){
-        var self = this;
+            self.playing = true;
+            soundInstance.start();
 
-        self.playing = true;
+            // Try to play the next in queue
+            soundInstance.on('complete', function () {
+                self.helper.getLogger().log('Done with playback!');
 
-        // fire and forget:
-        var music = new Sound(fileName, this.execPath);
-        music.play();
+                self.playing = false;
 
-        // you can also listen for various callbacks:
-        music.on('complete', function () {
-            self.helper.getLogger().log('Done with playback!');
-
-            self.playing = false;
-
-            // Just clear first item in order to not pop this one and play it again
-            if(isFirst === true){
+                // Just clear first item in order to not pop this one and play it again
                 self.queue.pop();
-            }
 
-            console.log('Sounds still in queue ' + self.queue.length);
+                console.log('Sounds still in queue ' + self.queue.length);
 
-            // Try to read next in queue
-            var stillInQueue = self.queue.pop();
-            if(typeof stillInQueue !== 'undefined'){
-                self._play(stillInQueue);
-            }
-        });
+                // Try to read next in queue
+                var stillInQueue = self.queue.pop();
+                if(typeof stillInQueue !== 'undefined'){
+                    self.playing = true;
+                    stillInQueue.start();
+                }
+            });
+        }
 
-        music.on('stop', function(){
-
-        });
-
-        music.on('pause', function(){
-
-        });
-
-        music.on('resume', function(){
-
-        });
+        return soundInstance;
     }
 
     /**
@@ -109,14 +114,14 @@ class Player{
      * @param config
      * @param cb
      */
-    static create(helper, config, cb){
+    static Create(helper, config, cb){
         var instance = new Player(helper, config);
-        Player.checkLibrary(instance.execPath, function(err){
+        Player.CheckLibrary(instance.execPath, function(err){
             return cb(err, instance);
         });
     }
 
-    static checkLibrary(execPath, cb){
+    static CheckLibrary(execPath, cb){
         const spawn = childProcess.spawn;
         const ls = spawn(path.normalize(execPath), ['-?']);
 
