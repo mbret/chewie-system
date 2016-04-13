@@ -69,29 +69,6 @@ module.exports = function(system, logger, done){
                         });
                 })
                 .then(function(){
-                    return system.localRepository
-                        .getPluginInfo({name: 'speaker'})
-                        .then(function(packages){
-                            var packageJson = packages.modulePackage;
-                            var pluginPackage = packages.pluginPackage;
-
-                            // create plugin
-                            return Promise.all([
-                                system.orm.models.Plugins.findOrCreate({
-                                    where: {name: pluginPackage.name, userId: user.id},
-                                    defaults: {
-                                        modulePackage: packageJson,
-                                        pluginPackage: pluginPackage,
-                                        version: packageJson.version,
-                                        description: packageJson.description,
-                                        name: packageJson.name,
-                                        userId: user.id
-                                    }
-                                })
-                            ]);
-                        });
-                })
-                .then(function(){
                     // create task
                     return Promise.all([
                         //system.orm.models.Task.create({
@@ -154,9 +131,12 @@ module.exports = function(system, logger, done){
                             userId: user.id,
                             triggers: [
                                 {
-                                    //type: 'schedule',
                                     type: 'direct',
-                                    options: { action: 'start' },
+                                    options: { action: 'start', repeat: true },
+                                    schedule: {
+                                        interval: 94000,
+                                        method: 'interval'
+                                    }
                                     //schedule: {
                                     //    method: 'moment',
                                     //    dayOfWeek: [0,1,3,4,5],
@@ -164,6 +144,15 @@ module.exports = function(system, logger, done){
                                     //    minute: 0,
                                     //    second: 0
                                     //}
+                                },
+                                {
+                                    type: 'schedule',
+                                    options: { action: 'stop' },
+                                    schedule: {
+                                        method: 'moment',
+                                        hour: 21,
+                                        minute: 0,
+                                    }
                                 },
                             ]
                         }),

@@ -31,6 +31,7 @@
     "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",
     "moment": "^2.12.0",
+    "mpg123": "^0.1.0",
     "my-buddy-lib": "git+https://github.com/my-buddy/lib.git",
     "nedb": "^1.8.0",
     "node-schedule": "^1.1.0",
