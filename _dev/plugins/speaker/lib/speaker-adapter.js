@@ -29,7 +29,8 @@ class Adapter{
 
     playFile(filename){
         var self = this;
-        return self.sound.playFile(filename);
+        var sound = self.sound.playFile(filename);
+        return sound;
     }
 }
 

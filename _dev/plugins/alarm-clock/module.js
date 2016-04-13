@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+var path = require('path');
 
 class Module {
 
@@ -41,9 +42,9 @@ class Module {
 
     _startAlarm(){
         var self = this;
-        this.sound = this.helper.speaker.playFile('foo.mp3');
+        this.sound = this.helper.speaker.playFile(path.resolve('C:/Users/Public/Music/Sample Music/Kalimba.mp3'));
         this.sound.on('error', function(err){
-            self.helper.getLogger().error(err);
+            self.helper.getLogger().error('Unable to play alarm: ' + err);
         });
         //this.sound.on('stop', function(){
         //    self.sound = null;

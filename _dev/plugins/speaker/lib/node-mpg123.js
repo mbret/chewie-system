@@ -34,16 +34,24 @@ module.exports.prototype.play = function () {
     this.process = spawn(executable, [ this.filename ]);
     var self = this;
 
+    var stderr = '';
+    var stdout = '';
+
+    // get error
     this.process.stderr.on('data', function(err){
-        console.error('Error while running mpg123: ' + err);
+        stderr += err;
     });
 
-    this.process.on('close', function(code) {
-
+    this.process.stdout.on('data', function (data) {
+        stdout += data;
     });
 
-    this.process.on('exit', function (code, sig) {
-        if (code !== null && sig === null) {
+    // Code is always 0 with mpg even with error ...
+    this.process.once('close', function (code, sig) {
+        if(stderr != ''){
+            self.emit('error', new Error('Unable to play sound: ' + stderr));
+        }
+        else{
             self.emit('complete');
         }
     });
@@ -51,7 +59,9 @@ module.exports.prototype.play = function () {
 
 module.exports.prototype.stop = function () {
     this.stopped = true;
-    this.process.kill('SIGTERM');
+    if(this.process){
+        this.process.kill('SIGTERM');
+    }
     this.emit('stop');
 };
 

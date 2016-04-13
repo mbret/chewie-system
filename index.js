@@ -50,6 +50,18 @@ if (cluster.isMaster) {
 // Once cluster is created, run system
 if (cluster.isWorker) {
 
+    if (process.platform === "win32") {
+        var rl = require("readline")
+            .createInterface({
+                input: process.stdin,
+                output: process.stdout
+            });
+        rl.on("SIGINT", function () {
+            rl.close();
+            process.emit("SIGINT");
+        });
+    }
+
     var Daemon = require('./lib');
 
     // Register a new plugin directory before startup

@@ -9,6 +9,7 @@ var Sound               = require('./node-mpg123.js');
 var childProcess        = require('child_process');
 var GarbageCollector    = require('./garbage-collector.js');
 const EventEmitter      = require('events');
+var util = require('util');
 
 class SoundInstance extends EventEmitter {
 
@@ -17,32 +18,38 @@ class SoundInstance extends EventEmitter {
 
         this.filename = filename;
         this.execPath = execPath;
-        this.sound = null;
+        this.music = new Sound(this.filename, this.execPath);
     }
 
     start(){
         var self = this;
 
-        // fire and forget:
-        var music = new Sound(this.filename, this.execPath);
-        music.play();
+        this.music.play();
 
         // you can also listen for various callbacks:
-        music.on('complete', function () {
+        this.music.on('complete', function () {
             self.emit('complete');
         });
 
-        music.on('stop', function(){
+        this.music.on('stop', function(){
 
         });
 
-        music.on('pause', function(){
+        this.music.on('pause', function(){
 
         });
 
-        music.on('resume', function(){
+        this.music.on('resume', function(){
 
         });
+
+        this.music.on('error', function(err){
+            self.emit('error', err);
+        });
+    }
+
+    stop(){
+        this.music.stop();
     }
 }
 
@@ -75,35 +82,47 @@ class Player extends EventEmitter {
         // This is what is returned to user
         var soundInstance = new SoundInstance(filename, this.execPath);
 
-        // add element to the start of queue. It will be the next played
-        self.queue.splice(0, 0, soundInstance);
-        console.log('There is now ' + self.queue.length + ' sounds in queue');
+        // add silent listener to avoid node process crash
+        soundInstance.on('error', function(err){});
 
-        // Start the first element in queue
-        if(self.queue.length === 1 && !self.playing){
+        setImmediate(function(){
+            Player.CheckFileExist(filename, function(err){
+                if(err){
+                    soundInstance.emit('error', err);
+                    return;
+                }
 
-            self.playing = true;
-            soundInstance.start();
+                // add element to the start of queue. It will be the next played
+                self.queue.splice(0, 0, soundInstance);
+                console.log('There is now ' + self.queue.length + ' sounds in queue');
 
-            // Try to play the next in queue
-            soundInstance.on('complete', function () {
-                self.helper.getLogger().log('Done with playback!');
+                // Start the first element in queue
+                if(self.queue.length === 1 && !self.playing){
 
-                self.playing = false;
-
-                // Just clear first item in order to not pop this one and play it again
-                self.queue.pop();
-
-                console.log('Sounds still in queue ' + self.queue.length);
-
-                // Try to read next in queue
-                var stillInQueue = self.queue.pop();
-                if(typeof stillInQueue !== 'undefined'){
                     self.playing = true;
-                    stillInQueue.start();
+                    soundInstance.start();
+
+                    // Try to play the next in queue
+                    soundInstance.on('complete', function () {
+                        self.helper.getLogger().log('Done with playback!');
+
+                        self.playing = false;
+
+                        // Just clear first item in order to not pop this one and play it again
+                        self.queue.pop();
+
+                        console.log('Sounds still in queue ' + self.queue.length);
+
+                        // Try to read next in queue
+                        var stillInQueue = self.queue.pop();
+                        if(typeof stillInQueue !== 'undefined'){
+                            self.playing = true;
+                            stillInQueue.start();
+                        }
+                    });
                 }
             });
-        }
+        });
 
         return soundInstance;
     }
@@ -137,6 +156,18 @@ class Player extends EventEmitter {
             }
             return cb();
         })
+    }
+
+    static CheckFileExist(filename, cb){
+        fs.stat(filename, function(err, stat) {
+            if(err) {
+                if(err.code == 'ENOENT') {
+                    err.message = new Error('File does not exist');
+                }
+                return cb(err);
+            }
+            return cb();
+        });
     }
 }
 
