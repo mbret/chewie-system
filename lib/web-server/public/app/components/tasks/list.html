@@ -44,6 +44,7 @@
                                         <th>User</th>
                                         <th>Next invocation</th>
                                         <th>Schedule</th>
+                                        <th>Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -52,7 +53,14 @@
                                         <td>{{trigger.type}}</td>
                                         <td title="{{trigger.options}}">{{trigger.options | json | truncate : 20}}</td>
                                         <td>{{trigger.nextInvocation | date : 'medium' }}</td>
-                                        <td title="{{trigger.schedule}}">{{trigger.schedule | json | truncate : 20}}</td>
+                                        <td title="{{trigger.schedule}}"><span ng-if="trigger.schedule">{{trigger.schedule | json | truncate : 20}}</span></td>
+                                        <td>
+                                            <span ng-if="trigger.type === 'manual'">
+                                                <a class="font-lg" ng-click="runTask(task, trigger)">
+                                                    <i class="fa fa-play-circle-o"></i>
+                                                </a>
+                                            </span>
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>

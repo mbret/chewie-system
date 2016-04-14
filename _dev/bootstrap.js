@@ -130,29 +130,28 @@ module.exports = function(system, logger, done){
                             description: 'Reveil matin',
                             userId: user.id,
                             triggers: [
+                                //{
+                                //    type: 'direct',
+                                //    options: { action: 'start', repeat: true },
+                                //    schedule: {
+                                //        interval: 94000,
+                                //        method: 'interval'
+                                //    }
+                                //    //schedule: {
+                                //    //    method: 'moment',
+                                //    //    dayOfWeek: [0,1,3,4,5],
+                                //    //    hour: 9,
+                                //    //    minute: 0,
+                                //    //    second: 0
+                                //    //}
+                                //},
                                 {
-                                    type: 'direct',
-                                    options: { action: 'start', repeat: true },
-                                    schedule: {
-                                        interval: 94000,
-                                        method: 'interval'
-                                    }
-                                    //schedule: {
-                                    //    method: 'moment',
-                                    //    dayOfWeek: [0,1,3,4,5],
-                                    //    hour: 9,
-                                    //    minute: 0,
-                                    //    second: 0
-                                    //}
+                                    type: 'manual',
+                                    options: { action: 'stop' },
                                 },
                                 {
-                                    type: 'schedule',
-                                    options: { action: 'stop' },
-                                    schedule: {
-                                        method: 'moment',
-                                        hour: 21,
-                                        minute: 0,
-                                    }
+                                    type: 'manual',
+                                    options: { action: 'start', repeat: true },
                                 },
                             ]
                         }),

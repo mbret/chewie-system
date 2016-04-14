@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var path = require('path');
 var config = require('./config.js');
+var util = require('util');
 
 /**
  * This is possible to have only one alarm at a time.
@@ -25,18 +26,22 @@ class Module {
     initialize(cb){
         var self = this;
 
-        // Listen for new task on module
-        this.helper.onNewTask(function(context){
+        // When a new task is registered
+        this.helper.onNewTask(function(task){
 
-            if(context.options.action === 'start'){
-                self._startAlarm(context);
-            }
-            else{
-                self._stopAlarm(context);
-            }
+            // When the task is being executed (with a specific context trigger)
+            task.on('execute', function(trigger){
+                if(trigger.getOptions().action === 'start'){
+                    self._startAlarm(trigger);
+                }
+                else{
+                    self._stopAlarm(trigger);
+                }
+            });
 
-            context.task.on('stopped', function(){
-                self._stopAlarm(context);
+            // When the task is being stopped
+            task.on('stopped', function(){
+                self._stopAlarm();
             });
         });
 
@@ -57,7 +62,7 @@ class Module {
      * @private
      */
     _startAlarm(context){
-        this.helper.getLogger().info('Start alarm for task', context);
+        this.helper.getLogger().info('Start alarm for task %s with context options %s', JSON.stringify(context.getTask().toJSON()), JSON.stringify(context.getOptions()));
 
         // For now only one alarm at a time
         if(this.running){
@@ -73,7 +78,7 @@ class Module {
             self.helper.getLogger().error('Unable to play alarm: ' + err);
         });
         this.sound.on('complete', function(err){
-            if(context.options.repeat === true){
+            if(context.getOptions().repeat === true){
                 setTimeout(function(){
                     // alarm may be stopped since last time
                     if(self.sound){
@@ -100,7 +105,8 @@ class Module {
         }
 
         if(this.running){
-            this.helper.getLogger().info('Current alarm stopped');
+            this.helper.getLogger().debug('Current alarm stopped');
+            this.helper.notify('info', 'Alarm stopped');
         }
 
         this.running = false;
