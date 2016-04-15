@@ -4,19 +4,17 @@
             <li class="nav-header">
 
                 <div class="dropdown profile-element" dropdown>
-                    <img alt="image" class="img-circle" src="resources/img/profile_small.jpg"/>
+                    <img alt="image" class="img-circle" src="resources/img/{{user.getProfileImage('small')}}"/>
                     <a class="dropdown-toggle" dropdown-toggle href>
                         <span class="clear">
                             <span class="block m-t-xs">
-                                <strong class="font-bold">David Williams</strong>
+                                <strong class="font-bold">{{user.firstName}} {{user.lastName}}</strong>
                          </span>
-                            <span class="text-muted text-xs block">Art Director <b class="caret"></b></span>
+                            <span class="text-muted text-xs block">{{user.roleLabel}} <b class="caret"></b></span>
                         </span>
                     </a>
                     <ul class="dropdown-menu m-t-xs">
-                        <li><a ui-sref="profile">Profile</a></li>
-                        <!--<li><a ui-sref="contacts">Contacts</a></li>-->
-                        <!--<li><a ui-sref="inbox">Mailbox</a></li>-->
+                        <li><a ui-sref="dashboard.profile">Profile</a></li>
                         <li class="divider"></li>
                         <li><a ui-sref="signout">Logout</a></li>
                     </ul>

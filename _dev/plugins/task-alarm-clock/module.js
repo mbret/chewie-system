@@ -27,7 +27,7 @@ class Module {
         var self = this;
 
         // When a new task is registered
-        this.helper.onNewTask(function(task){
+        this.helper.on('new:task', function(task){
 
             // When the task is being executed (with a specific context trigger)
             task.on('execute', function(trigger){
@@ -39,7 +39,8 @@ class Module {
                 }
             });
 
-            // When the task is being stopped
+            // When the task is being stopped and destroyed
+            // This task will no longer exist.
             task.on('stopped', function(){
                 self._stopAlarm();
             });

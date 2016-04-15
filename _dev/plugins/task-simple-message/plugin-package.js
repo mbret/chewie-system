@@ -20,7 +20,7 @@ module.exports = {
             // Used as task context option.
             taskOptions: [
                 {
-                    name: 'taskOptions.option1',
+                    name: 'text',
                     label: 'Texte',
                     type: 'text',
                     required: true

@@ -2,26 +2,26 @@
 <div id="wrapper">
 
     <!-- Navigation -->
-    <div ng-include="APP_CONFIG.viewBaseUrl + '/common/navigation.html'"></div>
+    <div ng-include="APP_CONFIG.viewBaseUrl + '/shared/navigation.html'"></div>
 
     <!-- Page wraper -->
     <!-- ng-class with current state name give you the ability to extended customization your view -->
     <div id="page-wrapper" class="gray-bg {{$state.current.name}}">
 
         <!-- Page wrapper -->
-        <div ng-include="APP_CONFIG.viewBaseUrl + '/common/topnavbar.html'"></div>
+        <div ng-include="APP_CONFIG.viewBaseUrl + '/shared/topnavbar.html'"></div>
 
         <!-- Main view  -->
         <div ui-view></div>
 
         <!-- Footer -->
-        <div ng-include="APP_CONFIG.viewBaseUrl + '/common/footer.html'"></div>
+        <div ng-include="APP_CONFIG.viewBaseUrl + '/shared/footer.html'"></div>
 
     </div>
     <!-- End page wrapper-->
 
     <!-- Right Sidebar -->
-    <!--<div ng-include="'views/common/right_sidebar.html'"></div>-->
+    <!--<div ng-include="'views/shared/right_sidebar.html'"></div>-->
 
 </div>
 <!-- End wrapper-->

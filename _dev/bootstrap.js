@@ -5,7 +5,7 @@ module.exports = function(system, logger, done){
         .then(function(user){
 
             return system.localRepository
-                .getPluginInfo({name: 'simple-message'})
+                .getPluginInfo({name: 'task-simple-message'})
                 .then(function(packages){
                     var packageJson = packages.modulePackage;
                     var pluginPackage = packages.pluginPackage;
@@ -47,7 +47,7 @@ module.exports = function(system, logger, done){
                 })
                 .then(function(){
                     return system.localRepository
-                        .getPluginInfo({name: 'alarm-clock'})
+                        .getPluginInfo({name: 'task-alarm-clock'})
                         .then(function(packages){
                             var packageJson = packages.modulePackage;
                             var pluginPackage = packages.pluginPackage;
@@ -88,7 +88,7 @@ module.exports = function(system, logger, done){
                         //    ]
                         //}),
                         system.orm.models.Task.create({
-                            module: 'simple-message:simple-message',
+                            module: 'task-simple-message:simple-message',
                             name: 'task 1',
                             options: { foo: 'bar' },
                             userId: user.id,
@@ -114,6 +114,11 @@ module.exports = function(system, logger, done){
                                 //    }
                                 //}
                                 {
+                                    type: 'manual',
+                                    options: { text: 'coucou' },
+                                    outputAdapters: ['voxygen']
+                                },
+                                {
                                     type: 'schedule',
                                     options: {'taskOptions.option1': 'coucou'},
                                     schedule: {
@@ -125,7 +130,7 @@ module.exports = function(system, logger, done){
                             ]
                         }),
                         system.orm.models.Task.create({
-                            module: 'alarm-clock:alarm-clock',
+                            module: 'task-alarm-clock:alarm-clock',
                             name: 'Reveil',
                             description: 'Reveil matin',
                             userId: user.id,
