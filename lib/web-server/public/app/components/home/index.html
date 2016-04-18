@@ -1,6 +1,6 @@
 <div class="row  border-bottom white-bg dashboard-header">
     <div class="col-sm-4">
-        <h2>Bienvenue Maxime</h2>
+        <h2>Bienvenue {{user.firstName}} {{user.lastName}}</h2>
         <small>Cela fais plaisir de vous revoir par ici !</small>
     </div>
     <div class="col-sm-5">
@@ -12,7 +12,7 @@
                 Système
             </h4>
             <p>
-                Actif depuis {{activeSince | friendlyDate}}
+                Actif depuis <br>{{(activeSince | friendlyDate) || '...'}}
             </p>
         </div>
     </div>

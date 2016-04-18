@@ -86,7 +86,7 @@ if (cluster.isWorker) {
                 process.exit(0);
             }
 
-            new Daemon(config);
+            (new Daemon(config)).init();
         });
 
     };
