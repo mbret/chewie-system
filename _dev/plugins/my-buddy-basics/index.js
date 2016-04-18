@@ -1,13 +1,10 @@
 'use strict';
 
-var MessageAdapterSpeak = require('./lib/message-adapter-speak.js');
-var MessageAdapterConsole = require('./lib/message-adapter-console.js');
+var MessageAdapterConsole = require('./lib/output-adapter-console.js');
+var pluginPackage = require('./plugin-package');
 
-function Plugin(pluginName, helper){
-    helper.registerMessageAdapter('MessageAdapterSpeak', MessageAdapterSpeak);
-    helper.registerMessageAdapter('MessageAdapterConsole', MessageAdapterConsole);
+function Plugin(helper){
+    helper.registerOutputAdapter(pluginPackage.modules[0].name, MessageAdapterConsole);
 }
-
-Plugin.require = ['helper'];
 
 module.exports = Plugin;

@@ -51,7 +51,7 @@
                                         {{task.nextTick|date:'yyyy-MM-dd HH:mm:ss'}}
                                     </td>
                                     <td>
-                                        <span class="badge" ng-repeat="adapter in task.messageAdapters">{{adapter}}</span>
+                                        <span class="badge" ng-repeat="adapter in task.outputAdapters">{{adapter}}</span>
                                     </td>
                                     <td>{{task.options}}</td>
                                     <td>
@@ -82,7 +82,7 @@
                                 <td scope="row" title="{{task.id}}">{{task.id|truncate:10}}</td>
                                 <td scope="row"><span class="badge">{{task.module}}</span></td>
                                 <td>
-                                    <span class="badge" ng-repeat="adapter in task.messageAdapters">{{adapter}}</span>
+                                    <span class="badge" ng-repeat="adapter in task.outputAdapters">{{adapter}}</span>
                                 </td>
                                 <td><span class="badge">{{task.trigger.id}}</span> from <span class="badge">{{task.trigger.pluginId}}</span></td>
                                 <td>{{task.triggerOptions}}</td>

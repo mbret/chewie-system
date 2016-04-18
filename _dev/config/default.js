@@ -24,7 +24,7 @@ module.exports = {
                 //    options: {
                 //        text: 'hello'
                 //    },
-                //    messageAdapters: [
+                //    outputAdapters: [
                 //        'MessageAdapterConsole',
                 //    ]
                 //},
@@ -37,7 +37,7 @@ module.exports = {
                 //    options: {
                 //        text: 'you'
                 //    },
-                //    messageAdapters: [
+                //    outputAdapters: [
                 //        'MessageAdapterConsole',
                 //    ]
                 //},
@@ -62,7 +62,7 @@ module.exports = {
         //{
         //    module: 'weather',
         //    type: 'direct',
-        //    messageAdapters: [
+        //    outputAdapters: [
         //        'MessageAdapterConsole',
         //        'MessageAdapterSpeak'
         //    ],
@@ -79,7 +79,7 @@ module.exports = {
         //{
         //    type: 'movement-command',
         //    module: 'my-buddy-say',
-        //    messageAdapters: ['messenger-adapter-write'],
+        //    outputAdapters: ['messenger-adapter-write'],
         //    optionsOnEnter: {
         //        text: 'dedans'
         //    },

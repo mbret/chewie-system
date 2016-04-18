@@ -9,21 +9,15 @@ class MessageAdapterConsole{
         this.helper = helper;
     }
 
-    getConfig(){
-        return {
-            displayName: 'Console'
-        }
-    }
-
     initialize(cb)
     {
         var self = this;
 
-        this.helper.onNewMessage(function(message){
-            self.helper.getLogger().info(message);
-        });
-
         return cb();
+    }
+
+    executeMessage(message){
+        this.helper.getLogger().info(message);
     }
 }
 

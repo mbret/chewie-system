@@ -42,16 +42,23 @@
                                         <th>User</th>
                                         <th>Next invocation</th>
                                         <th>Schedule</th>
+                                        <th>Outputs</th>
                                         <th>Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr ng-repeat="trigger in task.triggers">
-                                        <td title="{{trigger.id}}">{{trigger.id | truncate}}</td>
+                                        <td title="{{trigger.id}}">{{trigger.id | truncate : 5}}</td>
                                         <td>{{trigger.type}}</td>
                                         <td title="{{trigger.options}}">{{trigger.options | json | truncate : 20}}</td>
                                         <td>{{trigger.nextInvocation | date : 'medium' }}</td>
-                                        <td title="{{trigger.schedule}}"><span ng-if="trigger.schedule">{{trigger.schedule | json | truncate : 20}}</span></td>
+                                        <td title="{{trigger.schedule}}">
+                                            <span ng-if="trigger.schedule">{{trigger.schedule | json | truncate : 20}}</span>
+                                            <span ng-if="trigger.type == 'manual'">manual</span>
+                                        </td>
+                                        <td>
+                                            {{trigger.outputAdapters}}
+                                        </td>
                                         <td>
                                             <span ng-if="trigger.type === 'manual'">
                                                 <a class="font-lg" ng-click="runTask(task, trigger)">

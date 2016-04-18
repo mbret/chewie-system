@@ -1,9 +1,10 @@
 'use strict';
 
-var myModule = require('./lib/core-module.js');
+var myModule = require('./lib/adapter.js');
+var pluginPackage = require('./plugin-package');
 
-function plugin(pluginName, helper){
-    helper.registerCoreModule(myModule);
+function plugin(helper){
+    helper.registerOutputAdapter(pluginPackage.modules[0].name, myModule);
 }
 
 module.exports = plugin;

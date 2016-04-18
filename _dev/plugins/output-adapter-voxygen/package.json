@@ -1,7 +1,6 @@
 {
-  "name": "voxygen-speaker",
+  "name": "output-adapter-voxygen",
   "version": "0.0.1",
   "description": "Play text with voxygen effect",
-  "dependencies": {
-  }
+  "dependencies": {}
 }

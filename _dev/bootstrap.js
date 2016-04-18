@@ -10,21 +10,94 @@ module.exports = function(system, logger, done){
                     var packageJson = packages.modulePackage;
                     var pluginPackage = packages.pluginPackage;
 
-                    return system.orm.models.Plugins.findOrCreate({
-                        where: {name: pluginPackage.name, userId: user.id},
-                        defaults: {
-                            modulePackage: packageJson,
-                            pluginPackage: pluginPackage,
-                            version: packageJson.version,
-                            description: packageJson.description,
-                            name: packageJson.name,
-                            userId: user.id
-                        }
-                    });
+                    return system.orm.models.Plugins
+                        .findOrCreate({
+                            where: {name: pluginPackage.name, userId: user.id},
+                            defaults: {
+                                modulePackage: packageJson,
+                                pluginPackage: pluginPackage,
+                                version: packageJson.version,
+                                description: packageJson.description,
+                                name: packageJson.name,
+                                userId: user.id
+                            }
+                        })
+                        .then(function(plugins){
+                            return Promise.all([
+                                system.orm.models.Task.create({
+                                    module: plugins[0].get('name') + ':simple-message',
+                                    name: 'task 1',
+                                    options: { foo: 'bar' },
+                                    userId: user.id,
+                                    triggers: [
+                                        {
+                                            type: 'manual',
+                                            options: { text: 'coucou' },
+                                            outputAdapters: ['voxygen', 'console']
+                                        },
+                                        {
+                                            type: 'schedule',
+                                            options: {'taskOptions.option1': 'coucou'},
+                                            schedule: {
+                                                method: 'moment',
+                                                hour: 12,
+                                                minute: 27
+                                            }
+                                        }
+                                    ]
+                                }),
+                            ]);
+                        });
+                })
+                .then(function(){
+                    return system.localRepository
+                        .getPluginInfo({name: 'output-adapter-voxygen'})
+                        .then(function(packages){
+                            var packageJson = packages.modulePackage;
+                            var pluginPackage = packages.pluginPackage;
+
+                            // create plugin
+                            return Promise.all([
+                                system.orm.models.Plugins.findOrCreate({
+                                    where: {name: pluginPackage.name, userId: user.id},
+                                    defaults: {
+                                        modulePackage: packageJson,
+                                        pluginPackage: pluginPackage,
+                                        version: packageJson.version,
+                                        description: packageJson.description,
+                                        name: packageJson.name,
+                                        userId: user.id
+                                    }
+                                })
+                            ]);
+                        });
                 })
                 .then(function(){
                     return system.localRepository
                         .getPluginInfo({name: 'keypress-trigger'})
+                        .then(function(packages){
+                            var packageJson = packages.modulePackage;
+                            var pluginPackage = packages.pluginPackage;
+
+                            // create plugin
+                            return Promise.all([
+                                system.orm.models.Plugins.findOrCreate({
+                                    where: {name: pluginPackage.name, userId: user.id},
+                                    defaults: {
+                                        modulePackage: packageJson,
+                                        pluginPackage: pluginPackage,
+                                        version: packageJson.version,
+                                        description: packageJson.description,
+                                        name: packageJson.name,
+                                        userId: user.id
+                                    }
+                                })
+                            ]);
+                        });
+                })
+                .then(function(){
+                    return system.localRepository
+                        .getPluginInfo({name: 'my-buddy-basics'})
                         .then(function(packages){
                             var packageJson = packages.modulePackage;
                             var pluginPackage = packages.pluginPackage;
@@ -87,48 +160,7 @@ module.exports = function(system, logger, done){
                         //        },
                         //    ]
                         //}),
-                        system.orm.models.Task.create({
-                            module: 'task-simple-message:simple-message',
-                            name: 'task 1',
-                            options: { foo: 'bar' },
-                            userId: user.id,
-                            triggers: [
-                                //{
-                                //    type: 'direct',
-                                //    options: {'taskOptions.option1': 'coucou'},
-                                //},
-                                //{
-                                //    type: 'schedule',
-                                //    options: {'taskOptions.option1': 'coucou'},
-                                //    schedule: {
-                                //        method: 'interval',
-                                //        interval: 1000
-                                //    }
-                                //},
-                                //{
-                                //    type: 'schedule',
-                                //    options: {'taskOptions.option1': 'coucou'},
-                                //    schedule: {
-                                //        method: 'moment',
-                                //        date: new Date()
-                                //    }
-                                //}
-                                {
-                                    type: 'manual',
-                                    options: { text: 'coucou' },
-                                    outputAdapters: ['voxygen']
-                                },
-                                {
-                                    type: 'schedule',
-                                    options: {'taskOptions.option1': 'coucou'},
-                                    schedule: {
-                                        method: 'moment',
-                                        hour: 12,
-                                        minute: 27
-                                    }
-                                }
-                            ]
-                        }),
+
                         system.orm.models.Task.create({
                             module: 'task-alarm-clock:alarm-clock',
                             name: 'Reveil',
