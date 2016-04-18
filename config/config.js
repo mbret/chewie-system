@@ -1,4 +1,5 @@
 'use strict';
+var path = require('path');
 
 /**
  * This is the user config.
@@ -30,4 +31,8 @@ module.exports = {
     //                                                  *
     // **************************************************
     realIp: null,
+
+    resourcesDir: path.resolve(__dirname, '../resources'),
+
+    playSystemSounds: true
 };

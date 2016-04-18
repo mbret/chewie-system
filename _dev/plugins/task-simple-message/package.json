@@ -1,5 +1,5 @@
 {
-  "name": "simple-message",
+  "name": "task-simple-message",
   "version": "0.0.1",
   "description": "A simple module to create message task",
   "dependencies": {
