@@ -2,6 +2,24 @@
 
 module.exports = {
 
+    // 'Elizabeth', u'Adel', u'Bronwen', u'Eva', u'Marta', u'Guy', u'PapaNoel', u'Papi', u'Philippe', u'Ramboo', u'Robot', u'Sidoo', u'Sorciere', u'Stallone', u'Yeti', u'Zozo', u'Pedro', u'Helene', u'Paul', u'Sonia', u'Emma', u'Ludovic', u'Michel', u'Fabienne', u'Matteo', u'Emma', u'Judith', u'Martha', u'Becool', u'Chuchoti', u'Dark', u'Jean', u'Alain', u'Papy_Noel', u'Sylvester', u'Stallone', u'Moussa', u'Mendoo', u'Witch']. got 'qsd'
+    voices: [
+        { key: 'Dark', value: 'Dark' },
+        { key: 'Sorciere', value: 'Sorciere' },
+        { key: 'Phil', value: 'Phil' },
+        { key: 'Sylvia', value: 'Sylvia' },
+        { key: 'Agnes', value: 'Agnes' },
+        { key: 'Loic', value: 'Loic' },
+        { key: 'Damien', value: 'Damien' },
+        { key: 'Becool', value: 'Becool' },
+        { key: 'Chut', value: 'Chut' },
+        { key: 'DarkVadoor', value: 'DarkVadoor' },
+        { key: 'Electra', value: 'Electra' },
+        { key: 'JeanJean', value: 'JeanJean' },
+        { key: 'John', value: 'John' },
+        { key: 'Melodine', value: 'Melodine' },
+    ],
+
     coreModule: {
         description: 'Add speaker adapter with voxygen voices',
 
@@ -37,23 +55,7 @@ module.exports = {
 
         voxygenBasePath: "http://www.voxygen.fr/sites/all/modules/voxygen_voices/assets/proxy/index.php?method=redirect&voice=:voice&text=:text",
 
-        // 'Elizabeth', u'Adel', u'Bronwen', u'Eva', u'Marta', u'Guy', u'PapaNoel', u'Papi', u'Philippe', u'Ramboo', u'Robot', u'Sidoo', u'Sorciere', u'Stallone', u'Yeti', u'Zozo', u'Pedro', u'Helene', u'Paul', u'Sonia', u'Emma', u'Ludovic', u'Michel', u'Fabienne', u'Matteo', u'Emma', u'Judith', u'Martha', u'Becool', u'Chuchoti', u'Dark', u'Jean', u'Alain', u'Papy_Noel', u'Sylvester', u'Stallone', u'Moussa', u'Mendoo', u'Witch']. got 'qsd'
-        voices: {
-            Dark: 'Dark',
-            Sorciere: 'Sorciere',
-            Phil: 'Phil',
-            Sylvia: "Sylvia",
-            Agnes: "Agnes",
-            Loic: "Loic",
-            Damien: "Damien",
-            Becool: "Becool",
-            Chut: "Chut",
-            DarkVadoor: "DarkVadoor",
-            Electra: "Electra",
-            JeanJean: "JeanJean",
-            John: "John",
-            Melodine: "Melodine",
-        }
+
     }
 
 };

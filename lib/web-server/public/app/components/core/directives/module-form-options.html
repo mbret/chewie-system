@@ -1,13 +1,13 @@
-<div class="form-group" ng-repeat="option in options" ng-init="fieldId = prefix + '.options.' + option.name">
+<div class="form-group" ng-repeat="configOption in configOptions" ng-init="fieldId = prefix + '.options.' + configOption.name">
 
-    <label for="{{fieldId}}">{{option.label}}</label>
-    <span class="help-block m-b-none">{{option.description}}</span>
+    <label for="{{fieldId}}">{{configOption.label}}</label>
+    <span class="help-block m-b-none">{{configOption.description}}</span>
 
-    <div ng-switch="option.type">
+    <div ng-switch="configOption.type">
 
         <div ng-switch-when="select">
-            <select class="form-control" ng-model="option.value" ng-required="{{option.required}}" id="{{fieldId}}" name="{{fieldId}}">
-                <option value="{{value.value}}" ng-repeat="value in option.choices">{{value.label}}</option>
+            <select class="form-control" ng-model="options[configOption.name]" ng-required="{{configOption.required}}" id="{{fieldId}}" name="{{fieldId}}">
+                <option ng-repeat="value in configOption.choices">{{value.label}}</option>
             </select>
         </div>
 

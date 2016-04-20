@@ -10,8 +10,6 @@ class Adapter {
     {
         var self = this;
 
-        console.log(this.helper.getPluginOptions());
-        console.log(this.helper.getOptions());
         return cb();
     }
 

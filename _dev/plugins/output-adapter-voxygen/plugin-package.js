@@ -1,3 +1,5 @@
+var config = require('./config');
+
 module.exports = {
 
     modules: [
@@ -23,13 +25,27 @@ module.exports = {
     // Used as plugin options. Every modules
     // may retrieve these options. They can be set in
     // plugin page.
+    // Options types:
+    //  - {
+    //      type: 'select'
+    //      choices: [
+    //          { label: 'Start', value: 'start' },
+    //      ],
+    //  }
+    //
     options: [
         {
             name: 'voice',
             label: 'Voice',
-            type: 'text',
+            type: 'select',
+            choices: config.voices.map(function(voice){
+                return {
+                    label: voice.key,
+                    value: voice.value
+                }
+            }),
             required: 'true',
-            default: 'Melodine'
+            default: config.voices[0].key
         }
     ]
 };
