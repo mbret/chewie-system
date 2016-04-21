@@ -66,7 +66,7 @@ module.exports = function(system, logger, done){
                                         version: packageJson.version,
                                         description: packageJson.description,
                                         name: packageJson.name,
-                                        userId: user.id
+                                        userId: user.id,
                                     }
                                 })
                             ]);
