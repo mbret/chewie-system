@@ -4,9 +4,8 @@ module.exports = {
 
     // 'Elizabeth', u'Adel', u'Bronwen', u'Eva', u'Marta', u'Guy', u'PapaNoel', u'Papi', u'Philippe', u'Ramboo', u'Robot', u'Sidoo', u'Sorciere', u'Stallone', u'Yeti', u'Zozo', u'Pedro', u'Helene', u'Paul', u'Sonia', u'Emma', u'Ludovic', u'Michel', u'Fabienne', u'Matteo', u'Emma', u'Judith', u'Martha', u'Becool', u'Chuchoti', u'Dark', u'Jean', u'Alain', u'Papy_Noel', u'Sylvester', u'Stallone', u'Moussa', u'Mendoo', u'Witch']. got 'qsd'
     voices: [
-        { key: 'Dark', value: 'Dark' },
         { key: 'Sorciere', value: 'Sorciere' },
-        { key: 'Phil', value: 'Phil' },
+        { key: 'Philippe', value: 'Philippe' },
         { key: 'Sylvia', value: 'Sylvia' },
         { key: 'Agnes', value: 'Agnes' },
         { key: 'Loic', value: 'Loic' },
@@ -53,9 +52,8 @@ module.exports = {
         //binaryPath: null,
         binaryPath: 'C:/Program Files/mpg123/mpg123',
 
-        voxygenBasePath: "http://www.voxygen.fr/sites/all/modules/voxygen_voices/assets/proxy/index.php?method=redirect&voice=:voice&text=:text",
+    },
 
-
-    }
+    voxygenBasePath: "http://www.voxygen.fr/sites/all/modules/voxygen_voices/assets/proxy/index.php?method=redirect&voice=:voice&text=:text",
 
 };
