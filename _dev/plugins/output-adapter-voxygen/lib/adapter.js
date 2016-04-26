@@ -9,12 +9,15 @@ class Adapter {
 
     constructor(helper){
         this.helper = helper;
-        this.tmpDir = this.helper.getSystem().getConfig().system.tmpDir;
+        this.tmpDir = this.helper.getPluginTmpDir();
+        this.dataDir = this.helper.getPluginDataDir();
     }
 
     initialize(cb)
     {
         var self = this;
+
+        this.executeMessage('coucou');
 
         return cb();
     }

@@ -5,13 +5,13 @@ var path = require('path');
 module.exports = {
 
     system: {
-        tmpDir:         path.join(process.cwd(), '.my-buddy/tmp'),
-        dataDir:        path.join(process.cwd(), '.my-buddy/data'),
-        persistenceDir: path.join(process.cwd(), '.my-buddy/storage'),
+        tmpDir:         path.join(process.env.APP_ROOT_PATH, '.my-buddy/tmp'),
+        dataDir:        path.join(process.env.APP_ROOT_PATH, '.my-buddy/data'),
+        persistenceDir: path.join(process.env.APP_ROOT_PATH, '.my-buddy/storage'),
     },
 
     plugins: {
-        localRepositories: [process.cwd() + '/plugins']
+        localRepositories: [process.env.APP_ROOT_PATH + '/plugins']
     },
 
     tasks: [
@@ -101,7 +101,7 @@ module.exports = {
 
     database: {
         connexion: {
-            storage: path.join(process.cwd(), '.my-buddy/storage/db.sqlite'),
+            storage: path.join(process.env.APP_ROOT_PATH, '.my-buddy/storage/db.sqlite'),
             dropOnStartup: true
         }
     }
