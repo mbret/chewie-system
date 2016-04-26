@@ -9,11 +9,15 @@
 // store app root path
 process.env.APP_ROOT_PATH = __dirname;
 
-var system  = require(__dirname + '/../index.js');
+var System  = require(__dirname + '/../index');
+
+var ConfigHandler   = require(process.env.APP_ROOT_PATH + '/../lib/core/config-handler');
+var _ = require('lodash');
 
 // Start the system
 // You don't need anything else after this point.
 // The system handle itself completely.
-system.start(function(){
-
-});
+System.start(_.merge(
+    ConfigHandler.loadConfig(CONFIG_DIR),
+    ConfigHandler.loadConfig(process.env.APP_ROOT_PATH + '/config')
+));
