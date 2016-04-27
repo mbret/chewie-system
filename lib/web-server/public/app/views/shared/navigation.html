@@ -27,7 +27,7 @@
                 <a ui-sref="dashboard.home"><i class="fa fa-th-large"></i> <span class="nav-label">{{ 'Home' | translate }}</span></a>
             </li>
             <li ui-sref-active="active">
-                <a ui-sref="dashboard.usersConfig"><i class="fa fa-th-large"></i> <span class="nav-label">My preferences</span></a>
+                <a ui-sref="dashboard.preferences"><i class="fa fa-th-large"></i> <span class="nav-label">My preferences</span></a>
             </li>
             <li ui-sref-active-if="'dashboard.tasks.list'">
                 <a ui-sref="dashboard.tasks.list"><i class="fa fa-tasks"></i> <span class="nav-label">My tasks</span></a>
@@ -46,9 +46,6 @@
             </li>
             <li ui-sref-active="active">
                 <a ui-sref="dashboard.plugins"><i class="fa fa-th-large"></i> <span class="nav-label">{{ 'Plugins' | translate }}</span></a>
-            </li>
-            <li ui-sref-active="active">
-                <a ui-sref="dashboard.config"><i class="fa fa-th-large"></i> <span class="nav-label">Configuration</span></a>
             </li>
             <li ui-sref-active-if="'dashboard.repository'">
                 <a ui-sref="dashboard.repository"><i class="fa fa-th-large"></i> <span class="nav-label">Repository</span></a>
