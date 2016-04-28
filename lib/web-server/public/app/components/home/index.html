@@ -26,7 +26,7 @@
                     <h5>Server execution</h5>
                 </div>
                 <div class="ibox-content">
-                    <div ng-lockable="runProfileLock">
+                    <ng-lockable ng-lockable="runProfileLock">
                         <p ng-show="runProfile == null">You do not have any current executing profile.</p>
                         <div ng-show="runProfile != null">
                             Your current active profile is {{runProfile.login}}<br>
@@ -48,7 +48,7 @@
                             </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </ng-lockable>
                 </div>
             </div>
         </div>
