@@ -1,19 +1,27 @@
 # Install node.js on raspberry
 - https://nodejs.org/dist/
-- rasp2 -> arm7l.tar
+- rasp2 -> arm7l.tar or arm6l.tar
+- you can download directly binaries and copy the content inside /usr/local or /etc/node. Remember to add to your path node & npm
 
 # Install on Windows
+- npm install -g gulp
+- npm install node-gyp (because some modules needs to be compiled then and will fail if you do not previously download gyp)
 - npm install
 
 # Install on raspberry (debian)
-- sudo apt-get install mpg123
+- apt-get install mpg123
+- npm install -g gulp
+- npm install node-gyp (because some modules needs to be compiled then and will fail if you do not previously download gyp)
 - npm install
 
-# Run daemon
+# Run system
 - npm start
 
-# Customize daemon
-- use config.local.js
+# Test system
+- npm test
+
+# Customize system
+- check /config folder
 
 Task:
     - schedule
@@ -45,6 +53,6 @@ Here is the priority order:
     
     
 # tod
-- make pacjage inside core
+- make package inside core
 - buddy update
 - extract web server
