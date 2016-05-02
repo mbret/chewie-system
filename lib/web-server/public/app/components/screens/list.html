@@ -3,12 +3,12 @@
 
     <div class="buddy-screen-card-container">
 
-        <div class="buddy-screen-card" ng-repeat="screen in screens">
+        <a class="buddy-screen-card" ng-repeat="screen in screens" ui-sref="screens.view({id: screen.name})">
             <div class="ibox-content text-center full-height">
                 <h1>{{screen.name}}</h1>
                 <p class="font-bold">{{screen.description}}</p>
             </div>
-        </div>
+        </a>
 
         <div class="buddy-screen-card">
             <div class="ibox-content text-center full-height">
