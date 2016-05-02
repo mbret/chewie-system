@@ -17,4 +17,6 @@ module.exports.system = {
     synchronizedPluginsDir: undefined,
     pluginsTmpDir: undefined,
     pluginsDataDir: undefined,
+
+    mpg123BinaryPath: null,
 };

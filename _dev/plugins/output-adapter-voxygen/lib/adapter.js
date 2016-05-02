@@ -17,7 +17,7 @@ class Adapter {
     {
         var self = this;
 
-        //this.executeMessage('coucou');
+        // this.executeMessage('coucou');
 
         return cb();
     }
