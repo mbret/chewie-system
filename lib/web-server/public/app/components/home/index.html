@@ -88,7 +88,10 @@
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a class="btn btn-white" href="/auth/{{service.name}}" ng-hide="service.status == 'CONNECTED'">
+                                        <!--<a class="btn btn-white" href="/auth/{{service.name}}" ng-hide="service.status == 'CONNECTED'">-->
+                                            <!--<i class="fa fa-thumbs-up"></i> Connect-->
+                                        <!--</a>-->
+                                        <a class="btn btn-white" ng-click="connectThirdService(service.name)" ng-hide="service.status == 'CONNECTED'">
                                             <i class="fa fa-thumbs-up"></i> Connect
                                         </a>
                                     </div>
