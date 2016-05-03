@@ -28,11 +28,11 @@ html {
 }
 
 body {
-    padding: 45px 0;
-    font: 13px 'Open Sans', "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    padding: 10px;
+    /*font: 13px 'Open Sans', "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;*/
 }
 
-#weather {
+.weather-container {
     width: 500px;
     margin: 0px auto;
     text-align: center;
@@ -98,7 +98,7 @@ i {
 .icon-46:before { content: "U"; }
 .icon-47:before { content: "S"; }
 
-#weather h2 {
+.weather-container h2 {
     margin: 0 0 8px;
     color: #fff;
     font-size: 100px;
@@ -107,12 +107,12 @@ i {
     text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.15);
 }
 
-#weather ul {
+.weather-container ul {
     margin: 0;
     padding: 0;
 }
 
-#weather li {
+.weather-container li {
     background: #fff;
     background: rgba(255,255,255,0.90);
     padding: 20px;
@@ -120,6 +120,6 @@ i {
     border-radius: 5px;
 }
 
-#weather .currently {
+.weather-container .currently {
     margin: 0 20px;
 }

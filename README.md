@@ -30,7 +30,7 @@ Task:
     - command
         - vocal
         - write
- 
+
 # Understand configurations
 - System configuration:
 The main configuration. It's defined in a config.js inside the lib. It can be extended with user config. Some config entries are also changeable by user directly. Then they are stored inside db.
@@ -50,9 +50,14 @@ Here is the priority order:
     - User modules:
         - Task
 - Plugin: The plugin is an external plugable component which deal with modules.
-    
-    
-# tod
+
+# todo
 - make package inside core
 - buddy update
 - extract web server
+
+# screens idea
+- latests mails
+- latests social notifications
+- weather
+- incoming calendar events (google)

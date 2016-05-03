@@ -1,5 +1,20 @@
 <link rel="stylesheet" href="/app/screens/default/index.css">
 <script src="/app/screens/default/monkeecreate-jquery.simpleWeather/jquery.simpleWeather.min.js"></script>
 
-<!-- Docs at http://http://simpleweatherjs.com -->
-<div id="weather"></div>
+<div class="alert alert-danger" ng-if="!apiSocketConnected">
+    The web app seems disconnected from the server. Try to reload the page if the problem persist
+</div>
+
+<button ng-click="testApi()">test google api server</button>
+<button ng-click="testApiWeb()">test google api webapp</button>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="col-lg-6">
+            <div class="weather-container" id="weather1"></div>
+        </div>
+        <div class="col-lg-6">
+            <div class="weather-container" id="weather2"></div>
+        </div>
+    </div>
+</div>
