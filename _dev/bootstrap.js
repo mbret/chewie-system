@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = function(system, logger, done){
-    system.orm.models.User.findOne({where: {username: 'admin'}})
+    return system.orm.models.User.findOne({where: {username: 'admin'}})
         .then(function(user){
 
             return system.localRepository
@@ -198,5 +198,7 @@ module.exports = function(system, logger, done){
         .then(function(){
             return done();
         })
-        .catch(done);
+        .catch(function(err){
+            return done(err);
+        });
 };
