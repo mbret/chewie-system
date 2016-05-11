@@ -55,13 +55,35 @@
     </div>
 
     <div class="row">
+        <div class="col-lg-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Your system configuration</h5>
+                </div>
+                <div class="ibox-content no-padding">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <p><span class="text-success font-bold" href="">Speaker:</span> You are using the default speaker adapter</p>
+                        </li>
+                        <li class="list-group-item">
+                            <p><span class="text-success font-bold" href="">Text to speech:</span> You are using the default text to speech adapter</p>
+                        </li>
+                        <li class="list-group-item">
+                            <p><span class="text-success font-bold" href="">GPIO:</span> You are using the default gpio adapter</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-lg-3">
             <div class="ibox float-e-margins">
                 <div class="ibox-content">
                     <h5 class="m-b-md">Actions</h5>
                     <button class="btn btn-primary" ng-click="restart()" type="button">Restart the buddy</button>
                     <button class="btn btn-primary" ng-click="shutdown()" type="button">Shutdown the buddy</button>
-                    <button class="btn btn-primary" ng-click="testSound()" type="button">Test the sound</button>
                 </div>
             </div>
         </div>

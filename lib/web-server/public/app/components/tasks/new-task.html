@@ -6,7 +6,7 @@
                 <a ui-sref="dashboard.home">Home</a>
             </li>
             <li class="active">
-                <strong>Modules</strong>
+                <strong>New task</strong>
             </li>
         </ol>
     </div>
@@ -19,10 +19,17 @@
         <div class="col-lg-12">
             <div class="tabs-container">
                 <uib-tabset class="tabs-left">
-                    <uib-tab heading="{{module.config.name || module.name}}" ng-repeat="module in modules">
+                    <uib-tab heading="{{module.displayName || module.name}}" ng-repeat="module in modules">
                         <div class="panel-body">
+                            From plugin: <strong>{{module.plugin.name}}</strong>
+                            <hr>
                             <p>
-                                <strong>About: </strong>{{ module.description || "No description" }}
+                                <strong>Description: </strong>{{ module.description || "No description" }}<br>
+                            </p>
+                            <p>
+                                <strong>ID: </strong>{{ module.id }}<br>
+                                <strong>Original module name: </strong>{{ module.name }}<br>
+                                <strong>Has output support: </strong>{{ module.outputSupport }}
                             </p>
                             <p><a class="btn btn-primary" ui-sref="dashboard.tasks.createForm({plugin: module.plugin.id, module: module.name})">Create a new task</a></p>
                         </div>
