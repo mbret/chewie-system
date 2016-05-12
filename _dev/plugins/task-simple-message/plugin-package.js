@@ -41,7 +41,7 @@ module.exports = {
             name: 'plugin.option1',
             label: 'Plugin option',
             type: 'text',
-            required: 'true',
+            required: true,
             default: 'Bar'
         }
     ]
