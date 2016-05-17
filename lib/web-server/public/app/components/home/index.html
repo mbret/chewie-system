@@ -55,6 +55,15 @@
     </div>
 
     <div class="row">
+        <div class="col-lg-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <h5 class="m-b-md">Quick actions</h5>
+                    <button class="btn btn-primary" ng-click="restart()" type="button">Restart the buddy</button>
+                    <button class="btn btn-primary" ng-click="shutdown()" type="button">Shutdown the buddy</button>
+                </div>
+            </div>
+        </div>
         <div class="col-lg-6">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -78,16 +87,6 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-3">
-            <div class="ibox float-e-margins">
-                <div class="ibox-content">
-                    <h5 class="m-b-md">Actions</h5>
-                    <button class="btn btn-primary" ng-click="restart()" type="button">Restart the buddy</button>
-                    <button class="btn btn-primary" ng-click="shutdown()" type="button">Shutdown the buddy</button>
-                </div>
-            </div>
-        </div>
-
         <div class="col-lg-5">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -121,6 +120,17 @@
                             </tr>
                         </tbody>
                     </table>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <i class="fa fa-info-circle"></i> Info
+                        </div>
+                        <div class="panel-body">
+                            <p>
+                                External services allow the system to access some of your data like your mails, events, contacts. As the system is hosted by you, you need to create a
+                                developer account for every service you want to use. Then go to the preference page to configure them. Check <a href="https://developers.google.com">developers.google.com</a> for example.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

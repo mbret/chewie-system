@@ -36,34 +36,34 @@ class Module{
     initialize(cb){
         var self = this;
 
-        this.helper.onNewTask(function(task){
-            self._say(task);
+        // Listen for new task on module
+        this.helper.on('new:task', function(task){
+
+            task.on('execute', function(trigger){
+                self._say(trigger);
+            });
+
+            task.on('stopped', function(){
+
+            });
         });
 
         return cb();
     }
 
     getConfig(){
-        // set task options default values
-        var tmp = config.module;
-        var userOptions = this.helper.getUserOptions();
-        tmp.taskOptions.forEach(function(option){
-            if(userOptions[option.name]){
-                option.default = userOptions[option.name];
-            }
-        });
-        return tmp;
+        return {};
     }
 
     /**
      * Say the weather
      */
-    _say(task){
+    _say(trigger){
         var self = this;
-        var options = task.options;
+        var options = trigger.task.getOptions();
 
         if(!this._checkOptions(options)){
-            self.helper.notify('warn', 'Please configure the module before using it');
+            self.helper.notify('warn', 'Options are invalid, please check the task');
             return;
         }
 
@@ -83,7 +83,7 @@ class Module{
                 .replace('[summary]', i18n.__(weather.currently.summary))
                 .replace('[degree]', temp.split(".")[0]);
 
-            self.helper.executeMessage(task, sentence);
+            self.helper.speaker.play(sentence);
         });
     }
 
