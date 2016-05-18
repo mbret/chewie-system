@@ -18,5 +18,6 @@ module.exports.system = {
     pluginsTmpDir: undefined,
     pluginsDataDir: undefined,
 
+    // use mpg123 by default
     mpg123BinaryPath: null,
 };
