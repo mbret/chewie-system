@@ -20,13 +20,14 @@
         <div class="col-lg-12">
             <div class="tabs-container">
                 <uib-tabset class="tabs-left">
-                    <uib-tab heading="{{task.name}}" ng-repeat="task in tasks" >
+                    <uib-tab heading="{{task.name}}" ng-repeat="task in tasks">
                         <div class="panel-body">
                             <ng-lockable ng-lockable="task.locked">
                                 <strong>Module:</strong> {{task.module}}<br>
                                 <strong>Created:</strong> {{task.createdAt | date}}<br>
                                 <strong>Activated:</strong> {{task.active ? 'yes' : 'no'}}<br>
-                                <strong>Description</strong> {{task.description}}<br>
+                                <strong>Description:</strong> {{task.description}}<br>
+                                <strong>Options:</strong> {{task.options}}
                                 <p class="m-t-sm m-b-sm">
                                     <span class="label label-primary" ng-if="task.running">Running</span>
                                     <span class="label label-warning" ng-if="!task.running">Stopped</span>

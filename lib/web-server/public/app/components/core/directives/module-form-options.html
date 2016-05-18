@@ -12,11 +12,11 @@
         </div>
 
         <div ng-switch-when="text">
-            <input type="text" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{option.required}}" ng-model="option.value" />
+            <input type="text" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" />
         </div>
 
         <div ng-switch-when="password">
-            <input id="{{fieldId}}" name="{{fieldId}}" type="password" class="form-control" ng-required="{{option.required}}" ng-model="option.value" />
+            <input id="{{fieldId}}" name="{{fieldId}}" type="password" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" />
         </div>
 
         <form-errors form="form" field="form[fieldId]"></form-errors>

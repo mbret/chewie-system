@@ -39,6 +39,13 @@
                                 <form-errors form="form" field="form.name"></form-errors>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <div>
+                                <input type="text" name="description" class="form-control" ng-model="formData.description" />
+                                <form-errors form="form" field="form.description"></form-errors>
+                            </div>
+                        </div>
 
                         <hr>
 
@@ -49,6 +56,9 @@
                         <module-form-options config-options="module.options" ng-model="formData.options" prefix="'task'"></module-form-options>
 
                         <h3>Your triggers</h3>
+                        <div class="alert alert-info">
+                            If a task contain only a one time trigger, the task will not be saved. Instead it will be executed (if the running profile belong to the user)
+                        </div>
                         <div ng-repeat="taskTrigger in formData.triggers" ng-init="fieldPrefix = 'taskTrigger[' + $index + ']'">
                             <div class="panel panel-success">
                                 <div class="panel-heading">
@@ -62,6 +72,10 @@
 
                                     -------------------------------->
                                     <h4>Specify the type of the trigger</h4>
+                                    <span class="help-block">
+                                        <strong>One time:</strong> The task will be executed directly.
+                                        <br><strong>Manual:</strong> The task is executed manually whenever you want.
+                                    </span>
                                     <div class="form-group">
                                         <div class="btn-group">
                                             <label class="btn btn-default" ng-model="taskTrigger.type" uib-btn-radio="'direct'">One time</label>
@@ -78,6 +92,7 @@
 
                                     -------------------------------->
                                     <h3>Options</h3>
+                                    {{ taskTrigger.options }}
                                     <module-form-options config-options="module.taskOptions" ng-model="taskTrigger.options" prefix="'taskTrigger[' + $index + ']'"></module-form-options>
 
                                     <!-----------------------------
@@ -107,7 +122,6 @@
                                         Trigger Schedule part
 
                                     -------------------------------->
-                                    {{formData.triggers}}
                                     <div ng-if="taskTrigger.type === 'schedule'">
                                         <h3>Schedule</h3>
                                         <div class="form-group">
@@ -178,7 +192,7 @@
                                         Trigger output actions
 
                                     -------------------------------->
-                                    <div ng-if="module.config.outputSupport">
+                                    <div ng-if="module.outputSupport">
                                         {{taskTrigger.actions}}
                                         <h4>Specify an output action</h4>
                                         <div class="form-group">

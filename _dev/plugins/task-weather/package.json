@@ -1,5 +1,5 @@
 {
-  "name": "my-buddy-weather",
+  "name": "task-weather",
   "version": "0.0.1",
   "dependencies": {
     "forecast": "^0.2.1",

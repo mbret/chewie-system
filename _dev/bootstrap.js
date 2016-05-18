@@ -7,21 +7,7 @@ module.exports = function(system, logger, done){
             return system.localRepository
                 .getPluginInfo({name: 'task-simple-message'})
                 .then(function(packages){
-                    var packageJson = packages.modulePackage;
-                    var pluginPackage = packages.pluginPackage;
-
-                    return system.orm.models.Plugins
-                        .findOrCreate({
-                            where: {name: pluginPackage.name, userId: user.id},
-                            defaults: {
-                                modulePackage: packageJson,
-                                pluginPackage: pluginPackage,
-                                version: packageJson.version,
-                                description: packageJson.description,
-                                name: packageJson.name,
-                                userId: user.id
-                            }
-                        })
+                    return insertPlugin(user, packages)
                         .then(function(plugins){
                             return Promise.all([
                                 system.orm.models.Task.create({
@@ -53,92 +39,35 @@ module.exports = function(system, logger, done){
                     return system.localRepository
                         .getPluginInfo({name: 'output-adapter-voxygen'})
                         .then(function(packages){
-                            var packageJson = packages.modulePackage;
-                            var pluginPackage = packages.pluginPackage;
-
-                            // create plugin
-                            return Promise.all([
-                                system.orm.models.Plugins.findOrCreate({
-                                    where: {name: pluginPackage.name, userId: user.id},
-                                    defaults: {
-                                        modulePackage: packageJson,
-                                        pluginPackage: pluginPackage,
-                                        version: packageJson.version,
-                                        description: packageJson.description,
-                                        name: packageJson.name,
-                                        userId: user.id,
-                                    }
-                                })
-                            ]);
+                            return insertPlugin(user, packages);
                         });
                 })
                 .then(function(){
                     return system.localRepository
                         .getPluginInfo({name: 'keypress-trigger'})
                         .then(function(packages){
-                            var packageJson = packages.modulePackage;
-                            var pluginPackage = packages.pluginPackage;
-
-                            // create plugin
-                            return Promise.all([
-                                system.orm.models.Plugins.findOrCreate({
-                                    where: {name: pluginPackage.name, userId: user.id},
-                                    defaults: {
-                                        modulePackage: packageJson,
-                                        pluginPackage: pluginPackage,
-                                        version: packageJson.version,
-                                        description: packageJson.description,
-                                        name: packageJson.name,
-                                        userId: user.id
-                                    }
-                                })
-                            ]);
+                            return insertPlugin(user, packages);
                         });
                 })
                 .then(function(){
                     return system.localRepository
                         .getPluginInfo({name: 'my-buddy-basics'})
                         .then(function(packages){
-                            var packageJson = packages.modulePackage;
-                            var pluginPackage = packages.pluginPackage;
-
-                            // create plugin
-                            return Promise.all([
-                                system.orm.models.Plugins.findOrCreate({
-                                    where: {name: pluginPackage.name, userId: user.id},
-                                    defaults: {
-                                        modulePackage: packageJson,
-                                        pluginPackage: pluginPackage,
-                                        version: packageJson.version,
-                                        description: packageJson.description,
-                                        name: packageJson.name,
-                                        userId: user.id
-                                    }
-                                })
-                            ]);
+                            return insertPlugin(user, packages);
                         });
                 })
                 .then(function(){
                     return system.localRepository
                         .getPluginInfo({name: 'task-alarm-clock'})
                         .then(function(packages){
-                            var packageJson = packages.modulePackage;
-                            var pluginPackage = packages.pluginPackage;
-
-                            // create plugin
-                            return Promise.all([
-                                system.orm.models.Plugins.findOrCreate({
-                                    where: {name: pluginPackage.name, userId: user.id},
-                                    defaults: {
-                                        modulePackage: packageJson,
-                                        pluginPackage: pluginPackage,
-                                        version: packageJson.version,
-                                        description: packageJson.description,
-                                        name: packageJson.name,
-                                        userId: user.id
-                                    }
-                                })
-                            ]);
+                            return insertPlugin(user, packages);
+                        });
+                })
+                .then(function(){
+                    return system.localRepository
+                        .getPluginInfo({name: 'task-weather'})
+                        .then(function(buddyPackage){
+                            return insertPlugin(user, buddyPackage);
                         });
                 })
                 .then(function(){
@@ -193,7 +122,26 @@ module.exports = function(system, logger, done){
                             ]
                         }),
                     ]);
-                });
+                })
+                // Create weather task
+                .then(function(){
+                    system.orm.models.Task.create({
+                        module: 'task-weather:weather',
+                        name: 'Weather',
+                        description: 'Weather in Nancy',
+                        userId: user.id,
+                        options: {
+                            latitude: 48.690399,
+                            longitude: 6.171033,
+                            city: 'Nancy'
+                        },
+                        triggers: [
+                            {
+                                type: 'manual',
+                            },
+                        ]
+                    })
+                })
         })
         .then(function(){
             return done();
@@ -201,4 +149,26 @@ module.exports = function(system, logger, done){
         .catch(function(err){
             return done(err);
         });
+
+    /**
+     * Insert a repository package inside the db.
+     * @param user
+     * @param packages Repository package
+     * @returns {*|Deferred|Promise.<Instance, created>}
+     */
+    function insertPlugin(user, packages){
+        var packageJson = packages.modulePackage;
+        var pluginPackage = packages.pluginPackage;
+        return system.orm.models.Plugins.findOrCreate({
+            where: {name: pluginPackage.name, userId: user.id},
+            defaults: {
+                modulePackage: packageJson,
+                pluginPackage: pluginPackage,
+                version: packageJson.version,
+                description: packageJson.description,
+                name: packageJson.name,
+                userId: user.id
+            }
+        });
+    }
 };
