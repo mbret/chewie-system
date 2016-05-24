@@ -7,6 +7,8 @@ var path = require('path');
  */
 module.exports = {
 
+    env: process.env.NODE_ENV || "development",
+
     /**
      * Define your sleep time
      * Sleep time is a period when you can avoid some actions
