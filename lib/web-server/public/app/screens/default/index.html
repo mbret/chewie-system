@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="/app/screens/default/index.css">
 <script src="/app/screens/default/monkeecreate-jquery.simpleWeather/jquery.simpleWeather.min.js"></script>
 
-<div id="wrapper">
+<div id="wrapper" class="full-height">
 
     <div class="alert alert-danger" ng-if="!apiSocketConnected">
         The web app seems disconnected from the server. Try to reload the page if the problem persist
@@ -30,7 +30,7 @@
             </div>
             <div class="col-lg-6">
                 <div class="ibox float-e-margins m-t-0">
-                    <div class="ibox-content">
+                    <div class="ibox-content" slim-scroll slim-scroll-height="100%">
                         <div>
                             <div class="chat-activity-list">
                                 <div class="chat-element" ng-repeat="message in messages">
