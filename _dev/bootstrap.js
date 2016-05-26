@@ -56,13 +56,13 @@ module.exports = function(system, logger, done){
                             return insertPlugin(user, packages);
                         });
                 })
-                .then(function(){
-                    return system.localRepository
-                        .getPluginInfo({name: 'task-alarm-clock'})
-                        .then(function(packages){
-                            return insertPlugin(user, packages);
-                        });
-                })
+                //.then(function(){
+                //    return system.localRepository
+                //        .getPluginInfo({name: 'task-alarm-clock'})
+                //        .then(function(packages){
+                //            return insertPlugin(user, packages);
+                //        });
+                //})
                 .then(function(){
                     return system.localRepository
                         .getPluginInfo({name: 'task-weather'})
