@@ -123,3 +123,18 @@ i {
 .weather-container .currently {
     margin: 0 20px;
 }
+
+.widget {
+    /*padding: 0px;*/
+    margin: 0px;
+}
+
+.screen-board {
+    padding: 2.5px;
+}
+
+.screen-widget {
+    margin:2.5px;
+    /*margin-top: 5px;*/
+    /*margin-bottom: 5px;*/
+}

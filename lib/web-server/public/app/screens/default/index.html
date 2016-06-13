@@ -1,7 +1,8 @@
 <link rel="stylesheet" href="/app/screens/default/index.css">
 <script src="/app/screens/default/monkeecreate-jquery.simpleWeather/jquery.simpleWeather.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.1.0/masonry.pkgd.min.js"></script>
 
-<div id="wrapper" class="full-height">
+<div class="screens-page screen-board">
 
     <div class="alert alert-danger" ng-if="!apiSocketConnected">
         The web app seems disconnected from the server. Try to reload the page if the problem persist
@@ -10,36 +11,22 @@
     <!--<button ng-click="testApi()">test google api server</button>-->
     <!--<button ng-click="testApiWeb()">test google api webapp</button>-->
 
-    <div class="container-fluid m-t-md">
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="widget navy-bg m-b-md m-t-none">
-                            <div class="weather-container" id="weather1"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="widget navy-bg m-t-none">
-                            <div class="weather-container" id="weather2"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="ibox float-e-margins m-t-0">
-                    <div class="ibox-content" slim-scroll slim-scroll-height="100%">
-                        <div>
-                            <div class="chat-activity-list">
-                                <div class="chat-element" ng-repeat="message in messages">
-                                    <div class="media-body">
-                                        <small class="pull-right text-navy">1m ago</small>
-                                        <strong>{{message.author}}</strong>
-                                        <p class="m-b-xs">{{message.message}}</p>
-                                        <small class="text-muted">Today 4:21 pm - 12.06.2014</small>
-                                    </div>
+    <!--<div class="flex-container flex&#45;&#45;flow-row flex&#45;&#45;align-v-start full-height&#45;&#45;vh" style="flex-direction: column;height: 100vw;max-width:100%;">-->
+
+    <div class="grid full-height--vh">
+
+        <div class="screen-widget grid-item">
+            <!--<div class="ibox-content" slim-scroll slim-scroll-height="100%">-->
+            <div class="widget yellow-bg"  style="width: 300px; height: 98vh">
+                <div slim-scroll slim-scroll-height="100%" style="overflow: scroll; ">
+                    <div>
+                        <div class="chat-activity-list">
+                            <div class="chat-element" ng-repeat="message in messages">
+                                <div class="media-body">
+                                    <small class="pull-right">{{message.date | date : "medium"}}</small>
+                                    <strong>{{message.author}}</strong>
+                                    <p class="m-b-xs">{{message.message}}</p>
+                                    <!--<small >{{message.date | date : "medium"}}</small>-->
                                 </div>
                             </div>
                         </div>
@@ -47,5 +34,45 @@
                 </div>
             </div>
         </div>
+
+        <div class="screen-widget grid-item">
+            <div class="widget navy-bg">
+                <div class="weather-container" id="weather1"></div>
+            </div>
+        </div>
+
+        <!--<div class="screen-widget grid-item" style="height: 500px;">-->
+        <div class="screen-widget grid-item">
+            <div class="widget navy-bg">
+                <div class="weather-container" id="weather2"></div>
+            </div>
+        </div>
+
+        <div class="screen-widget grid-item">
+            <div class="widget navy-bg" style="width: 200px; height: 200px; overflow: hidden;">
+            </div>
+        </div>
+
+        <div class="screen-widget grid-item">
+            <div class="widget navy-bg" style="width: 200px; height: 200px; overflow: hidden;">
+            </div>
+        </div>
+
+        <div class="screen-widget grid-item">
+            <div class="widget navy-bg" style="width: 600px; height: 300px; overflow: hidden;">
+            </div>
+        </div>
+
     </div>
+
 </div>
+
+<script>
+    setTimeout(function(){
+        $('.grid').masonry({
+            itemSelector: '.grid-item',
+            columnWidth: 1,
+//            gutter: 50,
+        });
+    }, 1000);
+</script>
