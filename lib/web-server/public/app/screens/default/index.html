@@ -1,12 +1,8 @@
-<link rel="stylesheet" href="/app/screens/default/index.css">
-<script src="/app/screens/default/monkeecreate-jquery.simpleWeather/jquery.simpleWeather.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.1.0/masonry.pkgd.min.js"></script>
-
 <div class="screens-page screen-board">
 
-    <div class="alert alert-danger" ng-if="!apiSocketConnected">
-        The web app seems disconnected from the server. Try to reload the page if the problem persist
-    </div>
+    <!--<div class="alert alert-danger" ng-if="!apiSocketConnected">-->
+        <!--The web app seems disconnected from the server. Try to reload the page if the problem persist-->
+    <!--</div>-->
 
     <!--<button ng-click="testApi()">test google api server</button>-->
     <!--<button ng-click="testApiWeb()">test google api webapp</button>-->
@@ -18,6 +14,7 @@
         <div class="screen-widget grid-item">
             <!--<div class="ibox-content" slim-scroll slim-scroll-height="100%">-->
             <div class="widget yellow-bg"  style="width: 300px; height: 98vh">
+                <qrcode data="{{messageUrl}}"></qrcode>
                 <div slim-scroll slim-scroll-height="100%" style="overflow: scroll; ">
                     <div>
                         <div class="chat-activity-list">
