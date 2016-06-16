@@ -11,7 +11,8 @@
 # Install on raspberry (debian)
 - apt-get install mpg123
 - npm install -g gulp
-- npm install node-gyp (because some modules needs to be compiled then and will fail if you do not previously download gyp)
+- sudo apt-get install python-software-properties python g++ make (for node-gyp to work)
+- sudo npm install node-gyp -g (because some modules needs to be compiled then and will fail if you do not previously download gyp)
 - npm install
 
 # Run system

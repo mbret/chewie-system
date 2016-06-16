@@ -18,6 +18,7 @@ module.exports.system = {
     pluginsTmpDir: undefined,
     pluginsDataDir: undefined,
 
-    // use mpg123 by default
-    mpg123BinaryPath: null,
+    // By default there are no speaker adapter.
+    // The system may run without adapter it will just no output sound.
+    speakerAdapter: null,
 };
