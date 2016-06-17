@@ -1,0 +1,9 @@
+{
+  "name": "default-screen",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "async": "^2.0.0-rc.6",
+    "nedb": "^1.8.0"
+  }
+}

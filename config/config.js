@@ -36,5 +36,7 @@ module.exports = {
 
     resourcesDir: path.resolve(__dirname, '../resources'),
 
-    playSystemSounds: true
+    playSystemSounds: true,
+
+    profileToLoadOnStartup: null
 };
