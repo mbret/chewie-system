@@ -6,9 +6,8 @@
         // check http://stackoverflow.com/questions/33284948/masonry-multiple-image-width
         .controller('ScreensDefaultIndexController', function($scope, $state, _, screensService, apiService, $http, $interval){
 
-            console.log('coucou');
             $scope.messages = [];
-            $scope.messageUrl = "https://localhost:3000/screens/default/add-message";
+            $scope.messageUrl = "https://localhost:3000/screens/default-screen/add-message";
 
             // Get messages
             updateMessages();
@@ -80,7 +79,7 @@
             //};
 
             function updateMessages() {
-                $http.get("/screens/default/messages").then(function(data){
+                $http.get("/screens/default-screen/messages").then(function(data){
                     $scope.messages = data.data;
                 });
             }

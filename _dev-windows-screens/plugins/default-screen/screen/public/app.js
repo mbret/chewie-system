@@ -19,7 +19,7 @@
             $stateProvider.state('home', {
                 url: '',
                 controller: 'ScreensDefaultIndexController',
-                templateUrl: '/screens/default/index.html'
+                templateUrl: '/screens/default-screen/index.html'
             });
 
             $stateProvider.state('"screens.default', {
@@ -30,7 +30,7 @@
 
             $stateProvider.state('"screens.default.message', {
                 url: "/coucou",
-                templateUrl: "/screens/default/message.html"
+                templateUrl: "/screens/default-screen/message.html"
             });
 
         })
