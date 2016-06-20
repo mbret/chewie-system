@@ -13,9 +13,9 @@
 
         <div class="screen-widget grid-item">
             <!--<div class="ibox-content" slim-scroll slim-scroll-height="100%">-->
-            <div class="widget yellow-bg"  style="width: 300px; height: 98vh">
+            <div class="widget yellow-bg"  style="height: 98vh">
                 <div slim-scroll slim-scroll-height="100%" style="overflow: scroll; ">
-                    <qrcode data="{{messageUrl}}"></qrcode>
+                    <a ui-sref="message"><qrcode data="{{messageUrl}}" title="{{messageUrl}}"></qrcode></a>
                     <div>
                         <div class="chat-activity-list">
                             <div class="chat-element" ng-repeat="message in messages">
@@ -33,43 +33,44 @@
         </div>
 
         <div class="screen-widget grid-item">
-            <div class="widget navy-bg">
+            <div class="widget navy-bg widget-feed">
+                <div ng-repeat="feed in feeds">
+                    <div class="flex-container flex--flow-row flex--nowrap">
+                        <qrcode class="qrcode" data="{{feed.link}}" title="{{feed.link}}"></qrcode>
+                        <div class="details">
+                            <h4>{{feed.website}}</h4>
+                            <a href="{{feed.link}}">{{feed.title}}</a>
+                            <br><time>{{feed.pubDate | date: "medium"}}</time>
+                        </div>
+                    </div>
+                    <!--<p ng-bind-html="feed.description"></p>-->
+                </div>
+            </div>
+        </div>
+
+        <div class="screen-widget grid-item">
+            <div class="widget widget-weather navy-bg">
                 <div class="weather-container" id="weather1"></div>
             </div>
         </div>
 
         <!--<div class="screen-widget grid-item" style="height: 500px;">-->
         <div class="screen-widget grid-item">
-            <div class="widget navy-bg">
+            <div class="widget widget-weather navy-bg">
                 <div class="weather-container" id="weather2"></div>
             </div>
         </div>
 
-        <div class="screen-widget grid-item">
-            <div class="widget navy-bg" style="width: 200px; height: 200px; overflow: hidden;">
-            </div>
-        </div>
+        <!--<div class="screen-widget grid-item">-->
+            <!--<div class="widget navy-bg" style="width: 200px; height: 200px; overflow: hidden;">-->
+            <!--</div>-->
+        <!--</div>-->
 
-        <div class="screen-widget grid-item">
-            <div class="widget navy-bg" style="width: 200px; height: 200px; overflow: hidden;">
-            </div>
-        </div>
-
-        <div class="screen-widget grid-item">
-            <div class="widget navy-bg" style="width: 600px; height: 300px; overflow: hidden;">
-            </div>
-        </div>
+        <!--<div class="screen-widget grid-item">-->
+            <!--<div class="widget navy-bg" style="width: 600px; height: 300px; overflow: hidden;">-->
+            <!--</div>-->
+        <!--</div>-->
 
     </div>
 
 </div>
-
-<script>
-    setTimeout(function(){
-        $('.grid').masonry({
-            itemSelector: '.grid-item',
-            columnWidth: 1,
-//            gutter: 50,
-        });
-    }, 1000);
-</script>

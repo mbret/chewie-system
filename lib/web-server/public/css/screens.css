@@ -9,6 +9,9 @@
 .screens-page .flex--flow-row {
     flex-flow: row wrap;
 }
+.screens-page .flex--nowrap {
+    flex-wrap: nowrap;
+}
 .screens-page .flex--align-h-center {
     justify-content: center;
 }

@@ -4,16 +4,60 @@
     angular.module('screens.default')
 
         // check http://stackoverflow.com/questions/33284948/masonry-multiple-image-width
-        .controller('ScreensDefaultIndexController', function($scope, $state, _, screensService, apiService, $http, $interval){
+        .controller('ScreensDefaultIndexController', function($scope, _, screensService, apiService, $http, $interval, $location, $state, $sce, $filter){
 
             $scope.messages = [];
-            $scope.messageUrl = "https://localhost:3000/screens/default-screen/add-message";
+            $scope.messageUrl = $state.href("message", {}, {absolute: true});
+            $scope.feeds = [];
 
             // Get messages
             updateMessages();
             $interval(function() {
                 updateMessages();
             }, 5000);
+
+            // get rss flux
+            // scotch.io
+            $scope.feeds = [];
+            $http.get("https://rss2json.com/api.json", {params : {rss_url: "https://scotch.io/rss"}})
+                .then(function(data) {
+                    var tmp = data.data.items;
+                    tmp = tmp.slice(0, 2);
+                    tmp = tmp.map(function(feed) {
+                        return {
+                            website: data.data.feed.title + " (" + data.data.feed.link + ")",
+                            title: feed.title,
+                            description: $sce.trustAsHtml(feed.description),
+                            pubDate: new Date(feed.pubDate),
+                            link: feed.link
+                        }
+                    });
+                    $scope.feeds = $scope.feeds.concat(tmp);
+                    return Promise.resolve();
+                })
+                // jvc
+                .then(function() {
+                    return $http.get("https://rss2json.com/api.json", {params : {rss_url: "http://www.jeuxvideo.com/rss/rss.xml"}}).then(function(data) {
+                        var tmp = data.data.items;
+                        tmp = tmp.slice(0, 2);
+                        tmp = tmp.map(function(feed) {
+                            return {
+                                website: data.data.feed.title + " (" + data.data.feed.link + ")",
+                                title: feed.title,
+                                description: $sce.trustAsHtml(feed.description),
+                                pubDate: new Date(feed.pubDate),
+                                link: feed.link
+                            }
+                        });
+                        $scope.feeds = $scope.feeds.concat(tmp);
+                        return Promise.resolve();
+                    });
+                })
+                .then(function() {
+                    setTimeout(function(){
+                        updateMasonry();
+                    }, 1000);
+                });
 
             //googleApi.authorize()
             //    .then(function(gapi){
@@ -43,6 +87,8 @@
             //
             //});
 
+            updateMasonry();
+
             setInterval(function(){
                 displayWeather('#weather1', 'Nancy, France');
                 displayWeather('#weather2', 'Toul, France');
@@ -65,24 +111,43 @@
                         html += '<li>'+weather.wind.direction+' '+weather.wind.speed+' '+weather.units.speed+'</li></ul>';
 
                         $(id).html(html);
+
+                        updateMasonry();
                     },
                     error: function(error) {
                         $(id).html('<p>'+error+'</p>');
+                        updateMasonry();
                     }
                 });
             }
 
-            //$scope.testApi = function(){
-            //    apiService.get('/users/' + auth.getUser().getId() + '/external-services').then(function(res){
-            //
-            //    });
-            //};
-
             function updateMessages() {
-                $http.get("/screens/default-screen/messages").then(function(data){
+                $http.get("api/messages").then(function(data){
                     $scope.messages = data.data;
                 });
             }
+
+            function updateMasonry() {
+                $('.grid').masonry({
+                    itemSelector: '.grid-item',
+                    columnWidth: 1,
+                });
+            }
+        })
+
+        .controller('ScreensDefaultMessageController', function($scope, $state, _, screensService, apiService, $http, $interval) {
+
+            $scope.message = {};
+
+            $scope.submit = function(form) {
+                if(!form.$valid) {
+                    alert("Form invalid");
+                    return;
+                }
+                $http.post("api/messages", $scope.message).then(function(data){
+                    $scope.message = {};
+                });
+            };
 
         });
 })();

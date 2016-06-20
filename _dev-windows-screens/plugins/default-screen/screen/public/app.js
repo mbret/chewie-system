@@ -7,32 +7,28 @@
         'ui.bootstrap.tpls',
         'ui.router',
         "monospaced.qrcode",
-        "app.shared"
+        "app.shared",
     ])
 
         .constant("_", _)
 
         .config(function($locationProvider, $urlRouterProvider, $stateProvider) {
 
-            //$locationProvider.hashPrefix('!');
+            $locationProvider.html5Mode(true).hashPrefix('!');
+
+            $urlRouterProvider.otherwise("/board");
 
             $stateProvider.state('home', {
-                url: '',
+                url: '/board',
                 controller: 'ScreensDefaultIndexController',
-                templateUrl: '/screens/default-screen/index.html'
+                templateUrl: 'public/index.html'
             });
 
-            $stateProvider.state('"screens.default', {
-                url: "/default",
-                template: "<ui-view></ui-view>",
-                abstract: true
+            $stateProvider.state('message', {
+                url: '/message',
+                controller: 'ScreensDefaultMessageController',
+                templateUrl: 'public/message.html'
             });
-
-            $stateProvider.state('"screens.default.message', {
-                url: "/coucou",
-                templateUrl: "/screens/default-screen/message.html"
-            });
-
         })
 
         .config(function (apiServiceProvider) {
