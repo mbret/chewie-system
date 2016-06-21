@@ -29,8 +29,9 @@ module.exports = function(system, logger, done){
     function insertPlugin(user, packages){
         var packageJson = packages.modulePackage;
         var pluginPackage = packages.pluginPackage;
+
         return system.orm.models.Plugins.findOrCreate({
-            where: {name: pluginPackage.name, userId: user.id},
+            where: {name: packageJson.name, userId: user.id},
             defaults: {
                 modulePackage: packageJson,
                 pluginPackage: pluginPackage,

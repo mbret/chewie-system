@@ -5,8 +5,14 @@ var async = require("async");
 var path = require("path");
 var Datastore = require('nedb');
 var config = require("./config");
+var express = require("express");
+
 var Module = function(helper){
     this.daemon = helper.system;
+    // used to store middleware to be able to delete it on destroy
+    // and free the memory
+    this.staticMiddlewares = [];
+    this.app = null;
 };
 
 /**
@@ -17,12 +23,13 @@ var Module = function(helper){
  *
  * @param app
  * @param router
+ * @param namespace
  * @param cb
  */
-Module.prototype.initialize = function(app, router, cb) {
+Module.prototype.initialize = function(app, router, namespace, cb) {
     var self = this;
     var view = config.indexViewPath;
-
+    this.app = app;
     // For now it use a custom database stored in system data dir
     // we could use profile info and plugin tmp dir
     var db = new Datastore({ filename: path.resolve(self.daemon.getConfig().system.dataDir, 'screens-default-messages.db') });
@@ -30,6 +37,12 @@ Module.prototype.initialize = function(app, router, cb) {
         if(err) {
             return cb(err);
         }
+
+        // isolate screens statics asset in namespace
+        // so it's easier for the module to retrieve it
+        var staticMiddleware = express.static(config.publicPath);
+        app.use(namespace + "/public", staticMiddleware);
+        self.staticMiddlewares.push(staticMiddleware);
 
         router.post("/api/messages", function(req, res) {
             var author = req.body.author || "";
@@ -92,11 +105,35 @@ Module.prototype.initialize = function(app, router, cb) {
 };
 
 /**
+ * It's important to free all middleware added to app here. Otherwise they will be added to the stack
+ * and indefinitly concatened. This will result in uncontrolled behaviour after start/stop several profiles.
+ *
+ * Router does not need to be free. The web server handle it itself.
  *
  * @param cb
  * @returns {*}
  */
 Module.prototype.destroy = function(cb) {
+    var self = this;
+
+    if(this.app) {
+        // loop over mid stack
+        this.app._router.stack = this.app._router.stack.filter(function(layer) {
+            var handle = layer.handle;
+            var valid = true;
+            // loop over each static middleware and remove it
+            // compare handle object with the middleware object
+            // it work with all middleware (not only static)
+            self.staticMiddlewares.forEach(function(staticMiddleware) {
+                if(handle === staticMiddleware) {
+                    valid = false;
+                }
+            });
+            return valid;
+        });
+    }
+    self.staticMiddlewares = [];
+
     return cb();
 };
 
