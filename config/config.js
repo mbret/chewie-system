@@ -35,6 +35,7 @@ module.exports = {
     realIp: null,
 
     resourcesDir: path.resolve(__dirname, '../resources'),
+    coreHooksDir: path.resolve(__dirname, "../lib/hooks"),
 
     playSystemSounds: true,
 
