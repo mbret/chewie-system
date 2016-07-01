@@ -18,7 +18,9 @@ module.exports.database = {
         storage: path.join(localAppDataDir, '.my-buddy', 'storage/database.sqlite'),
 
         dropOnStartup: false,
-
         logging: false,
+
+        // Will activate validation for type ex Enum
+        typeValidation: true
     }
 };

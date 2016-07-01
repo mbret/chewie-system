@@ -5,13 +5,9 @@ module.exports = function(system, logger, done){
     system.apiService
         // Create user "maxime"
         .post("/users", {
-            username: "mbret",
-            lastName: "Bret",
-            firstName: "Maxime"
-
+            username: "mbret"
         })
-        .then(function(response) {
-            console.log(response.statusCode);
+        .then(function() {
             return done();
         })
         .catch(done);

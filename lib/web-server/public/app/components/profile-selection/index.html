@@ -1,10 +1,10 @@
 <div class="profile-selection flex-container flex--flow-row flex--align-h-center flex--align-v-center full-height--vh">
-    <div class="text-center animated fadeIn" ng-repeat="profile in profiles">
+    <div class="text-center animated fadeIn" ng-repeat="profile in users">
         <div class="m-lg cursor-pointer" ng-click="selectProfile(profile.username)">
             <div class="m-b-md">
-                <img alt="image" class="img-circle circle-border profile-image-lg" ng-src="{{profile.profileImageUrl}}">
+                <img alt="image" class="img-circle circle-border profile-image-lg" ng-src="{{profile.profileImage | profileImageUrl}}">
             </div>
-            <h3>{{profile.displayName}}</h3>
+            <h3>{{profile | userName:true }}</h3>
         </div>
     </div>
 </div>
