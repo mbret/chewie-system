@@ -35,27 +35,27 @@ module.exports = function(system, logger, done){
                             ]);
                         });
                 })
-                .then(function(){
-                    return system.localRepository
-                        .getPluginInfo({name: 'output-adapter-voxygen'})
-                        .then(function(packages){
-                            return insertPlugin(user, packages);
-                        });
-                })
-                .then(function(){
-                    return system.localRepository
-                        .getPluginInfo({name: 'keypress-trigger'})
-                        .then(function(packages){
-                            return insertPlugin(user, packages);
-                        });
-                })
-                .then(function(){
-                    return system.localRepository
-                        .getPluginInfo({name: 'my-buddy-basics'})
-                        .then(function(packages){
-                            return insertPlugin(user, packages);
-                        });
-                })
+                // .then(function(){
+                //     return system.localRepository
+                //         .getPluginInfo({name: 'output-adapter-voxygen'})
+                //         .then(function(packages){
+                //             return insertPlugin(user, packages);
+                //         });
+                // })
+                // .then(function(){
+                //     return system.localRepository
+                //         .getPluginInfo({name: 'keypress-trigger'})
+                //         .then(function(packages){
+                //             return insertPlugin(user, packages);
+                //         });
+                // })
+                // .then(function(){
+                //     return system.localRepository
+                //         .getPluginInfo({name: 'my-buddy-basics'})
+                //         .then(function(packages){
+                //             return insertPlugin(user, packages);
+                //         });
+                // })
                 //.then(function(){
                 //    return system.localRepository
                 //        .getPluginInfo({name: 'task-alarm-clock'})
@@ -63,13 +63,13 @@ module.exports = function(system, logger, done){
                 //            return insertPlugin(user, packages);
                 //        });
                 //})
-                .then(function(){
-                    return system.localRepository
-                        .getPluginInfo({name: 'task-weather'})
-                        .then(function(buddyPackage){
-                            return insertPlugin(user, buddyPackage);
-                        });
-                })
+                // .then(function(){
+                //     return system.localRepository
+                //         .getPluginInfo({name: 'task-weather'})
+                //         .then(function(buddyPackage){
+                //             return insertPlugin(user, buddyPackage);
+                //         });
+                // })
                 .then(function(){
                     // create task
                     return Promise.all([

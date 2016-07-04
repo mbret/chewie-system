@@ -1,0 +1,23 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "extends": "eslint:recommended",
+    "installedESLint": true,
+    "plugins": [
+        "standard"
+    ],
+    "env": {
+        "node": true,
+        "es6": true
+    },
+    "rules": {
+        // disable rules from base configurations
+        "no-console": "off",
+        "no-empty": "off"
+    }
+}

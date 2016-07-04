@@ -4,6 +4,8 @@ var path = require('path');
 
 module.exports = {
 
+    profileToLoadOnStartup: "admin",
+    
     system: {
         tmpDir:         path.join(process.env.APP_ROOT_PATH, '.my-buddy/tmp'),
         dataDir:        path.join(process.env.APP_ROOT_PATH, '.my-buddy/data'),
