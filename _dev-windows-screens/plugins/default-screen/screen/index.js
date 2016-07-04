@@ -8,11 +8,23 @@ var config = require("./config");
 var express = require("express");
 
 var Module = function(helper){
-    this.daemon = helper.system;
+    this.system = helper.system;
     // used to store middleware to be able to delete it on destroy
     // and free the memory
     this.staticMiddlewares = [];
     this.app = null;
+};
+
+Module.prototype.initialize = function(cb) {
+    var self = this;
+
+    this.system.webServer.registerScreen("default-screen", function(err, app, namespace, router) {
+        self._registerScreen(app, router, namespace, cb);
+    });
+};
+
+Module.prototype.destroy = function(cb) {
+    this._destroyScreen(cb);
 };
 
 /**
@@ -25,14 +37,15 @@ var Module = function(helper){
  * @param router
  * @param namespace
  * @param cb
+ * @private
  */
-Module.prototype.initialize = function(app, router, namespace, cb) {
+Module.prototype._registerScreen = function(app, router, namespace, cb) {
     var self = this;
     var view = config.indexViewPath;
     this.app = app;
     // For now it use a custom database stored in system data dir
     // we could use profile info and plugin tmp dir
-    var db = new Datastore({ filename: path.resolve(self.daemon.getConfig().system.dataDir, 'screens-default-messages.db') });
+    var db = new Datastore({ filename: path.resolve(self.system.getConfig().system.dataDir, 'screens-default-messages.db') });
     db.loadDatabase(function (err) {
         if(err) {
             return cb(err);
@@ -113,7 +126,7 @@ Module.prototype.initialize = function(app, router, namespace, cb) {
  * @param cb
  * @returns {*}
  */
-Module.prototype.destroy = function(cb) {
+Module.prototype._destroyScreen = function(cb) {
     var self = this;
 
     if(this.app) {
