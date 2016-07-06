@@ -7,18 +7,8 @@ module.exports = function(system, logger, done){
             return system.localRepository
                 .getPluginInfo({name: 'task-simple-message'})
                 .then(function(packages){
-
-                    var packageJson = packages.modulePackage;
-                    var pluginPackage = packages.pluginPackage;
-                    return system.apiService
-                        .findOrCreatePlugin(user.id, packageJson.name, {
-                            modulePackage: packageJson,
-                            pluginPackage: pluginPackage,
-                            version: packageJson.version,
-                            description: packageJson.description,
-                            name: packageJson.name
-                        })
-                        .then(function(plugins){
+                    insertPlugin(user, packages)
+                        .then(function(plugin){
                             return Promise.all([
                                 //system.orm.models.Task.create({
                                 //    module: plugins[0].get('name') + ':simple-message',
@@ -66,20 +56,68 @@ module.exports = function(system, logger, done){
                 //             return insertPlugin(user, packages);
                 //         });
                 // })
-                //.then(function(){
-                //    return system.localRepository
-                //        .getPluginInfo({name: 'task-alarm-clock'})
-                //        .then(function(packages){
-                //            return insertPlugin(user, packages);
-                //        });
-                //})
-                // .then(function(){
-                //     return system.localRepository
-                //         .getPluginInfo({name: 'task-weather'})
-                //         .then(function(buddyPackage){
-                //             return insertPlugin(user, buddyPackage);
-                //         });
-                // })
+                .then(function(){
+                   return system.localRepository
+                       .getPluginInfo({name: 'task-alarm-clock'})
+                       .then(function(packages){
+                           return insertPlugin(user, packages)
+                               .then(function(plugin) {
+                                   return system.apiService.createTask(user.id, plugin.id, "alarm-clock", {
+                                       name: 'Reveil',
+                                       description: 'Reveil matin',
+                                       triggers: [
+                                           //{
+                                           //    type: 'direct',
+                                           //    options: { action: 'start', repeat: true },
+                                           //    schedule: {
+                                           //        interval: 94000,
+                                           //        method: 'interval'
+                                           //    }
+                                           //    //schedule: {
+                                           //    //    method: 'moment',
+                                           //    //    dayOfWeek: [0,1,3,4,5],
+                                           //    //    hour: 9,
+                                           //    //    minute: 0,
+                                           //    //    second: 0
+                                           //    //}
+                                           //},
+                                           {
+                                               type: 'manual',
+                                               options: { action: 'stop' }
+                                           },
+                                           {
+                                               type: 'manual',
+                                               options: { action: 'start', repeat: true }
+                                           }
+                                       ]
+                                   });
+                               })
+                       });
+                })
+                .then(function(){
+                    return system.localRepository
+                        .getPluginInfo({name: 'task-weather'})
+                        .then(function(buddyPackage){
+                            return insertPlugin(user, buddyPackage)
+                                .then(function(plugin) {
+                                    // Create weather task
+                                    return system.apiService.createTask(user.id, plugin.id, "weather", {
+                                        name: 'Weather',
+                                        description: 'Weather in Nancy',
+                                        options: {
+                                            latitude: 48.690399,
+                                            longitude: 6.171033,
+                                            city: 'Nancy'
+                                        },
+                                        triggers: [
+                                            {
+                                                type: 'manual'
+                                            }
+                                        ]
+                                    })
+                                });
+                        });
+                })
                 .then(function(){
 
                     // create task
@@ -101,56 +139,10 @@ module.exports = function(system, logger, done){
                         //    ]
                         //}),
 
-                        system.apiService.createTask(user.id, {
-                            module: 'task-alarm-clock:alarm-clock',
-                            name: 'Reveil',
-                            description: 'Reveil matin',
-                            triggers: [
-                                //{
-                                //    type: 'direct',
-                                //    options: { action: 'start', repeat: true },
-                                //    schedule: {
-                                //        interval: 94000,
-                                //        method: 'interval'
-                                //    }
-                                //    //schedule: {
-                                //    //    method: 'moment',
-                                //    //    dayOfWeek: [0,1,3,4,5],
-                                //    //    hour: 9,
-                                //    //    minute: 0,
-                                //    //    second: 0
-                                //    //}
-                                //},
-                                {
-                                    type: 'manual',
-                                    options: { action: 'stop' }
-                                },
-                                {
-                                    type: 'manual',
-                                    options: { action: 'start', repeat: true }
-                                }
-                            ]
-                        })
+
                     ]);
                 })
-                // Create weather task
-                .then(function(){
-                    return system.apiService.createTask(user.id, {
-                        module: 'task-weather:weather',
-                        name: 'Weather',
-                        description: 'Weather in Nancy',
-                        options: {
-                            latitude: 48.690399,
-                            longitude: 6.171033,
-                            city: 'Nancy'
-                        },
-                        triggers: [
-                            {
-                                type: 'manual'
-                            }
-                        ]
-                    })
-                })
+
         })
         .then(function(){
             return done();
@@ -158,4 +150,17 @@ module.exports = function(system, logger, done){
         .catch(function(err){
             return done(err);
         });
+
+    function insertPlugin(user, packages) {
+        var packageJson = packages.modulePackage;
+        var pluginPackage = packages.pluginPackage;
+        return system.apiService
+            .findOrCreatePlugin(user.id, packageJson.name, {
+                modulePackage: packageJson,
+                pluginPackage: pluginPackage,
+                version: packageJson.version,
+                description: packageJson.description,
+                name: packageJson.name
+            })
+    }
 };

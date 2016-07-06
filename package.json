@@ -23,7 +23,7 @@
     "fibers": "^1.0.13",
     "fs-extra": "^0.30.0",
     "get-folder-size": "^1.0.0",
-    "googleapis": "^8.2.0",
+    "googleapis": "^9.0.0",
     "gulp": "^3.9.1",
     "gulp-angular-filesort": "^1.1.1",
     "gulp-inject": "^4.1.0",
