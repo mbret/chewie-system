@@ -1,37 +1,47 @@
 "use strict";
 
 module.exports = function(system, logger, done){
-    return system.orm.models.User.findOne({where: {username: 'admin'}})
-        .then(function(user){
 
+    system.apiService.findUserByUsername("admin")
+        .then(function(user) {
             return system.localRepository
                 .getPluginInfo({name: 'task-simple-message'})
                 .then(function(packages){
-                    return insertPlugin(user, packages)
+
+                    var packageJson = packages.modulePackage;
+                    var pluginPackage = packages.pluginPackage;
+                    return system.apiService
+                        .findOrCreatePlugin(user.id, packageJson.name, {
+                            modulePackage: packageJson,
+                            pluginPackage: pluginPackage,
+                            version: packageJson.version,
+                            description: packageJson.description,
+                            name: packageJson.name
+                        })
                         .then(function(plugins){
                             return Promise.all([
-                                system.orm.models.Task.create({
-                                    module: plugins[0].get('name') + ':simple-message',
-                                    name: 'task 1',
-                                    options: { foo: 'bar' },
-                                    userId: user.id,
-                                    triggers: [
-                                        {
-                                            type: 'manual',
-                                            options: { text: 'coucou' },
-                                            outputAdapters: ['voxygen', 'console']
-                                        },
-                                        {
-                                            type: 'schedule',
-                                            options: {'taskOptions.option1': 'coucou'},
-                                            schedule: {
-                                                method: 'moment',
-                                                hour: 12,
-                                                minute: 27
-                                            }
-                                        }
-                                    ]
-                                }),
+                                //system.orm.models.Task.create({
+                                //    module: plugins[0].get('name') + ':simple-message',
+                                //    name: 'task 1',
+                                //    options: { foo: 'bar' },
+                                //    userId: user.id,
+                                //    triggers: [
+                                //        {
+                                //            type: 'manual',
+                                //            options: { text: 'coucou' },
+                                //            outputAdapters: ['voxygen', 'console']
+                                //        },
+                                //        {
+                                //            type: 'schedule',
+                                //            options: {'taskOptions.option1': 'coucou'},
+                                //            schedule: {
+                                //                method: 'moment',
+                                //                hour: 12,
+                                //                minute: 27
+                                //            }
+                                //        }
+                                //    ]
+                                //}),
                             ]);
                         });
                 })
@@ -71,6 +81,7 @@ module.exports = function(system, logger, done){
                 //         });
                 // })
                 .then(function(){
+
                     // create task
                     return Promise.all([
                         //system.orm.models.Task.create({
@@ -90,11 +101,10 @@ module.exports = function(system, logger, done){
                         //    ]
                         //}),
 
-                        system.orm.models.Task.create({
+                        system.apiService.createTask(user.id, {
                             module: 'task-alarm-clock:alarm-clock',
                             name: 'Reveil',
                             description: 'Reveil matin',
-                            userId: user.id,
                             triggers: [
                                 //{
                                 //    type: 'direct',
@@ -113,23 +123,22 @@ module.exports = function(system, logger, done){
                                 //},
                                 {
                                     type: 'manual',
-                                    options: { action: 'stop' },
+                                    options: { action: 'stop' }
                                 },
                                 {
                                     type: 'manual',
-                                    options: { action: 'start', repeat: true },
-                                },
+                                    options: { action: 'start', repeat: true }
+                                }
                             ]
-                        }),
+                        })
                     ]);
                 })
                 // Create weather task
                 .then(function(){
-                    system.orm.models.Task.create({
+                    return system.apiService.createTask(user.id, {
                         module: 'task-weather:weather',
                         name: 'Weather',
                         description: 'Weather in Nancy',
-                        userId: user.id,
                         options: {
                             latitude: 48.690399,
                             longitude: 6.171033,
@@ -137,8 +146,8 @@ module.exports = function(system, logger, done){
                         },
                         triggers: [
                             {
-                                type: 'manual',
-                            },
+                                type: 'manual'
+                            }
                         ]
                     })
                 })
@@ -149,26 +158,4 @@ module.exports = function(system, logger, done){
         .catch(function(err){
             return done(err);
         });
-
-    /**
-     * Insert a repository package inside the db.
-     * @param user
-     * @param packages Repository package
-     * @returns {*|Deferred|Promise.<Instance, created>}
-     */
-    function insertPlugin(user, packages){
-        var packageJson = packages.modulePackage;
-        var pluginPackage = packages.pluginPackage;
-        return system.orm.models.Plugins.findOrCreate({
-            where: {name: pluginPackage.name, userId: user.id},
-            defaults: {
-                modulePackage: packageJson,
-                pluginPackage: pluginPackage,
-                version: packageJson.version,
-                description: packageJson.description,
-                name: packageJson.name,
-                userId: user.id
-            }
-        });
-    }
 };
