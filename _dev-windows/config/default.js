@@ -9,7 +9,6 @@ module.exports = {
     system: {
         tmpDir:         path.join(process.env.APP_ROOT_PATH, '.my-buddy/tmp'),
         dataDir:        path.join(process.env.APP_ROOT_PATH, '.my-buddy/data'),
-        persistenceDir: path.join(process.env.APP_ROOT_PATH, '.my-buddy/storage'),
     },
 
     plugins: {
