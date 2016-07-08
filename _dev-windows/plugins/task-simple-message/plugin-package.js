@@ -2,7 +2,7 @@ module.exports = {
 
     modules: [
         {
-            module: require(require("path").resolve(__dirname, "lib/module")),
+            module: require("path").resolve(__dirname, "lib/module"),
             name: 'simple-message',
             displayName: 'Message',
             type: 'task-module',

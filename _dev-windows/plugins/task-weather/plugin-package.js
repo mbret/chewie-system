@@ -2,6 +2,7 @@ module.exports = {
 
     modules: [
         {
+            module: require("path").resolve(__dirname, "lib/module"),
             name: 'weather',
             displayName: 'Weather',
             type: 'task-module',
@@ -13,19 +14,19 @@ module.exports = {
                     name: 'latitude',
                     label: 'Latitude',
                     type: 'double',
-                    required: true,
+                    required: true
                 },
                 {
                     name: 'longitude',
                     label: 'Longitude',
                     type: 'double',
-                    required: true,
+                    required: true
                 },
                 {
                     name: 'city',
                     label: 'City',
                     type: 'text',
-                    required: true,
+                    required: true
                 }
             ],
 
@@ -36,7 +37,7 @@ module.exports = {
 
             // This module has a support for output. It means that you can
             // specify several output actions for your task.
-            outputSupport: true,
+            outputSupport: true
         }
     ],
 

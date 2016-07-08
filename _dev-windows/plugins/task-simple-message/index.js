@@ -1,5 +1,7 @@
-"use strict";
+'use strict';
 
-module.exports = function(helper, cb) {
+function myPlugin(helper, cb) {
     return cb();
-};
+}
+
+module.exports = myPlugin;

@@ -2,6 +2,7 @@ module.exports = {
 
     modules: [
         {
+            module: require("path").resolve(__dirname, "module"),
             name: 'alarm-clock',
             displayName: 'Alarm clock',
             type: 'task-module',
