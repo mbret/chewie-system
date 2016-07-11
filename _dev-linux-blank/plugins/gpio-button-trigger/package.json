@@ -1,0 +1,9 @@
+{
+  "name": "gpio-button-trigger",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "onoff": "^1.1.1",
+    "lodash": "^4.13.1"
+  }
+}

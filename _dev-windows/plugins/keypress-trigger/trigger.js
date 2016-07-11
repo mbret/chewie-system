@@ -1,10 +1,13 @@
 'use strict';
 
 var stdin = process.stdin;
+var Events = require("events");
 
-class Trigger{
+class Trigger extends Events {
 
     constructor(helper){
+        super();
+        var self = this;
         this.helper = helper;
 
         // without this, we would only get streams once enter is pressed
@@ -21,12 +24,13 @@ class Trigger{
         stdin.on( 'data', function( key ){
 
             // ctrl-c ( end of text )
-            if ( key === '\u0003' ) {
-                process.exit();
-            }
+            // if ( key === '\u0003' ) {
+            //     process.exit();
+            // }
 
             // write the key to stdout all normal like
-            process.stdout.write( key );
+            process.stdout.write( "key: " + key + "\n" );
+            self.emit("pressed", key);
         });
     }
 
@@ -35,53 +39,29 @@ class Trigger{
         var self = this;
 
         // A new task has been registered with this module
-        this.helper.onNewWatch(function(options, cb){
-
-            self.helper.getLogger().debug('Watch for keypress %s', JSON.stringify(options));
-
-            // on any data into stdin
-            stdin.on( 'data', function( key ){
-
-                if(key === options.key){
-                    self.helper.getLogger().info('You have pressed the key %s', key);
-                    return cb();
-                }
-
-            });
-        });
+        // this.helper.onNewWatch(function(options, cb){
+        //
+        //     self.helper.getLogger().debug('Watch for keypress %s', JSON.stringify(options));
+        //
+        //     // on any data into stdin
+        //     stdin.on( 'data', function( key ){
+        //
+        //         if(key === options.key){
+        //             self.helper.getLogger().info('You have pressed the key %s', key);
+        //             return cb();
+        //         }
+        //
+        //     });
+        // });
 
         return done();
     }
 
-    getConfig(){
-        return {
-
-            // module scope
-            // for global run
-            // available in instance scope
-            options: [
-                {
-                    name: 'test',
-                    label: 'One option',
-                    type: 'text',
-                    required: true
-                },
-            ],
-
-            // trigger scope
-            // every run
-            // only available on new watch
-            triggerOptions: [
-                {
-                    name: 'key',
-                    label: 'Key to press',
-                    type: 'text',
-                    required: true
-                },
-            ]
-        };
+    newTrigger(options, cb) {
+        this.on("pressed", function(key) {
+            cb();
+        });
     }
-
 }
 
 module.exports = Trigger;

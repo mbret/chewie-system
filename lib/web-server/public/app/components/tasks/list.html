@@ -34,20 +34,26 @@
                     <uib-tab heading="{{task.name}}" ng-repeat="task in tasks">
                         <div class="panel-body">
                             <ng-lockable ng-lockable="task.locked">
+                                <p>
+                                    <a class="btn btn-default" type="button" ui-sref="">Edit the task</a>
+                                </p>
                                 <strong>Module:</strong> {{task.module}}<br>
                                 <strong>Created:</strong> {{task.createdAt | date}}<br>
                                 <strong>Activated:</strong> {{task.active ? 'yes' : 'no'}}<br>
                                 <strong>Description:</strong> {{task.description}}<br>
                                 <strong>Options:</strong> {{task.options}}
-                                <p class="m-t-sm m-b-sm">
-                                    <a class="btn btn-primary" type="button" ng-click="toggleTaskActive(task)" ng-if="!task.running">
-                                        Start the task
-                                    </a>
-                                    <a class="btn btn-warning" type="button" ng-click="toggleTaskActive(task)" ng-if="task.running">
-                                        Stop the task
-                                    </a>
-                                </p>
-                                <table class="table table-hover">
+                                <div class="m-t-sm m-b-sm"></div>
+                                <div class="alert alert-info">You can either start or stop the task. When the the task is started the triggers are all running.</div>
+                                <a class="btn btn-primary" type="button" ng-click="toggleTaskActive(task)" ng-if="!task.running">
+                                    Start the task
+                                </a>
+                                <a class="btn btn-warning" type="button" ng-click="toggleTaskActive(task)" ng-if="task.running">
+                                    Stop the task
+                                </a>
+                                <div class="m-t-sm m-b-md"></div>
+                                <h3>Schedules:</h3>
+                                <div class="alert alert-info" ng-if="task.triggers.length < 1">You don't have any schedules set.</div>
+                                <table class="table table-hover" ng-if="task.triggers.length > 0">
                                     <thead>
                                     <tr>
                                         <th>#</th>

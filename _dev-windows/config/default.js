@@ -4,7 +4,7 @@ var path = require('path');
 
 module.exports = {
 
-    //profileToLoadOnStartup: "admin",
+    profileToLoadOnStartup: "admin",
     
     system: {
         tmpDir:         path.join(process.env.APP_ROOT_PATH, '.my-buddy/tmp'),
@@ -15,11 +15,11 @@ module.exports = {
         localRepositories: [process.env.APP_ROOT_PATH + '/plugins']
     },
 
-    tasks: [
-        {
-            moduleId: 'simple-message:simple-message',
-            name: 'Task 1',
-            triggers: [
+    // tasks: [
+    //     {
+    //         moduleId: 'simple-message:simple-message',
+    //         name: 'Task 1',
+    //         triggers: [
                 //{
                 //    type: 'direct',
                 //    options: {
@@ -42,24 +42,24 @@ module.exports = {
                 //        'MessageAdapterConsole',
                 //    ]
                 //},
-                {
-                    type: 'trigger',
-                    options: {
-                        text: 'bitch'
-                    },
-                    trigger: {
-                        options: {
-                            key: 'i'
-                        },
-                        id: 'keypress-trigger'
-                    }
-                }
-            ],
+                // {
+                //     type: 'trigger',
+                //     options: {
+                //         text: 'bitch'
+                //     },
+                //     trigger: {
+                //         options: {
+                //             key: 'i'
+                //         },
+                //         id: 'keypress-trigger'
+                //     }
+                // }
+            // ],
             // task options
-            options: {
+            // options: {
 
-            }
-        },
+            // }
+        // },
         //{
         //    module: 'weather',
         //    type: 'direct',
@@ -98,7 +98,7 @@ module.exports = {
         //        }
         //    ]
         //}
-    ],
+    // ],
 
     database: {
         connexion: {

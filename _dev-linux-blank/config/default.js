@@ -10,7 +10,7 @@ module.exports = {
             module: require("my-buddy-lib").speakerAdapter,
             options: {
                 // use mpg123 by default
-                mpg123BinaryPath: "mpg123"
+                mpg123BinaryPath: ""
             }
         }
     }

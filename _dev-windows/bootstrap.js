@@ -13,9 +13,10 @@ module.exports = function(system, logger, done){
                     return system.localRepository
                         .getPluginInfo({name: 'task-simple-message'})
                         .then(function(packages){
-                            insertPlugin(user, packages)
+                            return insertPlugin(user, packages)
                                 .then(function(plugin){
-                                    return Promise.all([
+                                    return system.apiService.createTask(user.id, plugin.id, "simple-message", {name: "My task"});
+                                    // return Promise.all([
                                         //system.orm.models.Task.create({
                                         //    module: plugins[0].get('name') + ':simple-message',
                                         //    name: 'task 1',
@@ -38,30 +39,16 @@ module.exports = function(system, logger, done){
                                         //        }
                                         //    ]
                                         //}),
-                                    ]);
+                                    // ]);
                                 });
                         })
-                        // .then(function(){
-                        //     return system.localRepository
-                        //         .getPluginInfo({name: 'output-adapter-voxygen'})
-                        //         .then(function(packages){
-                        //             return insertPlugin(user, packages);
-                        //         });
-                        // })
-                        // .then(function(){
-                        //     return system.localRepository
-                        //         .getPluginInfo({name: 'keypress-trigger'})
-                        //         .then(function(packages){
-                        //             return insertPlugin(user, packages);
-                        //         });
-                        // })
-                        // .then(function(){
-                        //     return system.localRepository
-                        //         .getPluginInfo({name: 'my-buddy-basics'})
-                        //         .then(function(packages){
-                        //             return insertPlugin(user, packages);
-                        //         });
-                        // })
+                        .then(function() {
+                            return system.localRepository
+                                .getPluginInfo({name: 'keypress-trigger'})
+                                .then(function(packages) {
+                                    return insertPlugin(user, packages);
+                                });
+                        })
                         .then(function(){
                             return system.localRepository
                                 .getPluginInfo({name: 'task-alarm-clock'})
@@ -123,30 +110,6 @@ module.exports = function(system, logger, done){
                                             })
                                         });
                                 });
-                        })
-                        .then(function(){
-
-                            // create task
-                            return Promise.all([
-                                //system.orm.models.Task.create({
-                                //    module: 'simple-message:simple-message',
-                                //    name: 'task 0',
-                                //    options: { foo: 'bar' },
-                                //    userId: user.id,
-                                //    triggers: [
-                                //        {
-                                //            type: 'schedule',
-                                //            options: {'taskOptions.option1': 'coucou'},
-                                //            schedule: {
-                                //                method: 'interval',
-                                //                interval: 5000
-                                //            }
-                                //        },
-                                //    ]
-                                //}),
-
-
-                            ]);
                         })
 
                 })

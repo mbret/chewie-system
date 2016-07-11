@@ -9,35 +9,27 @@ class Module {
     }
 
     initialize(cb){
-        var self = this;
-
-        // Listen for new task on module
-        this.helper.on('new:task', function(task){
-
-            task.on('execute', function(trigger){
-                self.say(trigger);
-            });
-
-            task.on('stopped', function(){
-
-            });
-        });
-
         return cb();
     }
 
-    /**
-     *
-     * @returns {object}
-     */
-    getConfig(){
-        return {};
+    destroy(cb) {
+        return cb();
+    }
+
+    newTask(task) {
+        task.on('execute', function(context){
+            self._say(context);
+        });
+
+        task.on('stopped', function(){
+
+        });
     }
 
     /**
      * This module is simple and only say a message.
      */
-    say(context){
+    _say(context){
         var self = this;
         if(!_.isString(context.getOptions().text)){
             self.helper.notify('warn', 'Invalid task options received [' + JSON.stringify(context.options) + ']');

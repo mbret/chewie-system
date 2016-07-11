@@ -1,6 +1,7 @@
 module.exports = {
     modules: [
         {
+            module: require("path").resolve(__dirname, "trigger"),
             name: 'keypress-trigger',
             displayName: '',
             type: 'trigger',

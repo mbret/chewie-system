@@ -5,7 +5,7 @@ module.exports = {
             module: require("path").resolve(__dirname, "lib/module"),
             name: 'weather',
             displayName: 'Weather',
-            type: 'task-module',
+            type: 'task',
             description: 'Get the weather',
 
             // User as task general options.

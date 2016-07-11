@@ -5,7 +5,7 @@ module.exports = {
             module: require("path").resolve(__dirname, "module"),
             name: 'alarm-clock',
             displayName: 'Alarm clock',
-            type: 'task-module',
+            type: 'task',
             description: 'Schedule your alarm clock',
 
             // User as task general options.

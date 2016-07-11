@@ -2,10 +2,10 @@ module.exports = {
 
     modules: [
         {
-            module: require("path").resolve(__dirname, "lib/module"),
+            module: require("path").resolve(__dirname, "module"),
             name: 'simple-message',
             displayName: 'Message',
-            type: 'task-module',
+            type: 'task',
             description: 'Send a simple message',
 
             // User as task general options.
