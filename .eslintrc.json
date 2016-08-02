@@ -16,7 +16,6 @@
         "es6": true
     },
     "rules": {
-        // disable rules from base configurations
         "no-console": "off",
         "no-empty": "off"
     }
