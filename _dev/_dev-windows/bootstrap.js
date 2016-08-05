@@ -2,9 +2,11 @@
 
 module.exports = function(system, logger, done){
 
+    console.log("coucou", system.apiService.foo);
+
     // create new user
     system.apiService
-        .createUser({
+        .findOrCreateUser({
             username: "mbret"
         })
         .then(function() {
