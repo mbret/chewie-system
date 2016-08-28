@@ -2,8 +2,6 @@
 
 module.exports = function(system, logger, done){
 
-    console.log("coucou", system.apiService.foo);
-
     // create new user
     system.apiService
         .findOrCreateUser({
@@ -17,7 +15,9 @@ module.exports = function(system, logger, done){
                         .then(function(packages){
                             return insertPlugin(user, packages)
                                 .then(function(plugin){
-                                    return system.apiService.createTask(user.id, plugin.id, "simple-message", {name: "My task"});
+                                    return system.apiService.findModuleByName(user.id, plugin.id, "simple-message").then(function(module) {
+                                        return system.apiService.findOrCreateTask(user.id, plugin.id, module.id, {name: "My task"});
+                                    });
                                     // return Promise.all([
                                         //system.orm.models.Task.create({
                                         //    module: plugins[0].get('name') + ':simple-message',
@@ -57,34 +57,36 @@ module.exports = function(system, logger, done){
                                 .then(function(packages){
                                     return insertPlugin(user, packages)
                                         .then(function(plugin) {
-                                            return system.apiService.createTask(user.id, plugin.id, "alarm-clock", {
-                                                name: 'Reveil',
-                                                description: 'Reveil matin',
-                                                triggers: [
-                                                    //{
-                                                    //    type: 'direct',
-                                                    //    options: { action: 'start', repeat: true },
-                                                    //    schedule: {
-                                                    //        interval: 94000,
-                                                    //        method: 'interval'
-                                                    //    }
-                                                    //    //schedule: {
-                                                    //    //    method: 'moment',
-                                                    //    //    dayOfWeek: [0,1,3,4,5],
-                                                    //    //    hour: 9,
-                                                    //    //    minute: 0,
-                                                    //    //    second: 0
-                                                    //    //}
-                                                    //},
-                                                    {
-                                                        type: 'manual',
-                                                        options: { action: 'stop' }
-                                                    },
-                                                    {
-                                                        type: 'manual',
-                                                        options: { action: 'start', repeat: true }
-                                                    }
-                                                ]
+                                            return system.apiService.findModuleByName(user.id, plugin.id, "alarm-clock").then(function(module) {
+                                                return system.apiService.findOrCreateTask(user.id, plugin.id, module.id, {
+                                                    name: 'Reveil',
+                                                    description: 'Reveil matin',
+                                                    triggers: [
+                                                        //{
+                                                        //    type: 'direct',
+                                                        //    options: { action: 'start', repeat: true },
+                                                        //    schedule: {
+                                                        //        interval: 94000,
+                                                        //        method: 'interval'
+                                                        //    }
+                                                        //    //schedule: {
+                                                        //    //    method: 'moment',
+                                                        //    //    dayOfWeek: [0,1,3,4,5],
+                                                        //    //    hour: 9,
+                                                        //    //    minute: 0,
+                                                        //    //    second: 0
+                                                        //    //}
+                                                        //},
+                                                        {
+                                                            type: 'manual',
+                                                            options: { action: 'stop' }
+                                                        },
+                                                        {
+                                                            type: 'manual',
+                                                            options: { action: 'start', repeat: true }
+                                                        }
+                                                    ]
+                                                });
                                             });
                                         })
                                 });
@@ -95,26 +97,34 @@ module.exports = function(system, logger, done){
                                 .then(function(buddyPackage){
                                     return insertPlugin(user, buddyPackage)
                                         .then(function(plugin) {
-                                            // Create weather task
-                                            return system.apiService.createTask(user.id, plugin.id, "weather", {
-                                                name: 'Weather',
-                                                description: 'Weather in Nancy',
-                                                options: {
-                                                    latitude: 48.690399,
-                                                    longitude: 6.171033,
-                                                    city: 'Nancy'
-                                                },
-                                                triggers: [
-                                                    {
-                                                        type: 'manual'
-                                                    }
-                                                ]
-                                            })
+                                            return system.apiService.findModuleByName(user.id, plugin.id, "weather").then(function(module) {
+                                                return system.apiService.findOrCreateTask(user.id, plugin.id, module.id, {
+                                                    name: 'Weather',
+                                                    description: 'Weather in Nancy',
+                                                    options: {
+                                                        latitude: 48.690399,
+                                                        longitude: 6.171033,
+                                                        city: 'Nancy'
+                                                    },
+                                                    triggers: [
+                                                        {
+                                                            type: 'manual'
+                                                        }
+                                                    ]
+                                                });
+                                            });
                                         });
                                 });
                         })
-
-                })
+                        // bell plugin
+                        .then(function() {
+                            return system.localRepository
+                                .getPluginInfo({name: 'bell'})
+                                .then(function(buddyPackage){
+                                    return insertPlugin(user, buddyPackage);
+                                });
+                        });
+                });
         })
         .then(function(){
             return done();
@@ -133,6 +143,6 @@ module.exports = function(system, logger, done){
                 version: packageJson.version,
                 description: packageJson.description,
                 name: packageJson.name
-            })
+            });
     }
 };

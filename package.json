@@ -14,9 +14,9 @@
   "description": "",
   "version": "1.0.0",
   "scripts": {
-    "start": "node _dev-linux-blank/index.js",
-    "start_windows": "node _dev-windows/index.js",
-    "start_windows_blank": "node _dev-windows-blank/index.js",
+    "start": "node _dev/_dev-linux-blank/index.js",
+    "start_windows": "node _dev/_dev-windows/index.js",
+    "start_windows_blank": "node _dev/_dev-windows-blank/index.js",
     "test": "mocha"
   },
   "dependencies": {

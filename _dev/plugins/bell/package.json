@@ -1,0 +1,9 @@
+{
+  "name": "bell",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "i18n": "^0.5.0",
+    "lodash": "^3.10.1"
+  }
+}
