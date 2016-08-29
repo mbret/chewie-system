@@ -9,8 +9,7 @@ module.exports = {
             // User as task general options.
             options: [
                 {
-                    name: 'options.option1',
-                    label: 'General option for this module',
+                    name: 'port',
                     type: 'text',
                     required: true
                 }
@@ -24,11 +23,7 @@ module.exports = {
                     type: 'text',
                     required: true
                 }
-            ],
-
-            // This module has a support for output. It means that you can
-            // specify several output actions for your task.
-            outputSupport: true,
+            ]
         }
     ],
 

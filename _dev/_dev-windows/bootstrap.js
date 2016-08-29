@@ -1,5 +1,7 @@
 "use strict";
 
+var util = require("util");
+
 module.exports = function(system, logger, done){
 
     // create new user
@@ -10,39 +12,42 @@ module.exports = function(system, logger, done){
         .then(function() {
             return system.apiService.findUserByUsername("admin")
                 .then(function(user) {
-                    return system.localRepository
-                        .getPluginInfo({name: 'task-simple-message'})
-                        .then(function(packages){
-                            return insertPlugin(user, packages)
-                                .then(function(plugin){
-                                    return system.apiService.findModuleByName(user.id, plugin.id, "simple-message").then(function(module) {
-                                        return system.apiService.findOrCreateTask(user.id, plugin.id, module.id, {name: "My task"});
-                                    });
-                                    // return Promise.all([
-                                        //system.orm.models.Task.create({
-                                        //    module: plugins[0].get('name') + ':simple-message',
-                                        //    name: 'task 1',
-                                        //    options: { foo: 'bar' },
-                                        //    userId: user.id,
-                                        //    triggers: [
-                                        //        {
-                                        //            type: 'manual',
-                                        //            options: { text: 'coucou' },
-                                        //            outputAdapters: ['voxygen', 'console']
-                                        //        },
-                                        //        {
-                                        //            type: 'schedule',
-                                        //            options: {'taskOptions.option1': 'coucou'},
-                                        //            schedule: {
-                                        //                method: 'moment',
-                                        //                hour: 12,
-                                        //                minute: 27
-                                        //            }
-                                        //        }
-                                        //    ]
-                                        //}),
-                                    // ]);
-                                });
+                    return Promise
+                        .resolve()
+                        .then(function() {
+                           return system.localRepository.getPluginInfo({name: 'task-simple-message'})
+                               .then(function(packages){
+                                   return insertPlugin(user, packages)
+                                       .then(function(plugin){
+                                           return system.apiService.findModuleByName(user.id, plugin.id, "simple-message").then(function(module) {
+                                               return system.apiService.findOrCreateTask(user.id, plugin.id, module.id, {name: "My task"});
+                                           });
+                                           // return Promise.all([
+                                           //system.orm.models.Task.create({
+                                           //    module: plugins[0].get('name') + ':simple-message',
+                                           //    name: 'task 1',
+                                           //    options: { foo: 'bar' },
+                                           //    userId: user.id,
+                                           //    triggers: [
+                                           //        {
+                                           //            type: 'manual',
+                                           //            options: { text: 'coucou' },
+                                           //            outputAdapters: ['voxygen', 'console']
+                                           //        },
+                                           //        {
+                                           //            type: 'schedule',
+                                           //            options: {'taskOptions.option1': 'coucou'},
+                                           //            schedule: {
+                                           //                method: 'moment',
+                                           //                hour: 12,
+                                           //                minute: 27
+                                           //            }
+                                           //        }
+                                           //    ]
+                                           //}),
+                                           // ]);
+                                       });
+                               });
                         })
                         .then(function() {
                             return system.localRepository
@@ -51,7 +56,7 @@ module.exports = function(system, logger, done){
                                     return insertPlugin(user, packages);
                                 });
                         })
-                        .then(function(){
+                        .then(function() {
                             return system.localRepository
                                 .getPluginInfo({name: 'task-alarm-clock'})
                                 .then(function(packages){
@@ -88,31 +93,32 @@ module.exports = function(system, logger, done){
                                                     ]
                                                 });
                                             });
-                                        })
+                                        });
                                 });
                         })
-                        .then(function(){
+                        .then(function() {
                             return system.localRepository
                                 .getPluginInfo({name: 'task-weather'})
                                 .then(function(buddyPackage){
                                     return insertPlugin(user, buddyPackage)
                                         .then(function(plugin) {
-                                            return system.apiService.findModuleByName(user.id, plugin.id, "weather").then(function(module) {
-                                                return system.apiService.findOrCreateTask(user.id, plugin.id, module.id, {
-                                                    name: 'Weather',
-                                                    description: 'Weather in Nancy',
-                                                    options: {
-                                                        latitude: 48.690399,
-                                                        longitude: 6.171033,
-                                                        city: 'Nancy'
-                                                    },
-                                                    triggers: [
-                                                        {
-                                                            type: 'manual'
-                                                        }
-                                                    ]
+                                            return system.apiService.findModuleByName(user.id, plugin.id, "weather")
+                                                .then(function(module) {
+                                                    return system.apiService.findOrCreateTask(user.id, plugin.id, module.id, {
+                                                        name: 'Weather',
+                                                        description: 'Weather in Nancy',
+                                                        options: {
+                                                            latitude: 48.690399,
+                                                            longitude: 6.171033,
+                                                            city: 'Nancy'
+                                                        },
+                                                        triggers: [
+                                                            {
+                                                                type: 'manual'
+                                                            }
+                                                        ]
+                                                    });
                                                 });
-                                            });
                                         });
                                 });
                         })
@@ -136,13 +142,17 @@ module.exports = function(system, logger, done){
     function insertPlugin(user, packages) {
         var packageJson = packages.modulePackage;
         var pluginPackage = packages.pluginPackage;
+        var data = {
+            modulePackage: packageJson,
+            pluginPackage: pluginPackage,
+            version: packageJson.version,
+            description: packageJson.description,
+            name: packageJson.name
+        };
         return system.apiService
-            .findOrCreatePlugin(user.id, packageJson.name, {
-                modulePackage: packageJson,
-                pluginPackage: pluginPackage,
-                version: packageJson.version,
-                description: packageJson.description,
-                name: packageJson.name
+            .findOrCreatePlugin(user.id, packageJson.name, data)
+            .then(function(plugin) {
+                return system.apiService.updatePlugin(user.id, plugin.id, {pluginPackage: pluginPackage});
             });
     }
 };
