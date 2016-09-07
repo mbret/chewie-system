@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+var http = require('http');
 
 class Module {
 
@@ -9,6 +10,9 @@ class Module {
     }
 
     initialize(cb){
+
+
+
         return cb();
     }
 
@@ -17,11 +21,30 @@ class Module {
     }
 
     newTask(task) {
-        task.on('execute', function(context){
-            self._say(context);
+        var self = this;
+
+        task.on('execute', function(context) {
+
+            //Create a server
+            var server = http.createServer(handleRequest);
+
+            // initialize the server
+            var port = context.options.port;
+            server.listen(port, function(err) {
+                if (err) {
+                    self.logger.error(err);
+                    return;
+                }
+
+                self.logger.debug("server listening on ${port}");
+            });
+
+            function handleRequest(request, response) {
+                console.log("coucou");
+            }
         });
 
-        task.on('stopped', function(){
+        task.on('stopped', function() {
 
         });
     }
