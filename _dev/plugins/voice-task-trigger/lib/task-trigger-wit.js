@@ -21,11 +21,11 @@ class Module{
         var self = this;
 
         // new task registered with this command plugin
-        this.helper.onNewTaskToTrigger(function(task, cb){
-
-            return cb();
-
-        });
+        // this.helper.onNewTaskToTrigger(function(task, cb){
+        //
+        //     return cb();
+        //
+        // });
 
         // Listen for new voice recorded event
         MyBuddy.on('voice:recorded:new', function(file){

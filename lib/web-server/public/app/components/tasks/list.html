@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<div class="wrapper wrapper-content">
+<div class="wrapper wrapper-content" id="task-list">
 
     <h1 class="page-header">My tasks</h1>
 
@@ -44,10 +44,10 @@
                                 <strong>Options:</strong> {{task.options}}
                                 <div class="m-t-sm m-b-sm"></div>
                                 <div class="alert alert-info">You can either start or stop the task. When the the task is started the triggers are all running.</div>
-                                <a class="btn btn-primary" type="button" ng-click="toggleTaskActive(task)" ng-if="!task.running">
+                                <a class="btn btn-primary" type="button" ng-click="toggleTaskActive(task)" ng-if="!task.active">
                                     Start the task
                                 </a>
-                                <a class="btn btn-warning" type="button" ng-click="toggleTaskActive(task)" ng-if="task.running">
+                                <a class="btn btn-warning" type="button" ng-click="toggleTaskActive(task)" ng-if="task.active">
                                     Stop the task
                                 </a>
                                 <div class="m-t-sm m-b-md"></div>
@@ -80,12 +80,12 @@
                                         </td>
                                         <!--Actions-->
                                         <td class="text-center">
-                                            <span ng-if="(trigger.type === 'manual') && task.running">
+                                            <span ng-if="(trigger.type === 'manual') && task.active">
                                                 <a class="font-lg" ng-click="runTask(task, trigger)">
                                                     <i class="fa fa-play-circle-o"></i>
                                                 </a>
                                             </span>
-                                            <i class="fa fa-lock cursor-pointer" ng-if="!task.running" uib-tooltip="Task is not running" tooltip-class="tooltip-inline"></i>
+                                            <i class="fa fa-lock cursor-pointer" ng-if="!task.active" uib-tooltip="Task is not active" tooltip-class="tooltip-inline"></i>
                                         </td>
                                     </tr>
                                     </tbody>

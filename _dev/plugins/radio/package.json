@@ -1,5 +1,8 @@
 {
   "name": "radio",
   "version": "0.0.1",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "mplayer": "^2.1.0"
+  }
 }

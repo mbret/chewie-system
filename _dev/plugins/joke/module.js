@@ -13,13 +13,13 @@ class Module {
         var self = this;
 
         // Listen for new task on module
-        this.helper.onNewTask(function(context){
-
-            this._getChuckNorrisFact(function(err, fact){
-                self.helper.executeMessage(context, fact);
-            });
-
-        });
+        // this.helper.onNewTask(function(context){
+        //
+        //     this._getChuckNorrisFact(function(err, fact){
+        //         self.helper.executeMessage(context, fact);
+        //     });
+        //
+        // });
 
         return cb();
     }

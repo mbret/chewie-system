@@ -6,22 +6,17 @@ module.exports = {
             name: 'radio',
             type: 'task',
 
-            // User as task general options.
             options: [
                 {
-                    name: 'options.option1',
-                    label: 'General option for this module',
-                    type: 'text',
-                    required: true
-                }
-            ],
-
-            // Used as task context option.
-            taskOptions: [
-                {
-                    name: 'text',
-                    label: 'Texte',
-                    type: 'text',
+                    name: 'radioName',
+                    label: 'Radio',
+                    type: 'select',
+                    choices: [
+                        {
+                            label: "NRJ",
+                            value: "nrj"
+                        }
+                    ],
                     required: true
                 }
             ],

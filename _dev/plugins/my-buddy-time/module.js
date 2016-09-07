@@ -23,26 +23,26 @@ class Module extends EventEmitter{
         var self = this;
 
         // Listen for new task on module
-        this.helper.onNewTask(function(task){
-            var time = null;
-
-            switch(task.options.format){
-                case 'hours':
-                    time = self._giveTime();
-                    break;
-
-                case 'moment':
-                    time = self._giveMoment();
-                    break;
-
-                default :
-                    logger.debug('Task with no format (unrecognized?) options provided, ignored!', task);
-                    return;
-                    break;
-            }
-
-            self.emit('action:execute', actions, time);
-        });
+        // this.helper.onNewTask(function(task){
+        //     var time = null;
+        //
+        //     switch(task.options.format){
+        //         case 'hours':
+        //             time = self._giveTime();
+        //             break;
+        //
+        //         case 'moment':
+        //             time = self._giveMoment();
+        //             break;
+        //
+        //         default :
+        //             logger.debug('Task with no format (unrecognized?) options provided, ignored!', task);
+        //             return;
+        //             break;
+        //     }
+        //
+        //     self.emit('action:execute', actions, time);
+        // });
 
         return cb();
     }
