@@ -123,6 +123,21 @@ module.exports = function(system, logger, done){
                                 .then(function(buddyPackage){
                                     return insertPlugin(user, buddyPackage);
                                 });
+                        })
+                        // radio plugin
+                        .then(function() {
+                            return system.localRepository
+                                .getPluginInfo({name: 'radio'})
+                                // insert plugin
+                                .then(function(buddyPackage){
+                                    return insertPlugin(user, buddyPackage);
+                                })
+                                // create task
+                                .then(function(plugin) {
+                                    return system.apiService.findModuleByName(user.id, plugin.id, "radio").then(function(module) {
+                                        return system.apiService.findOrCreateTask(user.id, plugin.id, module.id, {name: "Radio matin"});
+                                    });
+                                });
                         });
                 });
         })
