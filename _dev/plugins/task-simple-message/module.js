@@ -17,6 +17,7 @@ class Module {
     }
 
     newTask(task) {
+        var self = this;
         task.on('execute', function(context){
             self._say(context);
         });

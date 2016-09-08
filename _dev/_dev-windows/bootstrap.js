@@ -82,14 +82,14 @@ module.exports = function(system, logger, done){
                                                         //    //    second: 0
                                                         //    //}
                                                         //},
-                                                        {
-                                                            type: 'manual',
-                                                            options: { action: 'stop' }
-                                                        },
-                                                        {
-                                                            type: 'manual',
-                                                            options: { action: 'start', repeat: true }
-                                                        }
+                                                        // {
+                                                        //     type: 'manual',
+                                                        //     options: { action: 'stop' }
+                                                        // },
+                                                        // {
+                                                        //     type: 'manual',
+                                                        //     options: { action: 'start', repeat: true }
+                                                        // }
                                                     ]
                                                 });
                                             });
@@ -112,11 +112,6 @@ module.exports = function(system, logger, done){
                                                             longitude: 6.171033,
                                                             city: 'Nancy'
                                                         },
-                                                        triggers: [
-                                                            {
-                                                                type: 'manual'
-                                                            }
-                                                        ]
                                                     });
                                                 });
                                         });
