@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git+https://mbret@github.com/mbret/my-buddy-system.git"
   },
-  "author": "",
+  "author": "Maxime Bret",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/mbret/my-buddy-system/issues"
@@ -13,6 +13,9 @@
   "name": "my-buddy-system",
   "description": "",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=6.5.0"
+  },
   "scripts": {
     "start": "node _dev/_dev-linux-blank/index.js",
     "start_windows": "node _dev/_dev-windows/index.js",
@@ -28,7 +31,7 @@
     "express-ejs-layouts": "^2.2.0",
     "fs-extra": "^0.30.0",
     "get-folder-size": "^1.0.0",
-    "googleapis": "^12.4.0",
+    "googleapis": "^13.0.0",
     "gulp": "^3.9.1",
     "gulp-angular-filesort": "^1.1.1",
     "gulp-inject": "^4.1.0",
