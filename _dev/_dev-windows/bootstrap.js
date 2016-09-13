@@ -132,19 +132,19 @@ module.exports = function(system, logger, done){
                                 // insert plugin
                                 .then(function(buddyPackage){
                                     return insertPlugin(user, buddyPackage);
-                                })
-                                // create task
-                                .then(function(plugin) {
-                                    return system.apiService.findModuleByName(user.id, plugin.id, "radio").then(function(module) {
-                                        return system.apiService.findOrCreateTask(user.id, plugin.id, module.id,
-                                            {
-                                                name: "Radio matin",
-                                                options: {
-                                                    radioName: "nrj"
-                                                }
-                                            });
-                                    });
                                 });
+                                // create task
+                                // .then(function(plugin) {
+                                //     return system.apiService.findModuleByName(user.id, plugin.id, "radio").then(function(module) {
+                                //         return system.apiService.findOrCreateTask(user.id, plugin.id, module.id,
+                                //             {
+                                //                 name: "Radio matin",
+                                //                 options: {
+                                //                     radioName: "nrj"
+                                //                 }
+                                //             });
+                                //     });
+                                // });
                         });
                 });
         })

@@ -2,6 +2,8 @@
 
 var MPlayer = require('mplayer');
 var player = new MPlayer();
+var EventEmitter = require("events");
+var scheduler = require('node-schedule');
 
 class Module {
 
@@ -14,6 +16,23 @@ class Module {
     }
 
     initialize(cb){
+        var self = this;
+        // @todo dev
+        class Task extends EventEmitter {
+
+        }
+        var task = new Task();
+        task.options = {radioName: "nrj"};
+
+        var rule = new scheduler.RecurrenceRule();
+        rule.hour = 9;
+        rule.minute = 0;
+        rule.dayOfWeek = [1,2,3,4,5];
+        scheduler.scheduleJob(rule, function(){
+            self.newTask(task);
+        });
+        // @todo fin dev
+
         return cb();
     }
 
@@ -28,15 +47,13 @@ class Module {
     newTask(task) {
         var self = this;
 
-        // Each time the task is executed by a trigger
-        task.on('execute', function(context){
-            console.log("new radio task executed");
-            player.openFile(self.config[context.options.radioName]);
+        console.log("new radio task executed");
+        player.openFile(self.config[task.options.radioName]);
 
-            context.on("stop", function() {
-                console.log("radio stop");
-                player.stop();
-            });
+        // Each time the task is executed by a trigger
+        task.once('stop', function() {
+            console.log("radio stop");
+            player.stop();
         });
     }
 }
