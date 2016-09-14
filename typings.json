@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "lodash": "registry:npm/lodash#4.0.0+20160723033700",
+    "node-uuid": "registry:npm/node-uuid#1.4.7+20160723033700"
+  },
+  "globalDependencies": {
+    "angular-cookie": "registry:dt/angular-cookie#4.1.0+20160317120654",
+    "node": "registry:env/node#6.0.0+20160902022231"
+  }
+}

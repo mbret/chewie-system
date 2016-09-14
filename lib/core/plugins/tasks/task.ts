@@ -1,40 +1,47 @@
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+import _ from "lodash";
 var TaskTriggers = require('./task-triggers');
-var events_1 = require("events");
-var ExecutionContext = (function (_super) {
-    __extends(ExecutionContext, _super);
-    function ExecutionContext(task, options) {
-        _super.call(this);
+import { EventEmitter }  from "events";
+
+class ExecutionContext extends EventEmitter {
+    constructor(task, options) {
+        super();
         var self = this;
         this.task = task;
         this.options = options;
-        this.task.on("stopped", function () {
+
+        this.task.on("stopped", function() {
             self.emit("stop");
         });
     }
-    return ExecutionContext;
-}(events_1.EventEmitter));
+}
+
 /**
  * Module task
  *
  * A task is being executed when
  * - one of its trigger is executed
  */
-var Task = (function (_super) {
-    __extends(Task, _super);
-    function Task(system, id, userId, pluginId, moduleId, name, options, triggers) {
-        _super.call(this);
+class Task extends EventEmitter {
+
+    logger: any;
+    system: any;
+    id: string;
+    userId: any;
+    options: any;
+    name: string;
+
+    constructor(system, id, userId, pluginId, moduleId, name, options, triggers){
+        super();
+
         var self = this;
         this.logger = system.logger.Logger.getLogger('Task');
+
         options = options || {};
+
         this.system = system;
         this.id = id;
         this.userId = userId;
+
         // General options for the task. same for any execution
         // these options may be different for several tasks. These are not global task options.
         this.options = options;
@@ -44,19 +51,22 @@ var Task = (function (_super) {
         this.pluginId = pluginId;
         this.triggers = new Map();
         this.stopped = true;
+
         //this.userOptions = {};
         // var map = new Map();
+
         // _.forEach(triggers, function(trigger){
         //     var instance = TaskTriggers.Build(system, self, trigger);
         //     self.triggers.set(trigger.id, instance);
         // });
     }
+
     /**
      * Initialize all triggers and listen for execute events
      * @param cb
      * @returns {*}
      */
-    Task.prototype.initialize = function (cb) {
+    initialize(cb){
         var self = this;
         // _.forEach(this.triggers.values(), function(trigger){
         //     trigger.initialize(function(err){
@@ -71,47 +81,55 @@ var Task = (function (_super) {
         //         });
         //     });
         // });
+
         return cb();
-    };
+    }
+
     /**
      * Execute the task with the given task trigger as context.
      */
-    Task.prototype.execute = function (trigger) {
+    execute(trigger){
         this.logger.verbose('task [%s] executed for module [%s] with general options [%s] and context trigger [%s] with options [%s]', this.id, this.moduleId, JSON.stringify(this.options), trigger.type, JSON.stringify(trigger.options));
+
         var context = new ExecutionContext(this, this.options);
         this.emit('execute', context);
-    };
+    }
+
     /**
      * Completely stop an active task.
      * - stop all triggers
      */
-    Task.prototype.stop = function () {
-        if (this.stopped) {
+    stop(){
+        if(this.stopped) {
             return;
         }
+
         this.stopped = true;
         // Stop each triggers
         // _.forEach(this.triggers.values(), function(trigger){
         //     trigger.stop();
         // });
+
         this.logger.verbose('Task [%s] stopped', this.id);
         this.emit('stopped');
-    };
+    }
+
     /**
      * Start a task
      * - resume all triggers
      */
-    Task.prototype.start = function () {
-        if (!this.stopped) {
+    start() {
+        if(!this.stopped) {
             return;
         }
+
         this.stopped = false;
         // restart all triggers
         // _.forEach(this.triggers.values(), function(trigger){
         //     trigger.start();
         // });
         this.emit('started');
-    };
-    return Task;
-}(events_1.EventEmitter));
+    }
+}
+
 module.exports = Task;
