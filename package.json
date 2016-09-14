@@ -18,6 +18,7 @@
   },
   "scripts": {
     "start": "node _dev/_dev-linux-blank/index.js",
+    "start_linux": "node _dev/_dev-linux/index.js",
     "start_windows": "node _dev/_dev-windows/index.js",
     "start_windows_blank": "node _dev/_dev-windows-blank/index.js",
     "test": "mocha"
