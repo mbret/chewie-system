@@ -82,7 +82,7 @@ class Module {
         var self = this;
 
         console.log("new radio task executed");
-        player.openFile(self.config[task.options.radioName]);
+        // player.openFile(self.config[task.options.radioName]);
 
         // Each time the task is executed by a trigger
         task.once('stop', function() {

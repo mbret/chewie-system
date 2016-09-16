@@ -44,6 +44,9 @@
                                 <strong>Options:</strong> {{task.options}}
                                 <div class="m-t-sm m-b-sm"></div>
                                 <div class="alert alert-info">You can either start or stop the task. When the the task is started the triggers are all running.</div>
+                                <button class="btn btn-primary" ng-click="executeTask(task)">
+                                    Execute
+                                </button>
                                 <!--<a class="btn btn-primary" type="button" ng-click="toggleTaskActive(task)" ng-if="!task.active">-->
                                     <!--Activate the task-->
                                 <!--</a>-->
@@ -51,7 +54,7 @@
                                     <!--Deactivate the task-->
                                 <!--</a>-->
                                 <div class="m-t-sm m-b-md"></div>
-                                <h3>Schedules:</h3>
+                                <h3>Executions:</h3>
                                 <div class="alert alert-info" ng-if="task.triggers.length < 1">You don't have any schedules set.</div>
                                 <table class="table table-hover" ng-if="task.triggers.length > 0">
                                     <thead>

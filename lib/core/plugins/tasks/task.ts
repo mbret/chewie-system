@@ -1,4 +1,5 @@
 import _ from "lodash";
+import * as uuid from "node-uuid";
 var TaskTriggers = require('./task-triggers');
 import { EventEmitter }  from "events";
 
@@ -21,44 +22,29 @@ class ExecutionContext extends EventEmitter {
  * A task is being executed when
  * - one of its trigger is executed
  */
-class Task extends EventEmitter {
+export class Task extends EventEmitter {
 
     logger: any;
     system: any;
-    id: string;
-    userId: any;
+    id: number;
+    executionId: string;
+    userId: number;
+    pluginId: number;
+    moduleId: string;
     options: any;
     name: string;
 
-    constructor(system, id, userId, pluginId, moduleId, name, options, triggers){
+    constructor(system, id, executionId = uuid.v4(), userId, pluginId, moduleId, options){
         super();
 
-        var self = this;
         this.logger = system.logger.Logger.getLogger('Task');
-
-        options = options || {};
-
         this.system = system;
         this.id = id;
+        this.executionId = executionId;
         this.userId = userId;
-
-        // General options for the task. same for any execution
-        // these options may be different for several tasks. These are not global task options.
         this.options = options;
-        this.name = name;
         this.moduleId = moduleId;
-        this.moduleName = system.modules.get(moduleId).name;
         this.pluginId = pluginId;
-        this.triggers = new Map();
-        this.stopped = true;
-
-        //this.userOptions = {};
-        // var map = new Map();
-
-        // _.forEach(triggers, function(trigger){
-        //     var instance = TaskTriggers.Build(system, self, trigger);
-        //     self.triggers.set(trigger.id, instance);
-        // });
     }
 
     /**
@@ -131,5 +117,3 @@ class Task extends EventEmitter {
         this.emit('started');
     }
 }
-
-module.exports = Task;
