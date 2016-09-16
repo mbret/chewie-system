@@ -8,6 +8,7 @@ var PluginsHandler      = require(CORE_DIR + '/plugins/plugins-handler.js');
 var Speaker             = require(CORE_DIR + '/speaker').Speaker;
 import {Server as ApiServer} from "./api-server";
 import {Task} from "./core/plugins/tasks/task";
+import {TaskExecution} from "./core/plugins/tasks/task-execution";
 var WebServer           = require(LIB_DIR + '/web-server');
 var ConfigHandler       = require(CORE_DIR + '/config-handler');
 var SpeechHandler       = require(CORE_DIR + '/speech/speech-handler.js');
@@ -29,7 +30,9 @@ var api                 = require(CORE_DIR + "/api");
  */
 export class Daemon extends EventEmitter {
 
-    tasks: Map<string, Task>;
+    executingTasks: Map<string, TaskExecution>;
+    modules: Map<string, any>;
+    runtimeHelper: RuntimeHelper;
 
     constructor(configOverride){
         super();
@@ -64,7 +67,7 @@ export class Daemon extends EventEmitter {
         // Contain modules by their names
         this.modules                = new Map();
         // Contain tasks by their id
-        this.tasks                  = new Map();
+        this.executingTasks = new Map();
         this.bus                    = new Bus(this);
     }
 

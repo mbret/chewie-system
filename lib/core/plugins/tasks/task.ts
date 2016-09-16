@@ -3,18 +3,18 @@ import * as uuid from "node-uuid";
 var TaskTriggers = require('./task-triggers');
 import { EventEmitter }  from "events";
 
-class ExecutionContext extends EventEmitter {
-    constructor(task, options) {
-        super();
-        var self = this;
-        this.task = task;
-        this.options = options;
-
-        this.task.on("stopped", function() {
-            self.emit("stop");
-        });
-    }
-}
+// class ExecutionContext extends EventEmitter {
+//     constructor(task, options) {
+//         super();
+//         var self = this;
+//         this.task = task;
+//         this.options = options;
+//
+//         this.task.on("stopped", function() {
+//             self.emit("stop");
+//         });
+//     }
+// }
 
 /**
  * Module task
@@ -27,24 +27,24 @@ export class Task extends EventEmitter {
     logger: any;
     system: any;
     id: number;
-    executionId: string;
     userId: number;
     pluginId: number;
     moduleId: string;
     options: any;
     name: string;
+    stopped: boolean;
 
-    constructor(system, id, executionId = uuid.v4(), userId, pluginId, moduleId, options){
+    constructor(system, id, userId, pluginId, moduleId, options){
         super();
 
         this.logger = system.logger.Logger.getLogger('Task');
         this.system = system;
         this.id = id;
-        this.executionId = executionId;
         this.userId = userId;
         this.options = options;
         this.moduleId = moduleId;
         this.pluginId = pluginId;
+        this.stopped = false;
     }
 
     /**
@@ -52,8 +52,8 @@ export class Task extends EventEmitter {
      * @param cb
      * @returns {*}
      */
-    initialize(cb){
-        var self = this;
+    // initialize(cb){
+    //     var self = this;
         // _.forEach(this.triggers.values(), function(trigger){
         //     trigger.initialize(function(err){
         //         if(err){
@@ -67,9 +67,9 @@ export class Task extends EventEmitter {
         //         });
         //     });
         // });
-
-        return cb();
-    }
+    //
+    //     return cb();
+    // }
 
     /**
      * Execute the task with the given task trigger as context.
@@ -85,35 +85,25 @@ export class Task extends EventEmitter {
      * Completely stop an active task.
      * - stop all triggers
      */
-    stop(){
-        if(this.stopped) {
-            return;
+    // stop(){
+    //     if(this.stopped) {
+    //         return;
+    //     }
+    //
+    //     this.stopped = true;
+    //     // Stop each triggers
+    //     // _.forEach(this.triggers.values(), function(trigger){
+    //     //     trigger.stop();
+    //     // });
+    //
+    //     this.logger.verbose('Task [%s] stopped', this.id);
+    //     this.emit('stopped');
+    // }
+
+    stop() {
+        if (!this.stopped) {
+            this.stopped = true;
+            this.emit("stop");
         }
-
-        this.stopped = true;
-        // Stop each triggers
-        // _.forEach(this.triggers.values(), function(trigger){
-        //     trigger.stop();
-        // });
-
-        this.logger.verbose('Task [%s] stopped', this.id);
-        this.emit('stopped');
-    }
-
-    /**
-     * Start a task
-     * - resume all triggers
-     */
-    start() {
-        if(!this.stopped) {
-            return;
-        }
-
-        this.stopped = false;
-        // restart all triggers
-        // _.forEach(this.triggers.values(), function(trigger){
-        //     trigger.start();
-        // });
-        this.emit('started');
     }
 }

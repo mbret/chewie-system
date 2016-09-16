@@ -1,13 +1,13 @@
 'use strict';
 
-var MPlayer = require('mplayer');
-var player = new MPlayer();
+var MPlayer = require('./mplayer');
 var EventEmitter = require("events");
 var scheduler = require('node-schedule');
 
-class Module {
+class Module extends EventEmitter {
 
     constructor(helper) {
+        super();
         this.helper = helper;
         this.config = {
             nrj: "http://cdn.nrjaudio.fm/audio1/fr/40101/aac_576.mp3?origine=fluxradios",
@@ -70,24 +70,24 @@ class Module {
         return cb();
     }
 
-    /**
-     * On module destroy.
-     * @returns {*}
-     */
-    destroy() {
-        return Promise.resolve();
-    }
-
     newTask(task) {
         var self = this;
 
-        console.log("new radio task executed");
-        // player.openFile(self.config[task.options.radioName]);
+        self.emit("newTask");
+
+        var player = new MPlayer({verbose: false});
+        player.on("ready", function() {
+            player.openFile(self.config[task.options.radioName]);
+        });
 
         // Each time the task is executed by a trigger
         task.once('stop', function() {
-            console.log("radio stop");
-            player.stop();
+            player.kill();
+        });
+
+        // when new task is created automatically stop this task
+        this.once("newTask", function() {
+            task.stop();
         });
     }
 }

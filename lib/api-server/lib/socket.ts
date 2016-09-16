@@ -1,4 +1,5 @@
 import {Task} from "../../core/plugins/tasks/task";
+import {TaskExecution} from "../../core/plugins/tasks/task-execution";
 
 module.exports = function(server, socketServer){
 
@@ -21,19 +22,29 @@ module.exports = function(server, socketServer){
             socket.emit('user:updated', id);
         }
 
-        function onNewRuntimeTask(task: Task) {
-            socket.emit("runtime:task:new", server.services.taskService.toJson(task));
+        function onNewRuntimeTask(execution: TaskExecution) {
+            socket.emit("runtime:task-execution:new", server.services.taskService.taskExecutionToJson(execution));
+            emitRuntimeTaskUpdate();
+        }
+
+        function onDeleteRuntimeTask(executionId: string) {
+            socket.emit("runtime:task-execution:delete", executionId);
+            emitRuntimeTaskUpdate();
+        }
+
+        function emitRuntimeTaskUpdate() {
             var tasks = [];
-            server.system.tasks.forEach(function(tmp: Task) {
+            server.system.executingTasks.forEach(function(tmp: TaskExecution) {
                 tasks.push(tmp);
             });
-            socket.emit("runtime:tasks:update", server.services.taskService.toJson(tasks));
+            socket.emit("runtime:executing-tasks:update", server.services.taskService.taskExecutionToJson(tasks));
         }
 
         // Listen for new notifications
         // Then pass notification through socket
         server.system.on('notification:new', onNewNotification);
-        server.system.on("runtime:task:new", onNewRuntimeTask);
+        server.system.on("runtime:task-execution:new", onNewRuntimeTask);
+        server.system.on("runtime:task-execution:delete", onDeleteRuntimeTask);
         server.system.runtimeHelper.profile.on('profile:stopped:completed', onProfileStoppedCompleted);
         server.system.runtimeHelper.profile.on('profile:start:complete', onProfileStartedCompleted);
         server.system.bus.on('user:updated', onUserUpdated);
@@ -42,7 +53,8 @@ module.exports = function(server, socketServer){
         // avoid listeners leak
         socket.on('disconnect', function(){
             server.system.removeListener('notification:new', onNewNotification);
-            server.system.removeListener('runtime:task:new', onNewRuntimeTask);
+            server.system.removeListener("runtime:task-execution:new", onNewRuntimeTask);
+            server.system.removeListener("runtime:task-execution:new", onDeleteRuntimeTask);
             server.system.runtimeHelper.profile.removeListener('profile:stopped:completed', onProfileStoppedCompleted);
             server.system.runtimeHelper.profile.removeListener('profile:start:complete', onProfileStartedCompleted);
             server.system.bus.removeListener('user:updated', onUserUpdated);
