@@ -1,0 +1,45 @@
+<div class="panel panel-success" ng-init="trigger = formData.triggers[$index]">
+    <div class="panel-heading ng-binding">
+        Schedule
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <div class="radio radio-info radio-inline">
+                <input id="inlineRadio2" type="radio" value="moment" name="trigger-method[]" id="{{formId}}." ng-model="trigger.method" ng-required="true">
+                <label for="inlineRadio2">Moment</label>
+            </div>
+            <form-errors form="form" field="form['taskTrigger.schedule.method']"></form-errors>
+        </div>
+
+        <div ng-show="trigger.method === 'moment'">
+
+            <h4>What skind of moment?</h4>
+
+            <div class="form-group" >
+                <div class="btn-group">
+                    <label class="btn btn-default" ng-model="trigger.schedule.subMoment" uib-btn-radio="'date'" uncheckable>Pick a date and time</label>
+                    <label class="btn btn-default" ng-model="trigger.schedule.subMoment" uib-btn-radio="'hours'" uncheckable>Choose a more complex schedule</label>
+                </div>
+            </div>
+
+            <!--Date moment-->
+            <div class="form-group" ng-show="trigger.schedule.subMoment === 'date'">
+                <label>Date</label>
+                <input type="text" class="form-control" date-range-picker ng-model="trigger.schedule.date" options="schedules.dateRangePickerOptions" />
+            </div>
+
+            <div ng-show="taskTrigger.schedule.subMoment === 'hours'">
+                <div class="form-group" >
+                    <label >Jours</label>
+                    <select size="7" class="form-control" ng-required="taskTrigger.schedule.method === 'hours'" multiple ng-multiple="true" ng-model="taskTrigger.schedule.selectedDays" ng-options="day.name for day in schedules.days"></select>
+                </div>
+                <div class="form-group" ng-show="taskTrigger.schedule.subMoment === 'hours'">
+                    <label >Heure</label>
+                    <input type="time" min="00:00" ng-model="taskTrigger.schedule.time" name="taskTrigger.schedule.time" class="form-control" ng-required="taskTrigger.schedule.subMoment === 'hours'"/>
+                    <form-errors form="form" field="form['taskTrigger.schedule.time']"></form-errors>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Scenarios</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <a ui-sref="dashboard.scenarios.index">Scenarios</a>
+            </li>
+            <li class="active">
+                <strong>Create</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content" id="scenario-create">
+
+    <h1 class="page-header">New scenario</h1>
+
+    <form novalidate name="form" id="{{formId}}" ng-submit="processForm(form)">
+
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>General</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="form-group">
+                    <label for="{{formId}}.name">Name</label>
+                    <div>
+                        <input type="text" id="{{formId}}.name" name="name" class="form-control" ng-required="true" ng-model="formData.name" />
+                        <form-errors form="form" field="form.name"></form-errors>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="{{formId}}.description">Description</label>
+                    <div>
+                        <textarea name="description" id="{{formId}}.description" class="form-control" ng-required="true" ng-model="formData.description"></textarea>
+                        <form-errors form="description" field="form.description"></form-errors>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Content</h5>
+            </div>
+            <div class="ibox-content">
+                <div ng-repeat="trigger in formData.triggers track by $index" class="ng-scope">
+                    <ng-include src="'/app/components/scenarios/templates/create-trigger-' + trigger.name + '.include.html'"></ng-include>
+                </div>
+                <button class="btn btn-default" type="button" ng-click="addTrigger()">Add a trigger</button>
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" type="submit">Confirm</button>
+    </form>
+
+</div>
