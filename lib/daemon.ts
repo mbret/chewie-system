@@ -6,10 +6,9 @@ var childProcess        = require('child_process');
 var _                   = require('lodash');
 var PluginsHandler      = require(CORE_DIR + '/plugins/plugins-handler.js');
 var Speaker             = require(CORE_DIR + '/speaker').Speaker;
-import {Server as ApiServer} from "./api-server";
-import {Task} from "./core/plugins/tasks/task";
+import {Server as ApiServer} from "./server-api";
 import {TaskExecution} from "./core/plugins/tasks/task-execution";
-var WebServer           = require(LIB_DIR + '/web-server');
+var WebServer           = require(LIB_DIR + '/client-web-server');
 var ConfigHandler       = require(CORE_DIR + '/config-handler');
 var SpeechHandler       = require(CORE_DIR + '/speech/speech-handler.js');
 var ModuleHandler       = require(CORE_DIR + '/plugins/modules').Handler;
@@ -23,6 +22,8 @@ var packageInfo         = require(ROOT_DIR + '/package.json');
 var Logger              = require('my-buddy-lib').logger.Logger;
 var Bus                 = require(CORE_DIR + '/bus');
 var api                 = require(CORE_DIR + "/api");
+var ip  = require('ip');
+import * as ServerCommunication from "./core/server-communication/index";
 
 /**
  * Daemon is the main program daemon.
@@ -33,10 +34,14 @@ export class Daemon extends EventEmitter {
     executingTasks: Map<string, TaskExecution>;
     modules: Map<string, any>;
     runtimeHelper: RuntimeHelper;
+    apiServer: ApiServer;
+    config: any;
+    serverSocketEventsListener: ServerCommunication.SocketEventsListener;
 
     constructor(configOverride){
         super();
 
+        this.config = configOverride;
         this.logger = LOGGER.getLogger('Daemon');
         this.logger.Logger = LOGGER;
         this.logger.getLogger = LOGGER.getLogger.bind(LOGGER);
@@ -50,6 +55,7 @@ export class Daemon extends EventEmitter {
             version: packageInfo.version
         };
         // Used to handle running profile / tasks / etc
+        this.serverSocketEventsListener = new ServerCommunication.SocketEventsListener(this);
         this.runtimeHelper          = new RuntimeHelper(this);
         this.configHandler          = new ConfigHandler(this, configOverride);
         this.apiServer              = new ApiServer(this);
@@ -113,7 +119,7 @@ export class Daemon extends EventEmitter {
             // Splash final information
             self.logger.info('The system is now started and ready!');
             self.logger.info('The web interface is available at at %s or %s for remote access', self.webServer.getLocalAddress(), self.webServer.getRemoteAddress());
-            self.logger.info('The API is available at at %s or %s for remote access', self.apiServer.getLocalAddress(), self.apiServer.getRemoteAddress());
+            self.logger.info('The API is available at at %s or %s for remote access', self.apiServer.getLocalAddress(), self.config.apiEndpointAddress);
             console.log('');
 
             // Play some system sounds
@@ -393,7 +399,10 @@ Daemon.start = function(userConfig, cb){
 
     // Set some config now (only possible during runtime or when forced)
     config.system.pluginsTmpDir = config.system.pluginsTmpDir || path.resolve(config.system.tmpDir, 'plugins');
+    config.realIp = ip.address();
+    config.apiEndpointAddress = config.apiEndpointAddress || "https://" + (config.realIp + ':' + config.apiPort);
 
+    console.log(config.apiEndpointAddress);
     // Build system logger
     global.LOGGER = new Logger(config.log);
     var logger = LOGGER.getLogger('Daemon');

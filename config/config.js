@@ -24,7 +24,20 @@ module.exports = {
     // Handled by app
     activeModules: [],
 
+    // **************************************************
+    //                                                  *
+    //  Api server configuration                        *
+    //                                                  *
+    // **************************************************
     apiPort: 3001,
+    // when set the address will take priority over apiPort
+    apiEndpointAddress: null,
+
+    // **************************************************
+    //                                                  *
+    //  Web server configuration                        *
+    //                                                  *
+    // **************************************************
     webServerPort: 3000,
 
     // **************************************************
