@@ -27,4 +27,19 @@
 
     <h1 class="page-header">My scenarios</h1>
 
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="tabs-container">
+                <uib-tabset class="tabs-left">
+                    <uib-tab heading="{{scenario.name}}" ng-repeat="scenario in scenarios" >
+                        <div class="panel-body">
+                            <strong>Created:</strong> {{scenario.createdAt | date}}<br>
+                            <strong>Description</strong> {{scenario.description}}<br>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
+
 </div>
