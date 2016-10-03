@@ -19,7 +19,7 @@
 
     <h1 class="page-header">New scenario</h1>
 
-    <form novalidate name="form" id="{{formId}}" ng-submit="processForm(form)">
+    <form novalidate name="form" id="{{formId}}" ng-submit="confirm(form)">
 
         <div class="ibox float-e-margins">
             <div class="ibox-title">
@@ -30,32 +30,67 @@
                     <label for="{{formId}}.name">Name</label>
                     <div>
                         <input type="text" id="{{formId}}.name" name="name" class="form-control" ng-required="true" ng-model="formData.name" />
-                        <form-errors form="form" field="form.name"></form-errors>
+                        <form-errors field="form.name"></form-errors>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="{{formId}}.description">Description</label>
                     <div>
-                        <textarea name="description" id="{{formId}}.description" class="form-control" ng-required="true" ng-model="formData.description"></textarea>
-                        <form-errors form="description" field="form.description"></form-errors>
+                        <textarea name="description" id="{{formId}}.description" class="form-control" ng-model="formData.description"></textarea>
+                        <form-errors field="form.description"></form-errors>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="ibox float-e-margins">
             <div class="ibox-title">
                 <h5>Content</h5>
             </div>
             <div class="ibox-content">
-                <div ng-repeat="trigger in formData.triggers track by $index" class="ng-scope">
-                    <ng-include src="'/app/components/scenarios/templates/create-trigger-' + trigger.name + '.include.html'"></ng-include>
+                <input type="hidden" name="content" ng-model="formData.nodes" required>
+                <form-errors field="form.content"></form-errors>
+                <p>
+                    <span ng-repeat="element in elements">
+                        <span class="btn btn-default" ng-if="element.type === 'task'">Task: "{{tasks[element.taskId].name}}", Scenario ID - {{element.id}}</span>
+                    </span>
+                </p>
+                <p>
+                    <button class="btn btn-default" type="button" ng-click="addNewTaskRef()"><i class="fa fa-plus"></i> Include a new task reference</button>
+                </p>
+                <div ui-tree="treeOptions" id="tree-root">
+                    <ol ui-tree-nodes ng-model="formData.nodes">
+                        <li ng-repeat="node in formData.nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+                    </ol>
                 </div>
-                <button class="btn btn-default" type="button" ng-click="addTrigger()">Add a trigger</button>
+                <p>
+                    <button class="btn btn-default" type="button" ng-click="newItem()"><i class="fa fa-plus"></i> Add an element to the root</button>
+                </p>
             </div>
         </div>
-
         <button class="btn btn-primary btn-lg" type="submit">Confirm</button>
     </form>
-
 </div>
+
+<script type="text/ng-template" id="nodes_renderer.html">
+    <div ui-tree-handle class="tree-node tree-node-content">
+        <a class="btn btn-success btn-xs" ng-if="node.nodes && node.nodes.length > 0" data-nodrag ng-click="toggle(this)">
+            <span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed }"></span>
+        </a>
+        <span ng-if="node.type === 'action'">Action {{node.configuration.action}}</span>
+        <span ng-if="node.type === 'task'">Scenario task {{node.element.id}}</span>
+        <span ng-if="node.type === 'trigger'">Trigger {{node.configuration.method}}</span>
+        <a class="pull-right btn btn-danger btn-xs" data-nodrag ng-click="remove(this)">
+            <span class="glyphicon glyphicon-remove"></span>
+        </a>
+        <a class="pull-right btn btn-warning btn-xs" data-nodrag ng-click="configure(node)" style="margin-right: 8px;">
+            <i class="fa fa-cog"></i>
+        </a>
+        <a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="newItem(node)" style="margin-right: 8px;">
+            <span class="glyphicon glyphicon-plus"></span>
+        </a>
+    </div>
+    <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
+        <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
+        </li>
+    </ol>
+</script>

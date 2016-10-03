@@ -1,0 +1,18 @@
+<div class="modal-header">
+    <h3 class="modal-title">Configure your task</h3>
+</div>
+<div class="modal-body">
+    <form name="form">
+        <div>
+            <label for="elementId">What task reference choose?</label>
+            <select class="form-control" ng-required="true" ng-model="formData.elementId" name="elementId" id="elementId">
+                <option ng-repeat="element in elements" value="{{element.id}}">Task: "{{tasks[element.taskId].name}}", Scenario ID - {{element.id}}</option>
+            </select>
+            <form-errors field="form.elementId"></form-errors>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" type="button" ng-click="confirm(form)">Confirm</button>
+</div>
