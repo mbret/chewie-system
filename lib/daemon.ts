@@ -69,7 +69,7 @@ export class Daemon extends EventEmitter {
         this.localRepository        = new repositories.LocalRepository(this);
         this.repository             = new repositories.Repository(this);
         // Contain plugins by their names
-        this.plugins                = new Map();
+        // this.plugins                = new Map();
         // Contain modules by their names
         this.modules                = new Map();
         // Contain tasks by their id
@@ -268,21 +268,22 @@ export class Daemon extends EventEmitter {
                         // The packages will be required and each
                         // plugin is able to register some modules.
                         function(done2){
-                            self.logger.verbose('Load plugins...');
-                            self.pluginsHandler
-                                .loadPlugins(profileId, plugins)
-                                .then(function(plugins){
-                                    // first empty all runtime plugins
-                                    self.plugins.clear();
-                                    // Then attach all new created plugins
-                                    // plugins is a list of system plugin object that contains some info and the instance of plugin.
-                                    plugins.forEach(function(plugin){
-                                        self.logger.debug("Plugin %s correctly loaded", plugin.name);
-                                        self.plugins.set(plugin.getId(), plugin);
-                                    });
-                                    return done2();
-                                })
-                                .catch(done2);
+                            // self.logger.verbose('Load plugins...');
+                            // self.pluginsHandler
+                            //     .loadPlugins(profileId, plugins)
+                            //     .then(function(plugins){
+                            //         // first empty all runtime plugins
+                            //         self.plugins.clear();
+                            //         // Then attach all new created plugins
+                            //         // plugins is a list of system plugin object that contains some info and the instance of plugin.
+                            //         plugins.forEach(function(plugin){
+                            //             self.logger.debug("Plugin %s correctly loaded", plugin.name);
+                            //             self.plugins.set(plugin.getId(), plugin);
+                            //         });
+                            //         return done2();
+                            //     })
+                            //     .catch(done2);
+                            return done2();
                         },
 
                         // Now we need to initialize all modules that have been registered

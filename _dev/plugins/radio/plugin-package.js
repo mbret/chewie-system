@@ -1,11 +1,15 @@
+var myPackage = require("./package.json");
+
 module.exports = {
+
+    name: myPackage.name,
+    description: myPackage.description,
 
     modules: [
         {
             module: "./module.js",
             name: 'radio',
             type: 'task',
-
             options: [
                 {
                     name: 'radioName',
@@ -20,7 +24,6 @@ module.exports = {
                     required: true
                 }
             ],
-
             // This module has a support for output. It means that you can
             // specify several output actions for your task.
             outputSupport: true,
