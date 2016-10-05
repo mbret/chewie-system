@@ -7,10 +7,11 @@ module.exports = {
 
     modules: [
         {
+            id: "startRadio",
             module: "./module.js",
-            name: 'radio',
+            name: 'Start radio',
             type: 'task',
-            options: [
+            optionsConfig: [
                 {
                     name: 'radioName',
                     label: 'Radio',
@@ -24,22 +25,13 @@ module.exports = {
                     required: true
                 }
             ],
-            // This module has a support for output. It means that you can
-            // specify several output actions for your task.
-            outputSupport: true,
+        },
+        {
+            id: "stopRadio",
+            module: "./module.js",
+            name: 'Stop radio',
+            type: 'task',
+            optionsConfig: [],
         }
     ],
-
-    // Used as plugin options. Every modules
-    // may retrieve these options. They can be set in
-    // plugin page.
-    options: [
-        {
-            name: 'plugin.option1',
-            label: 'Plugin option',
-            type: 'text',
-            required: true,
-            default: 'Bar'
-        }
-    ]
 };

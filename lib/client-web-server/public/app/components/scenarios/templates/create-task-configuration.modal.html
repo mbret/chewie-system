@@ -3,13 +3,7 @@
 </div>
 <div class="modal-body">
     <form name="form">
-        <div>
-            <label for="elementId">What task reference choose?</label>
-            <select class="form-control" ng-required="true" ng-model="formData.elementId" name="elementId" id="elementId">
-                <option ng-repeat="element in elements" value="{{element.id}}">Task: "{{tasks[element.taskId].name}}", Scenario ID - {{element.id}}</option>
-            </select>
-            <form-errors field="form.elementId"></form-errors>
-        </div>
+        <module-form-options config-options="module.optionsConfig" ng-model="formData.options" prefix="1"></module-form-options>
     </form>
 </div>
 <div class="modal-footer">

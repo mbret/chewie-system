@@ -29,11 +29,13 @@ module.exports = function(server, router){
             .then(function(created) {
                 server.logger.verbose("Scenario %s created", created.id);
 
-                // Read the scenario
-                server.system.scenarioReader.readScenario(created)
-                    .catch(function(err) {
-                        server.logger.error("Unable to read scenario", err);
-                    });
+                setImmediate(function() {
+                    // Read the scenario
+                    server.system.scenarioReader.readScenario(created)
+                        .catch(function(err) {
+                            server.logger.error("Unable to read scenario", err);
+                        });
+                });
 
                 // Send response
                 return res.created(created);

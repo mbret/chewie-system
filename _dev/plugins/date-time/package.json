@@ -1,4 +1,8 @@
 {
   "name": "Date & Time",
-  "description": "Provide basic date and time schedule"
+  "description": "Provide basic date and time schedule",
+  "dependencies": {
+    "node-schedule": "^1.1.1",
+    "lodash": "^2.4.1"
+  }
 }

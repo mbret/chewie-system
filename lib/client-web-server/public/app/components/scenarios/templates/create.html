@@ -77,7 +77,7 @@
             <span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed }"></span>
         </a>
         <span ng-if="node.type === 'action'">Action {{node.configuration.action}}</span>
-        <span ng-if="node.type === 'task'">Scenario task {{node.element.id}}</span>
+        <span ng-if="node.type === 'task'">Task "{{tasks[node.taskId].name}}" from plugin "{{tasks[node.taskId].plugin.name}}"</span>
         <span ng-if="node.type === 'trigger'">Trigger {{node.configuration.method}}</span>
         <a class="pull-right btn btn-danger btn-xs" data-nodrag ng-click="remove(this)">
             <span class="glyphicon glyphicon-remove"></span>

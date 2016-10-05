@@ -24,7 +24,7 @@ var Bus                 = require(CORE_DIR + '/bus');
 var api                 = require(CORE_DIR + "/api");
 var ip  = require('ip');
 import * as ServerCommunication from "./core/server-communication/index";
-import {ScenarioReader} from "./core/scenario/reader";
+import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
 
 /**
