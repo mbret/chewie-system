@@ -14,7 +14,6 @@ module.exports = function(system, logger, done){
                             // retrieve date & time plugin info
                             system.localRepository.getPluginInfo("date-time")
                                 .then(function(info) {
-                                    console.log(info);
                                     // insert plugin in db
                                     return system.apiService.createOrUpdatePlugin(user.id, info.id, info);
                                 }),

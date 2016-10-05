@@ -7,12 +7,19 @@ module.exports = {
 
     modules: [
         {
+            id: "schedule",
             name: "Schedule",
             module: "./trigger.js",
             type: "trigger",
-            config: [
-
-            ]
+            optionsConfig: [
+                {
+                    name: "interval",
+                    label: "Interval",
+                    value: 10,
+                    type: "number"
+                }
+            ],
+            config: []
         }
-    ],
+    ]
 };

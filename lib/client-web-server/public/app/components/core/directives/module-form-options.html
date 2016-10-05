@@ -19,6 +19,11 @@
             <input id="{{fieldId}}" name="{{fieldId}}" type="password" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" />
         </div>
 
+        <!--number-->
+        <div ng-switch-when="number">
+            <input type="number" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" />
+        </div>
+
         <form-errors form="form" field="form[fieldId]"></form-errors>
     </div>
 </div>

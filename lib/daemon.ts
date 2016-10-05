@@ -24,6 +24,8 @@ var Bus                 = require(CORE_DIR + '/bus');
 var api                 = require(CORE_DIR + "/api");
 var ip  = require('ip');
 import * as ServerCommunication from "./core/server-communication/index";
+import {ScenarioReader} from "./core/scenario/reader";
+import {ModuleLoader} from "./core/plugins/modules/module-loader";
 
 /**
  * Daemon is the main program daemon.
@@ -37,6 +39,8 @@ export class Daemon extends EventEmitter {
     apiServer: ApiServer;
     config: any;
     serverSocketEventsListener: ServerCommunication.SocketEventsListener;
+    scenarioReader: ScenarioReader;
+    moduleLoader: ModuleLoader;
 
     constructor(configOverride){
         super();
@@ -68,6 +72,8 @@ export class Daemon extends EventEmitter {
         this.speechHandler          = new SpeechHandler();
         this.localRepository        = new repositories.LocalRepository(this);
         this.repository             = new repositories.Repository(this);
+        this.scenarioReader = new ScenarioReader(this);
+        this.moduleLoader = new ModuleLoader(this);
         // Contain plugins by their names
         // this.plugins                = new Map();
         // Contain modules by their names

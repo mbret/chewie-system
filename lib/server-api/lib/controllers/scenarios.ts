@@ -28,6 +28,14 @@ module.exports = function(server, router){
         ScenarioDao.create(scenario)
             .then(function(created) {
                 server.logger.verbose("Scenario %s created", created.id);
+
+                // Read the scenario
+                server.system.scenarioReader.readScenario(created)
+                    .catch(function(err) {
+                        server.logger.error("Unable to read scenario", err);
+                    });
+
+                // Send response
                 return res.created(created);
             })
             .catch(function(err) {
