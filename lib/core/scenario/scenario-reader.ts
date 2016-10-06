@@ -1,5 +1,4 @@
 "use strict";
-
 import {Daemon} from "../../daemon";
 
 export class ScenarioReader {
@@ -49,7 +48,7 @@ export class ScenarioReader {
             .resolve(self.getModuleInstance(scenario.userId, node.pluginId, node.triggerId))
             .then(function(data) {
                 self.logger.debug("Create a new demand for trigger module from plugin %s", data.plugin.id);
-                data.moduleInstance.onNewDemand(node.options, onTrigger);
+                data.container.instance.onNewDemand(node.options, onTrigger);
             })
             .catch(function(err) {
                 self.logger.error("Unable to read scenario", err);
@@ -69,8 +68,17 @@ export class ScenarioReader {
             .resolve(self.getModuleInstance(scenario.userId, node.pluginId, node.taskId))
             // Get plugin info
             .then(function(data) {
+                // add to global storage
+                self.system.modules.set(data.container.uniqueId, data.container);
                 self.logger.debug("Create a new demand for task module from plugin %s", data.plugin.id, node.options);
-                data.moduleInstance.onNewTask(node.options);
+                data.container.instance.run(node.options, onTaskEnd);
+
+                function onTaskEnd() {
+                    // remove from storage. At this point we do not have anymore reference of the instance in system
+                    // It's up to module to clean their stuff
+                    self.system.modules.delete(data.container.uniqueId);
+                    self.logger.debug("Task %s from plugin %s has been done and deleted from runtime storage", node.taskId, node.pluginId);
+                }
             })
             .catch(function(err) {
                 self.logger.error("Unable to read scenario", err);
@@ -92,10 +100,10 @@ export class ScenarioReader {
                 self.logger.debug("Load module instance from plugin %s", plugin.id);
                 return self.system.moduleLoader.loadModule(plugin, moduleId);
             })
-            .then(function(moduleInstance) {
+            .then(function(moduleContainer) {
                 return {
                     plugin: plugin,
-                    moduleInstance: moduleInstance
+                    container: moduleContainer
                 };
             });
     }

@@ -4,6 +4,7 @@ import {Daemon} from "../../daemon";
 import * as _ from "lodash";
 import * as path from "path"
 import {ModuleHelper} from "./module-helper";
+import {ModuleContainer} from "./module-container";
 
 export class ModuleLoader {
 
@@ -32,12 +33,12 @@ export class ModuleLoader {
 
         // now require the module
         var Module = require(modulePath);
-        var instance = new Module(new ModuleHelper(this.system, {moduleInfo}), moduleInfo);
+        var helper = new ModuleHelper(this.system, moduleInfo);
+        var instance = new Module(helper, moduleInfo);
 
-        this.system.modules.add(plugin.id + ":" + moduleInfo.id, {
-            instance: instance
-        });
+        // create container
+        var container = new ModuleContainer(this.system, plugin, moduleInfo, instance);
 
-        return Promise.resolve(instance);
+        return Promise.resolve(container);
     }
 }

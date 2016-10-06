@@ -11,7 +11,7 @@ import {TaskExecution} from "./core/plugins/tasks/task-execution";
 var WebServer           = require(LIB_DIR + '/client-web-server');
 var ConfigHandler       = require(CORE_DIR + '/config-handler');
 var SpeechHandler       = require(CORE_DIR + '/speech/speech-handler.js');
-var ModuleHandler       = require(CORE_DIR + '/plugins/modules').Handler;
+//var ModuleHandler       = require(CORE_DIR + '/plugins/modules').Handler;
 var NotificationService = require(CORE_DIR + '/notification-service');
 var taskQueue           = require('my-buddy-lib').taskQueue;
 var repositories        = require(CORE_DIR + '/repositories');
@@ -65,7 +65,7 @@ export class Daemon extends EventEmitter {
         this.apiServer              = new ApiServer(this);
         this.webServer              = new WebServer(this);
         this.pluginsHandler         = new PluginsHandler(this);
-        this.moduleHandler          = new ModuleHandler(this);
+        //this.moduleHandler          = new ModuleHandler(this);
         this.notificationService    = new NotificationService(this);
         this.apiService             = new api.ApiService(this);
         this.speaker                = new Speaker(this);
@@ -77,7 +77,7 @@ export class Daemon extends EventEmitter {
         // Contain plugins by their names
         // this.plugins                = new Map();
         // Contain modules by their names
-        this.modules                = new Map();
+        this.modules = new Map();
         // Contain tasks by their id
         this.executingTasks = new Map();
         this.bus                    = new Bus(this);
@@ -273,30 +273,29 @@ export class Daemon extends EventEmitter {
                         // load plugins into system
                         // The packages will be required and each
                         // plugin is able to register some modules.
-                        function(done2){
-                            // self.logger.verbose('Load plugins...');
-                            // self.pluginsHandler
-                            //     .loadPlugins(profileId, plugins)
-                            //     .then(function(plugins){
-                            //         // first empty all runtime plugins
-                            //         self.plugins.clear();
-                            //         // Then attach all new created plugins
-                            //         // plugins is a list of system plugin object that contains some info and the instance of plugin.
-                            //         plugins.forEach(function(plugin){
-                            //             self.logger.debug("Plugin %s correctly loaded", plugin.name);
-                            //             self.plugins.set(plugin.getId(), plugin);
-                            //         });
-                            //         return done2();
-                            //     })
-                            //     .catch(done2);
-                            return done2();
-                        },
+                        //function(done2){
+                        //     self.logger.verbose('Load plugins...');
+                        //     self.pluginsHandler
+                        //         .loadPlugins(profileId, plugins)
+                        //         .then(function(plugins){
+                        //             // first empty all runtime plugins
+                        //             self.plugins.clear();
+                        //             // Then attach all new created plugins
+                        //             // plugins is a list of system plugin object that contains some info and the instance of plugin.
+                        //             plugins.forEach(function(plugin){
+                        //                 self.logger.debug("Plugin %s correctly loaded", plugin.name);
+                        //                 self.plugins.set(plugin.getId(), plugin);
+                        //             });
+                        //             return done2();
+                        //         })
+                        //         .catch(done2);
+                        //},
 
                         // Now we need to initialize all modules that have been registered
-                        function(done){
-                            self.logger.debug('Initialize modules ...');
-                            self.moduleHandler.initializeModules(done);
-                        }
+                        //function(done){
+                        //    self.logger.debug('Initialize modules ...');
+                        //    self.moduleHandler.initializeModules(done);
+                        //}
                     ], function(err){
                         if(err){
                             return Promise.reject(err);

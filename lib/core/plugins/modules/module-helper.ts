@@ -1,8 +1,6 @@
-'use strict';
-import {Daemon} from "../../../daemon";
+"use strict";
 
-var _ = require('lodash');
-var util = require('util');
+import {Daemon} from "../../../daemon";
 
 export class ModuleHelper {
 
@@ -16,9 +14,7 @@ export class ModuleHelper {
         this.logger = this.system.logger.Logger.getLogger('ModuleHelper');
     }
 
-    getTasksFromMyPlugin() {
+    getActiveTasksFromMyPlugin() {
         var modules = this.system.modules.get(this.moduleInfo.plugin.id + ":" + this.moduleInfo.id);
     }
 }
-
-module.exports = ModuleHelper;
