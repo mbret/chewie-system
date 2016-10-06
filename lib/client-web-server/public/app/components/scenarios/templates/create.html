@@ -29,14 +29,14 @@
                 <div class="form-group">
                     <label for="{{formId}}.name">Name</label>
                     <div>
-                        <input type="text" id="{{formId}}.name" name="name" class="form-control" ng-required="true" ng-model="formData.name" />
+                        <input type="text" id="{{formId}}.name" name="name" class="form-control" ng-required="true" ng-model="formData.name" placeholder="ex: Week radio alarm clock" />
                         <form-errors field="form.name"></form-errors>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="{{formId}}.description">Description</label>
                     <div>
-                        <textarea name="description" id="{{formId}}.description" class="form-control" ng-model="formData.description"></textarea>
+                        <textarea name="description" id="{{formId}}.description" class="form-control" ng-model="formData.description" placeholder="ex: My new scenario..."></textarea>
                         <form-errors field="form.description"></form-errors>
                     </div>
                 </div>

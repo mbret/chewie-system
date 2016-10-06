@@ -1,44 +1,53 @@
 'use strict';
-var RuntimeProfileHook_1 = require("./hooks/RuntimeProfileHook");
+import {Daemon} from "./daemon";
+import {RuntimeProfileHook} from "./hooks/RuntimeProfileHook";
 var async = require('async');
 var util = require('util');
 var path = require('path');
 var DefaultTextToSpeechAdapter = require(CORE_DIR + '/speaker').DefaultTextToSpeechAdapter;
-var Bootstrap = (function () {
-    function Bootstrap(system) {
+
+export class Bootstrap {
+
+    system: Daemon;
+
+    constructor(system) {
         this.system = system;
     }
+
     /**
      *
      * @param done
      * @returns {undefined}
      */
-    Bootstrap.prototype.bootstrap = function (done) {
+    bootstrap(done) {
         var self = this;
         // register hooks
-        this.system.hooksToLoad.push(RuntimeProfileHook_1.RuntimeProfileHook);
+        this.system.hooksToLoad.push(RuntimeProfileHook);
+
         // run old bootstrap
-        return this._oldBootstrap(this.system, this.system.logger, function (err) {
+        return this._oldBootstrap(this.system, this.system.logger, function(err) {
             if (err) {
                 return done(err);
             }
+
             // load hooks
             self._loadHooks()
-                .then(function () {
-                return done();
-            })
-                .catch(function (err) {
-                return done(err);
-            });
+                .then(function() {
+                    return done();
+                })
+                .catch(function(err) {
+                    return done(err);
+                });
         });
-    };
-    Bootstrap.prototype._loadHooks = function () {
+    }
+
+    _loadHooks() {
         var self = this;
         var promises = [];
-        this.system.hooksToLoad.forEach(function (Module) {
+        this.system.hooksToLoad.forEach(function(Module) {
             var hook = new Module(self.system);
-            promises.push(new Promise(function (resolve, reject) {
-                hook.initialize(function (err) {
+            promises.push(new Promise(function(resolve, reject) {
+                hook.initialize(function(err) {
                     if (err) {
                         return reject(err);
                     }
@@ -46,89 +55,106 @@ var Bootstrap = (function () {
                 });
             }));
         });
+
         return Promise.all(promises);
-    };
-    Bootstrap.prototype._oldBootstrap = function (system, logger, bootstrapDone) {
+    }
+
+    _oldBootstrap(system, logger, bootstrapDone){
+
         async.series([
+
             // Use daemon as a bridge to pass some events
             // It may more easy to catch elsewhere
-            function (done) {
-                system.apiServer.on("initialized", function () { setImmediate(function () { system.emit('api-server:initialized'); }); });
+            function(done) {
+                system.apiServer.on("initialized", function() { setImmediate(function() { system.emit('api-server:initialized'); }) });
                 return done();
             },
+
             // We need the user to be loaded to initialize
             // because it load the user related config.
-            function (done) {
+            function(done){
                 return system.configHandler.initialize(done);
             },
+
             // Initialize api & web server.
-            function (done) {
+            function(done){
                 async.parallel([
                     // Start api server
-                    function (cb) {
+                    function(cb){
                         system.apiServer.initialize(cb);
                     },
                     // Start web server
-                    function (cb) {
+                    function(cb){
                         system.webServer.initialize(cb);
                     }
                 ], done);
             },
+
             // Initialize some final stuff
-            function (done) {
+            function(done){
                 async.parallel([
+
                     // Register default speaker adapter
                     // The speaker adapter is the bridge between system speaker class and hardware
                     // It is possible to not set an adapter (some system do not need it). In this case
                     // the speaker will always return fake sound that are completed and closed directly. It does not
                     // break code.
-                    function (cb) {
+                    function(cb){
                         var config = system.config.system.speakerAdapter;
-                        if (config === null) {
+                        if(config === null) {
                             logger.warn('No speaker adapter set. You will not have any audio output.');
                             return cb();
                         }
                         var SpeakerAdapter = config.module;
                         system.speaker.registerSpeakerAdapter(new SpeakerAdapter(system, config.options), cb);
                     },
+
                     // Register default text to speech adapter
                     // This adapter is supposed to transform text into sound file
-                    function (cb) {
+                    function(cb){
                         system.speaker.registerTextToSpeechAdapter(DefaultTextToSpeechAdapter, cb);
                     },
+
                     // Listen the orm events bus
                     // The orm bus act as a link to update runtime plugins/modules/etc whenever
                     // something in database is updated and should be reflected in runtime.
-                    function (cb) {
+                    function(cb){
+
                         // Listen for plugins update
                         // In this case we need to update the possible runtime plugins
-                        system.on('orm:plugins:updated', function (plugin) {
+                        system.on('orm:plugins:updated', function(plugin){
+
                             // check if a plugin with taht name (and belong to the user) is registered
-                            if (system.plugins.has(plugin.name) && system.runtimeHelper.profile.getActiveProfileId() === plugin.userId) {
+                            if(system.plugins.has(plugin.name) && system.runtimeHelper.profile.getActiveProfileId() === plugin.userId){
                                 // Then we need to update its user options
                                 system.plugins.get(plugin.name).setOptions(plugin.get('userOptions'));
                             }
                         });
+
                         // Listen for user update
                         // We need to update the active profile to keep for example the user config
                         // up to date.
-                        system.on('orm:user:updated', function (user) {
-                            if (system.runtimeHelper.profile.getActiveProfile().id === user.get('id')) {
+                        system.on('orm:user:updated', function(user){
+
+                            if(system.runtimeHelper.profile.getActiveProfile().id === user.get('id')){
                                 system.runtimeHelper.profile.setActiveProfile(user.toJSON());
                             }
                         });
+
                         return cb();
                     },
+
                     // Listen the communication bus
-                    function (cb) {
+                    function(cb) {
+
                         // Listen for new task being created
-                        system.bus.on('task:created', function (task) {
+                        system.bus.on('task:created', function(task) {
                             // Run task if a profile is loaded + check if task user = profile
                             // No need to be sync, task is ran in background
-                            if (system.runtimeHelper.profile.hasActiveProfile()) {
-                                system.runtimeHelper.registerTask(task, function (err) {
-                                    if (err) {
-                                        if (err.moduleNotLoaded) {
+                            if(system.runtimeHelper.profile.hasActiveProfile()){
+                                system.runtimeHelper.registerTask(task, function(err){
+                                    if(err){
+                                        if(err.moduleNotLoaded) {
                                             system.logger.warn(err.message);
                                         }
                                         else {
@@ -140,17 +166,18 @@ var Bootstrap = (function () {
                                 });
                             }
                         });
+
                         return cb();
                     },
-                    function (cb) {
+
+                    function(cb) {
                         system.serverSocketEventsListener.initialize(cb);
                     },
+
                 ], done);
             },
-        ], function (err) {
+        ], function(err){
             return bootstrapDone(err);
         });
-    };
-    return Bootstrap;
-}());
-exports.Bootstrap = Bootstrap;
+    }
+}

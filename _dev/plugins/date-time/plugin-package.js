@@ -31,7 +31,7 @@ module.exports = {
                     name: "interval",
                     label: "Interval",
                     value: 10,
-                    type: "number"
+                    type: "interval"
                 }
             ]
         },
@@ -45,7 +45,7 @@ module.exports = {
                     name: "timeout",
                     label: "Wait for",
                     value: null,
-                    type: "number",
+                    type: "interval",
                     required: true
                 },
             ]

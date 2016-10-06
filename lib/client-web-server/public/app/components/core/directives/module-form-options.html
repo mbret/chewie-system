@@ -24,6 +24,12 @@
             <input type="number" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" />
         </div>
 
+        <!--interval-->
+        <div ng-switch-when="interval">
+            <input type="number" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" />
+            {{options[configOption.name] | friendlyInterval}}
+        </div>
+
         <!--date-->
         <div ng-switch-when="date">
             <input type="date" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" />

@@ -59,9 +59,9 @@ class Module extends EventEmitter {
 
     _stopRadio() {
         var tasks = this.helper.getActiveTasksFromMyPlugin();
-        tasks.forEach(function(value, key) {
+        tasks.forEach(function(task) {
             // we stop the radio whatever the task type
-            tasks.stopRadio();
+            task.stopRadio();
         });
     }
 }

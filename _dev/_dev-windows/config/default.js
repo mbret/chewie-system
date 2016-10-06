@@ -18,7 +18,7 @@ module.exports = {
     database: {
         connexion: {
             storage: path.join(process.env.APP_ROOT_PATH, '.my-buddy/storage/db.sqlite'),
-            dropOnStartup: true
+            dropOnStartup: false
         }
     }
 };

@@ -1,21 +1,16 @@
 'use strict';
 
-import { EventEmitter }  from "events";
 var async               = require('async');
 var childProcess        = require('child_process');
 var _                   = require('lodash');
 var PluginsHandler      = require(CORE_DIR + '/plugins/plugins-handler.js');
 var Speaker             = require(CORE_DIR + '/speaker').Speaker;
-import {Server as ApiServer} from "./server-api";
-import {TaskExecution} from "./core/plugins/tasks/task-execution";
 var WebServer           = require(LIB_DIR + '/client-web-server');
 var ConfigHandler       = require(CORE_DIR + '/config-handler');
 var SpeechHandler       = require(CORE_DIR + '/speech/speech-handler.js');
-//var ModuleHandler       = require(CORE_DIR + '/plugins/modules').Handler;
 var NotificationService = require(CORE_DIR + '/notification-service');
 var taskQueue           = require('my-buddy-lib').taskQueue;
 var repositories        = require(CORE_DIR + '/repositories');
-var RuntimeHelper       = require(CORE_DIR + '/runtime-helper');
 var utils               = require('my-buddy-lib').utils;
 var path                = require('path');
 var packageInfo         = require(ROOT_DIR + '/package.json');
@@ -23,9 +18,16 @@ var Logger              = require('my-buddy-lib').logger.Logger;
 var Bus                 = require(CORE_DIR + '/bus');
 var api                 = require(CORE_DIR + "/api");
 var ip  = require('ip');
+import { EventEmitter }  from "events";
 import * as ServerCommunication from "./core/server-communication/index";
 import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
+import {Bootstrap} from "./bootstrap";
+import {RuntimeHelper} from "./core/runtime-helper";
+import {ModuleContainer} from "./core/plugins/modules/module-container";
+import {Server as ApiServer} from "./server-api";
+import {TaskExecution} from "./core/plugins/tasks/task-execution";
+import {Hook, HookConstructor} from "./core/hook";
 
 /**
  * Daemon is the main program daemon.
@@ -34,13 +36,15 @@ import {ModuleLoader} from "./core/plugins/modules/module-loader";
 export class Daemon extends EventEmitter {
 
     executingTasks: Map<string, TaskExecution>;
-    modules: Map<string, any>;
+    modules: Map<string, ModuleContainer>;
     runtimeHelper: RuntimeHelper;
     apiServer: ApiServer;
     config: any;
     serverSocketEventsListener: ServerCommunication.SocketEventsListener;
     scenarioReader: ScenarioReader;
     moduleLoader: ModuleLoader;
+    hooksToLoad: Array<HookConstructor>;
+    logger: any;
 
     constructor(configOverride){
         super();
@@ -65,7 +69,6 @@ export class Daemon extends EventEmitter {
         this.apiServer              = new ApiServer(this);
         this.webServer              = new WebServer(this);
         this.pluginsHandler         = new PluginsHandler(this);
-        //this.moduleHandler          = new ModuleHandler(this);
         this.notificationService    = new NotificationService(this);
         this.apiService             = new api.ApiService(this);
         this.speaker                = new Speaker(this);
@@ -74,13 +77,12 @@ export class Daemon extends EventEmitter {
         this.repository             = new repositories.Repository(this);
         this.scenarioReader = new ScenarioReader(this);
         this.moduleLoader = new ModuleLoader(this);
-        // Contain plugins by their names
-        // this.plugins                = new Map();
         // Contain modules by their names
         this.modules = new Map();
         // Contain tasks by their id
         this.executingTasks = new Map();
-        this.bus                    = new Bus(this);
+        this.hooksToLoad = [];
+        this.bus = new Bus(this);
     }
 
     init(cb) {
@@ -116,7 +118,10 @@ export class Daemon extends EventEmitter {
             self.logger.info('The system is restarting');
         });
 
-        this._bootstrap(function(err){
+        // listen and forward some core events
+        this.runtimeHelper.profileManager.on("profile:start", this.emit.bind(this, "profile:start"));
+
+        this.runBootstrap(function(err){
             if(err){
                 errorOnStartup(err);
                 return;
@@ -134,10 +139,8 @@ export class Daemon extends EventEmitter {
                 self.playSystemSound('profile_loaded.wav');
             });
 
-            self._attachProfileEventsTasks();
-
             // Try to start profile if one is defined on startup
-            var profileToLoad = self.getConfig().profileToLoadOnStartup;
+            var profileToLoad = self.config.profileToLoadOnStartup;
             if(profileToLoad) {
                 self.runtimeHelper.profile.startProfile(profileToLoad)
                     .then(function(){
@@ -191,10 +194,6 @@ export class Daemon extends EventEmitter {
         });
     }
 
-    getConfig(){
-        return this.configHandler.getSystemConfig();
-    }
-
     _onUnexpectedError(error){
         // kill speaker to avoid having phantom sounds if system crash
         this.speaker.kill();
@@ -202,187 +201,59 @@ export class Daemon extends EventEmitter {
         process.exit(1);
     }
 
-    _bootstrap(done){
-        var self = this;
-        // get user bootstrap if it exist
-        var userBootstrap = function(a,b,c){return c()};
-        try{
-            userBootstrap = require(process.env.APP_ROOT_PATH + '/bootstrap.js');
-        }
-        catch(e){}
-
-        async.series([
-            function(cb){
-                require('./bootstrap')(self, self.logger, cb);
-            },
-            function(cb){
-                self.logger.debug('Run user bootstrap');
-                userBootstrap(self, self.logger, cb);
-            }
-        ], function(err){
-            // I do not know why but a bug with bluebird make promise in userBootstrap catch uncaughtException
-            // that may occurs later in sequentially code which trigger the cb passed twice ... We also lost trace for real uncaughtException error
-            setImmediate(function(){
-                return done(err);
-            });
-        });
-    }
-
     /**
-     * Its better to handle both start and stop event here to have one place to manage run/clean up task.
-     * @private
+     * Run the core bootstrap then the user bootstrap if it exist.
+     * @param done
      */
-    _attachProfileEventsTasks() {
+    runBootstrap(done){
         var self = this;
 
-        // on new profile to start register some stuff
-        taskQueue.register('profile:start', function(cb){
+        // run core bootstrap
+        self.logger.debug("Run system bootstrap...");
+        var bootstrap = new Bootstrap(this);
+        bootstrap.bootstrap(function(err) {
+            if (err) {
+                return done(err);
+            }
 
-            var profileId = self.runtimeHelper.profile.getActiveProfile().id;
-            var plugins = null;
-            var tasks   = null;
-
-            // get plugins
-            self.apiService.findAllPluginsByUser(profileId)
-                .then(function(data){
-                    plugins = data;
-                    return plugins;
-                })
-                // get tasks
-                // .then(function(){
-                //     return self.apiService.findAllTasksByUser(profileId)
-                //         .then(function(data){
-                //             tasks = data;
-                //             return tasks;
-                //         });
-                // })
-                .then(function(){
-                    async.series([
-
-                        // Synchronize plugins
-                        // download the plugins if not exist
-                        function(done2){
-                            self.logger.verbose('Synchronizing plugins..');
-                            self.repository.synchronize(plugins)
-                                .then(function(){
-                                    return done2();
-                                })
-                                .catch(done2);
-                        },
-
-                        // load plugins into system
-                        // The packages will be required and each
-                        // plugin is able to register some modules.
-                        //function(done2){
-                        //     self.logger.verbose('Load plugins...');
-                        //     self.pluginsHandler
-                        //         .loadPlugins(profileId, plugins)
-                        //         .then(function(plugins){
-                        //             // first empty all runtime plugins
-                        //             self.plugins.clear();
-                        //             // Then attach all new created plugins
-                        //             // plugins is a list of system plugin object that contains some info and the instance of plugin.
-                        //             plugins.forEach(function(plugin){
-                        //                 self.logger.debug("Plugin %s correctly loaded", plugin.name);
-                        //                 self.plugins.set(plugin.getId(), plugin);
-                        //             });
-                        //             return done2();
-                        //         })
-                        //         .catch(done2);
-                        //},
-
-                        // Now we need to initialize all modules that have been registered
-                        //function(done){
-                        //    self.logger.debug('Initialize modules ...');
-                        //    self.moduleHandler.initializeModules(done);
-                        //}
-                    ], function(err){
-                        if(err){
-                            return Promise.reject(err);
-                        }
-
-                        // for now end process now
-                        // and process task in another background
-                        cb();
-
-                        // setImmediate(function(){
-                        //     self.logger.debug('Process user stored tasks');
-                        //
-                        //     // pass all tasks presents in config + db
-                        //     _.forEach(tasks, function(task){
-                        //
-                        //         // No need to save again, just register.
-                        //         self.runtimeHelper.registerTask(task, function(err){
-                        //             if(err){
-                        //                 self.logger.warn("An error occurred when registering the task " + task.id + " => " + err);
-                        //             }
-                        //         });
-                        //
-                        //     });
-                        //
-                        // });
-                    });
-                })
-                .catch(cb);
+            // run user bootstrap if exist
+            var UserBootstrapModule = null;
+            try{
+                UserBootstrapModule = require(process.env.APP_ROOT_PATH + '/bootstrap.js');
+            } catch (err) {}
+            if (UserBootstrapModule) {
+                self.logger.debug("A user bootstrap has been found, run it");
+                var userBootstrap = new UserBootstrapModule(self);
+                userBootstrap.bootstrap(done);
+            }
         });
 
-        // On current profile to stop
-        taskQueue.register('profile:stop', function(cb){
-
-            var activeProfile = self.runtimeHelper.profile.getActiveProfile().id;
-
-            var tasksIds = Array.from(self.tasksMap.keys());
-
-            // Clean up tasks
-            async.map(tasksIds, function(id, cbTask){
-                self.logger.debug('clean up task %s', id);
-                self.runtimeHelper.unregisterTask(id);
-                return cbTask();
-            }, function(err){
-                if(err) {
-                    return cb(err);
-                }
-                async.parallel([
-                    // clean up screen modules
-                    function(cb2) {
-                        self.logger.debug('Cleaning and destroying screens modules ...');
-                        async.each(self.modules.values(), function(container, cb) {
-                            self.webServer.destroyScreen(container, cb);
-                        }, cb2);
-                    },
-                    // clean up modules
-                    function(cb2) {
-                        var promises = [];
-                        for (let module of self.modules) {
-                            self.logger.verbose("Destroying module %s", module.name);
-                            promises.push(module.destroy());
-                        }
-                        Promise.all(promises)
-                            .then(function() {
-                                self.logger.verbose("All modules has been destroyed");
-                                self.modules.clear();
-                                cb2();
-                            })
-                            .catch(function() { cb2(); });
-                    },
-                    // clean up plugins
-                    function(cb2) {
-                        self.plugins.clear();
-                        return cb2();
-                    }
-                ], cb);
-            });
-        });
+        // I do not know why but a bug with bluebird make promise in userBootstrap catch uncaughtException
+        // that may occurs later in sequentially code which trigger the cb passed twice ... We also lost trace for real uncaughtException error
+        // setImmediate(function(){
+        //     return done(err);
+        // });
     }
 
     /**
      * @check C:\Windows\Media\Garden
-     * @param file
+     * @param {string} file
      */
-    playSystemSound(file){
+    playSystemSound(file: string){
         if(this.configHandler.getConfig().playSystemSounds){
             return this.speaker.playFile(this.configHandler.getConfig().resourcesDir + '/system/' + file);
         }
+    }
+
+    /**
+     * Register a synchronized task
+     * Example of available events: shutdown, ...
+     *
+     * @param event
+     * @param cb
+     */
+    registerTask(event: string, cb: Function) {
+        taskQueue.register(event, cb);
     }
 }
 

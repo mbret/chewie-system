@@ -1,10 +1,10 @@
 "use strict";
 
-import {Daemon} from "../../daemon";
 import * as _ from "lodash";
 import * as path from "path"
 import {ModuleHelper} from "./module-helper";
 import {ModuleContainer} from "./module-container";
+import {Daemon} from "../../../daemon";
 
 export class ModuleLoader {
 
@@ -16,9 +16,9 @@ export class ModuleLoader {
         this.logger = this.system.logger.Logger.getLogger('ModuleLoader');
     }
 
-    loadModule(plugin, moduleId) {
+    loadModule(plugin: any, moduleId) {
         // get module info
-        var moduleInfo = _.find(plugin.modules, function(module) {
+        var moduleInfo = _.find(plugin.modules, function(module: any) {
             return module.id === moduleId;
         });
 
@@ -31,13 +31,13 @@ export class ModuleLoader {
             modulePath = path.resolve(pluginAbsolutePath, modulePath);
         }
 
+        // create container
+        var container = new ModuleContainer(this.system, plugin, moduleInfo, null);
+
         // now require the module
         var Module = require(modulePath);
-        var helper = new ModuleHelper(this.system, moduleInfo);
-        var instance = new Module(helper, moduleInfo);
-
-        // create container
-        var container = new ModuleContainer(this.system, plugin, moduleInfo, instance);
+        var helper = new ModuleHelper(this.system, container);
+        container.instance = new Module(helper, moduleInfo);
 
         return Promise.resolve(container);
     }

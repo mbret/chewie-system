@@ -9,7 +9,7 @@ var taskQueue = require('my-buddy-lib').taskQueue;
 var ProfileManager = require(CORE_DIR + '/profile-manager');
 var util = require("util");
 
-class RuntimeHelper {
+export class RuntimeHelper {
 
     system: Daemon;
 
@@ -193,5 +193,3 @@ class RuntimeHelper {
         taskExecution.stop();
     }
 }
-
-module.exports = RuntimeHelper;

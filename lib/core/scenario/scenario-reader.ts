@@ -20,8 +20,11 @@ export class ScenarioReader {
         this.logger.debug("Read scenario %s", scenario.id);
 
         // execute each node
-        this.readNodes(scenario, scenario.nodes, { lvl: -1 });
-        return Promise.resolve();
+        return this.readNodes(scenario, scenario.nodes, { lvl: -1 })
+            .catch(function(err) {
+                self.logger.error("An error occurred while reading scenario %s", scenario.name);
+                throw err;
+            });
     }
 
     readNodes(scenario: any, nodes: any[], options: any) {
@@ -29,6 +32,8 @@ export class ScenarioReader {
         nodes.forEach(function(node) {
             self.readNode(scenario, node, { lvl: options.lvl + 1 });
         });
+
+        return Promise.resolve();
     }
 
     readNode(scenario: any, node: any, options: any) {
@@ -51,11 +56,12 @@ export class ScenarioReader {
                 data.container.instance.onNewDemand(node.options, onTrigger);
             })
             .catch(function(err) {
-                self.logger.error("Unable to read scenario", err);
+                self.logger.error("An error occurred during scenario reading", err);
+                throw err;
             });
 
         function onTrigger() {
-            console.log("trigger execution", node.options, options);
+            self.logger.debug("trigger execution", node.options, options);
             self.readNodes(scenario, node.nodes, options);
         }
     }
