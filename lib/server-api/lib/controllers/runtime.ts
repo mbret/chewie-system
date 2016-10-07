@@ -210,4 +210,16 @@ module.exports = function(server, router){
     //         })
     //         .catch(res.serverError);
     // });
+
+    /**
+     *
+     */
+    router.get("/runtime/scenarios", function(req, res) {
+        var scenarios = [];
+        server.system.runtime.scenarios.forEach(function(value) {
+            scenarios.push(value);
+        });
+
+        return res.ok(scenarios);
+    });
 };

@@ -35,6 +35,9 @@
                         <div class="panel-body">
                             <strong>Created:</strong> {{scenario.createdAt | date}}<br>
                             <strong>Description</strong> {{scenario.description}}<br>
+                            <hr>
+                            <button ng-if="scenario.active">Deactivate scenario</button>
+                            <button ng-if="!scenario.active">Activate scenario</button>
                         </div>
                     </uib-tab>
                 </uib-tabset>

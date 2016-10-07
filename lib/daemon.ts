@@ -23,7 +23,7 @@ import * as ServerCommunication from "./core/server-communication/index";
 import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
 import {Bootstrap} from "./bootstrap";
-import {RuntimeHelper} from "./core/runtime-helper";
+import {Runtime} from "./core/runtime";
 import {ModuleContainer} from "./core/plugins/modules/module-container";
 import {Server as ApiServer} from "./server-api";
 import {TaskExecution} from "./core/plugins/tasks/task-execution";
@@ -37,7 +37,7 @@ export class Daemon extends EventEmitter {
 
     executingTasks: Map<string, TaskExecution>;
     modules: Map<string, ModuleContainer>;
-    runtimeHelper: RuntimeHelper;
+    runtime: Runtime;
     apiServer: ApiServer;
     config: any;
     serverSocketEventsListener: ServerCommunication.SocketEventsListener;
@@ -64,7 +64,7 @@ export class Daemon extends EventEmitter {
         };
         // Used to handle running profile / tasks / etc
         this.serverSocketEventsListener = new ServerCommunication.SocketEventsListener(this);
-        this.runtimeHelper          = new RuntimeHelper(this);
+        this.runtime = this.runtimeHelper = new Runtime(this);
         this.configHandler          = new ConfigHandler(this, configOverride);
         this.apiServer              = new ApiServer(this);
         this.webServer              = new WebServer(this);

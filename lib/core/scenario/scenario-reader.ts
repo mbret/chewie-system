@@ -12,17 +12,25 @@ export class ScenarioReader {
     }
 
     /**
-     * Read a scenario from data
+     * Read a scenario from data.
+     * Scenario once read are never removed from runtime, even if it is done.
+     * It could be occurs when a trigger is one-time. A scenario is either active or inactive.
+     *
      * @param scenario
      */
     readScenario(scenario) {
         var self = this;
         this.logger.debug("Read scenario %s", scenario.id);
 
+        // register scenario in runtime
+        // it prevent running more than once and also help dealing through the system
+        this.system.runtime.scenarios.set(scenario.id, scenario);
+
         // execute each node
         return this.readNodes(scenario, scenario.nodes, { lvl: -1 })
             .catch(function(err) {
                 self.logger.error("An error occurred while reading scenario %s", scenario.name);
+                self.system.runtime.scenarios.delete(scenario.name);
                 throw err;
             });
     }

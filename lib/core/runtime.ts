@@ -9,15 +9,17 @@ var taskQueue = require('my-buddy-lib').taskQueue;
 var ProfileManager = require(CORE_DIR + '/profile-manager');
 var util = require("util");
 
-export class RuntimeHelper {
+export class Runtime {
 
     system: Daemon;
+    scenarios: Map<string, any>;
 
     constructor(system: Daemon){
-        this.logger = system.logger.Logger.getLogger('RuntimeHelper');
+        this.logger = system.logger.Logger.getLogger('Runtime');
         this.system = system;
         this.profileManager = new ProfileManager(system);
         this.profile = this.profileManager;
+        this.scenarios = new Map();
     }
 
     initialize(cb) {
