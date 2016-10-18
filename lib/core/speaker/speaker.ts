@@ -5,7 +5,6 @@ import {Daemon} from "../../daemon";
 import {EventEmitter} from "events";
 var Mplayer = require("./mplayer");
 var path = require("path");
-const Flowrida = require('flowrida');
 
 /**
  * This fake sound is used when adapter is not available or not working.
@@ -51,38 +50,19 @@ export class Speaker {
     logger: any;
     currentInstance: any;
 
-    constructor(system){
+    constructor(system) {
         var self = this;
         this.system = system;
         this.logger = this.system.logger.Logger.getLogger('Speaker');
-
-        // Adapter used to play sound file on speaker
-        //this.speakerAdapter = null;
 
         // Adapter used to convert text to sound file
         this.textToSpeechAdapter = null;
         this.currentInstance = null;
     }
 
-    //setAdapter(adapter){
-    //    this.speakerAdapter = adapter;
-    //}
-
     setTextToSpeechAdapter(textToSpeechAdapter) {
         this.textToSpeechAdapter = textToSpeechAdapter;
     }
-
-    //registerSpeakerAdapter(adapter, cb) {
-    //    var self = this;
-    //    adapter.initialize(function(err){
-    //        if(err){
-    //            return cb(err);
-    //        }
-    //        self.setAdapter(adapter);
-    //
-    //        return cb();
-    //    });
-    //}
 
     registerTextToSpeechAdapter(Adapter, cb) {
         var self = this;
@@ -106,9 +86,8 @@ export class Speaker {
      */
     playFile(filename, options = {}) {
         var self = this;
-        var delay = options.delay || 0;
         var filename = filename.replace(new RegExp('\\' + path.sep, 'g'), '/');
-        var instance = new SpeakerInstance(new Mplayer());
+        var instance = new SpeakerInstance(new Mplayer({debug: false, args: "-ao win32"}));
         this.logger.debug("File %s requested to play", filename);
 
         instance.once("stop", function() {

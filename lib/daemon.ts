@@ -1,4 +1,3 @@
-import {PluginContainer} from "./core/plugins/plugin-container";
 'use strict';
 
 var async               = require('async');
@@ -6,7 +5,6 @@ var childProcess        = require('child_process');
 var _                   = require('lodash');
 var PluginsHandler      = require(CORE_DIR + '/plugins/plugins-handler.js');
 var WebServer           = require(LIB_DIR + '/client-web-server');
-var ConfigHandler       = require(CORE_DIR + '/config-handler');
 var SpeechHandler       = require(CORE_DIR + '/speech/speech-handler.js');
 var NotificationService = require(CORE_DIR + '/notification-service');
 var taskQueue           = require('my-buddy-lib').taskQueue;
@@ -69,7 +67,6 @@ export class Daemon extends EventEmitter {
         // Used to handle running profile / tasks / etc
         this.serverSocketEventsListener = new ServerCommunication.SocketEventsListener(this);
         this.runtime = this.runtimeHelper = new Runtime(this);
-        this.configHandler          = new ConfigHandler(this, configOverride);
         this.apiServer              = new ApiServer(this);
         this.webServer              = new WebServer(this);
         this.pluginsHandler         = new PluginsHandler(this);
@@ -276,6 +273,8 @@ Daemon.start = function(userConfig, cb){
 
     // Set some config now (only possible during runtime or when forced)
     config.system.pluginsTmpDir = config.system.pluginsTmpDir || path.resolve(config.system.tmpDir, 'plugins');
+    config.system.pluginsDataDir = config.system.pluginsDataDir || path.resolve(config.system.dataDir, 'plugins');
+    config.system.synchronizedPluginsDir = config.system.synchronizedPluginsDir || path.resolve(config.system.dataDir, 'synchronized-plugins');
     config.realIp = ip.address();
     config.apiEndpointAddress = config.apiEndpointAddress || "https://" + (config.realIp + ':' + config.apiPort);
 

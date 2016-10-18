@@ -5,12 +5,14 @@ var async = require('async');
 var util = require('util');
 var path = require('path');
 var DefaultTextToSpeechAdapter = require(CORE_DIR + '/speaker').DefaultTextToSpeechAdapter;
+var self = this;
 
 export class Bootstrap {
 
     system: Daemon;
 
     constructor(system) {
+        self = this;
         this.system = system;
     }
 
@@ -20,27 +22,32 @@ export class Bootstrap {
      * @returns {undefined}
      */
     bootstrap(done) {
-        var self = this;
+
         // register hooks
         this.system.hooksToLoad.push(RuntimeProfileHook);
 
-        // run old bootstrap
-        return this._oldBootstrap(this.system, this.system.logger, function(err) {
-            if (err) {
-                return done(err);
-            }
-
-            // load hooks
-            self._loadHooks()
-                .then(function() {
-                    return done();
-                })
-                .catch(function(err) {
-                    return done(err);
-                });
-        });
+        Promise
+            .all([
+                new Promise(function(resolve, reject) {
+                    // run old bootstrap
+                    self._oldBootstrap(self.system, self.system.logger, function(err) {
+                        if (err) {
+                            return reject(err);
+                        }
+                        return resolve();
+                    });
+                }),
+                self._loadHooks()
+            ])
+            .then(done.bind(self, null))
+            .catch(done);
     }
 
+    /**
+     *
+     * @returns {any}
+     * @private
+     */
     _loadHooks() {
         var self = this;
         var promises = [];
@@ -68,12 +75,6 @@ export class Bootstrap {
             function(done) {
                 system.apiServer.on("initialized", function() { setImmediate(function() { system.emit('api-server:initialized'); }) });
                 return done();
-            },
-
-            // We need the user to be loaded to initialize
-            // because it load the user related config.
-            function(done){
-                return system.configHandler.initialize(done);
             },
 
             // Initialize api & web server.

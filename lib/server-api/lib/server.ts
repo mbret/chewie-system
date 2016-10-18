@@ -52,7 +52,7 @@ export class Server extends EventEmitter {
 
     _startServer(cb){
         var self = this;
-        var port = self.system.configHandler.getConfig().apiPort;
+        var port = self.system.config.apiPort;
         var credentials = {key: privateKey, cert: certificate};
 
         this.server = https.createServer(credentials, app);

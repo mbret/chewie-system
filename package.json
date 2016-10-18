@@ -46,6 +46,7 @@
     "moment": "^2.15.0",
     "mpg123": "^0.2.1",
     "my-buddy-lib": "git+https://github.com/my-buddy/lib.git",
+    "node-mpv": "^0.11.0",
     "node-schedule": "^1.1.1",
     "npm": "^3.10.8",
     "passport": "^0.3.2",
