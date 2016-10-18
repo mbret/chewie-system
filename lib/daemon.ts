@@ -1,10 +1,10 @@
+import {PluginContainer} from "./core/plugins/plugin-container";
 'use strict';
 
 var async               = require('async');
 var childProcess        = require('child_process');
 var _                   = require('lodash');
 var PluginsHandler      = require(CORE_DIR + '/plugins/plugins-handler.js');
-var Speaker             = require(CORE_DIR + '/speaker').Speaker;
 var WebServer           = require(LIB_DIR + '/client-web-server');
 var ConfigHandler       = require(CORE_DIR + '/config-handler');
 var SpeechHandler       = require(CORE_DIR + '/speech/speech-handler.js');
@@ -28,6 +28,8 @@ import {ModuleContainer} from "./core/plugins/modules/module-container";
 import {Server as ApiServer} from "./server-api";
 import {TaskExecution} from "./core/plugins/tasks/task-execution";
 import {Hook, HookConstructor} from "./core/hook";
+import {PluginLoader} from "./core/plugins/plugin-loader";
+import {Speaker} from "./core/speaker/speaker";
 
 /**
  * Daemon is the main program daemon.
@@ -43,8 +45,10 @@ export class Daemon extends EventEmitter {
     serverSocketEventsListener: ServerCommunication.SocketEventsListener;
     scenarioReader: ScenarioReader;
     moduleLoader: ModuleLoader;
+    pluginLoader: PluginLoader;
     hooksToLoad: Array<HookConstructor>;
     logger: any;
+    speaker: Speaker;
 
     constructor(configOverride){
         super();
@@ -77,6 +81,7 @@ export class Daemon extends EventEmitter {
         this.repository             = new repositories.Repository(this);
         this.scenarioReader = new ScenarioReader(this);
         this.moduleLoader = new ModuleLoader(this);
+        this.pluginLoader = new PluginLoader(this);
         // Contain modules by their names
         this.modules = new Map();
         // Contain tasks by their id
@@ -145,11 +150,6 @@ export class Daemon extends EventEmitter {
                 self.runtimeHelper.profile.startProfile(profileToLoad)
                     .then(function(){
                         self.logger.info("Profile %s has been started", profileToLoad);
-
-                        //var md = self.modules.get("keypress-trigger:keypress-trigger");
-                        //md.newTrigger({}, function() {
-                        //    console.log("coucou");
-                        //});
                     })
                     .catch(errorOnStartup);
             }
@@ -236,13 +236,13 @@ export class Daemon extends EventEmitter {
     }
 
     /**
+     * Helper for system sounds
      * @check C:\Windows\Media\Garden
      * @param {string} file
+     * @param {object} options
      */
-    playSystemSound(file: string){
-        if(this.configHandler.getConfig().playSystemSounds){
-            return this.speaker.playFile(this.configHandler.getConfig().resourcesDir + '/system/' + file);
-        }
+    playSystemSound(file: string, options: any){
+        return this.speaker.playFile(path.join(this.config.resourcesDir, 'system', file), options);
     }
 
     /**

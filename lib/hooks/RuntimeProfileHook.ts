@@ -18,6 +18,9 @@ export class RuntimeProfileHook implements Hook {
 
     initialize(done: Function) {
 
+        /**
+         * Listen for new profile start.
+         */
         this.system.on("profile:start", function(profile) {
 
             var plugins = null;
@@ -32,6 +35,21 @@ export class RuntimeProfileHook implements Hook {
                     plugins = data;
                     self.system.logger.verbose('Synchronizing plugins..');
                     return self.system.repository.synchronize(plugins)
+                })
+                // Load the plugins
+                .then(function() {
+                    self.system.logger.verbose('Loding plugins..');
+                    var promises = [];
+                    plugins.forEach(function(plugin) {
+                        promises.push(self.system.pluginLoader
+                            .load(plugin)
+                            .then(function(container) {
+                                // add to global storage
+                                self.system.runtime.plugins.set(container.plugin.id, container);
+                                return Promise.resolve();
+                            }));
+                    });
+                    return Promise.all(promises);
                 })
                 // Now fetch all scenario
                 .then(function() {

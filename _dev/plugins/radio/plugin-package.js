@@ -4,7 +4,7 @@ module.exports = {
 
     name: myPackage.name,
     description: myPackage.description,
-
+    bootstrap: "./bootstrap.js",
     modules: [
         {
             id: "startRadio",

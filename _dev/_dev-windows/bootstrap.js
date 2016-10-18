@@ -1,5 +1,7 @@
 "use strict";
 
+var _ = require("lodash");
+
 module.exports = class Bootstrap {
 
     constructor(system) {
@@ -22,7 +24,7 @@ module.exports = class Bootstrap {
                                     .getPluginInfo("date-time")
                                     // insert plugin in db
                                     .then(function(info) {
-                                        return system.apiService.createOrUpdatePlugin(user.id, info.id, info);
+                                        return system.apiService.createOrUpdatePlugin(user.id, info.id, _.merge(info, {config: info}));
                                     }),
 
                                 // retrieve radio plugin info
@@ -30,7 +32,7 @@ module.exports = class Bootstrap {
                                     .getPluginInfo("radio")
                                     // insert plugin
                                     .then(function(info){
-                                        return system.apiService.createOrUpdatePlugin(user.id, info.id, info);
+                                        return system.apiService.createOrUpdatePlugin(user.id, info.id, _.merge(info, {config: info}));
                                     })
                             ])
                             .then(function() {

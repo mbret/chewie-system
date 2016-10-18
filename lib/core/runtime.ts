@@ -13,6 +13,7 @@ export class Runtime {
 
     system: Daemon;
     scenarios: Map<string, any>;
+    plugins: Map<string, PluginContainer>;
 
     constructor(system: Daemon){
         this.logger = system.logger.Logger.getLogger('Runtime');
@@ -20,6 +21,7 @@ export class Runtime {
         this.profileManager = new ProfileManager(system);
         this.profile = this.profileManager;
         this.scenarios = new Map();
+        this.plugins = new Map();
     }
 
     initialize(cb) {

@@ -32,7 +32,7 @@ export class ModuleLoader {
         }
 
         // create container
-        var container = new ModuleContainer(this.system, plugin, moduleInfo, null);
+        var container = new ModuleContainer(this.system, this.system.runtime.plugins.get(plugin.id), moduleInfo, null);
 
         // now require the module
         var Module = require(modulePath);

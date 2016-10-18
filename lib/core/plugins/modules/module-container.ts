@@ -1,22 +1,26 @@
 "use strict";
 
 import {Daemon} from "../../../daemon";
+import {PluginContainer} from "../plugin-container";
+import * as uuid from "node-uuid";
 
 export class ModuleContainer {
 
     system: Daemon;
-    plugin: any;
+    pluginContainer: PluginContainer;
     module: any;
     instance: any;
     uniqueId: string;
     logger: any;
 
-    constructor(system, plugin, moduleInfo, instance){
+    constructor(system, pluginContainer, moduleInfo, instance){
         this.system = system;
         this.logger = this.system.logger.Logger.getLogger('ModuleContainer');
-        this.uniqueId = this.getModuleUniqueId(plugin.id, moduleInfo.id);
+        this.uniqueId = this.getModuleUniqueId(pluginContainer.plugin.id, moduleInfo.id);
+        // runtime id
+        this.id = uuid.v4();
         this.instance = instance;
-        this.plugin = plugin;
+        this.pluginContainer = pluginContainer;
         this.module = moduleInfo;
     }
 

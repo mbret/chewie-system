@@ -54,9 +54,9 @@
                         <span class="btn btn-default" ng-if="element.type === 'task'">Task: "{{tasks[element.taskId].name}}", Scenario ID - {{element.id}}</span>
                     </span>
                 </p>
-                <p>
-                    <button class="btn btn-default" type="button" ng-click="addNewTaskRef()"><i class="fa fa-plus"></i> Include a new task reference</button>
-                </p>
+                <!--<p>-->
+                    <!--<button class="btn btn-default" type="button" ng-click="addNewTaskRef()"><i class="fa fa-plus"></i> Include a new task reference</button>-->
+                <!--</p>-->
                 <div ui-tree="treeOptions" id="tree-root">
                     <ol ui-tree-nodes ng-model="formData.nodes">
                         <li ng-repeat="node in formData.nodes" ui-tree-node ng-include="'nodes_renderer.html'"></li>

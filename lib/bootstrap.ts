@@ -99,15 +99,15 @@ export class Bootstrap {
                     // It is possible to not set an adapter (some system do not need it). In this case
                     // the speaker will always return fake sound that are completed and closed directly. It does not
                     // break code.
-                    function(cb){
-                        var config = system.config.system.speakerAdapter;
-                        if(config === null) {
-                            logger.warn('No speaker adapter set. You will not have any audio output.');
-                            return cb();
-                        }
-                        var SpeakerAdapter = config.module;
-                        system.speaker.registerSpeakerAdapter(new SpeakerAdapter(system, config.options), cb);
-                    },
+                    //function(cb){
+                    //    var config = system.config.system.speakerAdapter;
+                    //    if(config === null) {
+                    //        logger.warn('No speaker adapter set. You will not have any audio output.');
+                    //        return cb();
+                    //    }
+                    //    var SpeakerAdapter = config.module;
+                    //    system.speaker.registerSpeakerAdapter(new SpeakerAdapter(system, config.options), cb);
+                    //},
 
                     // Register default text to speech adapter
                     // This adapter is supposed to transform text into sound file

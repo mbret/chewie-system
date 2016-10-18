@@ -16,7 +16,7 @@ class Module extends EventEmitter {
         this.player = null;
         this.helper = helper;
         this.config = {
-            nrj: "http://cdn.nrjaudio.fm/audio1/fr/40101/aac_576.mp3?origine=fluxradios",
+            nrj: "http://cdn.nrjaudio.fm/audio1/fr/40101/aac_576.mp3?origine=fluxradios"
         };
     }
 
@@ -26,43 +26,42 @@ class Module extends EventEmitter {
      * @param done
      */
     run(options, done) {
+        var self = this;
+
+        this.helper.logger.debug("Task %s started", self.helper.id);
+
         // Start the radio
         if (this.info.id === "startRadio") {
-            this._startRadio(options);
-            // the task is done when radio is stopped
-            this.once("stop", function() {
+
+            Module.StopRadio(self.helper.shared.lastRunningRadio);
+            self.helper.shared.lastRunningRadio = this;
+
+            this.player = self.helper.system.speaker.playFile(self.config[options.radioName]);
+
+            this.player.once("stop", function() {
+                self.helper.logger.debug("Task %s stopped", self.helper.id);
                 done();
             });
         }
         // Stop the radio
         else if (this.info.id === "stopRadio") {
-            this._stopRadio();
+            Module.StopRadio(self.helper.shared.lastRunningRadio);
+            self.helper.shared.lastRunningRadio = null;
             return done();
         }
     }
 
-    stopRadio() {
-        if (this.player) {
-            this.player.kill();
-            this.emit("stop");
+    /**
+     * Stop the current radio
+     */
+    stop() {
+        this.player.stop();
+    }
+
+    static StopRadio(radio) {
+        if (radio) {
+            radio.stop();
         }
-    }
-
-    _startRadio(options) {
-        var self = this;
-
-        this.player = new MPlayer({verbose: false});
-        this.player.on("ready", function() {
-            self.player.openFile(self.config[options.radioName]);
-        });
-    }
-
-    _stopRadio() {
-        var tasks = this.helper.getActiveTasksFromMyPlugin();
-        tasks.forEach(function(task) {
-            // we stop the radio whatever the task type
-            task.stopRadio();
-        });
     }
 }
 
