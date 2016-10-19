@@ -1,5 +1,5 @@
 {
-  "main": "index.js",
+  "main": "./lib/index.js",
   "author": "Maxime Bret",
   "name": "my-buddy-system",
   "description": "",
@@ -18,13 +18,11 @@
   },
   "dependencies": {
     "async": "^2.0.1",
-    "bcrypt-nodejs": "0.0.3",
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "ejs": "^2.5.2",
     "express": "^4.14.0",
     "express-ejs-layouts": "^2.2.0",
-    "flowrida": "git+https://git@github.com/mickaelvalmier/flowrida.git",
     "fs-extra": "^0.30.0",
     "get-folder-size": "^1.0.0",
     "googleapis": "^13.0.0",
@@ -39,7 +37,6 @@
     "lodash": "^4.15.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.15.0",
-    "mpg123": "^0.2.1",
     "my-buddy-lib": "git+https://github.com/my-buddy/lib.git",
     "node-mpv": "^0.11.0",
     "node-schedule": "^1.1.1",

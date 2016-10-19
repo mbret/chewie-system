@@ -1,9 +1,9 @@
 'use strict';
 
 var utils = require('my-buddy-lib').utils;
-var System = require(__dirname + '/../../index');
+var system = require(__dirname + '/../..');
 
 // Start the system
 // You don't need anything else after this point.
 // The system handle itself completely.
-System.start(utils.loadConfig(__dirname + '/config'));
+system.start(utils.loadConfig(__dirname + '/config'));
