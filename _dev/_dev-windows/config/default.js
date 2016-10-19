@@ -4,7 +4,7 @@ var path = require('path');
 
 module.exports = {
 
-    //profileToLoadOnStartup: "admin",
+    profileToLoadOnStartup: "admin",
     
     system: {
         tmpDir:         path.join(__dirname, '../.my-buddy/tmp'),
