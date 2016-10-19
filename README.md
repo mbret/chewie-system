@@ -52,11 +52,6 @@ Here is the priority order:
         - Task
 - Plugin: The plugin is an external plugable component which deal with modules.
 
-# todo
-- make package inside core
-- buddy update
-- extract web server
-
 # screens idea
 - latests mails
 - latests social notifications

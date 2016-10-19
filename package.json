@@ -1,14 +1,9 @@
 {
   "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://mbret@github.com/mbret/my-buddy-system.git"
-  },
   "author": "Maxime Bret",
-  "homepage": "https://github.com/mbret/my-buddy-system#readme",
   "name": "my-buddy-system",
   "description": "",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "engines": {
     "node": ">=6.5.0"
   },

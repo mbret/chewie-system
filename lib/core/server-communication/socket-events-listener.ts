@@ -28,7 +28,7 @@ export class SocketEventsListener extends EventEmitter {
     }
 
     onConnect() {
-        console.log("api server connected via socket");
+        //console.log("api server connected via socket");
     }
 
     onConnectError(err) {

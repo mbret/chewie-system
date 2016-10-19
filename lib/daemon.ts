@@ -214,14 +214,11 @@ export class Daemon extends EventEmitter {
             }
 
             // run user bootstrap if exist
-            var UserBootstrapModule = null;
-            try{
-                UserBootstrapModule = require(process.env.APP_ROOT_PATH + '/bootstrap.js');
-            } catch (err) {}
+            var UserBootstrapModule = self.config.bootstrap || null;
             if (UserBootstrapModule) {
                 self.logger.debug("A user bootstrap has been found, run it");
-                var userBootstrap = new UserBootstrapModule(self);
-                userBootstrap.bootstrap(done);
+                var userBootstrap = new UserBootstrapModule();
+                userBootstrap.bootstrap(self, done);
             }
         });
 
@@ -269,7 +266,7 @@ Daemon.start = function(userConfig, cb){
     }
 
     // Build system config
-    var config = _.merge(utils.loadConfig(ROOT_DIR + '/config'), userConfig);
+    var config = _.merge(utils.loadConfig(__dirname + '/configuration/default'), userConfig);
 
     // Set some config now (only possible during runtime or when forced)
     config.system.pluginsTmpDir = config.system.pluginsTmpDir || path.resolve(config.system.tmpDir, 'plugins');

@@ -1,10 +1,5 @@
 'use strict';
 
-/**
- *
- */
-process.env.APP_ROOT_PATH = __dirname;
-
 var utils = require('my-buddy-lib').utils;
 var System = require(__dirname + '/../../index');
 
