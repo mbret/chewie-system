@@ -1,12 +1,12 @@
 <div class="row wrapper border-bottom white-bg page-heading">
     <div class="col-lg-9">
-        <h2>Tâches planifiées</h2>
+        <h2>Repository</h2>
         <ol class="breadcrumb">
             <li>
                 <a ui-sref="dashboard.home">Home</a>
             </li>
             <li class="active">
-                <strong>Tâches planifiées</strong>
+                <strong>Browse</strong>
             </li>
         </ol>
     </div>
@@ -14,7 +14,36 @@
 
 <div class="container-fluid">
     <div class="row">
-        <h1 class="page-header">Tâches</h1>
+        <h1 class="page-header">My local plugins</h1>
 
+        <div masonry="{ gutter: 25 }" load-images="false" preserve-order column-width="300" reload-on-resize>
+
+            <div class="masonry-brick brick-repository" ng-repeat="plugin in plugins">
+                <div class="contact-box">
+                    <a ui-sref="profile">
+                        <div class="col-sm-4">
+                            <div class="text-center">
+                                <img alt="image" class="img-circle m-t-xs img-responsive" src="img/a2.jpg">
+
+                                <div class="m-t-xs font-bold">Graphics designer</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <h3><strong>John Smith</strong></h3>
+
+                            <p><i class="fa fa-map-marker"></i> Riviera State 32/106</p>
+                            <address>
+                                <strong>Twitter, Inc.</strong><br>
+                                795 Folsom Ave, Suite 600<br>
+                                San Francisco, CA 94107<br>
+                                <abbr title="Phone">P:</abbr> (123) 456-7890
+                            </address>
+                        </div>
+                        <div class="clearfix"></div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>

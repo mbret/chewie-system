@@ -28,6 +28,7 @@ import {HookConstructor} from "./core/hook";
 import {PluginLoader} from "./core/plugins/plugin-loader";
 import {Speaker} from "./core/speaker/speaker";
 import configurationLoader from "./configuration/loader";
+import LocalRepository from "./core/repositories/local";
 
 /**
  * Daemon is the main program daemon.
@@ -47,6 +48,7 @@ export class Daemon extends EventEmitter {
     hooksToLoad: Array<HookConstructor>;
     logger: any;
     speaker: Speaker;
+    localRepository: LocalRepository;
 
     /**
      *
