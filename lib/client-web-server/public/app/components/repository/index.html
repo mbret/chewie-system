@@ -29,9 +29,11 @@
                             </div>
                         </div>
                         <div class="col-sm-8">
-                            <h3><strong>John Smith</strong></h3>
-
-                            <p><i class="fa fa-map-marker"></i> Riviera State 32/106</p>
+                            <h3>
+                                <strong>{{plugin.title || plugin.name}}</strong>
+                                <br><small>({{plugin.name}})</small>
+                            </h3>
+                            <p>{{plugin.description}}</p>
                             <address>
                                 <strong>Twitter, Inc.</strong><br>
                                 795 Folsom Ave, Suite 600<br>

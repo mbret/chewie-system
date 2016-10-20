@@ -4,7 +4,7 @@ module.exports = {
 
     name: myPackage.name,
     description: myPackage.description,
-
+    title: "Date & Time",
     modules: [
         {
             id: "date",
@@ -47,8 +47,8 @@ module.exports = {
                     value: null,
                     type: "interval",
                     required: true
-                },
+                }
             ]
-        },
+        }
     ]
 };

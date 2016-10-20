@@ -1,9 +1,14 @@
 'use strict';
+import {Daemon} from "../../daemon";
 
 class BaseRepository {
 
-    constructor(system){
+    system: Daemon;
+    logger: any;
+
+    constructor(system, logger){
         this.system = system;
+        this.logger = logger;
     }
 
     loadPlugin(name){

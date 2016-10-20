@@ -4,14 +4,48 @@ var _ = require('lodash');
 var walk = require('walk');
 var fs = require('fs');
 var path = require('path');
-var async = require('async');
 import BaseRepository = require("./base");
+import * as async from "async";
+let self = null;
 
 class LocalRepository extends BaseRepository {
 
     constructor(system){
-        super(system);
+        super(system, system.logger.Logger.getLogger('LocalRepository'));
+        self = this;
         this.localPaths = system.config.plugins.localRepositories;
+    }
+
+    /**
+     *
+     * @returns {Promise<T>|Promise}
+     */
+    public getPluginsInfo() {
+        return new Promise(function(resolve, reject) {
+            self.getPluginDirs(function(err, dirs) {
+                if (err) {
+                    return reject(err);
+                }
+
+                var pluginsInfo = [];
+                async.each(dirs, function(dir, cb) {
+                    self.readPlugin(dir, function(err, info) {
+                        if (err) {
+                            // just ignore the module if it is on error
+                            self.logger.debug("The module at " + dir + " has been ignored because of error on load", err.message);
+                            return cb(null);
+                        }
+                        pluginsInfo.push(info);
+                        return cb();
+                    });
+                }, function(err) {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(pluginsInfo);
+                });
+            });
+        });
     }
 
     /**
@@ -25,7 +59,6 @@ class LocalRepository extends BaseRepository {
             options = { id: options };
         }
         options = _.merge({name: null, version: null}, options);
-        var self = this;
 
         return new Promise(function(resolve, reject){
             self.getPluginDir(options.id, function(err, dir){
@@ -34,11 +67,10 @@ class LocalRepository extends BaseRepository {
                 }
 
                 if(dir !== null){
-                    return self._readPlugin(dir, function(err, info) {
+                    return self.readPlugin(dir, function(err, info) {
                         if (err) {
                             return reject(err);
                         }
-
                         info.id = options.id;
                         return resolve(info);
                     });
@@ -111,15 +143,24 @@ class LocalRepository extends BaseRepository {
         });
     }
 
-    _readPlugin(dirpath, cb){
+    private readPlugin(dirpath, cb){
+        var moduleInfo = null;
         try {
-            return cb(null, require(path.resolve(dirpath, 'plugin-package.js')));
+            // invalidate cache. We need this to ensure always having fresh info instead of the same "moduleInfo" var which may be changed further.
+            // also the plugin may be changed during runtime this way.
+            delete require.cache[require.resolve(path.join(dirpath, 'plugin-package.js'))];
+            moduleInfo = require(path.join(dirpath, 'plugin-package.js'));
         } catch (err) {
             if (err.code === "MODULE_NOT_FOUND") {
-                return cb(new Error("The module " + dirpath + " does not seems to be a valid module and is invalid to load. Please check that the module contain package.json and plugin-package.js. \n" + err.stack));
+                return cb(new Error("Not a valid module and is invalid to load. err: " + err.code));
             }
             return cb(err);
         }
+        // check module
+        if (!moduleInfo.name) {
+            return cb(new Error("No name specified"));
+        }
+        return cb(null, moduleInfo);
     }
 }
 

@@ -1,5 +1,5 @@
 {
-  "name": "Date & Time",
+  "name": "date-time",
   "description": "Provide basic date and time schedule",
   "dependencies": {
     "node-schedule": "^1.1.1",

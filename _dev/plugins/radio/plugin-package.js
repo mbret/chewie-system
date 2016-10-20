@@ -33,5 +33,5 @@ module.exports = {
             type: 'task',
             optionsConfig: [],
         }
-    ],
+    ]
 };
