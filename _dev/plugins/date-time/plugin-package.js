@@ -4,6 +4,7 @@ module.exports = {
 
     name: myPackage.name,
     description: myPackage.description,
+    author: myPackage.author,
     title: "Date & Time",
     modules: [
         {
@@ -18,7 +19,7 @@ module.exports = {
                     value: null,
                     type: "datetime-local",
                     required: true
-                },
+                }
             ]
         },
         {

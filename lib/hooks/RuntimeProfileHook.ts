@@ -70,6 +70,8 @@ export class RuntimeProfileHook implements Hook {
                 })
                 .catch(function(err) {
                     self.logger.error("Task on event profile:start failed", err);
+                    // @todo for now just shutdown but maybe we could rollback user load ?
+                    self.system.shutdown();
                 });
         });
 

@@ -13,4 +13,18 @@ export = function(server, router){
             .catch(res.serverError);
     });
 
+    /**
+     * Return info for specified plugin
+     */
+    router.get("/api/repositories/local/plugins/:name", function(req, res) {
+        server.system.localRepository.getPluginInfo(req.params.name)
+            .then(function(data) {
+                if (!data) {
+                    return res.notFound(data);
+                }
+                return res.ok(data);
+            })
+            .catch(res.serverError);
+    });
+
 };

@@ -1,6 +1,7 @@
 {
   "name": "date-time",
   "description": "Provide basic date and time schedule",
+  "author": "Maxime Bret",
   "dependencies": {
     "node-schedule": "^1.1.1",
     "lodash": "^2.4.1"

@@ -20,12 +20,11 @@
 
             <div class="masonry-brick brick-repository" ng-repeat="plugin in plugins">
                 <div class="contact-box">
-                    <a ui-sref="profile">
+                    <a ui-sref="dashboard.repository.detail({name: plugin.name})">
                         <div class="col-sm-4">
                             <div class="text-center">
                                 <img alt="image" class="img-circle m-t-xs img-responsive" src="img/a2.jpg">
-
-                                <div class="m-t-xs font-bold">Graphics designer</div>
+                                <div class="m-t-xs font-bold">By {{plugin.author}}</div>
                             </div>
                         </div>
                         <div class="col-sm-8">
@@ -34,12 +33,6 @@
                                 <br><small>({{plugin.name}})</small>
                             </h3>
                             <p>{{plugin.description}}</p>
-                            <address>
-                                <strong>Twitter, Inc.</strong><br>
-                                795 Folsom Ave, Suite 600<br>
-                                San Francisco, CA 94107<br>
-                                <abbr title="Phone">P:</abbr> (123) 456-7890
-                            </address>
                         </div>
                         <div class="clearfix"></div>
                     </a>

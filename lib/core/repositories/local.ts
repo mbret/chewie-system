@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('lodash');
-var walk = require('walk');
 var fs = require('fs');
 var path = require('path');
 import BaseRepository = require("./base");
@@ -10,10 +9,14 @@ let self = null;
 
 class LocalRepository extends BaseRepository {
 
+    localPath: string;
+
     constructor(system){
         super(system, system.logger.Logger.getLogger('LocalRepository'));
         self = this;
+        // @odo remove, use one path for now
         this.localPaths = system.config.plugins.localRepositories;
+        this.localPath = system.config.plugins.localRepositories[0];
     }
 
     /**
@@ -54,30 +57,23 @@ class LocalRepository extends BaseRepository {
      * name: name of package to get info
      * @returns {Promise}
      */
-    getPluginInfo(options){
-        if (_.isString(options)) {
-            options = { id: options };
-        }
-        options = _.merge({name: null, version: null}, options);
-
+    getPluginInfo(name) {
         return new Promise(function(resolve, reject){
-            self.getPluginDir(options.id, function(err, dir){
-                if(err){
-                    return reject(err);
-                }
-
-                if(dir !== null){
-                    return self.readPlugin(dir, function(err, info) {
+            let pluginDir = self.getPluginDir(name);
+            self.pluginExist(pluginDir)
+                .then(function(exist) {
+                    if (!exist) {
+                        return resolve(null);
+                    }
+                    return self.readPlugin(pluginDir, function(err, info) {
                         if (err) {
-                            return reject(err);
+                            self.logger.warn("The plugin %s is impossible to read. It either does not exist or is invalid");
+                            return resolve(null);
                         }
-                        info.id = options.id;
                         return resolve(info);
                     });
-                }
-
-                return resolve(null);
-            });
+                })
+                .catch(reject);
         });
     }
 
@@ -124,22 +120,26 @@ class LocalRepository extends BaseRepository {
      * Return the module directory for the plugin name.
      * Something like ../plugins/my-plugin
      * @param name
-     * @param cb
      */
-    getPluginDir(name, cb){
-        this.getPluginDirs(function(err, dirs){
-            if(err){
-                return cb(err);
-            }
+    getPluginDir(name){
+        return path.join(this.localPath, name);
+    }
 
-            var found = null;
-            _.forEach(dirs, function(dir){
-                if(path.basename(dir) === name){
-                    found = dir;
+    pluginExist(dir) {
+        return new Promise(function(resolve, reject) {
+            let stats = null;
+            try {
+                stats = fs.lstatSync(dir);
+            } catch (err) {
+                if (err.code === "ENOENT") {
+                    return resolve(false);
                 }
-            });
-
-            return cb(null, found);
+                return reject(err);
+            }
+            if (stats.isDirectory()) {
+                return resolve(true);
+            }
+            return resolve(false);
         });
     }
 
@@ -159,6 +159,9 @@ class LocalRepository extends BaseRepository {
         // check module
         if (!moduleInfo.name) {
             return cb(new Error("No name specified"));
+        }
+        if (!moduleInfo.author) {
+            return cb(new Error("No author specified"));
         }
         return cb(null, moduleInfo);
     }
