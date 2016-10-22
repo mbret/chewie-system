@@ -45,7 +45,7 @@ export class RuntimeProfileHook implements Hook {
                             .load(plugin)
                             .then(function(container) {
                                 // add to global storage
-                                self.system.runtime.plugins.set(container.plugin.id, container);
+                                self.system.runtime.plugins.set(container.plugin.name, container);
                                 return Promise.resolve();
                             }));
                     });

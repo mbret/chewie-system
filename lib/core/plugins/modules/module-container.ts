@@ -16,7 +16,7 @@ export class ModuleContainer {
     constructor(system, pluginContainer, moduleInfo, instance){
         this.system = system;
         this.logger = this.system.logger.Logger.getLogger('ModuleContainer');
-        this.uniqueId = this.getModuleUniqueId(pluginContainer.plugin.id, moduleInfo.id);
+        this.uniqueId = this.getModuleUniqueId(pluginContainer.plugin.name, moduleInfo.id);
         // runtime id
         this.id = uuid.v4();
         this.instance = instance;

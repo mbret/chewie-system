@@ -5,6 +5,7 @@ module.exports = {
     name: myPackage.name,
     description: myPackage.description,
     author: myPackage.author,
+    version: myPackage.version,
     title: "Date & Time",
     modules: [
         {

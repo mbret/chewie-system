@@ -27,12 +27,12 @@ export class ModuleLoader {
         // if path is relative we need to build absolute path because runtime is not inside the plugin dir
         // ./module will become D://foo/bar/plugins/module
         if (!path.isAbsolute(modulePath)) {
-            var pluginAbsolutePath = path.resolve(this.system.config.system.synchronizedPluginsDir, plugin.id);
+            var pluginAbsolutePath = path.resolve(this.system.config.system.synchronizedPluginsDir, plugin.name);
             modulePath = path.resolve(pluginAbsolutePath, modulePath);
         }
 
         // create container
-        var container = new ModuleContainer(this.system, this.system.runtime.plugins.get(plugin.id), moduleInfo, null);
+        var container = new ModuleContainer(this.system, this.system.runtime.plugins.get(plugin.name), moduleInfo, null);
 
         // now require the module
         var Module = require(modulePath);

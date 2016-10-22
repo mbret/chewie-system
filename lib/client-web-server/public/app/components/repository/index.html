@@ -18,20 +18,18 @@
 
         <div masonry="{ gutter: 25 }" load-images="false" preserve-order column-width="300" reload-on-resize>
 
-            <div class="masonry-brick brick-repository" ng-repeat="plugin in plugins">
+            <div class="masonry-brick brick-repository" ng-repeat="plugin in plugins" ng-class="{'brick-repository--selected': saved[plugin.name]}">
                 <div class="contact-box">
                     <a ui-sref="dashboard.repository.detail({name: plugin.name})">
-                        <div class="col-sm-4">
+                        <div class="col-sm-5">
                             <div class="text-center">
-                                <img alt="image" class="img-circle m-t-xs img-responsive" src="img/a2.jpg">
-                                <div class="m-t-xs font-bold">By {{plugin.author}}</div>
+                                <h3>{{plugin.title || plugin.name}}</h3>
+                                <small>({{plugin.name}})</small>
                             </div>
                         </div>
-                        <div class="col-sm-8">
-                            <h3>
-                                <strong>{{plugin.title || plugin.name}}</strong>
-                                <br><small>({{plugin.name}})</small>
-                            </h3>
+                        <div class="col-sm-7">
+                            <strong>from {{plugin.author}}</strong>
+                            <br><small>(v{{plugin.version}})</small>
                             <p>{{plugin.description}}</p>
                         </div>
                         <div class="clearfix"></div>

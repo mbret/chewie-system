@@ -60,7 +60,7 @@ export class ScenarioReader {
         return Promise
             .resolve(self.getModuleInstance(scenario.userId, node.pluginId, node.triggerId))
             .then(function(data) {
-                self.logger.debug("Create a new demand for trigger module from plugin %s", data.plugin.id);
+                self.logger.debug("Create a new demand for trigger module from plugin %s", data.plugin.name);
                 data.container.instance.onNewDemand(node.options, onTrigger);
             })
             .catch(function(err) {
@@ -84,7 +84,7 @@ export class ScenarioReader {
             .then(function(data) {
                 // add to global storage
                 self.system.modules.set(data.container.uniqueId, data.container);
-                self.logger.debug("Create a new demand for task module from plugin %s", data.plugin.id, node.options);
+                self.logger.debug("Create a new demand for task module from plugin %s", data.plugin.name, node.options);
                 data.container.instance.run(node.options, onTaskEnd);
 
                 function onTaskEnd() {
@@ -111,7 +111,7 @@ export class ScenarioReader {
             // Load module instance
             .then(function(data) {
                 plugin = data;
-                self.logger.debug("Load module instance from plugin %s", plugin.id);
+                self.logger.debug("Load module instance from plugin %s", plugin.name);
                 return self.system.moduleLoader.loadModule(plugin, moduleId);
             })
             .then(function(moduleContainer) {

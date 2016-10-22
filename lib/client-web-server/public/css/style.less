@@ -46,7 +46,7 @@ body{
     height: 250px;
 }
 
-.lockable{
+.lockable {
     position: absolute;
     top: 0;
     left: 0;
@@ -54,6 +54,7 @@ body{
     height: 100%;
     background: rgba(255, 255, 255, 0.7);
     animation-duration: 0.3s;
+    z-index: 9999;
 }
 .lockable-wrapper{
     display:flex;
@@ -96,4 +97,11 @@ body{
 .masonry-brick.brick-repository {
     margin-bottom: 25px;
     width: 300px;
+    border-radius: 4px;
+}
+.brick-repository .contact-box {
+    border-radius: 3px;
+}
+.brick-repository--selected .contact-box {
+    border-color: #1c84c6;
 }
