@@ -4,6 +4,7 @@ module.exports = {
 
     name: myPackage.name,
     description: myPackage.description,
+    version: myPackage.version,
     author: myPackage.author,
     bootstrap: "./bootstrap.js",
     modules: [

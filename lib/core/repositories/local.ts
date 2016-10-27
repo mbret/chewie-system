@@ -53,7 +53,7 @@ class LocalRepository extends BaseRepository {
 
     /**
      * Load a plugin package from local repository.
-     * @param options
+     * @param {string} name
      * name: name of package to get info
      * @returns {Promise}
      */
@@ -67,7 +67,7 @@ class LocalRepository extends BaseRepository {
                     }
                     return self.readPlugin(pluginDir, function(err, info) {
                         if (err) {
-                            self.logger.warn("The plugin %s is impossible to read. It either does not exist or is invalid");
+                            self.logger.debug("The plugin %s is impossible to read. It either does not exist or is invalid. Err: %s", name, err.message);
                             return resolve(null);
                         }
                         return resolve(info);
@@ -162,6 +162,9 @@ class LocalRepository extends BaseRepository {
         }
         if (!moduleInfo.author) {
             return cb(new Error("No author specified"));
+        }
+        if (!moduleInfo.version) {
+            return cb(new Error("No version specified"));
         }
         return cb(null, moduleInfo);
     }
