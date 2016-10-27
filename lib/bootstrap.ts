@@ -1,11 +1,12 @@
 'use strict';
 import {Daemon} from "./daemon";
-import {RuntimeProfileHook} from "./hooks/RuntimeProfileHook";
+import {RuntimeProfileHook} from "./hooks/runtime-profile-hook";
 var async = require('async');
 var util = require('util');
 var path = require('path');
 var DefaultTextToSpeechAdapter = require(CORE_DIR + '/speaker').DefaultTextToSpeechAdapter;
 var self = this;
+let clientWebServer = require("./client-web-server/server");
 
 export class Bootstrap {
 
@@ -19,7 +20,6 @@ export class Bootstrap {
     /**
      *
      * @param done
-     * @returns {undefined}
      */
     bootstrap(done) {
 
@@ -37,7 +37,8 @@ export class Bootstrap {
                         return resolve();
                     });
                 }),
-                self._loadHooks()
+                self._loadHooks(),
+                self._startWebServer()
             ])
             .then(done.bind(self, null))
             .catch(done);
@@ -66,6 +67,10 @@ export class Bootstrap {
         return Promise.all(promises);
     }
 
+    _startWebServer() {
+        return clientWebServer(this.system);
+    }
+
     _oldBootstrap(system, logger, bootstrapDone){
 
         async.series([
@@ -85,9 +90,9 @@ export class Bootstrap {
                         system.apiServer.initialize(cb);
                     },
                     // Start web server
-                    function(cb){
-                        system.webServer.initialize(cb);
-                    }
+                    //function(cb){
+                    //    system.webServer.initialize(cb);
+                    //}
                 ], done);
             },
 

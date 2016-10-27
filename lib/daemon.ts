@@ -3,7 +3,7 @@
 var async               = require('async');
 var _                   = require('lodash');
 var PluginsHandler      = require(CORE_DIR + '/plugins/plugins-handler.js');
-var WebServer           = require(LIB_DIR + '/client-web-server');
+//var WebServer           = require(LIB_DIR + '/client-web-server');
 var SpeechHandler       = require(CORE_DIR + '/speech/speech-handler.js');
 var NotificationService = require(CORE_DIR + '/notification-service');
 var taskQueue           = require('my-buddy-lib').taskQueue;
@@ -101,7 +101,7 @@ export class Daemon extends EventEmitter {
         this.serverSocketEventsListener = new ServerCommunication.SocketEventsListener(this);
         this.runtime = this.runtimeHelper = new Runtime(this);
         this.apiServer = new ApiServer(this);
-        this.webServer = new WebServer(this);
+        //this.webServer = new WebServer(this);
         this.pluginsHandler = new PluginsHandler(this);
         this.notificationService = new NotificationService(this);
         this.apiService = new api.ApiService(this);
@@ -186,7 +186,7 @@ export class Daemon extends EventEmitter {
 
             // Splash final information
             self.logger.info('The system is now started and ready!');
-            self.logger.info('The web interface is available at at %s or %s for remote access', self.webServer.getLocalAddress(), self.webServer.getRemoteAddress());
+            //self.logger.info('The web interface is available at at %s or %s for remote access', self.webServer.getLocalAddress(), self.webServer.getRemoteAddress());
             self.logger.info('The API is available at at %s or %s for remote access', self.apiServer.getLocalAddress(), self.config.apiEndpointAddress);
             console.log('');
 

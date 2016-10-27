@@ -1,15 +1,17 @@
 {
-  "name": "web-server",
-  "main": "index.js",
-  "homepage": "https://github.com/mbret/my-buddy-system",
-  "description": "",
-  "moduleType": [],
-  "license": "MIT",
+  "name": "client-web-server",
+  "description": " ",
+  "main": "server.js",
+  "author": " ",
+  "moduleType": [
+    "node"
+  ],
   "private": true,
   "ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
+    "public/components",
     "test",
     "tests"
   ],
