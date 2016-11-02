@@ -8,7 +8,5 @@ export function UsersService(system){
 }
 
 UsersService.prototype.formatUser = function(user){
-    return _.merge(user, {
-        roleLabel: this.system.config.users.rolesLabel.get(user.role)
-    });
+    return _.merge(user, {});
 };

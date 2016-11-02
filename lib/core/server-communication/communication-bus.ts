@@ -36,12 +36,9 @@ export class CommunicationBus extends EventEmitter {
     onConnect() {
         this.logger.verbose("connected to shared api server at %s", this.sharedApiEndpoint);
         this.socket
-            .on("user:plugin:created", function(plugin) {
-                self.emit("user:plugin:created", plugin);
-            })
-            .on("user:plugin:deleted", function(plugin) {
-                self.emit("user:plugin:deleted", plugin);
-            });
+            .on("user:plugin:created", self.emit.bind(self, "user:plugin:created"))
+            .on("user:plugin:deleted", self.emit.bind(self, "user:plugin:deleted"))
+            .on("user:scenario:created", self.emit.bind(self, "user:scenario:created"));
     }
 
     onConnectError(err) {

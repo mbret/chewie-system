@@ -1,0 +1,2 @@
+On windows we need to use -ao win32 as audio driver otherwise very brief song will create a loop.
+On windows a repetitive font scanning may occurs. In this case just deactivate fontconfig -> no or http://forum.smplayer.info/viewtopic.php?p=11248#p11248

@@ -123,9 +123,17 @@ export class RuntimeProfileHook implements Hook {
                 }
             })
             .on("user:plugin:deleted", function(plugin) {
-                console.log(plugin);
                 if (plugin.userId === self.currentProfile.id) {
                     self.unLoadPlugins([plugin]);
+                }
+            })
+            .on("user:scenario:created", function(scenario) {
+                if (scenario.userId === self.currentProfile.id) {
+                    // Read the scenario
+                    self.system.scenarioReader.readScenario(scenario)
+                        .catch(function(err) {
+                            self.logger.error("Unable to read scenario", err);
+                        });
                 }
             });
 
