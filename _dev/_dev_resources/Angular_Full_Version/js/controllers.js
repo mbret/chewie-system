@@ -44,6 +44,8 @@
  *  - touchspinCtrl
  *  - tourCtrl
  *  - jstreeCtrl
+ *  - datamapsCtrl
+ *  - pdfCtrl
  *
  *
  */
@@ -53,7 +55,31 @@
  * Contains several global data used in different view
  *
  */
-function MainCtrl() {
+function MainCtrl($http) {
+
+    /**
+     * countries - Used as duallistbox in form advanced view
+     */
+
+    this.countries = [
+        { name: 'Amsterdam' },
+        { name: 'Washington' },
+        { name: 'Sydney' },
+        { name: 'Cairo' },
+        { name: 'Beijing' }];
+
+    this.getLocation = function(val) {
+        return $http.get('//maps.googleapis.com/maps/api/geocode/json', {
+            params: {
+                address: val,
+                sensor: false
+            }
+        }).then(function(response){
+            return response.data.results.map(function(item){
+                return item.formatted_address;
+            });
+        });
+    };
 
     /**
      * daterange - Used as initial model for data range picker in Advanced form view
@@ -65,6 +91,17 @@ function MainCtrl() {
      */
     this.slideInterval = 5000;
 
+    /**
+     * tags - Used as advanced forms view in input tag control
+     */
+
+    this.tags = [
+        { text: 'Amsterdam' },
+        { text: 'Washington' },
+        { text: 'Sydney' },
+        { text: 'Cairo' },
+        { text: 'Beijing' }
+    ];
 
     /**
      * states - Data used in Advanced Form view for Chosen plugin
@@ -3337,6 +3374,104 @@ function jstreeCtrl($scope) {
 
 }
 
+function datamapsCtrl($scope) {
+
+    $scope.mapObject1 = {
+        scope: 'world',
+        responsive: true,
+        fills: {
+            defaultFill: "#DBDAD6"
+        },
+        geographyConfig: {
+            highlightFillColor: '#1C977A',
+            highlightBorderWidth: 0,
+        },
+    }
+
+    $scope.mapObject2 = {
+        scope: 'world',
+        responsive: true,
+        fills: {
+            defaultFill: "#DBDAD6",
+            active: "#2BA587"
+        },
+        geographyConfig: {
+            highlightFillColor: '#1C977A',
+            highlightBorderWidth: 0,
+        },
+        data: {
+            USA: { fillKey: "active" },
+            RUS: { fillKey: "active" },
+            DEU: { fillKey: "active" },
+            BRA: { fillKey: "active" }
+        }
+    }
+
+    $scope.mapObject3 = {
+        responsive: true,
+        scope: 'usa',
+        fills: {
+            defaultFill: "#DBDAD6",
+            active: "#2BA587"
+        },
+        geographyConfig: {
+            highlightFillColor: '#1C977A',
+            highlightBorderWidth: 0
+        },
+        data: {
+            NE: { fillKey: "active" },
+            CA: { fillKey: "active" },
+            NY: { fillKey: "active" },
+        }
+    }
+
+    $scope.mapObject4 = {
+        scope: 'world',
+        responsive: true,
+        fills: {
+            defaultFill: "#F2F2F0",
+            active: "#DBDAD6",
+            usa: "#269479"
+        },
+        geographyConfig: {
+            highlightFillColor: '#1C977A',
+            highlightBorderWidth: 0
+        },
+        data: {
+            USA: {fillKey: "usa"},
+            RUS: {fillKey: "active"},
+            DEU: {fillKey: "active"},
+            POL: {fillKey: "active"},
+            JAP: {fillKey: "active"},
+            AUS: {fillKey: "active"},
+            BRA: {fillKey: "active"}
+        }
+    };
+
+    $scope.mapPlugins = {
+        arc: {}
+    };
+
+    $scope.mapPluginData = {
+        arc: [
+            { origin: 'USA', destination: 'RUS'},
+            { origin: 'USA', destination: 'DEU'},
+            { origin: 'USA', destination: 'POL'},
+            { origin: 'USA', destination: 'JAP'},
+            { origin: 'USA', destination: 'AUS'},
+            { origin: 'USA', destination: 'BRA'}
+        ]
+    }
+
+
+
+}
+
+function pdfCtrl($scope) {
+    $scope.pdfUrl = './pdf/example.pdf';
+    $scope.httpHeaders = { Authorization: 'Bearer some-aleatory-token' };
+}
+
 /**
  *
  * Pass all functions into module
@@ -3380,5 +3515,7 @@ angular
     .controller('truncateCtrl', truncateCtrl)
     .controller('touchspinCtrl', touchspinCtrl)
     .controller('tourCtrl', tourCtrl)
-    .controller('jstreeCtrl', jstreeCtrl);
+    .controller('jstreeCtrl', jstreeCtrl)
+    .controller('datamapsCtrl', datamapsCtrl)
+    .controller('pdfCtrl', pdfCtrl);
 

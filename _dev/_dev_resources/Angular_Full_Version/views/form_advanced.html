@@ -84,16 +84,16 @@
         <div class="form-group">
         <label class="font-noraml">Basic example with <strong>ng-model</strong></label>
 
-        <div class="input-group">
-            <select chosen id="states" class="chosen-select" style="width:350px;" tabindex="4" ng-model="state" ng-options="s for s in main.states">
+        <div>
+            <select chosen id="states" class="chosen-select"  tabindex="4" ng-model="state" ng-options="s for s in main.states">
             </select>
         </div>
         </div>
         <div class="form-group">
         <label class="font-noraml">Multi select</label>
 
-        <div class="input-group">
-        <select multiple chosen class="chosen-select" style="width:350px;" tabindex="4">
+        <div>
+        <select multiple chosen class="chosen-select"  tabindex="4">
         <option value="">Select</option>
         <option value="United States">United States</option>
         <option value="United Kingdom">United Kingdom</option>
@@ -443,6 +443,46 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Dual Listbox</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <p>
+                        Bootstrap Dual Listbox is a responsive dual listbox widget optimized for Twitter Bootstrap. It works on all modern browsers and on touch devices.
+                    </p>
+
+                    <select
+                            ng-options="c.name for c in main.countries"
+                            multiple
+                            ng-model="selections"
+                            bs-duallistbox
+                            ></select>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
     <div class="row" data-ng-controller="selectCtrl">
         <div class="col-lg-12">
 
@@ -659,6 +699,25 @@
             <h5>As a link</h5>
             <a colorpicker ng-model="model.color2">Normal link</a> Model: {{model.color2 | json}}
             <br/>
+        </div>
+    </div>
+
+    <div class="ibox">
+        <div class="ibox-title">
+            <h5>Tags input </h5>
+        </div>
+        <div class="ibox-content">
+            <p>
+                Tags input directive for AngularJS http://mbenford.github.io/ngTagsInput
+            </p>
+
+            <p class="font-bold">
+                Basic example with few initial tags
+            </p>
+
+            <tags-input ng-model="main.tags">
+            </tags-input>
+
         </div>
     </div>
 </div>

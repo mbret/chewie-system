@@ -434,7 +434,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
                         {
                             insertBefore: '#loadBefore',
                             name: 'localytics.directives',
-                            files: ['css/plugins/chosen/chosen.css','js/plugins/chosen/chosen.jquery.js','js/plugins/chosen/chosen.js']
+                            files: ['css/plugins/chosen/bootstrap-chosen.css','js/plugins/chosen/chosen.jquery.js','js/plugins/chosen/chosen.js']
                         },
                         {
                             name: 'nouislider',
@@ -479,6 +479,17 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
                         },
                         {
                             files: ['css/plugins/touchspin/jquery.bootstrap-touchspin.min.css', 'js/plugins/touchspin/jquery.bootstrap-touchspin.min.js']
+                        },
+                        {
+                            name: 'ngTagsInput',
+                            files: ['js/plugins/ngTags//ng-tags-input.min.js', 'css/plugins/ngTags/ng-tags-input-custom.min.css']
+                        },
+                        {
+                            files: ['js/plugins/dualListbox/jquery.bootstrap-duallistbox.js','css/plugins/dualListbox/bootstrap-duallistbox.min.css']
+                        },
+                        {
+                            name: 'frapontillo.bootstrap-duallistbox',
+                            files: ['js/plugins/dualListbox/angular-bootstrap-duallistbox.js']
                         }
 
                     ]);
@@ -524,6 +535,9 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
                     return $ocLazyLoad.load([
                         {
                             files: ['css/plugins/dropzone/basic.css','css/plugins/dropzone/dropzone.css','js/plugins/dropzone/dropzone.js']
+                        },
+                        {
+                            files: ['js/plugins/jasny/jasny-bootstrap.min.js', 'css/plugins/jasny/jasny-bootstrap.min.css' ]
                         }
                     ]);
                 }
@@ -543,6 +557,12 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
                     ]);
                 }
             }
+        })
+        .state('forms.autocomplete', {
+            url: "/autocomplete",
+            templateUrl: "views/autocomplete.html",
+            data: { pageTitle: 'Autocomplete' }
+
         })
         .state('forms.markdown', {
             url: "/markdown",
@@ -697,8 +717,8 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
             templateUrl: "views/empty_page.html",
             data: { pageTitle: 'Empty page' }
         })
-        .state('login', {
-            url: "/login",
+        .state('logins', {
+            url: "/logins",
             templateUrl: "views/login.html",
             data: { pageTitle: 'Login', specialClass: 'gray-bg' }
         })
@@ -767,6 +787,11 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
             templateUrl: "views/notifications.html",
             data: { pageTitle: 'Notifications and tooltips' }
         })
+        .state('ui.helper_classes', {
+            url: "/helper_classes",
+            templateUrl: "views/helper_classes.html",
+            data: { pageTitle: 'Helper css classes' }
+        })
         .state('ui.badges_labels', {
             url: "/badges_labels",
             templateUrl: "views/badges_labels.html",
@@ -792,7 +817,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
                 }
             }
         })
-        .state('grid_options', {
+        .state('grid_optionss', {
             url: "/grid_options",
             templateUrl: "views/grid_options.html",
             data: { pageTitle: 'Grid options' }
@@ -817,6 +842,38 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
                             name: 'ui.map',
                             files: ['js/plugins/uimaps/ui-map.js']
                         },
+                    ]);
+                }
+            }
+        })
+        .state('miscellaneous.datamaps', {
+            url: "/datamaps",
+            templateUrl: "views/datamaps.html",
+            data: { pageTitle: 'Datamaps' },
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['js/plugins/d3/d3.min.js','js/plugins/topojson/topojson.js','js/plugins/datamaps/datamaps.all.min.js']
+                        },
+                        {
+                            name: 'datamaps',
+                            files: ['js/plugins/angular-datamaps/angular-datamaps.min.js']
+                        },
+                    ]);
+                }
+            }
+        })
+        .state('miscellaneous.socialbuttons', {
+            url: "/socialbuttons",
+            templateUrl: "views/socialbuttons.html",
+            data: { pageTitle: 'Social buttons' },
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['css/plugins/bootstrapSocial/bootstrap-social.css']
+                        }
                     ]);
                 }
             }
@@ -908,6 +965,24 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
                         {
                             name: 'diff-match-patch',
                             files: ['js/plugins/angular-diff-match-patch/angular-diff-match-patch.js']
+                        }
+                    ]);
+                }
+            }
+        })
+        .state('miscellaneous.pdf_viewer', {
+            url: "/pdf_viewer",
+            templateUrl: "views/pdf_viewer.html",
+            data: { pageTitle: 'PDF viewer' },
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['js/plugins/pdfjs/pdf.js']
+                        },
+                        {
+                            name: 'pdf',
+                            files: ['js/plugins/pdfjs/angular-pdf.js']
                         }
                     ]);
                 }

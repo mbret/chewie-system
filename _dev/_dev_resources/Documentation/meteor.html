@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -55,9 +55,9 @@
                 <small>
 
                     <strong>Documentation created:</strong> 10/05/2015<br/>
-                    <strong>Latest update:</strong> 24/02/2016<br/>
+                    <strong>Latest update:</strong> 28/09/2016<br/>
                     <strong>By:</strong> WebAppLayers Team<br/>
-                    <strong>Theme version:</strong> 2.5<br/>
+                    <strong>Theme version:</strong> 2.6.2<br/>
 
                 </small>
                 <br/>
@@ -71,6 +71,16 @@
             <div class="col-md-6">
                 <img src="img/preview.png" alt="screen" class="img-responsive"/>
 
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-danger">
+                    Please note that since Inspinia 2.6 Meteor project has Flow router - before Iron router.
+                    This update required to change all routes in config.js file as well as all helper in navigation.html.
+                    If you need any help with migration feel free to contact with me on support email and I will help you.
+                </div>
             </div>
         </div>
 
@@ -105,6 +115,8 @@
                 </ul>
             </li>
             <li><a href="#seed_project">Seed Project</a></li>
+            <li><a href="#change_log">Change log 2.6 > 2.6.2</a></li>
+            <li><a href="#change_log">Change log 2.5 > 2.6</a></li>
             <li><a href="#change_log">Change log 2.4 > 2.5</a></li>
             <li><a href="#change_log">Change log 2.3 > 2.4</a></li>
             <li><a href="#change_log">Change log 2.2 > 2.3</a></li>
@@ -591,6 +603,92 @@ $('body').addClass('skin-1');
 
 <a name="change_log" class="anchor"></a>
 
+    <h3>Change log 2.6 -> 2.6.2</h3>
+
+    <ul>
+
+
+        <hr>
+        <strong>Updates</strong>
+        <li> Bootstrap to 3.3.7</li>
+
+        <hr>
+        <strong>CSS/LESS/SCSS/SASS</strong>
+        <li> Fix the issue with hidden href on mobile mini navbar</li>
+        <li> Fix the flickering menu</li>
+        <li> Fix Safari modal issue</li>
+        <li> Fix Summernote fullscreen mode</li>
+        <li> Fix css width helper classes</li>
+        <li> Improve content height on fixed navbar</li>
+        <li>  Improve landing page on mobile view</li>
+
+
+    </ul>
+
+    <h3>Change log 2.5 -> 2.6</h3>
+
+
+    <div class="alert alert-danger">
+        Please note that since Inspinia 2.6 Meteor project has Flow router - before Iron router.
+        This update required to change all routes in config.js file as well as all helper in navigation.html.
+        If you need any help with migration feel free to contact with me on support email and I will help you.
+    </div>
+
+    <ul>
+
+        <strong>New view files</strong>
+        <li> pages/forms/autocomplete.html </li>
+        <li> pages/miscellaneous/datamaps.html </li>
+        <li> pages/miscellaneous/pdfViewer.html </li>
+        <li> pages/miscellaneous/socialButtons.html </li>
+        <li> pages/uielements/helperClasses.html </li>
+
+
+        <hr>
+        <strong>Changed views files</strong>
+        <li> views/common/navigation.html - add new menu elements for new views</li>
+        <li> views/forms/formAdvanced.html (js) - add new features, tag input, dual listbox</li>
+        <li> views/forms/fileUpload.html add new file input component</li>
+        <li> dashboard-1.js - update script for new Chartjs version</li>
+        <li> dashboard-2.js - update script for new Chartjs version</li>
+        <li> dashboard-3.js - update script for new Chartjs version</li>
+        <li> dashboard-4.js - update script for new Chartjs version</li>
+        <li> dashboard-4l.js - update script for new Chartjs version</li>
+        <li> chartjs.js - update script for new Chartjs version</li>
+
+        <hr>
+        <strong>New Inspinia js files</strong>
+        <li> public/pdf/example.pdf</li>
+        <li> public/api/typehead_collection.json</li>
+
+        <hr>
+        <strong>Updates</strong>
+        <li> plugins/dropzone </li>
+        <li> plugins/fullcalendar </li>
+        <li> plugins/chartJs </li>
+        <li> plugins/summernote </li>
+
+        <hr>
+        <strong>New plugins</strong>
+        <li> plugins/bootstrap-taginput</li>
+        <li> plugins/dualListbox</li>
+        <li> plugins/pdfjs</li>
+        <li> plugins/topojson</li>
+        <li> plugins/typehead</li>
+        <li> plugins/bootstrapSocial</li>
+
+
+        <hr>
+        <strong>CSS/LESS/SCSS/SASS</strong>
+        <li> Add styles for new pages </li>
+        <li> Fix menu jumping issue</li>
+        <li> Improve print mode for Firefox</li>
+        <li> Improve chosen colors</li>
+        <li> Fix boxes layout with md-skin</li>
+        <li> Improve custom swithc style</li>
+        <li> Add few new css classes - helper classes</li>
+
+    </ul>
 
     <h3>Change log 2.4 -> 2.5</h3>
 

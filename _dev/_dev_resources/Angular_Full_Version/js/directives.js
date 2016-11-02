@@ -28,6 +28,7 @@
  *  - touchSpin
  *  - markdownEditor
  *  - resizeable
+ *  - bootstrapTagsinput
  *
  */
 
@@ -64,6 +65,13 @@ function sideNavigation($timeout) {
                 element.metisMenu();
 
             });
+
+            // Enable initial fixed sidebar
+            //var sidebar = element.parent();
+            //sidebar.slimScroll({
+            //    height: '100%',
+            //    railOpacity: 0.9,
+            //});
         }
     };
 };
@@ -564,6 +572,7 @@ function markdownEditor() {
     }
 };
 
+
 /**
  *
  * Pass all functions into module
@@ -591,4 +600,4 @@ angular
     .directive('slimScroll', slimScroll)
     .directive('truncate', truncate)
     .directive('touchSpin', touchSpin)
-    .directive('markdownEditor', markdownEditor)
+    .directive('markdownEditor', markdownEditor);

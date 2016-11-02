@@ -22,7 +22,7 @@ import {ModuleLoader} from "./core/plugins/modules/module-loader";
 import {Bootstrap} from "./bootstrap";
 import {Runtime} from "./core/runtime";
 import {ModuleContainer} from "./core/plugins/modules/module-container";
-import {Server as ApiServer} from "./server-api";
+import {Server as ApiServer} from "./shared-server-api";
 import {TaskExecution} from "./core/plugins/tasks/task-execution";
 import {HookConstructor} from "./core/hook";
 import {PluginLoader} from "./core/plugins/plugin-loader";
@@ -41,7 +41,7 @@ export class Daemon extends EventEmitter {
     runtime: Runtime;
     apiServer: ApiServer;
     config: any;
-    serverSocketEventsListener: ServerCommunication.SocketEventsListener;
+    communicationBus: ServerCommunication.CommunicationBus;
     scenarioReader: ScenarioReader;
     moduleLoader: ModuleLoader;
     pluginLoader: PluginLoader;
@@ -49,6 +49,7 @@ export class Daemon extends EventEmitter {
     logger: any;
     speaker: Speaker;
     localRepository: LocalRepository;
+    repository: any;
 
     /**
      *
@@ -98,15 +99,14 @@ export class Daemon extends EventEmitter {
         this.logger.getLogger = LOGGER.getLogger.bind(LOGGER);
         this.logger.info('Starting...');
         // Used to handle running profile / tasks / etc
-        this.serverSocketEventsListener = new ServerCommunication.SocketEventsListener(this);
+        this.communicationBus = new ServerCommunication.CommunicationBus(this);
         this.runtime = this.runtimeHelper = new Runtime(this);
         this.apiServer = new ApiServer(this);
-        //this.webServer = new WebServer(this);
         this.pluginsHandler = new PluginsHandler(this);
         this.notificationService = new NotificationService(this);
         this.apiService = new api.ApiService(this);
         this.speaker = new Speaker(this);
-        this.localRepository = new repositories.LocalRepository(this);
+        this.localRepository = new LocalRepository(this);
         this.repository = new repositories.Repository(this);
         this.scenarioReader = new ScenarioReader(this);
         this.moduleLoader = new ModuleLoader(this);

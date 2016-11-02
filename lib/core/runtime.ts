@@ -14,6 +14,7 @@ export class Runtime {
     system: Daemon;
     scenarios: Map<string, any>;
     plugins: Map<string, PluginContainer>;
+    profileManager: any;
 
     constructor(system: Daemon){
         this.logger = system.logger.Logger.getLogger('Runtime');

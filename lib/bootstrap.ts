@@ -1,12 +1,12 @@
 'use strict';
 import {Daemon} from "./daemon";
-import {RuntimeProfileHook} from "./hooks/runtime-profile-hook";
+import {RuntimeProfileHook} from "./hooks/runtime-profile/runtime-profile";
+import {ClientWebServer} from "./hooks/client-web-server/server";
 var async = require('async');
 var util = require('util');
 var path = require('path');
-var DefaultTextToSpeechAdapter = require(CORE_DIR + '/speaker').DefaultTextToSpeechAdapter;
+var DefaultTextToSpeechAdapter = require('./core/speaker').DefaultTextToSpeechAdapter;
 var self = this;
-let clientWebServer = require("./client-web-server/server");
 
 export class Bootstrap {
 
@@ -25,6 +25,7 @@ export class Bootstrap {
 
         // register hooks
         this.system.hooksToLoad.push(RuntimeProfileHook);
+        this.system.hooksToLoad.push(ClientWebServer);
 
         Promise
             .all([
@@ -38,7 +39,6 @@ export class Bootstrap {
                     });
                 }),
                 self._loadHooks(),
-                self._startWebServer()
             ])
             .then(done.bind(self, null))
             .catch(done);
@@ -65,10 +65,6 @@ export class Bootstrap {
         });
 
         return Promise.all(promises);
-    }
-
-    _startWebServer() {
-        return clientWebServer(this.system);
     }
 
     _oldBootstrap(system, logger, bootstrapDone){
@@ -177,7 +173,7 @@ export class Bootstrap {
                     },
 
                     function(cb) {
-                        system.serverSocketEventsListener.initialize(cb);
+                        system.communicationBus.initialize(cb);
                     },
 
                 ], done);

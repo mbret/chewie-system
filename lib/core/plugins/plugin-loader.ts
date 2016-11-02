@@ -42,12 +42,12 @@ export class PluginLoader {
      * @returns {any}
      */
     getPluginBootstrap(plugin: any) {
-        if (!plugin.config.bootstrap) {
+        if (!plugin.package.bootstrap) {
             return defaultBootstrap;
         }
 
         // get module instance path
-        var modulePath = plugin.config.bootstrap;
+        var modulePath = plugin.package.bootstrap;
         // if path is relative we need to build absolute path because runtime is not inside the plugin dir
         // ./module will become D://foo/bar/plugins/module
         if (!path.isAbsolute(modulePath)) {

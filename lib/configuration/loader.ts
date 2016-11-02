@@ -3,6 +3,10 @@ var path  = require('path');
 var _ = require("lodash");
 var utils = require('my-buddy-lib').utils;
 
+/**
+ * @param config
+ * @returns {object}
+ */
 export default function(config: any) {
     let defaultConfig =  utils.loadConfig(__dirname + '/default');
     let completeConfig = _.merge({}, defaultConfig, config);
@@ -18,7 +22,7 @@ export default function(config: any) {
             synchronizedPluginsDir: completeConfig.system.synchronizedPluginsDir || path.join(completeConfig.system.dataDir, 'synchronized-plugins'),
         },
         realIp: realIp,
-        apiEndpointAddress: completeConfig.apiEndpointAddress || "https://" + (realIp + ':' + completeConfig.apiPort)
+        apiEndpointAddress: completeConfig.apiEndpointAddress || ((completeConfig.sharedServerApiSSL.activate ? "https" : "http") + "://" + (realIp + ':' + completeConfig.apiPort))
     });
     return completeConfig;
 };

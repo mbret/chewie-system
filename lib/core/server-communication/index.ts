@@ -1,1 +1,1 @@
-export {SocketEventsListener} from "./socket-events-listener";
+export {CommunicationBus} from "./communication-bus";

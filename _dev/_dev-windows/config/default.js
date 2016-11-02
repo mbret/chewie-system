@@ -18,7 +18,14 @@ module.exports = {
     database: {
         connexion: {
             storage: path.join(__dirname, '../.my-buddy/storage/db.sqlite'),
-            dropOnStartup: true
+            // dropOnStartup: true
         }
+    },
+
+    webServerSSL: {
+        activate: true
+    },
+    sharedServerApiSSL: {
+        activate: true
     }
 };

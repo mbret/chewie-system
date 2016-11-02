@@ -7,7 +7,7 @@ import BaseRepository = require("./base");
 import * as async from "async";
 let self = null;
 
-class LocalRepository extends BaseRepository {
+export default class LocalRepository extends BaseRepository {
 
     localPath: string;
 
@@ -21,7 +21,7 @@ class LocalRepository extends BaseRepository {
 
     /**
      *
-     * @returns {Promise<T>|Promise}
+     * @returns {Promise}
      */
     public getPluginsInfo() {
         return new Promise(function(resolve, reject) {
@@ -169,5 +169,3 @@ class LocalRepository extends BaseRepository {
         return cb(null, moduleInfo);
     }
 }
-
-export = LocalRepository;

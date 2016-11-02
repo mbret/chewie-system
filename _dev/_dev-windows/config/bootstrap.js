@@ -5,6 +5,8 @@ var _ = require("lodash");
 module.exports.bootstrap = class Bootstrap {
 
     bootstrap(system, done) {
+
+        return done();
         // create new user
         system.apiService
             .findOrCreateUser({ username: "mbret" })
