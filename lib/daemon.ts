@@ -1,19 +1,19 @@
 'use strict';
 
 var async = require('async');
-var _  = require('lodash');
-var PluginsHandler = require(CORE_DIR + '/plugins/plugins-handler.js');
-var SpeechHandler = require(CORE_DIR + '/speech/speech-handler.js');
-var NotificationService = require(CORE_DIR + '/notification-service');
+import _  = require('lodash');
+var PluginsHandler = require('./core/plugins/plugins-handler.js');
+var SpeechHandler = require('./core/speech/speech-handler.js');
+var NotificationService = require('./core/notification-service');
 var taskQueue = require('my-buddy-lib').taskQueue;
-var repositories = require(CORE_DIR + '/repositories');
+var repositories = require('./core/repositories');
 var utils = require('my-buddy-lib').utils;
-var path = require('path');
+import path = require('path');
 var packageInfo = require(__dirname + '/../package.json');
 var Logger = require('my-buddy-lib').logger.Logger;
-var Bus = require(CORE_DIR + '/bus');
-var api = require(CORE_DIR + "/api");
-var ip  = require('ip');
+var Bus = require('./core/bus');
+var api = require("./core/api");
+import ip  = require('ip');
 import { EventEmitter }  from "events";
 import * as ServerCommunication from "./core/server-communication/index";
 import {ScenarioReader} from "./core/scenario/scenario-reader";

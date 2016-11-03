@@ -1,10 +1,7 @@
 'use strict';
-import {TaskExecution} from "../../../core/plugins/tasks/task-execution";
 
+import {TaskExecution} from "../../../core/plugins/tasks/task-execution";
 var util = require('util');
-var tasksModule = require(CORE_DIR + '/plugins/tasks');
-var Task = tasksModule.Task;
-var ManualTaskTrigger = tasksModule.ManualTaskTrigger;
 
 module.exports = function(server, router){
 

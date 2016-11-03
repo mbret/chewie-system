@@ -1,14 +1,15 @@
-var ip  = require('ip');
-var path  = require('path');
-var _ = require("lodash");
-var utils = require('my-buddy-lib').utils;
+"use strict";
+
+import _ = require("lodash");
+import ip  = require('ip');
+import path = require("path");
 
 /**
  * @param config
  * @returns {object}
  */
 export default function(config: any) {
-    let defaultConfig =  utils.loadConfig(__dirname + '/default');
+    let defaultConfig =  require("./default");
     let completeConfig = _.merge({}, defaultConfig, config);
     let realIp = ip.address();
     let appPath = process.cwd();

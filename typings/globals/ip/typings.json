@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/71ae898a05164dc2a583ab75541ee67bee697b1d/ip/ip.d.ts",
+    "raw": "registry:dt/ip#0.0.0+20160929195624",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/71ae898a05164dc2a583ab75541ee67bee697b1d/ip/ip.d.ts"
+  }
+}

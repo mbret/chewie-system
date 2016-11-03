@@ -1,12 +1,12 @@
 'use strict';
 
 var _ = require('lodash');
-var tasks = require(CORE_DIR + "/plugins/tasks");
+var tasks = require("./plugins/tasks");
 import {Task} from "./plugins/tasks/index";
 import {Daemon} from "../daemon";
 import {TaskExecution} from "./plugins/tasks/task-execution";
-var taskQueue = require('my-buddy-lib').taskQueue;
-var ProfileManager = require(CORE_DIR + '/profile-manager');
+import {PluginContainer} from "./plugins/plugin-container";
+var ProfileManager = require('./profile-manager');
 var util = require("util");
 
 export class Runtime {

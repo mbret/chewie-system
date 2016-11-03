@@ -1,8 +1,4 @@
-
-global.LIB_DIR      = __dirname;
-global.CONFIG_DIR   = __dirname + '/config';
-global.MODULES_DIR  = __dirname + "/modules";
-global.CORE_DIR     = __dirname + "/core";
+"use strict";
 
 import {Daemon} from "./daemon";
 
@@ -19,4 +15,5 @@ if (process.platform === "win32") {
     });
 }
 
+// app is a skeleton
 export = new Daemon();
