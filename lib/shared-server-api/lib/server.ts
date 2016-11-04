@@ -54,12 +54,12 @@ export class Server extends EventEmitter {
 
     _startServer(cb){
         var self = this;
-        var port = self.system.config.apiPort;
+        var port = self.system.config.sharedApiPort;
 
         // use ssl ?
-        if (this.system.config.sharedServerApiSSL.activate) {
-            let privateKey = fs.readFileSync(this.system.config.sharedServerApiSSL.key, 'utf8');
-            let certificate = fs.readFileSync(this.system.config.sharedServerApiSSL.cert, 'utf8');
+        if (this.system.config.sharedApiSSL.activate) {
+            let privateKey = fs.readFileSync(this.system.config.sharedApiSSL.key, 'utf8');
+            let certificate = fs.readFileSync(this.system.config.sharedApiSSL.cert, 'utf8');
             this.server = https.createServer({key: privateKey, cert: certificate}, app);
         } else {
             this.server = http.createServer(app);

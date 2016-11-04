@@ -28,16 +28,27 @@ class FakeSound extends EventEmitter {
 }
 
 class SpeakerInstance extends EventEmitter {
+
     constructor(player) {
         super();
         var self = this;
         this.player = player;
-        this.player.on("stop", function() {
-             self.emit("stop");
-        });
+        this.stopped = false;
+        this.player
+            .on("stop", function() {
+                self.emit("stop");
+                self.stopped = true;
+            })
+            .on("error", function(err) {
+                self.emit("error", err);
+            });
     }
+
     stop() {
-        this.player.kill();
+        if (!this.stopped) {
+            this.player.stop();
+        }
+        return this;
     }
 }
 
@@ -87,17 +98,23 @@ export class Speaker {
     playFile(filename, options = {}) {
         var self = this;
         var filename = filename.replace(new RegExp('\\' + path.sep, 'g'), '/');
-        var instance = new SpeakerInstance(new Mplayer({debug: true, args: "-ao win32"}));
+        var instance = new SpeakerInstance(new Mplayer({debug: false, args: "-ao win32"}));
         this.logger.debug("File %s requested to play", filename);
 
         instance.once("stop", function() {
-            instance = null;
+            self.currentInstance = null;
+        });
+
+        instance.once("error", function(err) {
+            self.logger.error(err);
+            self.currentInstance = null;
         });
 
         // kill possible previous player
         if (self.currentInstance) {
             self.currentInstance.stop();
         }
+
         // create new player
         self.currentInstance = instance;
 

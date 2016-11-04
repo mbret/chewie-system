@@ -17,7 +17,28 @@
             "module": {
                 "arguments": [{ "directory": "path:./controllers" }]
             }
-        }
+        },
 
+        "appsec": {
+            "module": {
+                "arguments": [
+                    {
+                        "xframe": "SAMEORIGIN",
+                        "p3p": false,
+                        "csp": false
+                    }
+                ]
+            }
+        },
+        "csrf": {
+          "enabled": true,
+          "priority": 111,
+          "route": "/((?!api))*",
+          "module": {
+            "name": "lusca",
+            "method": "csrf",
+            "arguments": [ {} ]
+          }
+        }
     }
 }

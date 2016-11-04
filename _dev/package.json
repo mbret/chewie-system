@@ -4,8 +4,5 @@
     "start_linux": "node _dev-linux/index.js",
     "start_windows": "node _dev-windows/index.js --harmony",
     "start_windows_blank": "node _dev-windows-blank/index.js"
-  },
-  "devDependencies": {
-    "eslint-plugin-angular": "^1.4.1"
   }
 }

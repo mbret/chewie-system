@@ -25,7 +25,8 @@ module.exports = {
     webServerSSL: {
         activate: true
     },
-    sharedServerApiSSL: {
+
+    sharedApiSSL: {
         activate: true
     }
 };

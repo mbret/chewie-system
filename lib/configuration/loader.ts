@@ -11,7 +11,7 @@ import path = require("path");
 export default function(config: any) {
     let defaultConfig =  require("./default");
     let completeConfig = _.merge({}, defaultConfig, config);
-    let realIp = ip.address();
+    let systemIP = ip.address();
     let appPath = process.cwd();
 
     // Set some config only possible during runtime
@@ -22,8 +22,8 @@ export default function(config: any) {
             pluginsDataDir: completeConfig.system.pluginsDataDir || path.join(completeConfig.system.dataDir, 'plugins'),
             synchronizedPluginsDir: completeConfig.system.synchronizedPluginsDir || path.join(completeConfig.system.dataDir, 'synchronized-plugins'),
         },
-        realIp: realIp,
-        apiEndpointAddress: completeConfig.apiEndpointAddress || ((completeConfig.sharedServerApiSSL.activate ? "https" : "http") + "://" + (realIp + ':' + completeConfig.apiPort))
+        systemIP: systemIP,
+        sharedApiUrl: completeConfig.sharedApiUrl || ((completeConfig.sharedApiSSL.activate ? "https" : "http") + "://" + (systemIP + ':' + completeConfig.sharedApiPort))
     });
     return completeConfig;
 };

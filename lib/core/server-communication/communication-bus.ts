@@ -21,7 +21,7 @@ export class CommunicationBus extends EventEmitter {
         this.system = system;
         this.socket = null;
         this.logger = system.logger.getLogger('CommunicationBus');
-        this.sharedApiEndpoint = this.system.config.apiEndpointAddress;
+        this.sharedApiEndpoint = this.system.config.sharedApiUrl;
     }
 
     initialize(cb) {
