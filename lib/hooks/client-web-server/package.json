@@ -5,10 +5,10 @@
   "author": "test",
   "main": "index.js",
   "scripts": {
+    "postinstall": "npm run build",
     "test": "grunt test",
     "build": "gulp build",
-    "dev": "concurrently --raw \"gulp build\" \"gulp watch\"",
-    "all": "npm run build && npm run test"
+    "dev": "concurrently --raw \"gulp build\" \"gulp watch\""
   },
   "dependencies": {
     "construx": "^1.0.0",

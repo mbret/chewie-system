@@ -186,7 +186,7 @@ export class Daemon extends EventEmitter {
             // Splash final information
             self.logger.info('The system is now started and ready!');
             //self.logger.info('The web interface is available at at %s or %s for remote access', self.webServer.getLocalAddress(), self.webServer.getRemoteAddress());
-            self.logger.info('The API is available at at %s or %s for remote access', self.apiServer.getLocalAddress(), self.config.sharedApiUrl);
+            self.logger.info('The API is available at %s or %s for remote access', self.apiServer.getLocalAddress(), self.config.sharedApiUrl);
             console.log('');
 
             // Play some system sounds

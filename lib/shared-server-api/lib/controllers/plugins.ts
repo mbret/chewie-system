@@ -117,8 +117,6 @@ export = function(server, router) {
         var userId = parseInt(req.params.user);
         var pluginPackage = req.body.package;
 
-        console.log(pluginPackage);
-        console.log(typeof pluginPackage);
         // process.exit();
         // validation
         var errors = {};
