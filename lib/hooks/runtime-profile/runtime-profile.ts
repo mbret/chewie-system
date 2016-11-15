@@ -114,7 +114,7 @@ export class RuntimeProfileHook implements Hook {
         // Remote & shared events
         this.system.communicationBus
             .on("user:plugin:created", function(plugin) {
-                if (plugin.userId === self.currentProfile.id) {
+                if (self.currentProfile && plugin.userId === self.currentProfile.id) {
                     self
                         .synchronizePlugins([plugin])
                         .then(function() {
@@ -123,12 +123,12 @@ export class RuntimeProfileHook implements Hook {
                 }
             })
             .on("user:plugin:deleted", function(plugin) {
-                if (plugin.userId === self.currentProfile.id) {
+                if (self.currentProfile && plugin.userId === self.currentProfile.id) {
                     self.unLoadPlugins([plugin]);
                 }
             })
             .on("user:scenario:created", function(scenario) {
-                if (scenario.userId === self.currentProfile.id) {
+                if (self.currentProfile && scenario.userId === self.currentProfile.id) {
                     // Read the scenario
                     self.system.scenarioReader.readScenario(scenario)
                         .catch(function(err) {

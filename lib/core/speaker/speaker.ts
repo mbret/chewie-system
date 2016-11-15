@@ -3,88 +3,63 @@
 var taskQueue = require('my-buddy-lib').taskQueue;
 import {Daemon} from "../../daemon";
 import {EventEmitter} from "events";
-var Mplayer = require("./mplayer");
+var TextToSpeechAdapter = require("./adapters/default-text-to-speech-adapter/index");
+import {Adapter as MplayerSpeakerAdapter} from "./adapters/mplayer-speaker-adapter/adapter";
 var path = require("path");
-
+let self;
 /**
  * This fake sound is used when adapter is not available or not working.
  * In some system we may not need sound output and the system has to run well.
  * In order to not break the code we just return a fake sound instance which is closed & complete.
  */
-class FakeSound extends EventEmitter {
+// class FakeSound extends EventEmitter {
+//
+//     constructor() {
+//         super();
+//         var self = this;
+//         setImmediate(function() {
+//             self.emit("complete");
+//             self.emit("closed");
+//         });
+//     }
+//
+//     close() {
+//         // nothing
+//     }
+// }
 
-    constructor() {
-        super();
-        var self = this;
-        setImmediate(function() {
-            self.emit("complete");
-            self.emit("closed");
-        });
-    }
-
-    close() {
-        // nothing
-    }
-}
-
-class SpeakerInstance extends EventEmitter {
-
-    constructor(player) {
-        super();
-        var self = this;
-        this.player = player;
-        this.stopped = false;
-        this.player
-            .on("stop", function() {
-                self.emit("stop");
-                self.stopped = true;
-            })
-            .on("error", function(err) {
-                self.emit("error", err);
-            });
-    }
-
-    stop() {
-        if (!this.stopped) {
-            this.player.stop();
-        }
-        return this;
-    }
-}
-
-/**
- *
- */
 export class Speaker {
 
     system: Daemon;
     logger: any;
+    // current player instance. We do not play two main sound at the same time. Once a new sound is requested the current
+    // instance is automatically closed
     currentInstance: any;
+    // Adapter used to convert text to sound file
+    textToSpeechAdapter: any;
 
     constructor(system) {
-        var self = this;
+        self = this;
         this.system = system;
-        this.logger = this.system.logger.Logger.getLogger('Speaker');
-
-        // Adapter used to convert text to sound file
-        this.textToSpeechAdapter = null;
+        this.logger = this.system.logger.getLogger('Speaker');
         this.currentInstance = null;
+        this.textToSpeechAdapter = null;
     }
 
-    setTextToSpeechAdapter(textToSpeechAdapter) {
-        this.textToSpeechAdapter = textToSpeechAdapter;
-    }
-
-    registerTextToSpeechAdapter(Adapter, cb) {
-        var self = this;
-        var adapter = new Adapter(this.system);
-        adapter.initialize(function(err){
-            if(err){
-                return cb(err);
-            }
-            self.setTextToSpeechAdapter(adapter);
-
-            return cb();
+    /**
+     *
+     * @returns {Promise}
+     */
+    initialize() {
+        return new Promise(function(resolve, reject) {
+            self.textToSpeechAdapter = new TextToSpeechAdapter(self.system);
+            self.textToSpeechAdapter.initialize(function(err) {
+                if (err) {
+                    return reject(err);
+                } else {
+                    return resolve();
+                }
+            });
         });
     }
 
@@ -98,7 +73,7 @@ export class Speaker {
     playFile(filename, options = {}) {
         var self = this;
         var filename = filename.replace(new RegExp('\\' + path.sep, 'g'), '/');
-        var instance = new SpeakerInstance(new Mplayer({debug: false, args: "-ao win32"}));
+        var instance = new MplayerSpeakerAdapter(this.system);
         this.logger.debug("File %s requested to play", filename);
 
         instance.once("stop", function() {
@@ -118,10 +93,8 @@ export class Speaker {
         // create new player
         self.currentInstance = instance;
 
-        instance.player.once("ready", function() {
-            self.logger.debug('Playing sound file %s', filename);
-            instance.player.openFile(filename);
-        });
+        self.logger.debug('Playing sound file %s', filename);
+        instance.play(filename);
 
         return instance;
         //var sound = this.speakerAdapter.playFile(filename);
@@ -141,30 +114,30 @@ export class Speaker {
         //return sound;
     }
 
-    playUrl(url) {
-        var self = this;
-        this.logger.debug('Playing url %s', url);
-
-        if(!this.speakerAdapter){
-            return new FakeSound();
-        }
-
-        var sound = this.speakerAdapter.playUrl(url);
-
-        sound.on('error', function(err){
-            self.logger.error('An error happened while playing file %s. Err:', url, err);
-        });
-
-        // watch for system stop
-        // stop the current sound (running or not) to avoid having mpg123 playing sound
-        // even if system is not running.
-        taskQueue.register('shutdown', function(cb){
-            sound.close();
-            return cb();
-        });
-
-        return sound;
-    }
+    // playUrl(url) {
+    //     var self = this;
+    //     this.logger.debug('Playing url %s', url);
+    //
+    //     if(!this.speakerAdapter){
+    //         return new FakeSound();
+    //     }
+    //
+    //     var sound = this.speakerAdapter.playUrl(url);
+    //
+    //     sound.on('error', function(err){
+    //         self.logger.error('An error happened while playing file %s. Err:', url, err);
+    //     });
+    //
+    //     // watch for system stop
+    //     // stop the current sound (running or not) to avoid having mpg123 playing sound
+    //     // even if system is not running.
+    //     taskQueue.register('shutdown', function(cb){
+    //         sound.close();
+    //         return cb();
+    //     });
+    //
+    //     return sound;
+    // }
 
     /**
      * Play a text.

@@ -6,7 +6,7 @@ module.exports.bootstrap = class Bootstrap {
 
     bootstrap(system, done) {
 
-        return done();
+        // return done();
         // create new user
         system.apiService
             .findOrCreateUser({ username: "mbret" })
@@ -23,7 +23,7 @@ module.exports.bootstrap = class Bootstrap {
                                         if (!info) {
                                             throw new Error("date-time does not exist");
                                         }
-                                        var data = _.merge({id: info.name}, info, {config: info});
+                                        var data = _.merge({id: info.name}, info, {package: info});
                                         return system.apiService.createOrUpdatePlugin(user.id, data.id, data);
                                     }),
 
@@ -34,7 +34,7 @@ module.exports.bootstrap = class Bootstrap {
                                         if (!info) {
                                             throw new Error("radio-web does not exist");
                                         }
-                                        var data = _.merge({id: info.name}, info, {config: info});
+                                        var data = _.merge({id: info.name}, info, {package: info});
                                         return system.apiService.createOrUpdatePlugin(user.id, data.id, data);
                                     })
                             ]);

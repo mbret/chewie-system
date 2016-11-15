@@ -5,6 +5,12 @@
     <!--form-->
     <form name="form" novalidate>
 
+        <div class="form-group">
+            <label for="triggerName">Name of your trigger</label>
+            <span class="help-block m-b-none">You may set a custom name for your trigger or leave it blank and use default name "{{trigger.name}}"</span>
+            <input type="text" id="triggerName" name="triggerName" class="form-control" ng-required="false" ng-model="formData.name" placeholder="{{trigger.name}}"/>
+        </div>
+
         <module-form-options config-options="trigger.optionsConfig" ng-model="formData.options" prefix="1"></module-form-options>
 
         <!--<div class="panel panel-success">-->

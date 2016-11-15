@@ -5,7 +5,6 @@ import {ClientWebServer} from "./hooks/client-web-server/server";
 var async = require('async');
 var util = require('util');
 var path = require('path');
-var DefaultTextToSpeechAdapter = require('./core/speaker').DefaultTextToSpeechAdapter;
 var self = this;
 
 export class Bootstrap {
@@ -29,6 +28,7 @@ export class Bootstrap {
 
         Promise
             .all([
+                self.system.speaker.initialize(),
                 new Promise(function(resolve, reject) {
                     // run old bootstrap
                     self._oldBootstrap(self.system, self.system.logger, function(err) {
@@ -110,12 +110,6 @@ export class Bootstrap {
                     //    var SpeakerAdapter = config.module;
                     //    system.speaker.registerSpeakerAdapter(new SpeakerAdapter(system, config.options), cb);
                     //},
-
-                    // Register default text to speech adapter
-                    // This adapter is supposed to transform text into sound file
-                    function(cb){
-                        system.speaker.registerTextToSpeechAdapter(DefaultTextToSpeechAdapter, cb);
-                    },
 
                     // Listen the orm events bus
                     // The orm bus act as a link to update runtime plugins/modules/etc whenever
