@@ -2,6 +2,9 @@
     <h3 class="modal-title">Configure your trigger</h3>
 </div>
 <div class="modal-body">
+
+    <uib-alert type="info" ng-if="trigger.description">{{trigger.description}}</uib-alert>
+
     <!--form-->
     <form name="form" novalidate>
 

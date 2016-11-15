@@ -10,7 +10,7 @@
   "scripts": {
     "preinstall": "cd lib/hooks/client-web-server && npm install",
     "build": "cd lib/hooks/client-web-server && npm run build",
-    "dev": "concurrently --raw \"npm run build\" \"cd lib/hooks/client-web-server && npm run dev\"",
+    "dev": "concurrently --raw \"npm run build\" \"cd lib/hooks/client-web-server && npm run dev\" \"npm run tsc:w\"",
     "test": "mocha",
     "tsc": "tsc",
     "tsc:w": "tsc -w",

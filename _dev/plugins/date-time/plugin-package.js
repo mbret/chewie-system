@@ -67,7 +67,10 @@ module.exports = {
          */
         {
             id: "hoursRange",
-            name: "From an hour until another",
+            description: "Allow you to trigger an action when entering a time range. Let's say you want to play some radio at 4pm and stop it at 5pm. " +
+            "There are some case where the system could not be able to trigger it at 4pm (restart, crash, etc). In this case you would still trigger the radio even at 4:30pm. This trigger allow you " +
+            "to handle these scenarios",
+            name: "Time range",
             module: "./trigger.js",
             type: "trigger",
             optionsConfig: [
