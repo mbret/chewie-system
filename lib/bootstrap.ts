@@ -121,7 +121,7 @@ export class Bootstrap {
                         system.on('orm:plugins:updated', function(plugin){
 
                             // check if a plugin with taht name (and belong to the user) is registered
-                            if(system.plugins.has(plugin.name) && system.runtimeHelper.profile.getActiveProfileId() === plugin.userId){
+                            if(system.plugins.has(plugin.name) && system.runtime.profileManager.getActiveProfileId() === plugin.userId){
                                 // Then we need to update its user options
                                 system.plugins.get(plugin.name).setOptions(plugin.get('userOptions'));
                             }
@@ -132,8 +132,8 @@ export class Bootstrap {
                         // up to date.
                         system.on('orm:user:updated', function(user){
 
-                            if(system.runtimeHelper.profile.getActiveProfile().id === user.get('id')){
-                                system.runtimeHelper.profile.setActiveProfile(user.toJSON());
+                            if(system.runtime.profileManager.getActiveProfile().id === user.get('id')){
+                                system.runtime.profileManager.setActiveProfile(user.toJSON());
                             }
                         });
 
@@ -147,8 +147,8 @@ export class Bootstrap {
                         system.bus.on('task:created', function(task) {
                             // Run task if a profile is loaded + check if task user = profile
                             // No need to be sync, task is ran in background
-                            if(system.runtimeHelper.profile.hasActiveProfile()){
-                                system.runtimeHelper.registerTask(task, function(err){
+                            if(system.runtime.profileManager.hasActiveProfile()){
+                                system.runtime.registerTask(task, function(err){
                                     if(err){
                                         if(err.moduleNotLoaded) {
                                             system.logger.warn(err.message);

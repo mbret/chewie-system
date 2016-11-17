@@ -13,6 +13,7 @@ export default function(config: any) {
     let completeConfig = _.merge({}, defaultConfig, config);
     let systemIP = ip.address();
     let appPath = process.cwd();
+    let webServerUrl = ((completeConfig.webServerSSL.activate ? "https" : "http") + "://localhost:" + completeConfig.sharedApiPort);
 
     // Set some config only possible during runtime
     _.merge(completeConfig, {
@@ -23,7 +24,9 @@ export default function(config: any) {
             synchronizedPluginsDir: completeConfig.system.synchronizedPluginsDir || path.join(completeConfig.system.dataDir, 'synchronized-plugins'),
         },
         systemIP: systemIP,
-        sharedApiUrl: completeConfig.sharedApiUrl || ((completeConfig.sharedApiSSL.activate ? "https" : "http") + "://" + (systemIP + ':' + completeConfig.sharedApiPort))
+        sharedApiUrl: completeConfig.sharedApiUrl || ((completeConfig.sharedApiSSL.activate ? "https" : "http") + "://" + (systemIP + ':' + completeConfig.sharedApiPort)),
+        webServerUrl: webServerUrl,
+        webServerRemoteUrl: webServerUrl.replace("localhost", systemIP)
     });
     return completeConfig;
 };

@@ -6,7 +6,7 @@ import {Task} from "./plugins/tasks/index";
 import {Daemon} from "../daemon";
 import {TaskExecution} from "./plugins/tasks/task-execution";
 import {PluginContainer} from "./plugins/plugin-container";
-var ProfileManager = require('./profile-manager');
+import {ProfileManager} from "./profile-manager";
 var util = require("util");
 
 export class Runtime {
@@ -14,13 +14,12 @@ export class Runtime {
     system: Daemon;
     scenarios: Map<string, any>;
     plugins: Map<string, PluginContainer>;
-    profileManager: any;
+    profileManager: ProfileManager;
 
     constructor(system: Daemon){
         this.logger = system.logger.Logger.getLogger('Runtime');
         this.system = system;
         this.profileManager = new ProfileManager(system);
-        this.profile = this.profileManager;
         this.scenarios = new Map();
         this.plugins = new Map();
     }

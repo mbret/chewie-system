@@ -123,8 +123,8 @@ export class ClientWebServer implements Hook {
 
         server.listen(self.system.config.webServerPort);
         server.on('listening', function () {
-            app.locals.url = (useSSL ? "https" : "http") + "://localhost:" + this.address().port;
-            app.locals.realUrl = app.locals.url.replace("localhost", self.system.config.systemIP);
+            app.locals.url = self.system.config.webServerUrl;
+            app.locals.realUrl = self.system.config.webServerRemoteUrl;
             self.logger.debug('Server listening on %s (%s from outside)', app.locals.url, app.locals.realUrl);
         });
 

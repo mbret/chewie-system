@@ -60,6 +60,8 @@
     "which": "^1.2.11"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
     "concurrently": "^3.0.0",
     "eslint": "^3.9.1",
     "eslint-config-standard": "^6.2.0",

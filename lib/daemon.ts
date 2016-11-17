@@ -99,7 +99,7 @@ export class Daemon extends EventEmitter {
         this.logger.info('Starting...');
         // Used to handle running profile / tasks / etc
         this.communicationBus = new ServerCommunication.CommunicationBus(this);
-        this.runtime = this.runtimeHelper = new Runtime(this);
+        this.runtime = new Runtime(this);
         this.apiServer = new ApiServer(this);
         this.pluginsHandler = new PluginsHandler(this);
         this.notificationService = new NotificationService(this);
@@ -175,7 +175,7 @@ export class Daemon extends EventEmitter {
         });
 
         // listen and forward some core events
-        this.runtimeHelper.profileManager.on("profile:start", this.emit.bind(this, "profile:start"));
+        // this.runtimeHelper.profileManager.on("profile:start", this.emit.bind(this, "profile:start"));
 
         this.runBootstrap(function(err){
             if(err){
@@ -191,9 +191,9 @@ export class Daemon extends EventEmitter {
 
             // Play some system sounds
             self.playSystemSound('start_up.wav');
-            self.runtimeHelper.profile.on('profile:start:complete', function(){
-                self.playSystemSound('profile_loaded.wav');
-            });
+            // self.runtimeHelper.profile.on('profile:start:complete', function(){
+            //     self.playSystemSound('profile_loaded.wav');
+            // });
 
             // Try to start profile if one is defined on startup
             var profileToLoad = self.config.profileToLoadOnStartup;
@@ -250,6 +250,8 @@ export class Daemon extends EventEmitter {
                 self.logger.debug("A user bootstrap has been found, run it");
                 var userBootstrap = new UserBootstrapModule();
                 userBootstrap.bootstrap(self, done);
+            } else {
+                return done();
             }
         });
     }

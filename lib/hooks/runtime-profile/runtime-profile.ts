@@ -66,14 +66,14 @@ export class RuntimeProfileHook implements Hook {
             })
             .on("profile:stop", function() {
                 // self.currentProfile = null;
-                // var activeProfile = self.system.runtimeHelper.profile.getActiveProfile().id;
+                // var activeProfile = self.system.runtime.profileManager.getActiveProfile().id;
                 //
                 // var tasksIds = Array.from(self.system.tasksMap.keys());
                 //
                 // // Clean up tasks
                 // async.map(tasksIds, function(id, cbTask){
                 //     self.system.logger.debug('clean up task %s', id);
-                //     self.system.runtimeHelper.unregisterTask(id);
+                //     self.system.runtime.unregisterTask(id);
                 //     return cbTask();
                 // }, function(err){
                 //     if(err) {

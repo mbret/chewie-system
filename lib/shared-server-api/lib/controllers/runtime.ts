@@ -12,52 +12,11 @@ module.exports = function(server, router){
      * Reject all request method except OPTIONS when no active profile exist.
      */
     router.all("/runtime/tasks*", function(req, res, next) {
-        if(req.method === "OPTIONS" || server.system.runtimeHelper.hasActiveProfile()) {
+        if(req.method === "OPTIONS" || server.system.runtime.hasActiveProfile()) {
             return next();
         }
 
         return res.badRequest({code: "noActiveProfile"});
-    });
-
-    router.get('/runtime/profile', function(req, res){
-        var profile = server.system.runtimeHelper.profile.getActiveProfile();
-        if(profile === null){
-            return res.status(404).send();
-        }
-        return res.status(200).send(profile);
-    });
-
-    router.post('/runtime/profile', function(req, res){
-        var id = req.body.id;
-
-        UserDao.findById(id)
-            .then(function(user){
-                if(!user){
-                    return res.status(400).send('invalid user id');
-                }
-                return server.system.profileManager.startProfile(user.username);
-            })
-            .then(function(){
-                server.system.notificationService.push('success', 'Profile started');
-                return res.status(201).send();
-            })
-            .catch(function(err){
-                server.system.notificationService.push('error', 'Profile failed to start');
-                res.status(500).send(err.stack);
-            });
-    });
-
-    router.delete('/runtime/profile', function(req, res){
-
-        return server.system.profileManager.stopProfile()
-            .then(function(){
-                server.system.notificationService.push('success', 'Profile stopped');
-                res.status(200).send();
-            })
-            .catch(function(err){
-                server.system.notificationService.push('error', 'Profile failed to stop');
-                res.status(500).send(err.stack);
-            });
     });
 
     /**
@@ -98,7 +57,7 @@ module.exports = function(server, router){
     //             // activate the task (start it)
     //             if (active !== null && active && !server.system.tasks.has(taskId)) {
     //                 // Register the new task in runtime
-    //                 server.system.runtimeHelper.registerTask(task, function(err){
+    //                 server.system.runtime.registerTask(task, function(err){
     //                     if(err){
     //                         return res.serverError(err);
     //                     }
@@ -109,7 +68,7 @@ module.exports = function(server, router){
     //             }
     //             // deactivate the task (stop it)
     //             else if (active !== null && !active && server.system.tasks.has(taskId)) {
-    //                 server.system.runtimeHelper.unregisterTask(taskId)
+    //                 server.system.runtime.unregisterTask(taskId)
     //                     .then(function(){
     //                         server.system.notificationService.push('success', util.format('The task %s has been stopped', taskId));
     //                         return res.ok();
@@ -140,7 +99,7 @@ module.exports = function(server, router){
                 }
 
                 // execute the task
-                server.system.runtimeHelper.executeTask(task);
+                server.system.runtime.executeTask(task);
                 return res.created();
             })
             .catch(res.serverError);
@@ -162,7 +121,7 @@ module.exports = function(server, router){
         }
 
         // stop
-        server.system.runtimeHelper.stopTask(executingTask);
+        server.system.runtime.stopTask(executingTask);
         return res.ok();
     });
 
@@ -198,7 +157,7 @@ module.exports = function(server, router){
     //                     if (!trigger) {
     //                         return res.notFound("trigger not found");
     //                     }
-    //                     server.system.runtimeHelper.executeTask(task, trigger);
+    //                     server.system.runtime.executeTask(task, trigger);
     //                     server.system.notificationService.push('info', util.format('Task %s started manually', task.name));
     //                     server.logger.debug('Task %s with id %s started manually with trigger id %s', task.name, task.id, trigger.id);
     //
