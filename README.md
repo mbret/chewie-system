@@ -57,3 +57,6 @@ Here is the priority order:
 - latests social notifications
 - weather
 - incoming calendar events (google)
+
+Generator
+https://github.com/expressjs/generator
