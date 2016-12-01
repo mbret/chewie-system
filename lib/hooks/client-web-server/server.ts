@@ -47,6 +47,7 @@ export class ClientWebServer implements Hook {
 
         // Prepare app
         app.use(kraken(options));
+
         // @todo it should be moved elsewhere
         app.use(function(req, res, next){
 
@@ -118,7 +119,7 @@ export class ClientWebServer implements Hook {
             certificate = fs.readFileSync(self.system.config.webServerSSL.cert, 'utf8');
             server = https.createServer({key: privateKey, cert: certificate}, app);
         } else {
-            server = http.createServer(app);
+            http.createServer(app).listen();
         }
 
         server.listen(self.system.config.webServerPort);

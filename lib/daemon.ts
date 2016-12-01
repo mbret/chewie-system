@@ -198,7 +198,7 @@ export class Daemon extends EventEmitter {
             // Try to start profile if one is defined on startup
             var profileToLoad = self.config.profileToLoadOnStartup;
             if(profileToLoad) {
-                self.runtimeHelper.profile.startProfile(profileToLoad)
+                self.runtime.profileManager.startProfile(profileToLoad)
                     .then(function(){
                         self.logger.info("Profile %s has been started", profileToLoad);
                     })

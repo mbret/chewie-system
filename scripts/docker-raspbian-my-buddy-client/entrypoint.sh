@@ -6,4 +6,4 @@ cd /home/my-buddy
 echo "Installing project"
 npm install
 echo "Project installed, now try to run it"
-node index.js
+npm run start

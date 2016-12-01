@@ -13,7 +13,7 @@ export default function(config: any) {
     let completeConfig = _.merge({}, defaultConfig, config);
     let systemIP = ip.address();
     let appPath = process.cwd();
-    let webServerUrl = ((completeConfig.webServerSSL.activate ? "https" : "http") + "://localhost:" + completeConfig.sharedApiPort);
+    let webServerUrl = ((completeConfig.webServerSSL.activate ? "https" : "http") + "://localhost:" + completeConfig.webServerPort);
 
     // Set some config only possible during runtime
     _.merge(completeConfig, {
