@@ -1,7 +1,7 @@
 {
   "main": "./lib/index.js",
   "author": "Maxime Bret",
-  "name": "my-buddy-system",
+  "name": "chewie-system",
   "description": "",
   "version": "0.1.0",
   "engines": {
