@@ -11,9 +11,7 @@ module.exports = {
         dataDir:        path.join(__dirname, '../.my-buddy/data')
     },
 
-    plugins: {
-        localRepositories: [path.join(__dirname, '../../plugins')]
-    },
+    pluginsLocalRepositoryDir: path.join(__dirname, '../../plugins'),
 
     database: {
         connexion: {

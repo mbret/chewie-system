@@ -15,7 +15,5 @@ module.exports = {
         }
     },
 
-    plugins: {
-        localRepositories: [process.env.APP_ROOT_PATH + '/../plugins']
-    },
+    pluginsLocalRepositoryDir: process.env.APP_ROOT_PATH + '/../plugins',
 };

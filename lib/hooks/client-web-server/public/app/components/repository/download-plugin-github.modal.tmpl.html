@@ -1,0 +1,26 @@
+<div class="modal-header">
+    <h3 class="modal-title">Download a plugin from github</h3>
+</div>
+<div class="modal-body">
+
+    <p>
+        You can download a plugin from github github directly by providing its repository url.
+        The plugin will be downloaded inside the plugin directory you have set, otherwise it will be placed inside tmp folder.
+    </p>
+    <uib-alert type="info" >To set your plugin directory go to app folder and change pluginsLocalRepositoryDir inside /config/default.js (you may have changed the structure)</uib-alert>
+    <p>Your current plugin folder is <span class="label">{{APP_CONFIG.pluginsLocalDir}}</span></p>
+
+    <!--form-->
+    <form name="form">
+        <div class="form-group">
+            <label for="repoUrl">Plugin repository url</label>
+            <input type="text" id="repoUrl" name="repoUrl" class="form-control" ng-required="true" ng-model="$ctrl.formData.repoUrl" placeholder="ex: https://github.com/mbret/chewie-app.git"/>
+            <form-errors field="form.repoUrl"></form-errors>
+        </div>
+    </form>
+    <!--end:form-->
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+    <button class="btn btn-primary" type="submit" ng-click="$ctrl.confirm(form)">Confirm</button>
+</div>

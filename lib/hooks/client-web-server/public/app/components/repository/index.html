@@ -13,28 +13,43 @@
 </div>
 
 <div class="wrapper wrapper-content animated fadeIn">
-        <h1 class="page-header">My local plugins</h1>
+    <div class="tabs-container">
+        <uib-tabset>
+            <uib-tab heading="Local repository">
+                <div class="panel-body">
+                    <p>
+                        <button class="btn btn-success " type="button" ng-click="$ctrl.downloadFromGithub()"><i class="fa fa-download"></i>&nbsp;&nbsp;<span class="bold">Download from github</span></button>
+                    </p>
+                    <hr>
+                    <div masonry="{ gutter: 25 }" load-images="false" preserve-order column-width="300" reload-on-resize>
 
-        <div masonry="{ gutter: 25 }" load-images="false" preserve-order column-width="300" reload-on-resize>
-
-            <div class="masonry-brick brick-repository" ng-repeat="plugin in plugins" ng-class="{'brick-repository--selected': saved[plugin.name]}">
-                <div class="contact-box">
-                    <a ui-sref="dashboard.repository.detail({name: plugin.name})">
-                        <div class="col-sm-5">
-                            <div class="text-center">
-                                <h3>{{plugin.title || plugin.name}}</h3>
-                                <small>({{plugin.name}})</small>
+                        <div class="masonry-brick brick-repository" ng-repeat="plugin in $ctrl.plugins" ng-class="{'brick-repository--selected': $ctrl.saved[plugin.name]}">
+                            <div class="contact-box">
+                                <a ui-sref="dashboard.repository.detail({name: plugin.name})">
+                                    <div class="col-sm-5">
+                                        <div class="text-center">
+                                            <h3>{{plugin.title || plugin.name}}</h3>
+                                            <small>({{plugin.name}})</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <strong>from {{plugin.author}}</strong>
+                                        <br><small>(v{{plugin.version}})</small>
+                                        <p>{{plugin.description}}</p>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </a>
                             </div>
                         </div>
-                        <div class="col-sm-7">
-                            <strong>from {{plugin.author}}</strong>
-                            <br><small>(v{{plugin.version}})</small>
-                            <p>{{plugin.description}}</p>
-                        </div>
-                        <div class="clearfix"></div>
-                    </a>
-                </div>
-            </div>
 
-        </div>
+                    </div>
+                </div>
+            </uib-tab>
+            <uib-tab heading="Remote repository">
+                <div class="panel-body">
+                    Not yet available.
+                </div>
+            </uib-tab>
+        </uib-tabset>
+    </div>
 </div>
