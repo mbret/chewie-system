@@ -26,7 +26,7 @@ export class ModuleHelper {
      */
     //getActiveTasksFromMyPlugin() {
     //    var modules = [];
-    //    this.system.modules.forEach(function(container) {
+    //    this.system.runtime.modules.forEach(function(container) {
     //        if (container.pluginContainer.id === self.moduleContainer.pluginContainer.id && container.module.type === "task") {
     //            modules.push(container.instance);
     //        }

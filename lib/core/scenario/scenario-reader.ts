@@ -43,7 +43,7 @@ export class ScenarioReader {
                 scenario.nodes.forEach(function (node) {
                     let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
                     let rtId = self.getRuntimeModuleKey(scenario.id, node.id, moduleId);
-                    let module = self.system.modules.get(rtId);
+                    let module = self.system.runtime.modules.get(rtId);
                     if (node.type === "trigger") {
                         // Create the first demand for trigger at lvl 0 (root)
                         self.logger.debug("Create a new demand for trigger module from plugin %s", node.pluginId);
@@ -74,7 +74,7 @@ export class ScenarioReader {
 
                 node.nodes.forEach(function(subNode) {
                     let moduleUniqueId = ModuleContainer.getModuleUniqueId(subNode.pluginId, subNode.moduleId);
-                    let runtimeModuleContainer = self.system.modules.get(self.getRuntimeModuleKey(scenario.id, subNode.id, moduleUniqueId));
+                    let runtimeModuleContainer = self.system.runtime.modules.get(self.getRuntimeModuleKey(scenario.id, subNode.id, moduleUniqueId));
 
                     if (subNode.type === "trigger") {
                         self.logger.debug("Create a new demand for trigger module from plugin %s", subNode.pluginId);
@@ -113,7 +113,7 @@ export class ScenarioReader {
             .then(function(container) {
 
                 // add to global storage
-                self.system.modules.set(self.getRuntimeModuleKey(scenario.id, node.id, moduleUniqueId), container);
+                self.system.runtime.modules.set(self.getRuntimeModuleKey(scenario.id, node.id, moduleUniqueId), container);
 
                 return self.readNodes(scenario, node.nodes, options);
             })
@@ -142,12 +142,12 @@ export class ScenarioReader {
         // get the module instance
         let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
         let rtId = this.getRuntimeModuleKey(scenario.id, node.id, moduleId);
-        let module = this.system.modules.get(rtId);
+        let module = this.system.runtime.modules.get(rtId);
 
         this.logger.debug("Stopping %s", rtId);
         if (module) {
             module.instance.stop();
-            this.system.modules.delete(rtId);
+            this.system.runtime.modules.delete(rtId);
             this.logger.debug("module %s stopped and deleted from runtime", rtId);
         }
 
@@ -186,7 +186,7 @@ export class ScenarioReader {
     onTaskEnd(scenario, node, id) {
         // remove from storage. At this point we do not have anymore reference of the instance in system
         // It's up to module to clean their stuff
-        // this.system.modules.delete(this.getRuntimeModuleKey(scenario.id, node.id, id));
+        // this.system.runtime.modules.delete(this.getRuntimeModuleKey(scenario.id, node.id, id));
         // this.logger.debug("Task %s from plugin %s has been done and deleted from runtime storage", node.moduleId, node.pluginId);
     }
 

@@ -1,18 +1,18 @@
 'use strict';
 
-var async = require('async');
+let async = require('async');
 import _  = require('lodash');
-var PluginsHandler = require('./core/plugins/plugins-handler.js');
-var SpeechHandler = require('./core/speech/speech-handler.js');
-var NotificationService = require('./core/notification-service');
-var taskQueue = require('my-buddy-lib').taskQueue;
-var repositories = require('./core/repositories');
-var utils = require('my-buddy-lib').utils;
+let PluginsHandler = require('./core/plugins/plugins-handler.js');
+let SpeechHandler = require('./core/speech/speech-handler.js');
+let NotificationService = require('./core/notification-service');
+let taskQueue = require('my-buddy-lib').taskQueue;
+let repositories = require('./core/repositories');
+let utils = require('my-buddy-lib').utils;
 import path = require('path');
-var packageInfo = require(__dirname + '/../package.json');
-var Logger = require('my-buddy-lib').logger.Logger;
-var Bus = require('./core/bus');
-var api = require("./core/api");
+let packageInfo = require(__dirname + '/../package.json');
+let Logger = require('my-buddy-lib').logger.Logger;
+let Bus = require('./core/bus');
+let api = require("./core/api");
 import ip  = require('ip');
 import { EventEmitter }  from "events";
 import * as ServerCommunication from "./core/server-communication/index";
@@ -20,7 +20,6 @@ import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
 import {Bootstrap} from "./bootstrap";
 import {Runtime} from "./core/runtime";
-import {ModuleContainer} from "./core/plugins/modules/module-container";
 import {Server as ApiServer} from "./shared-server-api";
 import {TaskExecution} from "./core/plugins/tasks/task-execution";
 import {HookConstructor} from "./core/hook";
@@ -37,7 +36,6 @@ import Storage from "./core/storage/storage";
 export class Daemon extends EventEmitter {
 
     executingTasks: Map<string, TaskExecution>;
-    modules: Map<string, ModuleContainer>;
     runtime: Runtime;
     apiServer: ApiServer;
     config: any;
@@ -52,6 +50,7 @@ export class Daemon extends EventEmitter {
     repository: any;
     apiService: any;
     storage: Storage;
+    info: any;
 
     /**
      *
@@ -59,15 +58,14 @@ export class Daemon extends EventEmitter {
     constructor() {
         super();
         global.MyBuddy = this;
-        // Contain modules by their names
-        this.modules = new Map();
         // Contain tasks by their id
         this.executingTasks = new Map();
         this.hooksToLoad = [];
         this.storage = new Storage(this);
         this.info = {
             startedAt: new Date(),
-            version: packageInfo.version
+            version: packageInfo.version,
+            nodeVersions: process.versions
         };
     }
 
@@ -84,7 +82,7 @@ export class Daemon extends EventEmitter {
 
         // Build system logger
         global.LOGGER = new Logger(self.config.log);
-        var logger = LOGGER.getLogger('Daemon');
+        let logger = LOGGER.getLogger('Daemon');
 
         logger.info('Start daemon');
 
@@ -146,7 +144,7 @@ export class Daemon extends EventEmitter {
     }
 
     private init(cb) {
-        var self = this;
+        let self = this;
 
         // We should not do anything here
         // The system is in undefined state
@@ -209,13 +207,6 @@ export class Daemon extends EventEmitter {
         }
     }
 
-    private getInfo(){
-        return _.merge(this.info, {
-            uptime: process.uptime(),
-            nodeVersions: process.versions
-        });
-    }
-
     private _onUnexpectedError(error){
         // kill speaker to avoid having phantom sounds if system crash
         this.speaker.kill();
@@ -228,21 +219,21 @@ export class Daemon extends EventEmitter {
      * @param done
      */
     private runBootstrap(done){
-        var self = this;
+        let self = this;
 
         // run core bootstrap
         self.logger.debug("Run system bootstrap...");
-        var bootstrap = new Bootstrap(this);
+        let bootstrap = new Bootstrap(this);
         bootstrap.bootstrap(function(err) {
             if (err) {
                 return done(err);
             }
 
             // run user bootstrap if exist
-            var UserBootstrapModule = self.config.bootstrap || null;
+            let UserBootstrapModule = self.config.bootstrap || null;
             if (UserBootstrapModule) {
                 self.logger.debug("A user bootstrap has been found, run it");
-                var userBootstrap = new UserBootstrapModule();
+                let userBootstrap = new UserBootstrapModule();
                 userBootstrap.bootstrap(self, done);
             } else {
                 return done();
