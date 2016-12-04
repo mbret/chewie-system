@@ -185,8 +185,9 @@ export class Runtime {
         });
 
         // pass it to the module instance
-        var moduleContainer = this.system.modules.get(myTask.moduleId);
-        moduleContainer.instance.newTask(myTask);
+        throw new Error("c'est plus bon ici. system.modules n'a plus la même clé");
+        // var moduleContainer = this.system.modules.get(myTask.moduleId);
+        // moduleContainer.instance.newTask(myTask);
 
         // emit event
         this.system.emit("runtime:task-execution:new", execution);

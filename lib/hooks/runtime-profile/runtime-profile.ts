@@ -1,7 +1,7 @@
 "use strict";
 
-var async = require("async");
-var self = this;
+let async = require("async");
+let self = this;
 import * as _ from "lodash";
 import {Hook} from "../../core/hook";
 import {Daemon} from "../../daemon";
@@ -20,6 +20,18 @@ export class RuntimeProfileHook implements Hook {
     }
 
     initialize(done: Function) {
+
+        // Try to start profile if one is defined on startup
+        // let profileToLoad = self.config.profileToLoadOnStartup;
+        // if(profileToLoad) {
+            self.system.runtime.profileManager.startProfile("admin")
+                .then(function(){
+                    self.logger.info("Profile %s has been started", "admin");
+                })
+                .catch(function(err) {
+                    self.logger.info("Unable to start profile", "admin", err);
+                });
+        // }
 
         // System events
         this.system
@@ -135,6 +147,15 @@ export class RuntimeProfileHook implements Hook {
                             self.logger.error("Unable to read scenario", err);
                         });
                 }
+            })
+            .on("scenario:deleted", function(scenario) {
+                if (self.currentProfile) {
+                    // Stop and delete the runtime scenario
+                    self.system.scenarioReader.stopScenario(scenario.id)
+                        .catch(function(err) {
+                            self.logger.error("Unable to stop scenario", err);
+                        });
+                }
             });
 
         return done();
@@ -161,7 +182,7 @@ export class RuntimeProfileHook implements Hook {
         var promises = [];
         plugins.forEach(function(plugin) {
             promises.push(
-                self.system.pluginLoader
+                self.system.pluginsLoader
                     .load(plugin)
                     .then(function(container) {
                         // add to global storage

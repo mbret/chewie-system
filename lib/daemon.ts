@@ -24,10 +24,11 @@ import {ModuleContainer} from "./core/plugins/modules/module-container";
 import {Server as ApiServer} from "./shared-server-api";
 import {TaskExecution} from "./core/plugins/tasks/task-execution";
 import {HookConstructor} from "./core/hook";
-import {PluginLoader} from "./core/plugins/plugin-loader";
+import {PluginsLoader} from "./core/plugins/plugins-loader";
 import {Speaker} from "./core/speaker/speaker";
 import configurationLoader from "./configuration/loader";
 import LocalRepository from "./core/repositories/local";
+import Storage from "./core/storage/storage";
 
 /**
  * Daemon is the main program daemon.
@@ -43,12 +44,14 @@ export class Daemon extends EventEmitter {
     communicationBus: ServerCommunication.CommunicationBus;
     scenarioReader: ScenarioReader;
     moduleLoader: ModuleLoader;
-    pluginLoader: PluginLoader;
+    pluginsLoader: PluginsLoader;
     hooksToLoad: Array<HookConstructor>;
     logger: any;
     speaker: Speaker;
     localRepository: LocalRepository;
     repository: any;
+    apiService: any;
+    storage: Storage;
 
     /**
      *
@@ -61,6 +64,7 @@ export class Daemon extends EventEmitter {
         // Contain tasks by their id
         this.executingTasks = new Map();
         this.hooksToLoad = [];
+        this.storage = new Storage(this);
         this.info = {
             startedAt: new Date(),
             version: packageInfo.version
@@ -109,7 +113,7 @@ export class Daemon extends EventEmitter {
         this.repository = new repositories.Repository(this);
         this.scenarioReader = new ScenarioReader(this);
         this.moduleLoader = new ModuleLoader(this);
-        this.pluginLoader = new PluginLoader(this);
+        this.pluginsLoader = new PluginsLoader(this);
         this.bus = new Bus(this);
         this.speechHandler = new SpeechHandler();
 
@@ -194,16 +198,6 @@ export class Daemon extends EventEmitter {
             // self.runtimeHelper.profile.on('profile:start:complete', function(){
             //     self.playSystemSound('profile_loaded.wav');
             // });
-
-            // Try to start profile if one is defined on startup
-            var profileToLoad = self.config.profileToLoadOnStartup;
-            if(profileToLoad) {
-                self.runtime.profileManager.startProfile(profileToLoad)
-                    .then(function(){
-                        self.logger.info("Profile %s has been started", profileToLoad);
-                    })
-                    .catch(errorOnStartup);
-            }
 
             return cb();
         });

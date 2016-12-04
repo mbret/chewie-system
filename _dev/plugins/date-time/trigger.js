@@ -1,6 +1,6 @@
 "use strict";
 
-var schedule = require('node-schedule');
+let schedule = require('node-schedule');
 
 class Trigger {
 
@@ -18,6 +18,13 @@ class Trigger {
         } else if (this.info.id === "hoursRange") {
             this._watchHoursRange(options, cb);
         }
+    }
+
+    /**
+     * @todo
+     */
+    stop() {
+
     }
 
     _watchInterval(options, cb) {

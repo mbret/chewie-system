@@ -18,25 +18,25 @@ export class ModuleLoader {
 
     loadModule(plugin: any, moduleId) {
         // get module info
-        var moduleInfo = _.find(plugin.modules, function(module: any) {
+        let moduleInfo = _.find(plugin.package.modules, function(module: any) {
             return module.id === moduleId;
         });
 
         // get module instance path
-        var modulePath = moduleInfo.module;
+        let modulePath = moduleInfo.module;
         // if path is relative we need to build absolute path because runtime is not inside the plugin dir
         // ./module will become D://foo/bar/plugins/module
         if (!path.isAbsolute(modulePath)) {
-            var pluginAbsolutePath = path.resolve(this.system.config.system.synchronizedPluginsDir, plugin.name);
+            let pluginAbsolutePath = path.resolve(this.system.config.system.synchronizedPluginsDir, plugin.name);
             modulePath = path.resolve(pluginAbsolutePath, modulePath);
         }
 
         // create container
-        var container = new ModuleContainer(this.system, this.system.runtime.plugins.get(plugin.name), moduleInfo, null);
+        let container = new ModuleContainer(this.system, this.system.runtime.plugins.get(plugin.name), moduleInfo, null);
 
         // now require the module
-        var Module = require(modulePath);
-        var helper = new ModuleHelper(this.system, container);
+        let Module = require(modulePath);
+        let helper = new ModuleHelper(this.system, container);
         container.instance = new Module(helper, moduleInfo);
 
         return Promise.resolve(container);

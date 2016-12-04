@@ -13,10 +13,10 @@ module.exports = {
 
     pluginsLocalRepositoryDir: path.join(__dirname, '../../plugins'),
 
-    database: {
+    sharedDatabase: {
         connexion: {
             storage: path.join(__dirname, '../.my-buddy/storage/db.sqlite'),
-            dropOnStartup: true
+            dropOnStartup: false
         }
     },
 

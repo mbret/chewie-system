@@ -26,16 +26,13 @@
                     <div class="ibox-content no-padding border-left-right"></div>
                     <div class="ibox-content profile-content">
                         <h4>Plugin ID: {{plugin.name}}</h4>
-                        <p>From <strong>{{plugin.author}}</strong></p>
+                        <p>From <strong>{{plugin.extraInfo.author}}</strong></p>
                         <p><small>version {{plugin.version}}</small></p>
                         <h5>Description</h5>
-                        <p>{{plugin.description}}</p>
+                        <p>{{plugin.extraInfo.description}}</p>
                         <div class="user-button">
-                            <div class="row" ng-hide="!ready">
-                                <div class="col-md-12 animated fadeIn" ng-if="!saved">
-                                    <button type="button" class="btn btn-primary btn-sm btn-block" ng-click="save()">Install</button>
-                                </div>
-                                <div class="col-md-12 animated fadeIn" ng-if="saved">
+                            <div class="row">
+                                <div class="col-md-12 animated fadeIn">
                                     <button type="button" class="btn btn-warning btn-sm btn-block" ng-click="unSave()">Uninstall</button>
                                 </div>
                             </div>

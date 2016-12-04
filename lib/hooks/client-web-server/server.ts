@@ -1,6 +1,7 @@
 'use strict';
 import {Daemon} from "../../daemon";
 import {Hook} from "../../core/hook";
+import * as _ from "lodash";
 let http = require('http');
 let kraken = require('kraken-js');
 let express = require('express');
@@ -92,7 +93,7 @@ export class ClientWebServer implements Hook {
             };
 
             res.serverError = function(err){
-                var errResponse = {};
+                let errResponse = {};
                 errResponse.status = "error";
                 errResponse.code = "serverError";
                 errResponse.message = "An internal error occured";

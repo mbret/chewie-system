@@ -7,14 +7,14 @@ import {PluginContainer} from "./plugin-container";
 import {Daemon} from "../../daemon";
 import defaultBootstrap from "./plugin-default-bootstrap";
 
-export class PluginLoader {
+export class PluginsLoader {
 
     system: Daemon;
     logger: any;
 
     constructor(system) {
         this.system = system;
-        this.logger = this.system.logger.Logger.getLogger('PluginLoader');
+        this.logger = this.system.logger.Logger.getLogger('PluginsLoader');
     }
 
     load(plugin: any) {
@@ -42,16 +42,18 @@ export class PluginLoader {
      * @returns {any}
      */
     getPluginBootstrap(plugin: any) {
+        plugin.package = this.getPluginInfo(plugin.name);
+
         if (!plugin.package.bootstrap) {
             return defaultBootstrap;
         }
 
         // get module instance path
-        var modulePath = plugin.package.bootstrap;
+        let modulePath = plugin.package.bootstrap;
         // if path is relative we need to build absolute path because runtime is not inside the plugin dir
         // ./module will become D://foo/bar/plugins/module
         if (!path.isAbsolute(modulePath)) {
-            var pluginAbsolutePath = path.resolve(this.system.config.system.synchronizedPluginsDir, plugin.name);
+            let pluginAbsolutePath = path.resolve(this.system.config.system.synchronizedPluginsDir, plugin.name);
             modulePath = path.resolve(pluginAbsolutePath, modulePath);
         }
 
@@ -59,5 +61,13 @@ export class PluginLoader {
 
         // now require the module
         return require(modulePath);
+    }
+
+    /**
+     *
+     * @param name
+     */
+    getPluginInfo(name) {
+        return require(path.resolve(this.system.config.system.synchronizedPluginsDir, name, "plugin-package"));
     }
 }
