@@ -27,7 +27,6 @@ export default class Database {
         mkdirp.sync(path.dirname(this.system.config.storageDatabaseConnexion.storage));
 
         // Define models
-        console.log(require(modelsPath + '/profile'));
         this.models.Profiles = require(modelsPath + '/profile').default(sequelize);
 
         // create tables

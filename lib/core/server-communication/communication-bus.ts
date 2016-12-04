@@ -43,6 +43,6 @@ export class CommunicationBus extends EventEmitter {
     }
 
     onConnectError(err) {
-        console.error(err);
+        console.error("error on communication bus", err);
     }
 }

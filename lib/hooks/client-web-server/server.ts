@@ -53,7 +53,6 @@ export class ClientWebServer implements Hook {
         app.use(function(req, res, next){
 
             res.badRequest = function(data){
-                console.log(data);
                 if(_.isString(data)) {
                     data = {message: data};
                 }
