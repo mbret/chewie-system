@@ -37,7 +37,7 @@ export class RuntimeProfileHook implements Hook {
         this.system
             .on("profile:start", function(profile) {
                 self.currentProfile = profile;
-                var plugins = null;
+                let plugins = null;
 
                 // We have to run all the scenario user
                 // To do that we need the user modules to be sync inside system

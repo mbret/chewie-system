@@ -24,25 +24,28 @@
             <div class="flex-container flex--flow-row">
                 <div class="brick-repository m-r" ng-repeat="plugin in $ctrl.installed">
                     <div class="contact-box">
-                        <div ng-hide="plugin.extraInfo" class="text-center">
-                            <p>Fetching plugin data...</p>
-                        </div>
-                        <a ui-sref="dashboard.repository.installedDetail({name: plugin.name})" ng-lockable="!plugin.extraInfo">
-                            <div ng-hide="plugin.extraInfo">
+                        <!--<div ng-hide="plugin.extraInfo" class="text-center">-->
+                            <!--<p>Fetching plugin data...</p>-->
+                        <!--</div>-->
+                        <!--<a ui-sref="dashboard.repository.installedDetail({name: plugin.name})" ng-lockable="!plugin.extraInfo">-->
+                        <a ui-sref="dashboard.repository.installedDetail({name: plugin.name})">
+                            <!--<div ng-hide="plugin.extraInfo">-->
+                                <!--<div class="text-center">-->
+                                    <!--<h3>{{plugin.title || plugin.name}}</h3>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="col-sm-5" ng-show="plugin.extraInfo">-->
+                            <div class="col-sm-5">
                                 <div class="text-center">
-                                    <h3>{{plugin.title || plugin.name}}</h3>
-                                </div>
-                            </div>
-                            <div class="col-sm-5" ng-show="plugin.extraInfo">
-                                <div class="text-center">
-                                    <h3>{{plugin.extraInfo.title || plugin.name}}</h3>
+                                    <h3>{{plugin.package.title || plugin.name}}</h3>
                                     <small>({{plugin.name}})</small>
                                 </div>
                             </div>
-                            <div class="col-sm-7" ng-show="plugin.extraInfo">
-                                <strong>from {{plugin.extraInfo.author}}</strong>
+                            <!--<div class="col-sm-7" ng-show="plugin.extraInfo">-->
+                            <div class="col-sm-7" >
+                                <strong>from {{plugin.package.author}}</strong>
                                 <br><small>(v{{plugin.version}})</small>
-                                <p>{{plugin.extraInfo.description}}</p>
+                                <p>{{plugin.package.description}}</p>
                             </div>
                             <div class="clearfix"></div>
                         </a>

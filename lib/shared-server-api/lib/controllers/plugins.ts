@@ -3,61 +3,14 @@
 var _ = require('lodash');
 var validator = require('validator');
 var util = require('util');
+let request = require("request");
 
 export = function(server, router) {
 
     var PluginsDao = server.orm.models.Plugins;
 
     router.get('/users/:user/plugins', function(req, res){
-
-        var user = req.params.user;
-
-        PluginsDao
-            .findAll({
-                where: {
-                    userId: user
-                }
-            })
-            .then(function(plugins){
-                if(!plugins){
-                    return res.notFound('Invalid user id');
-                }
-
-                return res.ok(PluginsDao.toJSON(plugins));
-            })
-            .catch(function(err){
-                return res.serverError(err);
-            });
-    });
-
-    /**
-     *
-     */
-    router.get('/users/:user/plugins/:plugin', function(req, res){
-
-        let userId = req.params.user;
-        let name = req.params.plugin;
-
-        let search = {
-            userId: userId,
-            name: name
-        };
-
-        PluginsDao
-            .findOne({
-                where: search
-            })
-            .then(function(plugin){
-                if(!plugin){
-                    return res.notFound();
-                }
-                let json = plugin.toJSON();
-                // json.modules = plugin.getModules();
-                return res.ok(json);
-            })
-            .catch(function(err){
-                return res.serverError(err);
-            });
+        req.pipe(request({uri: server.system.config.webServerRemoteUrl + "/api/plugins", strictSSL: false})).pipe(res);
     });
 
     router.put('/users/:user/plugins/:plugin', function(req, res) {

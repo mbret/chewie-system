@@ -20,16 +20,17 @@
         <div class="col-md-8">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>{{plugin.title || plugin.name}}</h5>
+                    <h5>{{plugin.package.title || plugin.name}}</h5>
                 </div>
-                <div ng-lockable="!ready">
+                <!--<div ng-lockable="!ready">-->
+                <div>
                     <div class="ibox-content no-padding border-left-right"></div>
                     <div class="ibox-content profile-content">
                         <h4>Plugin ID: {{plugin.name}}</h4>
-                        <p>From <strong>{{plugin.extraInfo.author}}</strong></p>
+                        <p>From <strong>{{plugin.package.author}}</strong></p>
                         <p><small>version {{plugin.version}}</small></p>
                         <h5>Description</h5>
-                        <p>{{plugin.extraInfo.description}}</p>
+                        <p>{{plugin.package.description}}</p>
                         <div class="user-button">
                             <div class="row">
                                 <div class="col-md-12 animated fadeIn">
