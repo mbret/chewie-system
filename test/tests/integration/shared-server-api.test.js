@@ -10,7 +10,7 @@ chai.use(chaiHttp);
 describe('integration.hooks.shared-server-api', function() {
 
     it('should ping the server', function(done){
-        chai.request(system.config.sharedApiUrl)
+        chai.request({uri: system.config.sharedApiUrl, strictSSL: false})
             .get('/ping')
             .end(function(err, res) {
                 expect(err).to.be.null;
