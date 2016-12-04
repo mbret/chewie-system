@@ -36,11 +36,57 @@ export class ScenarioReader {
         // execute each node
         return this
             .readNodes(scenario, scenario.nodes, { lvl: -1 })
+            // Once they are all registered and loaded
+            // we run the first root trigger and tasks
+            .then(function() {
+                self.logger.debug("All nodes loaded, run the root nodes..");
+                scenario.nodes.forEach(function (node) {
+                    let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
+                    let rtId = self.getRuntimeModuleKey(scenario.id, node.id, moduleId);
+                    let module = self.system.modules.get(rtId);
+                    if (node.type === "trigger") {
+                        // Create the first demand for trigger at lvl 0 (root)
+                        self.logger.debug("Create a new demand for trigger module from plugin %s", node.pluginId);
+                        module.instance.onNewDemand(node.options, onTrigger.bind(self, scenario, node));
+                    }
+
+                    if (node.type === "task") {
+                        // Run automatically task at lvl 0 (root) will be forbidden later eventually
+                        self.logger.debug("Create a new demand for task module from plugin %s", node.pluginId, node.options);
+                        module.instance.run(node.options, self.onTaskEnd.bind(self, scenario, node, module.uniqueId));
+                    }
+                })
+            })
             .catch(function(err) {
-                self.logger.error("An error occurred while reading scenario %s", scenario.name);
-                self.system.runtime.scenarios.delete(scenario.name);
+                self.logger.error("An error occurred while reading scenario %s", scenario.name, err);
+                // self.system.runtime.scenarios.delete(scenario.name);
                 throw err;
             });
+
+            /**
+             * read the triggers -1 and create a new demand
+             * @param scenario
+             * @param node
+             */
+            function onTrigger(scenario, node) {
+                self.logger.debug("trigger execution", node.options);
+                self.logger.debug("Loop over sub nodes (-1) to ask new trigger demand");
+
+                node.nodes.forEach(function(subNode) {
+                    let moduleUniqueId = ModuleContainer.getModuleUniqueId(subNode.pluginId, subNode.moduleId);
+                    let runtimeModuleContainer = self.system.modules.get(self.getRuntimeModuleKey(scenario.id, subNode.id, moduleUniqueId));
+
+                    if (subNode.type === "trigger") {
+                        self.logger.debug("Create a new demand for trigger module from plugin %s", subNode.pluginId);
+                        runtimeModuleContainer.instance.onNewDemand(subNode.options, onTrigger.bind(self, scenario, subNode));
+                    }
+
+                    if (subNode.type === "task") {
+                        self.logger.debug("Create a new demand for task module from plugin %s", subNode.pluginId, subNode.options);
+                        runtimeModuleContainer.instance.run(subNode.options, self.onTaskEnd.bind(self, scenario, subNode, runtimeModuleContainer.uniqueId));
+                    }
+                });
+            }
     }
 
     stopScenario(id) {
@@ -50,17 +96,16 @@ export class ScenarioReader {
     }
 
     readNodes(scenario: any, nodes: any[], options: any) {
-        let self = this;
+        let promises = [];
         nodes.forEach(function(node) {
-            self.readNode(scenario, node, { lvl: options.lvl + 1 });
+            promises.push(self.readNode(scenario, node, { lvl: options.lvl + 1 }));
         });
 
-        return Promise.resolve();
+        return Promise.all(promises);
     }
 
     readNode(scenario: any, node: any, options: any) {
         let self = this;
-        let plugin = null;
         let moduleUniqueId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
 
         return Promise
@@ -70,53 +115,12 @@ export class ScenarioReader {
                 // add to global storage
                 self.system.modules.set(self.getRuntimeModuleKey(scenario.id, node.id, moduleUniqueId), container);
 
-                if (node.type === "trigger") {
-                    // Create the first demand for trigger at lvl 0 (root)
-                    if (options.lvl === 0) {
-                        self.logger.debug("Create a new demand for trigger module from plugin %s", node.pluginId);
-                        container.instance.onNewDemand(node.options, onTrigger.bind(self, scenario, node));
-                    }
-                }
-
-                if (node.type === "task") {
-                    // Run automatically task at lvl 0 (root) will be forbidden later eventually
-                    if (options.lvl === 0) {
-                        self.logger.debug("Create a new demand for task module from plugin %s", node.pluginId, node.options);
-                        container.instance.run(node.options, self.onTaskEnd.bind(self, scenario, node, container.uniqueId));
-                    }
-                }
-
-                self.readNodes(scenario, node.nodes, options);
+                return self.readNodes(scenario, node.nodes, options);
             })
             .catch(function(err) {
                 self.logger.error("An error occurred during scenario reading", err);
                 throw err;
             });
-
-        /**
-         * read the triggers -1 and create a new demand
-         * @param scenario
-         * @param node
-         */
-        function onTrigger(scenario, node) {
-            self.logger.debug("trigger execution", node.options, options);
-            self.logger.debug("Loop over sub nodes (-1) to ask new trigger demand");
-
-            node.nodes.forEach(function(subNode) {
-                let moduleUniqueId = ModuleContainer.getModuleUniqueId(subNode.pluginId, subNode.moduleId);
-                let runtimeModuleContainer = self.system.modules.get(self.getRuntimeModuleKey(scenario.id, subNode.id, moduleUniqueId));
-
-                if (subNode.type === "trigger") {
-                    self.logger.debug("Create a new demand for trigger module from plugin %s", subNode.pluginId);
-                    runtimeModuleContainer.instance.onNewDemand(subNode.options, onTrigger.bind(self, scenario, subNode));
-                }
-
-                if (subNode.type === "task") {
-                    self.logger.debug("Create a new demand for task module from plugin %s", subNode.pluginId, subNode.options);
-                    runtimeModuleContainer.instance.run(subNode.options, self.onTaskEnd.bind(self, scenario, subNode, runtimeModuleContainer.uniqueId));
-                }
-            });
-        }
     }
 
     /**
