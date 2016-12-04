@@ -5,6 +5,7 @@ import ip  = require('ip');
 import path = require("path");
 
 /**
+ * Return the default config with some value calculated during runtime.
  * @param config
  * @returns {object}
  */
@@ -28,5 +29,6 @@ export default function(config: any) {
         webServerUrl: webServerUrl,
         webServerRemoteUrl: webServerUrl.replace("localhost", systemIP)
     });
+
     return completeConfig;
 };
