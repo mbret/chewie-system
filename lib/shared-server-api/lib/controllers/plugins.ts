@@ -13,6 +13,10 @@ export = function(server, router) {
         req.pipe(request({uri: server.system.config.webServerRemoteUrl + "/api/plugins", strictSSL: false})).pipe(res);
     });
 
+    router.get('/users/:user/plugins/:plugin', function(req, res){
+        req.pipe(request({uri: server.system.config.webServerRemoteUrl + "/api/plugins/" + req.params.plugin, strictSSL: false})).pipe(res);
+    });
+
     router.put('/users/:user/plugins/:plugin', function(req, res) {
         var user = req.params.user;
         var pluginId = req.params.plugin;

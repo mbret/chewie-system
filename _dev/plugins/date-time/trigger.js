@@ -55,6 +55,9 @@ class Trigger {
         let ruleFrom = new schedule.RecurrenceRule();
         ruleFrom.hour = fromDate.getHours();
         ruleFrom.minute = fromDate.getMinutes();
+        if (options.days && Array.isArray(options.days)) {
+            ruleFrom.dayOfWeek = options.days.map( item => parseInt(item) );
+        }
 
         // execute classic schedule for the from time
         let j = schedule.scheduleJob(ruleFrom, function() {
@@ -75,7 +78,14 @@ class Trigger {
         toDate.setSeconds(0);
         fromDate.setSeconds(0);
         now.setSeconds(0, 0);
-        if (fromDate.getTime() < now.getTime()) {
+        if (
+            // has day
+            (
+                (ruleFrom.dayOfWeek && ruleFrom.dayOfWeek.indexOf(now.getDay())) !== -1
+                || !ruleFrom.dayOfWeek
+            )
+            && fromDate.getTime() < now.getTime()
+        ) {
             if (toDate.getTime() >= now.getTime()) {
                 cb();
             }
