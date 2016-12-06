@@ -10,6 +10,7 @@ var path        = require('path');
 var requireAll  = require('my-buddy-lib').requireAll;
 var EventEmitter = require("events");
 import * as Services from "./services";
+let self = null;
 
 export class Server extends EventEmitter {
 
@@ -17,6 +18,7 @@ export class Server extends EventEmitter {
 
     constructor(system){
         super();
+        self = this;
         this.logger = system.logger.Logger.getLogger('Api server');
 
         var self = this;
@@ -53,7 +55,6 @@ export class Server extends EventEmitter {
     }
 
     _startServer(cb){
-        var self = this;
         var port = self.system.config.sharedApiPort;
 
         // use ssl ?

@@ -2,7 +2,7 @@
 - https://nodejs.org/dist/
 - rasp2 -> arm7l.tar or arm6l.tar
 - you can download directly binaries and copy the content inside /usr/local or /etc/node. Remember to add to your path node & npm
-q
+
 # Install on Windows
 - npm install -g gulp
 - npm install node-gyp (because some modules needs to be compiled then and will fail if you do not previously download gyp)

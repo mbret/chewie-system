@@ -54,7 +54,7 @@ export class Bootstrap {
         let self = this;
         let promises = [];
         this.system.hooksToLoad.forEach(function(Module) {
-            var hook = new Module(self.system);
+            let hook = new Module(self.system);
             promises.push(new Promise(function(resolve, reject) {
                 hook.initialize(function(err) {
                     if (err) {

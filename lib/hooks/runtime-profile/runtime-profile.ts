@@ -30,6 +30,7 @@ export class RuntimeProfileHook implements Hook {
                 })
                 .catch(function(err) {
                     self.logger.info("Unable to start profile", "admin", err);
+                    throw err;
                 });
         // }
 
@@ -179,7 +180,7 @@ export class RuntimeProfileHook implements Hook {
      */
     loadPlugins(plugins) {
         self.logger.verbose('Loading plugins [%s]', _.map(plugins, "name"));
-        var promises = [];
+        let promises = [];
         plugins.forEach(function(plugin) {
             promises.push(
                 self.system.pluginsLoader
