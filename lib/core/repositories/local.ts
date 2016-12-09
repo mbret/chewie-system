@@ -15,8 +15,7 @@ export default class LocalRepository extends BaseRepository {
         super(system, system.logger.Logger.getLogger('LocalRepository'));
         self = this;
         // @odo remove, use one path for now
-        this.localPaths = system.config.plugins.localRepositories;
-        this.localPath = system.config.plugins.localRepositories[0];
+        this.localPath = system.config.pluginsLocalRepositoryDir;
     }
 
     /**
@@ -83,7 +82,8 @@ export default class LocalRepository extends BaseRepository {
      */
     getPluginDirs(cb){
         var dirs = [];
-        async.each(this.localPaths, function(dir, done){
+        // @todo remove array
+        async.each([this.localPath], function(dir, done){
 
             // Read current plugin dir
             fs.readdir(dir, function(err, files){

@@ -1,6 +1,7 @@
 'use strict';
 import {Daemon} from "../../daemon";
 import {Hook} from "../../core/hook";
+import * as _ from "lodash";
 let http = require('http');
 let kraken = require('kraken-js');
 let express = require('express');
@@ -47,11 +48,11 @@ export class ClientWebServer implements Hook {
 
         // Prepare app
         app.use(kraken(options));
+
         // @todo it should be moved elsewhere
         app.use(function(req, res, next){
 
             res.badRequest = function(data){
-                console.log(data);
                 if(_.isString(data)) {
                     data = {message: data};
                 }
@@ -91,7 +92,7 @@ export class ClientWebServer implements Hook {
             };
 
             res.serverError = function(err){
-                var errResponse = {};
+                let errResponse = {};
                 errResponse.status = "error";
                 errResponse.code = "serverError";
                 errResponse.message = "An internal error occured";
@@ -118,7 +119,7 @@ export class ClientWebServer implements Hook {
             certificate = fs.readFileSync(self.system.config.webServerSSL.cert, 'utf8');
             server = https.createServer({key: privateKey, cert: certificate}, app);
         } else {
-            server = http.createServer(app);
+            http.createServer(app).listen();
         }
 
         server.listen(self.system.config.webServerPort);

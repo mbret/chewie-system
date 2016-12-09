@@ -38,10 +38,11 @@ export class CommunicationBus extends EventEmitter {
         this.socket
             .on("user:plugin:created", self.emit.bind(self, "user:plugin:created"))
             .on("user:plugin:deleted", self.emit.bind(self, "user:plugin:deleted"))
-            .on("user:scenario:created", self.emit.bind(self, "user:scenario:created"));
+            .on("user:scenario:created", self.emit.bind(self, "user:scenario:created"))
+            .on("scenario:deleted", self.emit.bind(self, "scenario:deleted"));
     }
 
     onConnectError(err) {
-        console.error(err);
+        console.error("error on communication bus", err);
     }
 }

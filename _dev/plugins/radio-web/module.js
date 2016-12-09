@@ -1,7 +1,7 @@
 'use strict';
 
-var MPlayer = require('./mplayer');
-var EventEmitter = require("events");
+let MPlayer = require('./mplayer');
+let EventEmitter = require("events");
 
 class Module extends EventEmitter {
 
@@ -26,7 +26,7 @@ class Module extends EventEmitter {
      * @param done
      */
     run(options, done) {
-        var self = this;
+        let self = this;
 
         this.helper.logger.debug("Task %s started", self.helper.id);
 
@@ -55,7 +55,9 @@ class Module extends EventEmitter {
      * Stop the current radio
      */
     stop() {
-        this.player.stop();
+        if (this.player) {
+            this.player.stop();
+        }
     }
 
     static StopRadio(radio) {

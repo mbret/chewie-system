@@ -2,10 +2,19 @@
 
     <div ng-switch="configOption.type">
 
+        <!--select-->
         <div ng-switch-when="select">
             <label for="{{fieldId}}">{{configOption.label}}</label>
             <span class="help-block m-b-none">{{configOption.description}}</span>
             <select class="form-control" ng-model="options[configOption.name]" ng-required="{{configOption.required}}" id="{{fieldId}}" name="{{fieldId}}">
+                <option ng-repeat="value in configOption.choices" value="{{value.value}}">{{value.label}}</option>
+            </select>
+        </div>
+
+        <div ng-switch-when="multipleSelect">
+            <label for="{{fieldId}}">{{configOption.label}}</label>
+            <span class="help-block m-b-none">{{configOption.description}}</span>
+            <select multiple class="form-control" ng-model="options[configOption.name]" ng-required="{{configOption.required}}" id="{{fieldId}}" name="{{fieldId}}">
                 <option ng-repeat="value in configOption.choices" value="{{value.value}}">{{value.label}}</option>
             </select>
         </div>

@@ -3,9 +3,7 @@
         <h2>Bienvenue {{user.firstName}} {{user.lastName}}</h2>
         <small>Cela fais plaisir de vous revoir par ici !</small>
     </div>
-    <div class="col-sm-5">
-
-    </div>
+    <div class="col-sm-5"></div>
     <div class="col-sm-3">
         <div class="statistic-box">
             <h4>
@@ -19,48 +17,50 @@
 </div>
 
 <div class="wrapper wrapper-content ng-scope">
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>Server execution</h5>
-                </div>
-                <div class="ibox-content">
-                    <ng-lockable ng-lockable="runProfileLock">
-                        <p ng-show="runProfile == null">You do not have any current executing profile.</p>
-                        <div ng-show="runProfile != null">
-                            Your current active profile is {{runProfile.login}}<br>
-                            <button class="btn" ng-click="stopProfile()" >Stop the profile</button>
-                        </div>
-                        <table class="table table-hover margin bottom text-left">
-                            <thead>
-                            <tr>
-                                <th>Available profiles</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="entry in runProfiles">
-                                <td>{{entry.username}}</td>
-                                <td>
-                                    <button class="btn" ng-click="startProfile(entry.id)" ng-show="runProfile == null">Start</button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </ng-lockable>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!--<div class="row">-->
+        <!--<div class="col-lg-12">-->
+            <!--<div class="ibox float-e-margins">-->
+                <!--<div class="ibox-title">-->
+                    <!--<h5>Server execution</h5>-->
+                <!--</div>-->
+                <!--<div class="ibox-content">-->
+                    <!--<ng-lockable ng-lockable="runProfileLock">-->
+                        <!--<p ng-show="runProfile == null">You do not have any current executing profile.</p>-->
+                        <!--<div ng-show="runProfile != null">-->
+                            <!--Your current active profile is {{runProfile.login}}<br>-->
+                            <!--<button class="btn" ng-click="stopProfile()" >Stop the profile</button>-->
+                        <!--</div>-->
+                        <!--<table class="table table-hover margin bottom text-left">-->
+                            <!--<thead>-->
+                            <!--<tr>-->
+                                <!--<th>Available profiles</th>-->
+                                <!--<th></th>-->
+                            <!--</tr>-->
+                            <!--</thead>-->
+                            <!--<tbody>-->
+                            <!--<tr ng-repeat="entry in runProfiles">-->
+                                <!--<td>{{entry.username}}</td>-->
+                                <!--<td>-->
+                                    <!--<button class="btn" ng-click="startProfile(entry.id)" ng-show="runProfile == null">Start</button>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--</tbody>-->
+                        <!--</table>-->
+                    <!--</ng-lockable>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
 
     <div class="row">
-        <div class="col-lg-3">
+        <div class="col-lg-4">
             <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Quick actions</h5>
+                </div>
                 <div class="ibox-content">
-                    <h5 class="m-b-md">Quick actions</h5>
-                    <button class="btn btn-primary" ng-click="restart()" type="button">Restart the buddy</button>
-                    <button class="btn btn-primary" ng-click="shutdown()" type="button">Shutdown the buddy</button>
+                    <button class="btn btn-success" ng-click="restart()" type="button"><i class="fa fa-undo"></i>&nbsp;&nbsp;Restart Chewie</button>
+                    <button class="btn btn-warning" ng-click="shutdown()" type="button"><i class="fa fa-power-off"></i>&nbsp;&nbsp;Shutdown Chewie</button>
                 </div>
             </div>
         </div>

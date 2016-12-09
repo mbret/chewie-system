@@ -1,7 +1,7 @@
 "use strict";
 
-var async = require("async");
-var self = this;
+let async = require("async");
+let self = this;
 import * as _ from "lodash";
 import {Hook} from "../../core/hook";
 import {Daemon} from "../../daemon";
@@ -21,11 +21,24 @@ export class RuntimeProfileHook implements Hook {
 
     initialize(done: Function) {
 
+        // Try to start profile if one is defined on startup
+        // let profileToLoad = self.config.profileToLoadOnStartup;
+        // if(profileToLoad) {
+            self.system.runtime.profileManager.startProfile("admin")
+                .then(function(){
+                    self.logger.info("Profile %s has been started", "admin");
+                })
+                .catch(function(err) {
+                    self.logger.info("Unable to start profile", "admin", err);
+                    throw err;
+                });
+        // }
+
         // System events
         this.system
             .on("profile:start", function(profile) {
                 self.currentProfile = profile;
-                var plugins = null;
+                let plugins = null;
 
                 // We have to run all the scenario user
                 // To do that we need the user modules to be sync inside system
@@ -83,21 +96,21 @@ export class RuntimeProfileHook implements Hook {
                 //         // clean up screen modules
                 //         function(cb2) {
                 //             self.system.logger.debug('Cleaning and destroying screens modules ...');
-                //             async.each(self.system.modules.values(), function(container, cb) {
+                //             async.each(self.system.runtime.modules.values(), function(container, cb) {
                 //                 self.system.webServer.destroyScreen(container, cb);
                 //             }, cb2);
                 //         },
                 //         // clean up modules
                 //         function(cb2) {
                 //             var promises = [];
-                //             for (let module of self.system.modules) {
+                //             for (let module of self.system.runtime.modules) {
                 //                 self.system.logger.verbose("Destroying module %s", module.name);
                 //                 promises.push(module.destroy());
                 //             }
                 //             Promise.all(promises)
                 //                 .then(function() {
                 //                     self.system.logger.verbose("All modules has been destroyed");
-                //                     self.system.modules.clear();
+                //                     self.system.runtime.modules.clear();
                 //                     cb2();
                 //                 })
                 //                 .catch(function() { cb2(); });
@@ -135,6 +148,15 @@ export class RuntimeProfileHook implements Hook {
                             self.logger.error("Unable to read scenario", err);
                         });
                 }
+            })
+            .on("scenario:deleted", function(scenario) {
+                if (self.currentProfile) {
+                    // Stop and delete the runtime scenario
+                    self.system.scenarioReader.stopScenario(scenario.id)
+                        .catch(function(err) {
+                            self.logger.error("Unable to stop scenario", err);
+                        });
+                }
             });
 
         return done();
@@ -158,10 +180,10 @@ export class RuntimeProfileHook implements Hook {
      */
     loadPlugins(plugins) {
         self.logger.verbose('Loading plugins [%s]', _.map(plugins, "name"));
-        var promises = [];
+        let promises = [];
         plugins.forEach(function(plugin) {
             promises.push(
-                self.system.pluginLoader
+                self.system.pluginsLoader
                     .load(plugin)
                     .then(function(container) {
                         // add to global storage

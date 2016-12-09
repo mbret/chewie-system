@@ -13,10 +13,25 @@ module.exports = function(server, router) {
      * Create a new scenario.
      */
     router.post("/users/:user/scenarios", function(req, res) {
-        var name = req.body.name;
-        var description = req.body.description;
-        var nodes = req.body.nodes;
-        var userId = parseInt(req.params.user);
+        let name = req.body.name;
+        let description = req.body.description;
+        let nodes = req.body.nodes;
+        let userId = parseInt(req.params.user);
+
+        // validate body
+        let errors = new Map();
+
+        // check validity of nodes.
+        // They should have an unique id
+        nodes.forEach(function(node) {
+            if (!node.id || !Number.isInteger(node.id)) {
+                errors.set('nodes', 'Invalid or missing id');
+            }
+        });
+
+        if(errors.size > 0){
+            return res.badRequest(errors);
+        }
 
         var scenario = {
             name: name,

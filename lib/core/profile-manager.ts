@@ -35,7 +35,7 @@ export class ProfileManager extends EventEmitter {
      * @returns Promise.<Instance>
      */
     startProfile(username) {
-        var self = this;
+        let self = this;
 
         return Promise.resolve()
             .then(function() {
@@ -66,7 +66,7 @@ export class ProfileManager extends EventEmitter {
                         return new Promise(function(resolve, reject) {
                             taskQueue.proceed('profile:start', null, function(errs){
                                 if(errs) {
-                                    var txt = 'Unable to start profile. One or more errors has been thrown on starting task processing. Below are the errors:';
+                                    let txt = 'Unable to start profile. One or more errors has been thrown on starting task processing. Below are the errors:';
                                     _.forEach(errs.errors, function(err, index) {
                                         txt += "\n[Error " + ++index + "]";
                                         txt += "\n" + err.stack;

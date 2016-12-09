@@ -51,7 +51,7 @@
                 <form-errors field="form.content"></form-errors>
                 <p>
                     <span ng-repeat="element in elements">
-                        <span class="btn btn-default" ng-if="element.type === 'task'">Task: "{{tasks[element.taskId].name}}", Scenario ID - {{element.id}}</span>
+                        <span class="btn btn-default" ng-if="element.type === 'task'">Task: "{{tasks[element.moduleId].name}}", Scenario ID - {{element.id}}</span>
                     </span>
                 </p>
                 <!--<p>-->
@@ -77,8 +77,8 @@
             <span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed }"></span>
         </a>
         <span ng-if="node.type === 'action'">Action {{node.configuration.action}}</span>
-        <span ng-if="node.type === 'task'"><span class="label label-warning">Task</span> <span class="label">{{tasks[node.taskId].plugin.name}}</span> {{tasks[node.taskId].name}}</span>
-        <span ng-if="node.type === 'trigger'"><span class="label label-primary">Trigger</span> <span class="label">{{triggers[node.triggerId].plugin.name}}</span> {{node.name}}</span>
+        <span ng-if="node.type === 'task'"><span class="label label-warning">Task</span> <span class="label">{{tasks[node.moduleId].plugin.name}}</span> {{tasks[node.moduleId].name}}</span>
+        <span ng-if="node.type === 'trigger'"><span class="label label-primary">Trigger</span> <span class="label">{{triggers[node.moduleId].plugin.name}}</span> {{node.name}}</span>
         <a class="pull-right btn btn-danger btn-xs" data-nodrag ng-click="remove(this)">
             <span class="glyphicon glyphicon-remove"></span>
         </a>

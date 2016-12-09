@@ -41,6 +41,7 @@
                             <strong>Created:</strong> {{scenario.createdAt | date}}<br>
                             <strong>Description</strong> {{scenario.description}}<br>
                             <hr>
+                            <button class="btn btn-warning" ng-click="remove(scenario)"><i class="fa fa-trash"></i> Delete</button>
                             <button ng-if="scenario.active">Deactivate scenario</button>
                             <button ng-if="!scenario.active">Activate scenario</button>
                         </div>

@@ -88,12 +88,54 @@ module.exports = {
                     type: "time", // RFC3339 (1970-01-01T02:47:00.000Z)
                     required: true
                 },
+                // when true the recurrence will never stop.
+                // when false it stop after the first callback.
+                // May be useful after a specific date node.
+                // dos not work with days because there are several callback
                 {
                     name: "repeat",
                     label: "Should the trigger be repeated?",
+                    description: "By default the trigger will only occurs once. You can set it to be permanent with repeat mode. Take note that when using days option the repeat mode is always on.",
                     value: false,
                     type: "checkbox",
                     required: true
+                },
+                {
+                    name: 'days',
+                    label: 'Days',
+                    type: 'multipleSelect',
+                    description: "If none selected, it will check only time range regardless the day",
+                    required: false,
+                    choices: [
+                        {
+                            label: "Monday",
+                            value: 1
+                        },
+                        {
+                            label: "Tuesday",
+                            value: 2
+                        },
+                        {
+                            label: "Wednesday",
+                            value: 3
+                        },
+                        {
+                            label: "Thursday",
+                            value: 4
+                        },
+                        {
+                            label: "Friday",
+                            value: 5
+                        },
+                        {
+                            label: "Saturday",
+                            value: 6
+                        },
+                        {
+                            label: "Sunday",
+                            value: 0
+                        },
+                    ]
                 }
             ]
         }

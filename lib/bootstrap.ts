@@ -39,6 +39,7 @@ export class Bootstrap {
                     });
                 }),
                 self._loadHooks(),
+                self._loadStorage(),
             ])
             .then(done.bind(self, null))
             .catch(done);
@@ -50,10 +51,10 @@ export class Bootstrap {
      * @private
      */
     _loadHooks() {
-        var self = this;
-        var promises = [];
+        let self = this;
+        let promises = [];
         this.system.hooksToLoad.forEach(function(Module) {
-            var hook = new Module(self.system);
+            let hook = new Module(self.system);
             promises.push(new Promise(function(resolve, reject) {
                 hook.initialize(function(err) {
                     if (err) {
@@ -65,6 +66,10 @@ export class Bootstrap {
         });
 
         return Promise.all(promises);
+    }
+
+    _loadStorage() {
+        return this.system.storage.initialize();
     }
 
     _oldBootstrap(system, logger, bootstrapDone){

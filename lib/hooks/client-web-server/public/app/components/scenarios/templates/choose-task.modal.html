@@ -4,11 +4,11 @@
 <div class="modal-body">
     <form name="form">
         <div>
-            <label for="taskId">Tasks</label>
-            <select class="form-control" ng-model="formData.taskId" name="taskId" id="taskId" required>
+            <label for="moduleId">Tasks</label>
+            <select class="form-control" ng-model="formData.moduleId" name="moduleId" id="moduleId" required>
                 <option ng-repeat="element in tasks" value="{{element.id}}">{{element.name}}</option>
             </select>
-            <form-errors field="form.taskId"></form-errors>
+            <form-errors field="form.moduleId"></form-errors>
         </div>
     </form>
 </div>

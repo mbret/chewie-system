@@ -3,60 +3,18 @@
 var _ = require('lodash');
 var validator = require('validator');
 var util = require('util');
+let request = require("request");
 
 export = function(server, router) {
 
     var PluginsDao = server.orm.models.Plugins;
 
     router.get('/users/:user/plugins', function(req, res){
-
-        var user = req.params.user;
-
-        PluginsDao
-            .findAll({
-                where: {
-                    userId: user
-                }
-            })
-            .then(function(plugins){
-                if(!plugins){
-                    return res.notFound('Invalid user id');
-                }
-                return res.ok(PluginsDao.toJSON(plugins));
-            })
-            .catch(function(err){
-                return res.serverError(err);
-            });
+        req.pipe(request({uri: server.system.config.webServerRemoteUrl + "/api/plugins", strictSSL: false})).pipe(res);
     });
 
-    /**
-     *
-     */
     router.get('/users/:user/plugins/:plugin', function(req, res){
-
-        var userId = req.params.user;
-        var name = req.params.plugin;
-
-        var search = {
-            userId: userId,
-            name: name
-        };
-
-        PluginsDao
-            .findOne({
-                where: search
-            })
-            .then(function(plugin){
-                if(!plugin){
-                    return res.notFound();
-                }
-                var json = plugin.toJSON();
-                json.modules = plugin.getModules();
-                return res.ok(json);
-            })
-            .catch(function(err){
-                return res.serverError(err);
-            });
+        req.pipe(request({uri: server.system.config.webServerRemoteUrl + "/api/plugins/" + req.params.plugin, strictSSL: false})).pipe(res);
     });
 
     router.put('/users/:user/plugins/:plugin', function(req, res) {
@@ -111,15 +69,15 @@ export = function(server, router) {
      * Save a new plugin for a given user.
      */
     router.post("/users/:user/plugins", function(req, res) {
-        var version = req.body.version;
-        var name = req.body.name;
-        var repository = req.body.repository;
-        var userId = parseInt(req.params.user);
-        var pluginPackage = req.body.package;
+        let version = req.body.version;
+        let name = req.body.name;
+        let repository = req.body.repository;
+        let userId = parseInt(req.params.user);
+        let pluginPackage = req.body.package || {};
 
         // process.exit();
         // validation
-        var errors = {};
+        let errors = {};
 
         // Must contain a string as name
         if(!name || !validator.isLength(name, {min: 1})){
@@ -138,12 +96,12 @@ export = function(server, router) {
             return res.badRequest({errors: errors});
         }
 
-        var plugin = {
-            "version": version,
-            "name": name,
-            "userId": userId,
+        let plugin = {
+            version: version,
+            name: name,
+            userId: userId,
             "package": pluginPackage,
-            "repository": repository
+            repository: repository
         };
 
         // server.logger.verbose("Creating plugin with data %s", util.inspect(plugin));
@@ -154,7 +112,6 @@ export = function(server, router) {
                 return res.created(created);
             })
             .catch(res.serverError);
-
     });
 
     router.delete("/users/:user/plugins/:plugin", function(req, res) {
@@ -173,30 +130,6 @@ export = function(server, router) {
                 }
                 server.io.emit("user:plugin:deleted", { name: name, userId: userId });
                 return res.ok();
-            })
-            .catch(res.serverError);
-    });
-
-    /**
-     * Fetch modules for a user.
-     * You can filter modules by their types.
-     */
-    router.get('/users/:id/modules', function(req, res) {
-        PluginsDao
-            .findAllModulesByUserId(req.params.id)
-            .then(function(modules){
-                if(!modules){
-                    return res.badRequest("Invalid user id");
-                }
-                var tmp = modules
-                    .filter(function(item){
-                        return item.type === req.query.type;
-                    })
-                    .map(function(item){
-                        item.pluginId = item.plugin.name;
-                        return item;
-                    });
-                return res.ok(tmp);
             })
             .catch(res.serverError);
     });
