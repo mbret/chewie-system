@@ -1,9 +1,9 @@
 {
-  "name": "test",
+  "name": "client-web-server",
   "version": "0.1.0",
   "description": "test",
   "author": "test",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "postinstall": "npm run build",
     "test": "grunt test",

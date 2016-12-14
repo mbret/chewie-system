@@ -5,6 +5,10 @@
     "node_modules"
   ],
   "compilerOptions": {
+    "sourceMap": false,
+    "removeComments": true,
+    "strictNullChecks": false,
+    "moduleResolution": "Node",
     "target": "es5"
   }
 }

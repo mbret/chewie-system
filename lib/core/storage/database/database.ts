@@ -5,7 +5,7 @@ let mkdirp = require('mkdirp');
 let path = require("path");
 let self = null;
 
-export default class Database {
+export default class Database implements InitializableInterface {
     system: Daemon;
     models: any;
     config: any;
@@ -46,6 +46,7 @@ export default class Database {
                 //
                 // // By default there is always one user. The administrator
                 // return server.orm.models.User.initAdmin();
+                return Promise.resolve();
             });
     }
 }

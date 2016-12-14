@@ -16,7 +16,7 @@ let certificate = null;
 let server;
 let self = null;
 
-export class ClientWebServer implements Hook {
+export = class ClientWebServer implements Hook {
 
     system: Daemon;
     logger: any;

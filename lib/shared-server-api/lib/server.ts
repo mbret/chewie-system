@@ -1,29 +1,33 @@
 'use strict';
 
-var app         = require('express')();
-var io          = require('socket.io');
-var https       = require('https');
-var http = require("http");
-var fs          = require('fs');
+let app         = require('express')();
+let io          = require('socket.io');
+let https       = require('https');
+let http = require("http");
+let fs          = require('fs');
 import * as _ from "lodash";
-var path        = require('path');
-var requireAll  = require('my-buddy-lib').requireAll;
-var EventEmitter = require("events");
+let path        = require('path');
+import {EventEmitter} from "events";
 import * as Services from "./services";
-let self = null;
+import {Daemon} from "../../daemon";
+let self: Server = null;
 
-export class Server extends EventEmitter {
+export class Server extends EventEmitter implements InitializableInterface {
 
     io: any;
+    logger: any;
+    server: any;
+    services: any;
+    system: Daemon;
+    // set once the server is started and listening
+    localAddress: string;
 
     constructor(system){
         super();
         self = this;
         this.logger = system.logger.Logger.getLogger('Api server');
 
-        var self = this;
         this.system = system;
-        this.initialized = false;
         this.server = null;
         this.services = {};
         this.io = null;
@@ -34,28 +38,27 @@ export class Server extends EventEmitter {
         });
     }
 
-    initialize(cb){
-        var self = this;
-
-        require(__dirname + '/bootstrap')(this, app, function(err){
-            if(err){
-                return cb(err);
-            }
-
-            self._startServer(function(err){
+    initialize(){
+        return new Promise(function(resolve, reject) {
+            require(__dirname + '/bootstrap')(self, app, function(err){
                 if(err){
-                    return cb(err);
+                    return reject(err);
                 }
-                self.logger.verbose('Initialized');
-                self.emit("initialized");
-                self.initialized = true;
-                return cb();
+
+                self.startServer(function(err){
+                    if(err){
+                        return reject(err);
+                    }
+                    self.logger.verbose('Initialized');
+                    self.emit("initialized");
+                    return resolve();
+                });
             });
         });
     }
 
-    _startServer(cb){
-        var port = self.system.config.sharedApiPort;
+    startServer(cb){
+        let port = self.system.config.sharedApiPort;
 
         // use ssl ?
         if (this.system.config.sharedApiSSL.activate) {
@@ -73,7 +76,7 @@ export class Server extends EventEmitter {
                 throw error;
             }
 
-            var bind = typeof port === 'string'
+            let bind = typeof port === 'string'
                 ? 'Pipe ' + port
                 : 'Port ' + port;
 
@@ -92,18 +95,11 @@ export class Server extends EventEmitter {
         });
 
         this.server.on('listening', function(){
+            self.localAddress = 'https://localhost:' + self.server.address().port;
             return cb();
         });
 
         this.io = io(self.server, {});
         require('./socket')(self, this.io);
-    }
-
-    getConfig(){
-        return this.config;
-    }
-
-    getLocalAddress(){
-        return 'https://localhost:' + this.server.address().port;
     }
 }

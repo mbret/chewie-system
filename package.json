@@ -14,7 +14,8 @@
     "test": "mocha",
     "tsc": "tsc",
     "tsc:w": "tsc -w",
-    "foo": "./scripts/test.sh"
+    "foo": "./scripts/test.sh",
+    "start-dev": "cd _dev && node _dev-windows/index.js"
   },
   "dependencies": {
     "async": "^2.1.4",

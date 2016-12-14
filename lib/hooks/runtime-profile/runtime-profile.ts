@@ -6,7 +6,7 @@ import * as _ from "lodash";
 import {Hook} from "../../core/hook";
 import {Daemon} from "../../daemon";
 
-export class RuntimeProfileHook implements Hook {
+export = class RuntimeProfileHook implements Hook {
 
     system: Daemon;
     logger: any;

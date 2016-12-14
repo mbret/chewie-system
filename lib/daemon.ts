@@ -37,13 +37,13 @@ export class Daemon extends EventEmitter {
 
     executingTasks: Map<string, TaskExecution>;
     runtime: Runtime;
-    apiServer: ApiServer;
+    sharedApiServer: ApiServer;
     config: any;
     communicationBus: ServerCommunication.CommunicationBus;
     scenarioReader: ScenarioReader;
     moduleLoader: ModuleLoader;
     pluginsLoader: PluginsLoader;
-    hooksToLoad: Array<HookConstructor>;
+    hooksToLoad: Array<string>;
     logger: any;
     speaker: Speaker;
     localRepository: LocalRepository;
@@ -102,7 +102,7 @@ export class Daemon extends EventEmitter {
         // Used to handle running profile / tasks / etc
         this.communicationBus = new ServerCommunication.CommunicationBus(this);
         this.runtime = new Runtime(this);
-        this.apiServer = new ApiServer(this);
+        this.sharedApiServer = new ApiServer(this);
         this.pluginsHandler = new PluginsHandler(this);
         this.notificationService = new NotificationService(this);
         this.apiService = new api.ApiService(this);
@@ -188,7 +188,7 @@ export class Daemon extends EventEmitter {
             // Splash final information
             self.logger.info('The system is now started and ready!');
             //self.logger.info('The web interface is available at at %s or %s for remote access', self.webServer.getLocalAddress(), self.webServer.getRemoteAddress());
-            self.logger.info('The API is available at %s or %s for remote access', self.apiServer.getLocalAddress(), self.config.sharedApiUrl);
+            self.logger.info('The API is available at %s or %s for remote access', self.sharedApiServer.localAddress, self.config.sharedApiUrl);
             console.log('');
 
             // Play some system sounds

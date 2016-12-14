@@ -2,7 +2,7 @@
 import Database from "./database/database";
 import {Daemon} from "../../daemon";
 
-export default class Storage {
+export default class Storage implements InitializableInterface {
     database: Database;
     system: Daemon;
 
@@ -12,6 +12,6 @@ export default class Storage {
     }
 
     initialize() {
-        this.database.initialize();
+        return this.database.initialize();
     }
 }
