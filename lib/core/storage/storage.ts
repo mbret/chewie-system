@@ -2,7 +2,7 @@
 import Database from "./database/database";
 import {Daemon} from "../../daemon";
 
-export default class Storage implements InitializableInterface {
+export default class Storage implements InitializeAbleInterface {
     database: Database;
     system: Daemon;
 

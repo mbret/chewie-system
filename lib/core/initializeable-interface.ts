@@ -1,4 +1,4 @@
-interface InitializableInterface {
+interface InitializeAbleInterface {
     /**
      * Initialize the module
      */

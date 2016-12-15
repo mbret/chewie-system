@@ -5,7 +5,7 @@ let mkdirp = require('mkdirp');
 let path = require("path");
 let self = null;
 
-export default class Database implements InitializableInterface {
+export default class Database implements InitializeAbleInterface {
     system: Daemon;
     models: any;
     config: any;

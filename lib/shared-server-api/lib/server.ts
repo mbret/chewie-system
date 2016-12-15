@@ -12,7 +12,7 @@ import * as Services from "./services";
 import {Daemon} from "../../daemon";
 let self: Server = null;
 
-export class Server extends EventEmitter implements InitializableInterface {
+export class Server extends EventEmitter implements InitializeAbleInterface {
 
     io: any;
     logger: any;

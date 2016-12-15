@@ -57,7 +57,6 @@ export class Daemon extends EventEmitter {
      */
     constructor() {
         super();
-        global.MyBuddy = this;
         // Contain tasks by their id
         this.executingTasks = new Map();
         this.hooksToLoad = [];
@@ -81,10 +80,10 @@ export class Daemon extends EventEmitter {
         this.config = configurationLoader(userConfig);
 
         // Build system logger
-        global.LOGGER = new Logger(self.config.log);
-        let logger = LOGGER.getLogger('Daemon');
+        let LOGGER = new Logger(self.config.log);
+        this.logger = LOGGER.getLogger('Daemon');
 
-        logger.info('Start daemon');
+        this.logger.info('Start daemon');
 
         // init required folders
         utils.initDirsSync([
@@ -95,7 +94,6 @@ export class Daemon extends EventEmitter {
             path.resolve(self.config.system.dataDir, 'plugins')
         ]);
 
-        this.logger = LOGGER.getLogger('Daemon');
         this.logger.Logger = LOGGER;
         this.logger.getLogger = LOGGER.getLogger.bind(LOGGER);
         this.logger.info('Starting...');
@@ -113,7 +111,7 @@ export class Daemon extends EventEmitter {
         this.moduleLoader = new ModuleLoader(this);
         this.pluginsLoader = new PluginsLoader(this);
         this.bus = new Bus(this);
-        this.speechHandler = new SpeechHandler();
+        this.speechHandler = new SpeechHandler(this);
 
         this.init(function(err){
             return cb(err);
