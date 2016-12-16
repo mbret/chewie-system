@@ -5,6 +5,6 @@ export interface HookConstructor {
     new(system: Daemon): Hook;
 }
 
-export interface Hook {
+export interface HookInterface {
     initialize(done: Function);
 }

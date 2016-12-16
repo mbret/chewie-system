@@ -36,7 +36,7 @@ export class CommunicationBus extends EventEmitter implements InitializeAbleInte
 
                 self.socket.on('connect', function() {
                     self.onConnect();
-                    self.logger.debug("Initialized");
+                    self.logger.verbose("Initialized");
                     return resolve();
                 });
 

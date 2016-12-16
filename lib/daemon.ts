@@ -22,7 +22,6 @@ import {Bootstrap} from "./bootstrap";
 import {Runtime} from "./core/runtime";
 import {Server as ApiServer} from "./shared-server-api";
 import {TaskExecution} from "./core/plugins/tasks/task-execution";
-import {HookConstructor} from "./core/hook";
 import {PluginsLoader} from "./core/plugins/plugins-loader";
 import {Speaker} from "./core/speaker/speaker";
 import configurationLoader from "./configuration/loader";
@@ -60,7 +59,6 @@ export class Daemon extends EventEmitter {
         // Contain tasks by their id
         this.executingTasks = new Map();
         this.hooksToLoad = [];
-        this.storage = new Storage(this);
         this.info = {
             startedAt: new Date(),
             version: packageInfo.version,
@@ -98,6 +96,7 @@ export class Daemon extends EventEmitter {
         this.logger.getLogger = LOGGER.getLogger.bind(LOGGER);
         this.logger.info('Starting...');
         // Used to handle running profile / tasks / etc
+        this.storage = new Storage(this);
         this.communicationBus = new ServerCommunication.CommunicationBus(this);
         this.runtime = new Runtime(this);
         this.sharedApiServer = new ApiServer(this);

@@ -3,10 +3,10 @@
 let async = require("async");
 let self = this;
 import * as _ from "lodash";
-import {Hook} from "../../core/hook";
 import {Daemon} from "../../daemon";
+import {HookInterface} from "../../core/hook-interface";
 
-export = class RuntimeProfileHook implements Hook, InitializeAbleInterface {
+export = class RuntimeProfileHook implements HookInterface, InitializeAbleInterface {
 
     system: Daemon;
     logger: any;

@@ -1,7 +1,7 @@
 'use strict';
 import {Daemon} from "../../daemon";
-import {Hook} from "../../core/hook";
 import * as _ from "lodash";
+import {HookInterface} from "../../core/hook-interface";
 let http = require('http');
 let kraken = require('kraken-js');
 let express = require('express');
@@ -16,7 +16,7 @@ let certificate = null;
 let server;
 let self = null;
 
-export = class ClientWebServer implements Hook {
+export = class ClientWebServer implements HookInterface {
 
     system: Daemon;
     logger: any;

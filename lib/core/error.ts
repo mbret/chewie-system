@@ -1,7 +1,6 @@
 "use strict";
 
-export class SystemError extends Error {
-
+export class SystemError extends Error implements Error {
     code: string;
 
     public static CODE_PREFIX: string = "bError.";

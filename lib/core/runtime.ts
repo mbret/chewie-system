@@ -6,10 +6,10 @@ import {Daemon} from "../daemon";
 import {PluginContainer} from "./plugins/plugin-container";
 import {ProfileManager} from "./profile-manager";
 import {ModuleContainer} from "./plugins/modules/module-container";
+import {SystemModuleInterface} from "./system-module-interface";
 let util = require("util");
 
-export class Runtime {
-
+export class Runtime implements SystemModuleInterface {
     system: Daemon;
     scenarios: Map<string, any>;
     plugins: Map<string, PluginContainer>;
@@ -24,10 +24,6 @@ export class Runtime {
         this.scenarios = new Map();
         this.plugins = new Map();
         this.modules = new Map();
-    }
-
-    initialize(cb) {
-        return cb();
     }
 
     hasActiveProfile() {
