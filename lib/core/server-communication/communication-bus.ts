@@ -2,13 +2,13 @@
 
 import {EventEmitter}  from "events";
 import {Daemon} from "../../daemon";
-var io = require('socket.io-client');
+let io = require('socket.io-client');
 let self = null;
 
 /**
  *
  */
-export class CommunicationBus extends EventEmitter {
+export class CommunicationBus extends EventEmitter implements InitializeAbleInterface {
 
     system: Daemon;
     socket: any;
@@ -24,13 +24,28 @@ export class CommunicationBus extends EventEmitter {
         this.sharedApiEndpoint = this.system.config.sharedApiUrl;
     }
 
-    initialize(cb) {
-        // rejectUnauthorized is needed for self signed certificate
-        this.socket = io.connect(this.sharedApiEndpoint, {reconnect: true, rejectUnauthorized: false});
-        this.socket.on('connect', this.onConnect.bind(this));
-        this.socket.on('connect_error', this.onConnectError);
+    initialize() {
+        let self = this;
 
-        return cb();
+        return new Promise(function(resolve, reject) {
+            // wait for shared api to be initialized
+            self.system.sharedApiServer.on("initialized", function() {
+
+                // rejectUnauthorized is needed for self signed certificate
+                self.socket = io.connect(self.sharedApiEndpoint, {reconnect: true, rejectUnauthorized: false});
+
+                self.socket.on('connect', function() {
+                    self.onConnect();
+                    self.logger.debug("Initialized");
+                    return resolve();
+                });
+
+                self.socket.on('connect_error', function(err) {
+                    self.logger.error("An error occurred while trying to connect to shared api", err);
+                    return reject();
+                });
+            });
+        });
     }
 
     onConnect() {
@@ -40,9 +55,5 @@ export class CommunicationBus extends EventEmitter {
             .on("user:plugin:deleted", self.emit.bind(self, "user:plugin:deleted"))
             .on("user:scenario:created", self.emit.bind(self, "user:scenario:created"))
             .on("scenario:deleted", self.emit.bind(self, "scenario:deleted"));
-    }
-
-    onConnectError(err) {
-        console.error("error on communication bus", err);
     }
 }

@@ -21,6 +21,7 @@ export class Bootstrap {
      * @param done
      */
     bootstrap(done) {
+        let self = this;
 
         // register hooks (for now only core)
         this.system.hooksToLoad.push("runtime-profile");
@@ -29,7 +30,7 @@ export class Bootstrap {
         Promise
             .all([
                 self.system.speaker.initialize(),
-                self._oldBootstrap(),
+                self.system.communicationBus.initialize(),
                 self.system.sharedApiServer.initialize(),
                 self._loadStorage(),
                 self._loadHooks(),
@@ -151,9 +152,9 @@ export class Bootstrap {
                             return cb();
                         },
 
-                        function(cb) {
-                            system.communicationBus.initialize(cb);
-                        },
+                        // function(cb) {
+                        //     system.communicationBus.initialize(cb);
+                        // },
 
                     ], done);
                 },

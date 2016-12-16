@@ -6,7 +6,7 @@ import * as _ from "lodash";
 import {Hook} from "../../core/hook";
 import {Daemon} from "../../daemon";
 
-export = class RuntimeProfileHook implements Hook {
+export = class RuntimeProfileHook implements Hook, InitializeAbleInterface {
 
     system: Daemon;
     logger: any;
@@ -19,20 +19,7 @@ export = class RuntimeProfileHook implements Hook {
         this.currentProfile = null;
     }
 
-    initialize(done: Function) {
-
-        // Try to start profile if one is defined on startup
-        // let profileToLoad = self.config.profileToLoadOnStartup;
-        // if(profileToLoad) {
-            self.system.runtime.profileManager.startProfile("admin")
-                .then(function(){
-                    self.logger.info("Profile %s has been started", "admin");
-                })
-                .catch(function(err) {
-                    self.logger.info("Unable to start profile", "admin", err);
-                    throw err;
-                });
-        // }
+    initialize() {
 
         // System events
         this.system
@@ -159,7 +146,21 @@ export = class RuntimeProfileHook implements Hook {
                 }
             });
 
-        return done();
+        // we need to wait for shared api server
+        this.system.sharedApiServer.on("initialized", function() {
+
+            // start the profile admin @todo handle profile
+            self.system.runtime.profileManager.startProfile("admin")
+                .then(function(){
+                    self.logger.info("Profile %s has been started", "admin");
+                })
+                .catch(function(err) {
+                    self.logger.error("An error occurred while trying to start profile %s", "admin");
+                    throw err;
+                });
+        });
+
+        return Promise.resolve();
     }
 
     /**
