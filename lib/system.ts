@@ -2,8 +2,6 @@
 
 let async = require('async');
 import _  = require('lodash');
-// let PluginsHandler = require('./core/plugins/plugins-handler.js');
-// let SpeechHandler = require('./core/speech/speech-handler.js');
 let taskQueue = require('my-buddy-lib').taskQueue;
 let repositories = require('./core/repositories');
 let utils = require('my-buddy-lib').utils;
@@ -66,6 +64,7 @@ export class System extends EventEmitter {
      */
     public start(userConfig = {}, cb = function(err){}){
         let self = this;
+
         // load config
         this.config = configurationLoader(userConfig);
 
@@ -79,7 +78,6 @@ export class System extends EventEmitter {
         utils.initDirsSync([
             self.config.system.tmpDir,
             self.config.system.dataDir,
-            // config.system.persistenceDir,
             self.config.system.pluginsTmpDir,
             path.resolve(self.config.system.dataDir, 'plugins')
         ]);
@@ -87,7 +85,6 @@ export class System extends EventEmitter {
         this.logger.Logger = LOGGER;
         this.logger.getLogger = LOGGER.getLogger.bind(LOGGER);
         this.logger.info('Starting...');
-        // Used to handle running profile / tasks / etc
         this.storage = new Storage(this);
         this.communicationBus = new ServerCommunication.CommunicationBus(this);
         this.runtime = new Runtime(this);
@@ -99,7 +96,6 @@ export class System extends EventEmitter {
         this.scenarioReader = new ScenarioReader(this);
         this.moduleLoader = new ModuleLoader(this);
         this.pluginsLoader = new PluginsLoader(this);
-        // this.speechHandler = new SpeechHandler(this);
 
         this.init(function(err){
             return cb(err);
