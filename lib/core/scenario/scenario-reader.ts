@@ -1,5 +1,5 @@
 "use strict";
-import {Daemon} from "../../daemon";
+import {System} from "../../system";
 import {ModuleContainer} from "../plugins/modules/module-container";
 let self: ScenarioReader = null;
 
@@ -9,7 +9,7 @@ let self: ScenarioReader = null;
  */
 export class ScenarioReader {
 
-    system: Daemon;
+    system: System;
     logger: any;
 
     constructor(system) {

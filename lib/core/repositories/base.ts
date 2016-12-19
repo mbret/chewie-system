@@ -1,9 +1,9 @@
 'use strict';
-import {Daemon} from "../../daemon";
+import {System} from "../../system";
 
 class BaseRepository {
 
-    system: Daemon;
+    system: System;
     logger: any;
 
     constructor(system, logger){

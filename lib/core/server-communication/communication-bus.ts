@@ -1,7 +1,7 @@
 "use strict";
 
 import {EventEmitter}  from "events";
-import {Daemon} from "../../daemon";
+import {System} from "../../system";
 let io = require('socket.io-client');
 let self = null;
 
@@ -10,7 +10,7 @@ let self = null;
  */
 export class CommunicationBus extends EventEmitter implements InitializeAbleInterface {
 
-    system: Daemon;
+    system: System;
     socket: any;
     logger: any;
     sharedApiEndpoint: string;

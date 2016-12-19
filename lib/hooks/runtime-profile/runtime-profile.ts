@@ -3,16 +3,16 @@
 let async = require("async");
 let self = this;
 import * as _ from "lodash";
-import {Daemon} from "../../daemon";
+import {System} from "../../system";
 import {HookInterface} from "../../core/hook-interface";
 
 export = class RuntimeProfileHook implements HookInterface, InitializeAbleInterface {
 
-    system: Daemon;
+    system: System;
     logger: any;
     currentProfile: any;
 
-    constructor(system: Daemon) {
+    constructor(system: System) {
         self = this;
         this.system = system;
         this.logger = system.logger.Logger.getLogger('RuntimeProfileHook');

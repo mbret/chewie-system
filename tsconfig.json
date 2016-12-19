@@ -5,10 +5,11 @@
     "node_modules"
   ],
   "compilerOptions": {
+    "module": "commonjs",
     "sourceMap": false,
     "removeComments": true,
     "strictNullChecks": false,
     "moduleResolution": "Node",
-    "target": "es5"
+    "target": "es6"
   }
 }

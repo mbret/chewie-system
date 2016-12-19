@@ -1,13 +1,13 @@
 "use strict";
 import {EventEmitter} from "events";
-import {Daemon} from "../daemon";
+import {System} from "../system";
 import {SystemError, ErrorCodePrefix} from "./error";
 var taskQueue = require('my-buddy-lib').taskQueue;
 var _ = require('lodash');
 
 export class ProfileManager extends EventEmitter {
 
-    system: Daemon;
+    system: System;
     profile: any;
     logger: any;
     lock: boolean;

@@ -2,9 +2,9 @@
 
 // see https://www.typescriptlang.org/docs/handbook/mixins.html
 
-import {Daemon} from "../daemon";
+import {System} from "../system";
 
 export interface SystemModuleInterface {
-    system: Daemon;
+    system: System;
     logger: any;
 }

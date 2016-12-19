@@ -33,8 +33,8 @@ module.exports = function(server, socketServer){
         }
 
         function emitRuntimeTaskUpdate() {
-            var tasks = [];
-            server.system.executingTasks.forEach(function(tmp: TaskExecution) {
+            let tasks = [];
+            server.system.runtime.executingTasks.forEach(function(tmp: TaskExecution) {
                 tasks.push(tmp);
             });
             socket.emit("runtime:executing-tasks:update", server.services.taskService.taskExecutionToJson(tasks));
@@ -47,7 +47,7 @@ module.exports = function(server, socketServer){
         server.system.on("runtime:task-execution:delete", onDeleteRuntimeTask);
         server.system.runtime.profileManager.on('profile:stopped:completed', onProfileStoppedCompleted);
         server.system.on('profile:start:complete', onProfileStartedCompleted);
-        server.system.bus.on('user:updated', onUserUpdated);
+        // server.system.bus.on('user:updated', onUserUpdated);
 
         // Once socket is disconnected remove all the current listener for this user
         // avoid listeners leak
@@ -57,7 +57,7 @@ module.exports = function(server, socketServer){
             server.system.removeListener("runtime:task-execution:new", onDeleteRuntimeTask);
             server.system.runtime.profileManager.removeListener('profile:stopped:completed', onProfileStoppedCompleted);
             server.system.runtime.profileManager.removeListener('profile:start:complete', onProfileStartedCompleted);
-            server.system.bus.removeListener('user:updated', onUserUpdated);
+            // server.system.bus.removeListener('user:updated', onUserUpdated);
         });
     });
 };

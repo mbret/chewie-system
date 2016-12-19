@@ -1,10 +1,10 @@
 'use strict';
 
-import {Daemon} from "../../daemon";
+import {System} from "../../system";
 
 export class PluginContainer {
 
-    system: Daemon;
+    system: System;
     plugin: any;
     //instance: any;
     logger: any;

@@ -1,8 +1,8 @@
 'use strict';
 
-var _ = require('lodash');
-var fs = require('fs');
-var path = require('path');
+let _ = require('lodash');
+let fs = require('fs');
+let path = require('path');
 import BaseRepository = require("./base");
 import * as async from "async";
 let self = null;
