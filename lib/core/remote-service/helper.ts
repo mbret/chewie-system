@@ -12,106 +12,111 @@ let ApiResponseError = require("./response-error").ApiResponseError;
  */
 class RemoteServiceHelper {
 
+    defaultRequestOptions: any;
+    logger: any;
+
     constructor(system: System) {
         Object.assign(this, {system});
 
         let self = this;
-        this.logger = system.logger.getLogger('ApiService');
+        this.logger = system.logger.getLogger('RemoteServiceHelper');
         this.defaultRequestOptions = {
             rejectUnauthorized: false,
             baseUrl: null
         };
 
-        var address = system.config.sharedApiUrl;
+        let address = system.config.sharedApiUrl;
         this.logger.debug("Api server configured on address %s", address);
         this.defaultRequestOptions.baseUrl = address;
+    }
 
-        this._buildOptions = function(userOptions) {
-            // case of we have just an uri
-            if(_.isString(userOptions)) {
-                userOptions = { uri: userOptions };
-            }
-            return _.merge({}, this.defaultRequestOptions, userOptions);
-        };
+    _buildOptions(userOptions) {
+        // case of we have just an uri
+        // if(_.isString(userOptions)) {
+        //     userOptions = { uri: userOptions };
+        // }
+        return _.merge({}, this.defaultRequestOptions, userOptions);
+    }
 
-        this._handleResponse = function(cb, error, response, body) {
-            // Be careful this will not pass a response but a native Error object.
-            // It just does not have body, statusCode, etc
-            if (error) {
-                return cb(error);
-            }
+    _handleResponse(cb, error, response, body) {
+        // Be careful this will not pass a response but a native Error object.
+        // It just does not have body, statusCode, etc
+        if (error) {
+            return cb(error);
+        }
 
-            try {
-                response.body = JSON.parse(response.body);
-            } catch(err) {}
+        try {
+            response.body = JSON.parse(response.body);
+        } catch(err) {}
 
-            if (response.statusCode === 500) {
+        if (response.statusCode === 500) {
 
-                // Build an error object that will wrap response
-                // So we have a valid Error object and still able to handle response
-                return cb(new ApiResponseError(response));
-            }
+            // Build an error object that will wrap response
+            // So we have a valid Error object and still able to handle response
+            return cb(new ApiResponseError(response));
+        }
 
-            return cb(null, response);
-        };
+        return cb(null, response);
+    }
 
-        /**
-         *
-         * @param options
-         * @returns {Promise}
-         */
-        this.get = function(options) {
-            var self = this;
-            options = self._buildOptions(options);
-            return new Promise(function(resolve, reject) {
-                request
-                    .get(options, self._handleResponse.bind(null, (function(err, httpResponse) {
-                        if(err) {
-                            return reject(err);
-                        }
+    /**
+     *
+     * @returns {Promise}
+     */
+    post(url, data = {}, options = {}) {
+        let self = this;
+        options = self._buildOptions(options);
+        return new Promise(function(resolve, reject) {
+            let opt = _.merge({}, options, {uri: url, body: data, json: true});
+            request
+                .defaults({headers: { 'content-type': 'application/json'}})
+                .post(opt, self._handleResponse.bind(null, (function(err, httpResponse) {
+                    if(err) {
+                        return reject(err);
+                    }
 
-                        return resolve(httpResponse);
-                    })));
-            });
-        };
+                    return resolve(httpResponse);
+                })));
+        });
+    }
 
-        /**
-         *
-         * @returns {Promise}
-         */
-        this.post = function(options, data) {
-            var self = this;
-            options = self._buildOptions(options);
-            return new Promise(function(resolve, reject) {
-                let opt = _.merge({}, options, {body: data, json: true});
-                request
-                    .defaults({headers: { 'content-type': 'application/json'}})
-                    .post(opt, self._handleResponse.bind(null, (function(err, httpResponse) {
-                        if(err) {
-                            return reject(err);
-                        }
+    put(url, data, options) {
+        let self = this;
+        options = self._buildOptions(options);
+        return new Promise(function(resolve, reject) {
+            let opt = _.merge({}, options, {uri: url, body: data, json: true});
+            request
+                .put(_.merge(options, {form: data}), self._handleResponse.bind(null, (function(err, httpResponse) {
+                    if(err) {
+                        return reject(err);
+                    }
 
-                        return resolve(httpResponse);
-                    })));
-            });
-        };
+                    return resolve(httpResponse);
+                })));
+        });
+    }
 
-        this.put = function(options, data) {
-            var self = this;
-            options = self._buildOptions(options);
+    /**
+     *
+     * @param url
+     * @param options
+     * @returns {Promise}
+     */
+    get(url, options) {
+        let self = this;
+        options = self._buildOptions(options);
+        return new Promise(function(resolve, reject) {
+            let opt = _.merge({}, options, {uri: url});
+            self.logger.verbose("GET (https) %s%s", self.defaultRequestOptions.baseUrl, url);
+            request
+                .get(opt, self._handleResponse.bind(null, (function(err, httpResponse) {
+                    if(err) {
+                        return reject(err);
+                    }
 
-            return new Promise(function(resolve, reject) {
-
-                request
-                    .put(_.merge(options, {form: data}), self._handleResponse.bind(null, (function(err, httpResponse) {
-                        if(err) {
-                            return reject(err);
-                        }
-
-                        return resolve(httpResponse);
-                    })));
-            });
-        };
+                    return resolve(httpResponse);
+                })));
+        });
     }
 }
 

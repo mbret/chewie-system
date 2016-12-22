@@ -1,6 +1,6 @@
 "use strict";
 
-var _ = require("lodash");
+let _ = require("lodash");
 
 class ApiResponseError extends Error {
     constructor(response) {

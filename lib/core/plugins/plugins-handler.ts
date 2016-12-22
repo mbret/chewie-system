@@ -125,7 +125,7 @@ class PluginsHandler{
 
         // load user options
         // We need first to retrieve the plugin in database
-        this.system.apiService.findPlugin(profileId, pluginName)
+        this.system.sharedApiService.findPlugin(profileId, pluginName)
             .then(function(data){
 
                 // now check for values
@@ -323,7 +323,7 @@ class PluginsHandler{
     //     }
     //
     //     // Fetch module from api to get some info like user options
-    //     this.system.apiService.findModuleByName(profileId, plugin.name, moduleName)
+    //     this.system.sharedApiService.findModuleByName(profileId, plugin.name, moduleName)
     //         .then(function(module) {
     //             if(!module) {
     //                 return cb(new Error("Unable to retrieve module " + moduleName));

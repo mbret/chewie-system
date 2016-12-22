@@ -31,7 +31,7 @@ export = class RuntimeProfileHook implements HookInterface, InitializeAbleInterf
                 // To do that we need the user modules to be sync inside system
                 Promise
                     // So first fetch all user plugins
-                    .resolve(self.system.apiService.findAllPluginsByUser(profile.id))
+                    .resolve(self.system.sharedApiService.findAllPluginsByUser(profile.id))
                     // Now synchronize
                     .then(function(data) {
                         plugins = data;
@@ -43,7 +43,7 @@ export = class RuntimeProfileHook implements HookInterface, InitializeAbleInterf
                     })
                     // Now fetch all scenario
                     .then(function() {
-                        return self.system.apiService.findAllScenario(profile.id);
+                        return self.system.sharedApiService.findAllScenario(profile.id);
                     })
                     // Now run all scenario
                     .then(function(scenarios) {

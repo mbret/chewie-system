@@ -168,7 +168,7 @@ export class ScenarioReader {
             .resolve()
             // Get plugin info
             .then(function() {
-                return self.system.apiService.findPlugin(userId, pluginId);
+                return self.system.sharedApiService.findPlugin(userId, pluginId);
             })
             // Load module instance
             .then(function(data) {

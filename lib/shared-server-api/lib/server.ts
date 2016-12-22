@@ -10,6 +10,7 @@ let path        = require('path');
 import {EventEmitter} from "events";
 import * as Services from "./services";
 import {System} from "../../system";
+import {EventsWatcher} from "./services/events-watcher";
 let self: Server = null;
 
 export class Server extends EventEmitter implements InitializeAbleInterface {
@@ -21,6 +22,7 @@ export class Server extends EventEmitter implements InitializeAbleInterface {
     system: System;
     // set once the server is started and listening
     localAddress: string;
+    eventsWatcher: EventsWatcher;
 
     constructor(system){
         super();
@@ -32,6 +34,8 @@ export class Server extends EventEmitter implements InitializeAbleInterface {
         this.services = {};
         this.io = null;
 
+        this.eventsWatcher = new EventsWatcher(this);
+
         // Include all services
         _.forEach(Services, function(module, key) {
             self.services[key.charAt(0).toLowerCase() + key.slice(1)] = new module(system);
@@ -39,6 +43,7 @@ export class Server extends EventEmitter implements InitializeAbleInterface {
     }
 
     initialize(){
+        let self = this;
         return new Promise(function(resolve, reject) {
             require(__dirname + '/bootstrap')(self, app, function(err){
                 if(err){
@@ -49,8 +54,12 @@ export class Server extends EventEmitter implements InitializeAbleInterface {
                     if(err){
                         return reject(err);
                     }
+
+                    self.eventsWatcher.watch();
+
                     self.logger.verbose('Initialized');
                     self.emit("initialized");
+
                     return resolve();
                 });
             });

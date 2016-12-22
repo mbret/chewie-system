@@ -40,7 +40,7 @@ export class System extends EventEmitter {
     speaker: Speaker;
     localRepository: LocalRepository;
     repository: any;
-    apiService: any;
+    sharedApiService: RemoteServiceHelper;
     storage: Storage;
     info: any;
 
@@ -89,7 +89,7 @@ export class System extends EventEmitter {
         this.communicationBus = new ServerCommunication.CommunicationBus(this);
         this.runtime = new Runtime(this);
         this.sharedApiServer = new ApiServer(this);
-        this.apiService = new RemoteServiceHelper(this);
+        this.sharedApiService = new RemoteServiceHelper(this);
         this.speaker = new Speaker(this);
         this.localRepository = new LocalRepository(this);
         this.repository = new repositories.Repository(this);
@@ -184,6 +184,13 @@ export class System extends EventEmitter {
             // self.runtimeHelper.profile.on('profile:start:complete', function(){
             //     self.playSystemSound('profile_loaded.wav');
             // });
+            setInterval(function() {
+                self.sharedApiService.post("/notifications", {content: "test"}).then(function(res) {
+                    // console.log(res);
+                }).catch(function(err) {
+                    console.log("err", err.code, err.message);
+                });
+            }, 5000);
 
             return cb();
         });

@@ -5,19 +5,32 @@ let _ = require('lodash');
 
 module.exports = function(sequelize){
 
+    /**
+     * A notification may concern one user (userId) or all users (userId: null)
+     * It's also possible to target notification to a specific device with deviceId. deviceId and userId may be combinated.
+     */
     return sequelize.define('notification', {
+
         // user id
+        userId: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            defaultValue: null
+        },
 
         // @todo device id
 
         type: {
             type: Sequelize.ENUM("info", "warning", "danger"),
+            allowNull: false
         },
 
         content: {
-            type: Sequelize.STRING
+            type: Sequelize.STRING,
+            allowNull: false
         },
 
+        // more extra options
         options: {
             type: Sequelize.STRING,
             defaultValue: JSON.stringify({}),

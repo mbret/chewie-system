@@ -40,7 +40,7 @@ export class ProfileManager extends EventEmitter {
         return Promise.resolve()
             .then(function() {
                 // get profile id
-                return self.system.apiService
+                return self.system.sharedApiService
                     .findUserByUsername(username)
                     .then(function(user){
 
