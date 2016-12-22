@@ -1,13 +1,11 @@
 'use strict';
-import {Daemon} from "./daemon";
-let async = require('async');
+import {System} from "./system";
 let util = require('util');
-let path = require('path');
 let self = this;
 
 export class Bootstrap {
 
-    system: Daemon;
+    system: System;
     logger: any;
 
     constructor(system) {
@@ -22,10 +20,12 @@ export class Bootstrap {
      */
     bootstrap(done) {
         let self = this;
+        let initializing = true;
+        let hooksToLoad = [];
 
         // register hooks (for now only core)
-        this.system.hooksToLoad.push("runtime-profile");
-        this.system.hooksToLoad.push("client-web-server");
+        hooksToLoad.push("runtime-profile");
+        hooksToLoad.push("client-web-server");
 
         Promise
             .all([
@@ -33,34 +33,45 @@ export class Bootstrap {
                 self.system.communicationBus.initialize(),
                 self.system.sharedApiServer.initialize(),
                 self.system.storage.initialize(),
-                self._loadHooks(),
+                self._loadHooks(hooksToLoad),
             ])
-            .then(done.bind(self, null))
-            .catch(done);
+            .then(function() {
+                initializing = false;
+                return done();
+            })
+            .catch(function(err) {
+                initializing = false;
+                return done(err);
+            });
+
+        // Warning for abnormal time
+        setTimeout(function() {
+            if (initializing) {
+                self.logger.warn("The initialization process is still not done and seems to take an unusual long time. For some cases you may increase the time in config file.");
+            }
+        }, 6000);
     }
 
     /**
      * @returns {Object}
      * @private
      */
-    _loadHooks() {
+    _loadHooks(hooksToLoad) {
         let self = this;
         let promises = [];
-        this.system.hooksToLoad.forEach(function(moduleName) {
+        hooksToLoad.forEach(function(moduleName) {
+            self.logger.verbose("Initializing hook %s..", moduleName);
             let Module = require("./hooks/" + moduleName);
             let hook = new Module(self.system);
-            promises.push(new Promise(function(resolve, reject) {
-                hook.initialize(function(err) {
-                    if (err) {
-                        return reject(err);
-                    }
-                    self.logger.debug("Hook %s initialized", moduleName);
-                    setImmediate(function() {
-                        self.system.emit("hook:" + moduleName + ":initialized");
-                    });
-                    return resolve();
-                });
-            }));
+            promises.push(
+                hook.initialize()
+                    .then(function() {
+                        self.logger.verbose("Hook %s initialized", moduleName);
+                        setImmediate(function() {
+                            self.system.emit("hook:" + moduleName + ":initialized");
+                        });
+                    })
+            );
         });
 
         return Promise.all(promises);

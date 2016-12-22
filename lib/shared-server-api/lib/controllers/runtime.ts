@@ -107,7 +107,7 @@ module.exports = function(server, router){
 
     router.get("/runtime/executing-tasks", function(req, res) {
         var tasks = [];
-        server.system.executingTasks.forEach(function(tmp: TaskExecution) {
+        server.system.runtime.executingTasks.forEach(function(tmp: TaskExecution) {
             tasks.push(tmp);
         });
         return res.ok(server.services.taskService.taskExecutionToJson(tasks));
@@ -115,7 +115,7 @@ module.exports = function(server, router){
 
     router.delete("/runtime/executing-tasks/:execution", function(req, res) {
         var id = req.params.execution;
-        var executingTask = server.system.executingTasks.get(id);
+        var executingTask = server.system.runtime.executingTasks.get(id);
         if (!executingTask) {
             return res.notFound();
         }

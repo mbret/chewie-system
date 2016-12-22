@@ -9,7 +9,7 @@ import * as _ from "lodash";
 let path        = require('path');
 import {EventEmitter} from "events";
 import * as Services from "./services";
-import {Daemon} from "../../daemon";
+import {System} from "../../system";
 let self: Server = null;
 
 export class Server extends EventEmitter implements InitializeAbleInterface {
@@ -18,7 +18,7 @@ export class Server extends EventEmitter implements InitializeAbleInterface {
     logger: any;
     server: any;
     services: any;
-    system: Daemon;
+    system: System;
     // set once the server is started and listening
     localAddress: string;
 

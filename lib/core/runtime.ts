@@ -1,29 +1,33 @@
 'use strict';
 
 let _ = require('lodash');
-let tasks = require("./plugins/tasks");
-import {Daemon} from "../daemon";
+// let tasks = require("./plugins/tasks");
+import {System} from "../system";
 import {PluginContainer} from "./plugins/plugin-container";
 import {ProfileManager} from "./profile-manager";
 import {ModuleContainer} from "./plugins/modules/module-container";
 import {SystemModuleInterface} from "./system-module-interface";
+// import {TaskExecution} from "./plugins/tasks/task-execution";
 let util = require("util");
 
 export class Runtime implements SystemModuleInterface {
-    system: Daemon;
+    system: System;
     scenarios: Map<string, any>;
     plugins: Map<string, PluginContainer>;
     modules: Map<string, ModuleContainer>;
+    // executingTasks: Map<string, TaskExecution>;
     profileManager: ProfileManager;
     logger: any;
 
-    constructor(system: Daemon){
+    constructor(system: System){
         this.logger = system.logger.Logger.getLogger('Runtime');
         this.system = system;
         this.profileManager = new ProfileManager(system);
         this.scenarios = new Map();
         this.plugins = new Map();
         this.modules = new Map();
+        // Contain tasks by their id
+        this.executingTasks = new Map();
     }
 
     hasActiveProfile() {

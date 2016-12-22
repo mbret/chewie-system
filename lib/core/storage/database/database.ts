@@ -1,16 +1,16 @@
 "use strict";
-import {Daemon} from "../../../daemon";
+import {System} from "../../../system";
 let Sequelize = require('sequelize');
 let mkdirp = require('mkdirp');
 let path = require("path");
 let self = null;
 
 export default class Database implements InitializeAbleInterface {
-    system: Daemon;
+    system: System;
     models: any;
     config: any;
 
-    constructor(system: Daemon) {
+    constructor(system: System) {
         self = this;
         this.system = system;
         this.models = {};

@@ -1,12 +1,12 @@
 "use strict";
 
-import {Daemon} from "../../../daemon";
+import {System} from "../../../system";
 import {PluginContainer} from "../plugin-container";
 // import * as uuid from "node-uuid";
 
 export class ModuleContainer {
 
-    system: Daemon;
+    system: System;
     pluginContainer: PluginContainer;
     module: any;
     instance: any;

@@ -1,6 +1,6 @@
 "use strict";
 
-import {Daemon} from "./daemon";
+import {System} from "./system";
 
 // Read the ctrl+c of windows to handle SIGINT correctly
 if (process.platform === "win32") {
@@ -16,4 +16,4 @@ if (process.platform === "win32") {
 }
 
 // app is a skeleton
-module.exports = new Daemon();
+module.exports = new System();

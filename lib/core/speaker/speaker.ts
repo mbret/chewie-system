@@ -1,7 +1,7 @@
 'use strict';
 
 var taskQueue = require('my-buddy-lib').taskQueue;
-import {Daemon} from "../../daemon";
+import {System} from "../../system";
 import {EventEmitter} from "events";
 var TextToSpeechAdapter = require("./adapters/default-text-to-speech-adapter/index");
 import {Adapter as MplayerSpeakerAdapter} from "./adapters/mplayer-speaker-adapter/adapter";
@@ -30,7 +30,7 @@ let self;
 
 export class Speaker {
 
-    system: Daemon;
+    system: System;
     logger: any;
     // current player instance. We do not play two main sound at the same time. Once a new sound is requested the current
     // instance is automatically closed

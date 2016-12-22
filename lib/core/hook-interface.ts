@@ -1,8 +1,8 @@
 "use strict";
-import {Daemon} from "../daemon";
+import {System} from "../system";
 
 export interface HookConstructor {
-    new(system: Daemon): Hook;
+    new(system: System): Hook;
 }
 
 export interface HookInterface {

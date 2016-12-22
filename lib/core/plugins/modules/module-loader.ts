@@ -4,11 +4,11 @@ import * as _ from "lodash";
 import * as path from "path"
 import {ModuleHelper} from "./module-helper";
 import {ModuleContainer} from "./module-container";
-import {Daemon} from "../../../daemon";
+import {System} from "../../../system";
 
 export class ModuleLoader {
 
-    system: Daemon;
+    system: System;
     logger: any;
 
     constructor(system) {

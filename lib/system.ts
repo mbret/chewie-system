@@ -2,17 +2,12 @@
 
 let async = require('async');
 import _  = require('lodash');
-let PluginsHandler = require('./core/plugins/plugins-handler.js');
-let SpeechHandler = require('./core/speech/speech-handler.js');
-let NotificationService = require('./core/notification-service');
 let taskQueue = require('my-buddy-lib').taskQueue;
 let repositories = require('./core/repositories');
 let utils = require('my-buddy-lib').utils;
 import path = require('path');
 let packageInfo = require(__dirname + '/../package.json');
 let Logger = require('my-buddy-lib').logger.Logger;
-let Bus = require('./core/bus');
-let api = require("./core/api");
 import ip  = require('ip');
 import { EventEmitter }  from "events";
 import * as ServerCommunication from "./core/server-communication/index";
@@ -21,20 +16,19 @@ import {ModuleLoader} from "./core/plugins/modules/module-loader";
 import {Bootstrap} from "./bootstrap";
 import {Runtime} from "./core/runtime";
 import {Server as ApiServer} from "./shared-server-api";
-import {TaskExecution} from "./core/plugins/tasks/task-execution";
 import {PluginsLoader} from "./core/plugins/plugins-loader";
 import {Speaker} from "./core/speaker/speaker";
 import configurationLoader from "./configuration/loader";
 import LocalRepository from "./core/repositories/local";
 import Storage from "./core/storage/storage";
+import RemoteServiceHelper from "./core/remote-service/helper";
 
 /**
- * Daemon is the main program daemon.
+ * System is the main program daemon.
  * This daemon stay alive as long as the program is not shut down.
  */
-export class Daemon extends EventEmitter {
+export class System extends EventEmitter {
 
-    executingTasks: Map<string, TaskExecution>;
     runtime: Runtime;
     sharedApiServer: ApiServer;
     config: any;
@@ -42,7 +36,6 @@ export class Daemon extends EventEmitter {
     scenarioReader: ScenarioReader;
     moduleLoader: ModuleLoader;
     pluginsLoader: PluginsLoader;
-    hooksToLoad: Array<string>;
     logger: any;
     speaker: Speaker;
     localRepository: LocalRepository;
@@ -52,13 +45,10 @@ export class Daemon extends EventEmitter {
     info: any;
 
     /**
-     *
+     * System constructor
      */
     constructor() {
         super();
-        // Contain tasks by their id
-        this.executingTasks = new Map();
-        this.hooksToLoad = [];
         this.info = {
             startedAt: new Date(),
             version: packageInfo.version,
@@ -74,12 +64,13 @@ export class Daemon extends EventEmitter {
      */
     public start(userConfig = {}, cb = function(err){}){
         let self = this;
+
         // load config
         this.config = configurationLoader(userConfig);
 
         // Build system logger
         let LOGGER = new Logger(self.config.log);
-        this.logger = LOGGER.getLogger('Daemon');
+        this.logger = LOGGER.getLogger('System');
 
         this.logger.info('Start daemon');
 
@@ -87,7 +78,6 @@ export class Daemon extends EventEmitter {
         utils.initDirsSync([
             self.config.system.tmpDir,
             self.config.system.dataDir,
-            // config.system.persistenceDir,
             self.config.system.pluginsTmpDir,
             path.resolve(self.config.system.dataDir, 'plugins')
         ]);
@@ -95,22 +85,17 @@ export class Daemon extends EventEmitter {
         this.logger.Logger = LOGGER;
         this.logger.getLogger = LOGGER.getLogger.bind(LOGGER);
         this.logger.info('Starting...');
-        // Used to handle running profile / tasks / etc
         this.storage = new Storage(this);
         this.communicationBus = new ServerCommunication.CommunicationBus(this);
         this.runtime = new Runtime(this);
         this.sharedApiServer = new ApiServer(this);
-        this.pluginsHandler = new PluginsHandler(this);
-        this.notificationService = new NotificationService(this);
-        this.apiService = new api.ApiService(this);
+        this.apiService = new RemoteServiceHelper(this);
         this.speaker = new Speaker(this);
         this.localRepository = new LocalRepository(this);
         this.repository = new repositories.Repository(this);
         this.scenarioReader = new ScenarioReader(this);
         this.moduleLoader = new ModuleLoader(this);
         this.pluginsLoader = new PluginsLoader(this);
-        this.bus = new Bus(this);
-        this.speechHandler = new SpeechHandler(this);
 
         this.init(function(err){
             return cb(err);
@@ -182,10 +167,16 @@ export class Daemon extends EventEmitter {
                 return;
             }
 
-            // Splash final information
-            self.logger.info('The system is now started and ready!');
             //self.logger.info('The web interface is available at at %s or %s for remote access', self.webServer.getLocalAddress(), self.webServer.getRemoteAddress());
-            self.logger.info('The API is available at %s or %s for remote access', self.sharedApiServer.localAddress, self.config.sharedApiUrl);
+            self.logger.verbose('The API is available at %s or %s for remote access', self.sharedApiServer.localAddress, self.config.sharedApiUrl);
+
+            // Splash final information
+            self.logger.info('=====================================');
+            self.logger.info('                                     ');
+            self.logger.info('The system is now started and ready! ');
+            self.logger.info('                                     ');
+            self.logger.info('=====================================');
+
             console.log('');
 
             // Play some system sounds
@@ -229,9 +220,20 @@ export class Daemon extends EventEmitter {
             // run user bootstrap if exist
             let UserBootstrapModule = self.config.bootstrap || null;
             if (UserBootstrapModule) {
+                let initializing = true;
                 self.logger.debug("A user bootstrap has been found, run it");
                 let userBootstrap = new UserBootstrapModule();
-                userBootstrap.bootstrap(self, done);
+                userBootstrap.bootstrap(self, function(err) {
+                    initializing = false;
+                    return done(err);
+                });
+
+                // Warning for abnormal time
+                setTimeout(function() {
+                    if (initializing) {
+                        self.logger.warn("The user bootstrap seems to take an unusual long time. For some cases you may increase the time in config file.");
+                    }
+                }, 6000);
             } else {
                 return done();
             }

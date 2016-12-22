@@ -1,12 +1,12 @@
 "use strict";
 
-import {Daemon} from "../../../daemon";
+import {System} from "../../../system";
 import {ModuleContainer} from "./module-container";
 var self = this;
 
 export class ModuleHelper {
 
-    system: Daemon;
+    system: System;
     logger: any;
     moduleContainer: ModuleContainer;
     shared: any;

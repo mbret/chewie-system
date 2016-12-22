@@ -1,14 +1,14 @@
 "use strict";
 import Database from "./database/database";
-import {Daemon} from "../../daemon";
+import {System} from "../../system";
 import {SystemModuleInterface} from "../system-module-interface";
 
 export default class Storage implements SystemModuleInterface, InitializeAbleInterface {
-    system: Daemon;
+    system: System;
     database: Database;
     logger: any;
 
-    constructor(system: Daemon) {
+    constructor(system: System) {
         this.system = system;
         this.database = new Database(system);
         this.logger = system.logger.Logger.getLogger('Storage');

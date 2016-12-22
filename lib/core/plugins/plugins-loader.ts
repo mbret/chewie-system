@@ -4,12 +4,12 @@ import * as _ from "lodash";
 import * as path from "path"
 import {PluginHelper} from "./plugin-helper";
 import {PluginContainer} from "./plugin-container";
-import {Daemon} from "../../daemon";
+import {System} from "../../system";
 import defaultBootstrap from "./plugin-default-bootstrap";
 
 export class PluginsLoader {
 
-    system: Daemon;
+    system: System;
     logger: any;
 
     constructor(system) {

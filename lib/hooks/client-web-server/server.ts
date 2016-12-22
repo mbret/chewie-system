@@ -1,5 +1,5 @@
 'use strict';
-import {Daemon} from "../../daemon";
+import {System} from "../../system";
 import * as _ from "lodash";
 import {HookInterface} from "../../core/hook-interface";
 let http = require('http');
@@ -16,18 +16,18 @@ let certificate = null;
 let server;
 let self = null;
 
-export = class ClientWebServer implements HookInterface {
+export = class ClientWebServer implements HookInterface, InitializeAbleInterface {
 
-    system: Daemon;
+    system: System;
     logger: any;
 
-    constructor(system: Daemon) {
+    constructor(system: System) {
         self = this;
         this.system = system;
         this.logger = system.logger.Logger.getLogger('ClientWebServer');
     }
 
-    initialize(done: Function) {
+    initialize() {
 
         let useSSL = self.system.config.webServerSSL.activate;
         app.locals.system = this.system;
@@ -129,10 +129,13 @@ export = class ClientWebServer implements HookInterface {
             self.logger.debug('Server listening on %s (%s from outside)', app.locals.url, app.locals.realUrl);
         });
 
-        app.on('start', function () {
-            self.logger.debug('Application ready to serve requests.');
-            self.logger.debug('Environment: %s', app.kraken.get('env:env'));
-            return done();
+        return new Promise(function(resolve, reject) {
+            app.on('start', function () {
+                self.logger.debug('Application ready to serve requests.');
+                self.logger.debug('Environment: %s', app.kraken.get('env:env'));
+                return resolve();
+            });
         });
+
     }
 }
