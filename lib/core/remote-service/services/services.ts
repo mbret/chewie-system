@@ -121,19 +121,6 @@ ApiHelper.prototype.createPlugin = function(userId, data) {
         });
 };
 
-ApiHelper.prototype.createNotification = function(notification) {
-    return Promise.resolve(notification);
-    // @todo
-    //return this.post("/notifications", notification)
-    //    .then(function(response) {
-    //        // We only should get 201 / 400
-    //        if(response.statusCode !== 201) {
-    //            return Promise.reject(ApiResponseError.BuildErrorFromResponse(response));
-    //        }
-    //        return response.body;
-    //    });
-};
-
 /**
  *
  * @param userId

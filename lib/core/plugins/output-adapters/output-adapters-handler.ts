@@ -29,21 +29,21 @@ class OutputAdaptersHandler{
     }
 
     // @todo if one crash it crash the others.
-    executeMessage(outputAdapters, message){
-        var self = this;
-        _.forEach(outputAdapters, function(id){
-            var adapter = MyBuddy.outputAdaptersHandler.getAdapter(id);
-
-            if(adapter === null){
-                var mess = 'The message adapter ' + outputAdapters + ' does not seems to be loaded. Unable to execute message';
-                self.logger.warn(mess);
-                self.system.notificationService.push('warning', mess);
-                return;
-            }
-
-            adapter.executeMessage(message);
-        });
-    }
+    // executeMessage(outputAdapters, message){
+    //     var self = this;
+    //     _.forEach(outputAdapters, function(id){
+    //         var adapter = MyBuddy.outputAdaptersHandler.getAdapter(id);
+    //
+    //         if(adapter === null){
+    //             var mess = 'The message adapter ' + outputAdapters + ' does not seems to be loaded. Unable to execute message';
+    //             self.logger.warn(mess);
+    //             self.system.notificationService.push('warning', mess);
+    //             return;
+    //         }
+    //
+    //         adapter.executeMessage(message);
+    //     });
+    // }
 
     /**
      * Initialize each message adapters.

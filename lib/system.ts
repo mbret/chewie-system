@@ -184,13 +184,9 @@ export class System extends EventEmitter {
             // self.runtimeHelper.profile.on('profile:start:complete', function(){
             //     self.playSystemSound('profile_loaded.wav');
             // });
-            setInterval(function() {
-                self.sharedApiService.post("/notifications", {content: "test"}).then(function(res) {
-                    // console.log(res);
-                }).catch(function(err) {
-                    console.log("err", err.code, err.message);
-                });
-            }, 5000);
+
+            // broadcast
+            setTimeout(function(){ self.sharedApiService.post("/notifications", {content: "System started at " + self.info.startedAt + " and is now ready"});}, 2000);
 
             return cb();
         });

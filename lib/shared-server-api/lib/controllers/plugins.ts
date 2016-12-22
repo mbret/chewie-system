@@ -56,7 +56,7 @@ export = function(server, router) {
                 }
 
                 return plugin.update(toUpdate).then(function(test){
-                    server.system.notificationService.push('success', util.format('The plugin %s options has been updated', plugin.name));
+                    // server.system.notificationService.push('success', util.format('The plugin %s options has been updated', plugin.name));
                     return res.ok(test.toJSON());
                 });
             })
