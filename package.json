@@ -8,8 +8,8 @@
     "node": ">=6.5.0"
   },
   "scripts": {
-    "postinstall": "cd lib/hooks/client-web-server && npm install",
-    "build": "cd scripts && node generate-device-id && cd .. && cd lib/hooks/client-web-server && npm run build",
+    "postinstall": "npm run build && cd lib/hooks/client-web-server && npm install",
+    "build": "cd lib/hooks/client-web-server && npm run build",
     "dev": "concurrently --raw \"npm run build\" \"cd lib/hooks/client-web-server && npm run dev\" \"npm run tsc:w\"",
     "test": "mocha",
     "tsc": "tsc",

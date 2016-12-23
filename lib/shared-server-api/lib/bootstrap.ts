@@ -179,7 +179,7 @@ function configureOrm(server, done) {
 
     server.orm.models.User.hasMany(server.orm.models.Plugins);
     server.orm.models.User.hasMany(server.orm.models.Task);
-    server.orm.models.User.hasMany(server.orm.models.Scenario);
+    // server.orm.models.User.hasMany(server.orm.models.Scenario);
 
     // User 0 -> n Notification
     // server.orm.models.User.hasMany(server.orm.models.Notification);
@@ -188,7 +188,7 @@ function configureOrm(server, done) {
     server.orm.models.Plugins.belongsTo(server.orm.models.User);
     server.orm.models.Task.belongsTo(server.orm.models.User);
     server.orm.models.Task.belongsTo(server.orm.models.Plugins);
-    server.orm.models.Scenario.belongsTo(server.orm.models.User);
+    // server.orm.models.Scenario.belongsTo(server.orm.models.User);
     // server.orm.models.Notification.belongsTo(server.orm.models.User);
 
     server.orm.models.Plugins.hook('afterUpdate', function(plugin, options){

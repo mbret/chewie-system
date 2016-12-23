@@ -1,22 +1,22 @@
 'use strict';
 
-var _ = require('lodash');
-var google = require('googleapis');
-var util= require('util');
-var validator = require('validator');
+let _ = require('lodash');
+let google = require('googleapis');
+let util= require('util');
+let validator = require('validator');
 
 module.exports = function(server, router) {
 
-    var ScenarioDao = server.orm.models.Scenario;
+    let ScenarioDao = server.orm.models.Scenario;
 
     /**
      * Create a new scenario.
      */
-    router.post("/users/:user/scenarios", function(req, res) {
+    router.post("/devices/:device/scenarios", function(req, res) {
         let name = req.body.name;
         let description = req.body.description;
         let nodes = req.body.nodes;
-        let userId = parseInt(req.params.user);
+        let deviceId = req.params.device;
 
         // validate body
         let errors = new Map();
@@ -33,11 +33,11 @@ module.exports = function(server, router) {
             return res.badRequest(errors);
         }
 
-        var scenario = {
+        let scenario = {
             name: name,
             description: description,
             nodes: nodes,
-            userId: userId
+            deviceId: deviceId
         };
 
         ScenarioDao.create(scenario)
@@ -55,15 +55,17 @@ module.exports = function(server, router) {
             });
     });
 
-    router.get("/users/:user/scenarios", function(req, res) {
-        ScenarioDao.findAll()
+    router.get("/devices/:device/scenarios", function(req, res) {
+        ScenarioDao
+            .findAll({
+                where: {
+                    deviceId: req.params.device
+                }
+            })
             .then(function(results) {
-                var data = [];
-                results.forEach(function(res) {
-                    data.push(res.toJSON());
-                });
-
-                return res.ok(data);
+                return res.ok(results.map(function(res) {
+                    return res.toJSON();
+                }));
             })
             .catch(res.serverError);
     });

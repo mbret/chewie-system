@@ -1,16 +1,16 @@
 'use strict';
 
-var requireAll = require('require-all');
-var system = require(__dirname + '/../..');
-var path = require("path");
-var _ = require("lodash");
-
 // Ensure we're in the project directory, so cwd-relative paths work as expected
-// no matter where we actually start from.
+// no matter where we actually lift from.
 process.chdir(__dirname);
 
+const requireAll = require('require-all');
+const chewie = require(__dirname + '/../..');
+const path = require("path");
+const _ = require("lodash");
+
 // Load custom config
-var config = {};
+let config = {};
 requireAll({
     dirname     : path.join(__dirname, "config"),
     recursive   : true,
@@ -22,4 +22,4 @@ requireAll({
 // Start the system
 // You don't need anything else after this point.
 // The system handle itself completely.
-system.start(config);
+chewie.start(config);

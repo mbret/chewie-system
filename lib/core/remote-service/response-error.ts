@@ -2,7 +2,7 @@
 
 let _ = require("lodash");
 
-class ApiResponseError extends Error {
+export class ApiResponseError extends Error {
     constructor(response) {
         super();
 
@@ -24,7 +24,7 @@ class ApiResponseError extends Error {
     }
 }
 
-class ApiResponseBadRequestError extends ApiResponseError {
+export class ApiResponseBadRequestError extends ApiResponseError {
     constructor(response) {
         super(response);
 
@@ -33,7 +33,7 @@ class ApiResponseBadRequestError extends ApiResponseError {
     }
 }
 
-class ApiResponseNotFoundError extends ApiResponseError {
+export class ApiResponseNotFoundError extends ApiResponseError {
     constructor(response) {
         super(response);
 
@@ -42,18 +42,13 @@ class ApiResponseNotFoundError extends ApiResponseError {
     }
 }
 
-module.exports = {
-    ApiResponseError: ApiResponseError,
-    ApiResponseBadRequestError: ApiResponseBadRequestError,
-    ApiResponseNotFoundError: ApiResponseNotFoundError,
-    BuildErrorFromResponse: function(response) {
-        switch(response.statusCode) {
-            case 400:
-                return new ApiResponseBadRequestError(response);
-            case 404:
-                return new ApiResponseNotFoundError(response);
-            default:
-                return new ApiResponseError(response);
-        }
+export function BuildErrorFromResponse(response) {
+    switch(response.statusCode) {
+        case 400:
+            return new ApiResponseBadRequestError(response);
+        case 404:
+            return new ApiResponseNotFoundError(response);
+        default:
+            return new ApiResponseError(response);
     }
-};
+}

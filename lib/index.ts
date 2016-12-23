@@ -15,5 +15,8 @@ if (process.platform === "win32") {
     });
 }
 
-// app is a skeleton
-module.exports = new System();
+// generate app id
+require("child_process").execSync("node " + __dirname + "/../scripts/generate-app-id.js", { stdio: 'inherit', cwd: process.cwd() });
+
+// Export new app and pass .system info to it
+module.exports = new System(require('jsonfile').readFileSync(require("path").join(process.cwd(), ".system")));

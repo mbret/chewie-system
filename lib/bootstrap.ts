@@ -25,9 +25,11 @@ export class Bootstrap {
 
         // register hooks (for now only core)
         hooksToLoad.push("runtime-profile");
-        hooksToLoad.push("client-web-server");
+        // hooksToLoad.push("client-web-server");
+        hooksToLoad.push("scenarios");
 
         Promise
+            // Initialize core services
             .all([
                 self.system.speaker.initialize(),
                 self.system.communicationBus.initialize(),
@@ -35,6 +37,15 @@ export class Bootstrap {
                 self.system.storage.initialize(),
                 self._loadHooks(hooksToLoad),
             ])
+            // check remote api
+            // typically if we receive a "ECONNREFUSED"
+            .then(function() {
+                return self.system.sharedApiService.get("/ping")
+                    .catch(function() {
+                        self.logger.warn("Please check that the remote server is running before starting the system");
+                        throw new Error("Waiting for remote api server starting");
+                    });
+            })
             .then(function() {
                 initializing = false;
                 return done();

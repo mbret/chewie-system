@@ -43,12 +43,16 @@ export class System extends EventEmitter {
     sharedApiService: RemoteServiceHelper;
     storage: Storage;
     info: any;
+    id: string;
+    name: string;
 
     /**
      * System constructor
      */
-    constructor() {
+    constructor(info) {
         super();
+        this.id = info.id;
+        this.name = info.name;
         this.info = {
             startedAt: new Date(),
             version: packageInfo.version,
@@ -186,7 +190,12 @@ export class System extends EventEmitter {
             // });
 
             // broadcast
-            setTimeout(function(){ self.sharedApiService.post("/notifications", {content: "System started at " + self.info.startedAt + " and is now ready"});}, 2000);
+            setTimeout(function(){
+                self.sharedApiService.post("/notifications", {content: "System " + self.name + " started at " + self.info.startedAt + " and is now ready"})
+                    .catch(errorOnStartup)
+            }, 2000);
+
+            self.emit("ready");
 
             return cb();
         });

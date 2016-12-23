@@ -1,7 +1,7 @@
 'use strict';
 import {System} from "../../system";
 import * as _ from "lodash";
-import {HookInterface} from "../../core/hook-interface";
+import {HookInterface, Hook} from "../../core/hook-interface";
 let http = require('http');
 let kraken = require('kraken-js');
 let express = require('express');
@@ -16,14 +16,11 @@ let certificate = null;
 let server;
 let self = null;
 
-export = class ClientWebServer implements HookInterface, InitializeAbleInterface {
-
-    system: System;
-    logger: any;
+export = class ClientWebServer extends Hook implements HookInterface, InitializeAbleInterface {
 
     constructor(system: System) {
+        super(system);
         self = this;
-        this.system = system;
         this.logger = system.logger.Logger.getLogger('ClientWebServer');
     }
 

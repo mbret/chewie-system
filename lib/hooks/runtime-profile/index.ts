@@ -4,17 +4,15 @@ let async = require("async");
 let self = this;
 import * as _ from "lodash";
 import {System} from "../../system";
-import {HookInterface} from "../../core/hook-interface";
+import {HookInterface, Hook} from "../../core/hook-interface";
 
-export = class RuntimeProfileHook implements HookInterface, InitializeAbleInterface {
+export = class RuntimeProfileHook extends Hook implements HookInterface, InitializeAbleInterface {
 
-    system: System;
-    logger: any;
     currentProfile: any;
 
     constructor(system: System) {
+        super(system);
         self = this;
-        this.system = system;
         this.logger = system.logger.Logger.getLogger('RuntimeProfileHook');
         this.currentProfile = null;
     }
@@ -147,18 +145,18 @@ export = class RuntimeProfileHook implements HookInterface, InitializeAbleInterf
             });
 
         // we need to wait for shared api server
-        this.system.sharedApiServer.on("initialized", function() {
-
-            // start the profile admin @todo handle profile
-            self.system.runtime.profileManager.startProfile("admin")
-                .then(function(){
-                    self.logger.info("Profile %s has been started", "admin");
-                })
-                .catch(function(err) {
-                    self.logger.error("An error occurred while trying to start profile %s", "admin");
-                    throw err;
-                });
-        });
+        // this.system.sharedApiServer.on("initialized", function() {
+        //
+        //     // start the profile admin @todo handle profile
+        //     self.system.runtime.profileManager.startProfile("admin")
+        //         .then(function(){
+        //             self.logger.info("Profile default has been started", "admin");
+        //         })
+        //         .catch(function(err) {
+        //             self.logger.error("An error occurred while trying to start profile %s", "admin");
+        //             throw err;
+        //         });
+        // });
 
         return Promise.resolve();
     }

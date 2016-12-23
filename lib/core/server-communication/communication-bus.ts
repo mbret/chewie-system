@@ -27,25 +27,23 @@ export class CommunicationBus extends EventEmitter implements InitializeAbleInte
     initialize() {
         let self = this;
 
-        return new Promise(function(resolve, reject) {
-            // wait for shared api to be initialized
-            self.system.sharedApiServer.on("initialized", function() {
+        // wait for shared api to be initialized
+        self.system.on("ready", function() {
 
-                // rejectUnauthorized is needed for self signed certificate
-                self.socket = io.connect(self.sharedApiEndpoint, {reconnect: true, rejectUnauthorized: false});
+            // rejectUnauthorized is needed for self signed certificate
+            self.socket = io.connect(self.sharedApiEndpoint, {reconnect: true, rejectUnauthorized: false});
 
-                self.socket.on('connect', function() {
-                    self.onConnect();
-                    self.logger.verbose("Initialized");
-                    return resolve();
-                });
+            self.socket.on('connect', function() {
+                self.onConnect();
+                self.logger.verbose("Initialized");
+            });
 
-                self.socket.on('connect_error', function(err) {
-                    self.logger.error("An error occurred while trying to connect to shared api", err);
-                    return reject();
-                });
+            self.socket.on('connect_error', function(err) {
+                self.logger.error("An error occurred while trying to connect to shared api", err);
             });
         });
+
+        return Promise.resolve();
     }
 
     onConnect() {

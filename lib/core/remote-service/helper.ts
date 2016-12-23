@@ -1,9 +1,9 @@
 "use strict";
 import {System} from "../../system";
+import {ApiResponseError, ApiResponseNotFoundError} from "./response-error";
 
 let request = require("request");
 let _ = require("lodash");
-let ApiResponseError = require("./response-error").ApiResponseError;
 
 /**
  *
@@ -56,6 +56,13 @@ class RemoteServiceHelper {
             return cb(new ApiResponseError(response));
         }
 
+        if (response.statusCode === 404) {
+
+            // Build an error object that will wrap response
+            // So we have a valid Error object and still able to handle response
+            return cb(new ApiResponseNotFoundError(response));
+        }
+
         return cb(null, response);
     }
 
@@ -70,7 +77,7 @@ class RemoteServiceHelper {
             let opt = _.merge({}, options, {uri: url, body: data, json: true});
             request
                 .defaults({headers: { 'content-type': 'application/json'}})
-                .post(opt, self._handleResponse.bind(null, (function(err, httpResponse) {
+                .post(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
                     if(err) {
                         return reject(err);
                     }
@@ -86,7 +93,7 @@ class RemoteServiceHelper {
         return new Promise(function(resolve, reject) {
             let opt = _.merge({}, options, {uri: url, body: data, json: true});
             request
-                .put(_.merge(options, {form: data}), self._handleResponse.bind(null, (function(err, httpResponse) {
+                .put(_.merge(options, {form: data}), self._handleResponse.bind(self, (function(err, httpResponse) {
                     if(err) {
                         return reject(err);
                     }
@@ -102,14 +109,14 @@ class RemoteServiceHelper {
      * @param options
      * @returns {Promise}
      */
-    get(url, options) {
+    get(url, options = {}) {
         let self = this;
         options = self._buildOptions(options);
         return new Promise(function(resolve, reject) {
             let opt = _.merge({}, options, {uri: url});
             self.logger.verbose("GET (https) %s%s", self.defaultRequestOptions.baseUrl, url);
             request
-                .get(opt, self._handleResponse.bind(null, (function(err, httpResponse) {
+                .get(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
                     if(err) {
                         return reject(err);
                     }
