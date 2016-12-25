@@ -1,4 +1,5 @@
 "use strict";
+
 import {System} from "../../system";
 import {ApiResponseError, ApiResponseNotFoundError} from "./response-error";
 
@@ -14,11 +15,13 @@ class RemoteServiceHelper {
 
     defaultRequestOptions: any;
     logger: any;
+    system: System;
 
     constructor(system: System) {
         Object.assign(this, {system});
 
         let self = this;
+        this.system = system;
         this.logger = system.logger.getLogger('RemoteServiceHelper');
         this.defaultRequestOptions = {
             rejectUnauthorized: false,

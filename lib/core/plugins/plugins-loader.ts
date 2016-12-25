@@ -18,19 +18,21 @@ export class PluginsLoader {
     }
 
     load(plugin: any) {
-        var self = this;
+        let self = this;
         return new Promise(function(resolve, reject) {
-            var pluginBootstrap = self.getPluginBootstrap(plugin);
+            let pluginBootstrap = self.getPluginBootstrap(plugin);
 
             // create container
-            var container = new PluginContainer(self.system, plugin, null);
+            let container = new PluginContainer(self.system, plugin, null);
 
-            var helper = new PluginHelper(self.system, container);
+            let helper = new PluginHelper(self.system, container);
             // run plugin bootstrap
             pluginBootstrap(helper, function(err) {
                 if (err) {
                     return reject(err);
                 }
+                // add to global storage
+                self.system.runtime.plugins.set(container.plugin.name, container);
                 return resolve(container);
             });
         });

@@ -1,31 +1,123 @@
 'use strict';
 
-var _ = require('lodash');
-var validator = require('validator');
-var util = require('util');
+let _ = require('lodash');
+let validator = require('validator');
+let util = require('util');
 let request = require("request");
 
 export = function(server, router) {
 
-    var PluginsDao = server.orm.models.Plugins;
+    let PluginsDao = server.orm.models.Plugins;
 
-    router.get('/users/:user/plugins', function(req, res){
-        req.pipe(request({uri: server.system.config.webServerRemoteUrl + "/api/plugins", strictSSL: false})).pipe(res);
+    router.get('/devices/:device/plugins/:plugin', function(req, res){
+        let name = req.params.plugin;
+        let deviceId = req.params.device;
+        let search = {
+            deviceId: deviceId,
+            name: name
+        };
+
+        PluginsDao
+            .findOne({
+                where: search
+            })
+            .then(function(plugin){
+                if(!plugin){
+                    return res.notFound();
+                }
+
+                return res.ok(plugin.toJSON());
+            })
+            .catch(res.serverError);
     });
 
-    router.get('/users/:user/plugins/:plugin', function(req, res){
-        req.pipe(request({uri: server.system.config.webServerRemoteUrl + "/api/plugins/" + req.params.plugin, strictSSL: false})).pipe(res);
+    router.delete("/devices/:device/plugins/:plugin", function(req, res) {
+        let name = req.params.plugin;
+        let deviceId = req.params.device;
+        let query = {
+            where: {
+                name: name,
+                deviceId: deviceId
+            }
+        };
+        PluginsDao.destroy(query)
+            .then(function(rows) {
+                if (rows === 0) {
+                    return res.notFound();
+                }
+                server.io.emit("plugin:deleted", { name: name, deviceId: deviceId });
+                return res.ok();
+            })
+            .catch(res.serverError);
+    });
+
+    router.get('/devices/:device/plugins', function(req, res){
+        PluginsDao
+            .findAll({
+                where: {
+                    deviceId: req.params.device
+                }
+            })
+            .then(function(plugins){
+                return res.ok(plugins.map( item => item.toJSON() ));
+            })
+            .catch(res.serverError);
+    });
+
+    router.post("/devices/:device/plugins", function(req, res) {
+        let version = req.body.version;
+        let name = req.body.name;
+        let repository = req.body.repository;
+        let deviceId = req.params.device;
+        let pluginPackage = req.body.package || {};
+
+        // process.exit();
+        // validation
+        let errors = {};
+
+        // Must contain a string as name
+        if(!name || !validator.isLength(name, {min: 1})){
+            errors['name'] = 'Name required or invalid';
+        }
+
+        if(!version){
+            errors['version'] = 'version required or invalid';
+        }
+
+        if(!deviceId){
+            errors['deviceId'] = 'deviceId required or invalid';
+        }
+
+        if(_.size(errors) > 0) {
+            return res.badRequest({errors: errors});
+        }
+
+        let plugin = {
+            version: version,
+            name: name,
+            deviceId: deviceId,
+            "package": pluginPackage,
+            repository: repository
+        };
+
+        return PluginsDao.create(plugin)
+            .then(function(created) {
+                server.logger.verbose("Plugin %s created with id %s for user %s", created.name, created.id, created.userId);
+                server.io.emit("plugin:created", plugin);
+                return res.created(created);
+            })
+            .catch(res.serverError);
     });
 
     router.put('/users/:user/plugins/:plugin', function(req, res) {
-        var user = req.params.user;
-        var pluginId = req.params.plugin;
-        var userOptions = req.body.userOptions;
-        var pluginPackage = req.body.pluginPackage;
-        var toUpdate = {};
+        let user = req.params.user;
+        let pluginId = req.params.plugin;
+        let userOptions = req.body.userOptions;
+        let pluginPackage = req.body.pluginPackage;
+        let toUpdate = {};
 
         // validate body
-        var errors = new Map();
+        let errors = new Map();
 
         // user options
         if(userOptions !== undefined){
@@ -44,7 +136,7 @@ export = function(server, router) {
             return res.badRequest(errors);
         }
 
-        var where = { userId: user, id: pluginId };
+        let where = { userId: user, id: pluginId };
 
         PluginsDao
             .findOne({
@@ -59,77 +151,6 @@ export = function(server, router) {
                     // server.system.notificationService.push('success', util.format('The plugin %s options has been updated', plugin.name));
                     return res.ok(test.toJSON());
                 });
-            })
-            .catch(function(err){
-                return res.serverError(err);
-            });
-    });
-
-    /**
-     * Save a new plugin for a given user.
-     */
-    router.post("/users/:user/plugins", function(req, res) {
-        let version = req.body.version;
-        let name = req.body.name;
-        let repository = req.body.repository;
-        let userId = parseInt(req.params.user);
-        let pluginPackage = req.body.package || {};
-
-        // process.exit();
-        // validation
-        let errors = {};
-
-        // Must contain a string as name
-        if(!name || !validator.isLength(name, {min: 1})){
-            errors['name'] = 'Name required or invalid';
-        }
-
-        if(!version){
-            errors['version'] = 'version required or invalid';
-        }
-
-        if(!userId){
-            errors['userId'] = 'userId required or invalid';
-        }
-
-        if(_.size(errors) > 0) {
-            return res.badRequest({errors: errors});
-        }
-
-        let plugin = {
-            version: version,
-            name: name,
-            userId: userId,
-            "package": pluginPackage,
-            repository: repository
-        };
-
-        // server.logger.verbose("Creating plugin with data %s", util.inspect(plugin));
-        return PluginsDao.create(plugin)
-            .then(function(created) {
-                server.logger.verbose("Plugin \"%s\" created with id \"%s\" for user \"%s\"", created.name, created.id, created.userId);
-                server.io.emit("user:plugin:created", plugin);
-                return res.created(created);
-            })
-            .catch(res.serverError);
-    });
-
-    router.delete("/users/:user/plugins/:plugin", function(req, res) {
-        var userId = parseInt(req.params.user);
-        var name = req.params.plugin;
-        var query = {
-            where: {
-                userId: userId,
-                name: name
-            }
-        };
-        PluginsDao.destroy(query)
-            .then(function(rows) {
-                if (rows === 0) {
-                    return res.notFound();
-                }
-                server.io.emit("user:plugin:deleted", { name: name, userId: userId });
-                return res.ok();
             })
             .catch(res.serverError);
     });
@@ -147,7 +168,7 @@ export = function(server, router) {
                 if(!modules){
                     return res.notFound('Invalid user or plugin id');
                 }
-                var module = modules.find(function(module){
+                let module = modules.find(function(module){
                     return module.name === req.params.module;
                 });
                 if(module === undefined){

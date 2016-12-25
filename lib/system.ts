@@ -15,13 +15,13 @@ import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
 import {Bootstrap} from "./bootstrap";
 import {Runtime} from "./core/runtime";
-import {Server as ApiServer} from "./shared-server-api";
 import {PluginsLoader} from "./core/plugins/plugins-loader";
 import {Speaker} from "./core/speaker/speaker";
 import configurationLoader from "./configuration/loader";
 import LocalRepository from "./core/repositories/local";
 import Storage from "./core/storage/storage";
-import RemoteServiceHelper from "./core/remote-service/helper";
+import {SharedApiServiceHelper} from "./core/remote-service/sharedApiServiceHelper";
+import {SharedServerApi} from "./shared-server-api/lib/server";
 
 /**
  * System is the main program daemon.
@@ -30,7 +30,7 @@ import RemoteServiceHelper from "./core/remote-service/helper";
 export class System extends EventEmitter {
 
     runtime: Runtime;
-    sharedApiServer: ApiServer;
+    sharedApiServer: SharedServerApi;
     config: any;
     communicationBus: ServerCommunication.CommunicationBus;
     scenarioReader: ScenarioReader;
@@ -40,7 +40,7 @@ export class System extends EventEmitter {
     speaker: Speaker;
     localRepository: LocalRepository;
     repository: any;
-    sharedApiService: RemoteServiceHelper;
+    sharedApiService: SharedApiServiceHelper;
     storage: Storage;
     info: any;
     id: string;
@@ -92,8 +92,8 @@ export class System extends EventEmitter {
         this.storage = new Storage(this);
         this.communicationBus = new ServerCommunication.CommunicationBus(this);
         this.runtime = new Runtime(this);
-        this.sharedApiServer = new ApiServer(this);
-        this.sharedApiService = new RemoteServiceHelper(this);
+        this.sharedApiServer = new SharedServerApi(this);
+        this.sharedApiService = new SharedApiServiceHelper(this);
         this.speaker = new Speaker(this);
         this.localRepository = new LocalRepository(this);
         this.repository = new repositories.Repository(this);
@@ -191,7 +191,7 @@ export class System extends EventEmitter {
 
             // broadcast
             setTimeout(function(){
-                self.sharedApiService.post("/notifications", {content: "System " + self.name + " started at " + self.info.startedAt + " and is now ready"})
+                self.sharedApiService.createNotification("System " + self.name + " started at " + self.info.startedAt + " and is now ready")
                     .catch(errorOnStartup)
             }, 2000);
 

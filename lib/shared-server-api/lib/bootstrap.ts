@@ -109,6 +109,7 @@ module.exports = function(server, app, cb){
                  * @returns {*}
                  */
                 res.serverError = function(err){
+                    server.logger.error("Error on response:", err);
                     let errResponse = {};
                     errResponse.status = "error";
                     errResponse.code = "serverError";
@@ -177,17 +178,17 @@ function configureOrm(server, done) {
     server.orm.models.Scenario = require(modelsPath + '/scenario')(server.orm.sequelize, server);
     server.orm.models.Notification = require(modelsPath + '/notification')(server.orm.sequelize, server);
 
-    server.orm.models.User.hasMany(server.orm.models.Plugins);
+    // server.orm.models.User.hasMany(server.orm.models.Plugins);
     server.orm.models.User.hasMany(server.orm.models.Task);
     // server.orm.models.User.hasMany(server.orm.models.Scenario);
 
     // User 0 -> n Notification
     // server.orm.models.User.hasMany(server.orm.models.Notification);
-    server.orm.models.Plugins.hasMany(server.orm.models.Task);
+    // server.orm.models.Plugins.hasMany(server.orm.models.Task);
 
-    server.orm.models.Plugins.belongsTo(server.orm.models.User);
-    server.orm.models.Task.belongsTo(server.orm.models.User);
-    server.orm.models.Task.belongsTo(server.orm.models.Plugins);
+    // server.orm.models.Plugins.belongsTo(server.orm.models.User);
+    // server.orm.models.Task.belongsTo(server.orm.models.User);
+    // server.orm.models.Task.belongsTo(server.orm.models.Plugins);
     // server.orm.models.Scenario.belongsTo(server.orm.models.User);
     // server.orm.models.Notification.belongsTo(server.orm.models.User);
 
@@ -198,6 +199,8 @@ function configureOrm(server, done) {
     server.orm.models.User.hook('afterUpdate', function(user, options){
         server.emit('orm:user:updated', user);
     });
+
+    server.logger.verbose("Synchronizing ORM");
 
     // create tables
     Promise

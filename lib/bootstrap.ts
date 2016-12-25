@@ -1,4 +1,5 @@
 'use strict';
+
 import {System} from "./system";
 let util = require('util');
 let self = this;
@@ -24,28 +25,38 @@ export class Bootstrap {
         let hooksToLoad = [];
 
         // register hooks (for now only core)
-        hooksToLoad.push("runtime-profile");
-        // hooksToLoad.push("client-web-server");
+        hooksToLoad.push("client-web-server");
         hooksToLoad.push("scenarios");
+        hooksToLoad.push("plugins");
 
-        Promise
+        Promise.resolve()
             // Initialize core services
-            .all([
-                self.system.speaker.initialize(),
-                self.system.communicationBus.initialize(),
-                self.system.sharedApiServer.initialize(),
-                self.system.storage.initialize(),
-                self._loadHooks(hooksToLoad),
-            ])
-            // check remote api
-            // typically if we receive a "ECONNREFUSED"
+            .then(function() {
+                return Promise.all([
+                    self.system.sharedApiServer.initialize(),
+                    self.system.speaker.initialize(),
+                    self.system.communicationBus.initialize(),
+                    self.system.sharedApiService.initialize(),
+                    self.system.storage.initialize(),
+                    self._loadHooks(hooksToLoad),
+                ]);
+            })
+            // For now we need the shared api server to be connected
             .then(function() {
                 return self.system.sharedApiService.get("/ping")
+                    .then(function() {
+                        // self.system.emit("shared-api-server:connected");
+                        return Promise.resolve();
+                    })
                     .catch(function() {
                         self.logger.warn("Please check that the remote server is running before starting the system");
                         throw new Error("Waiting for remote api server starting");
                     });
             })
+            // @todo register system on shared api
+            // .then(function() {
+            //
+            // })
             .then(function() {
                 initializing = false;
                 return done();

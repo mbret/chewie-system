@@ -12,7 +12,7 @@ let util = require("util");
 
 export class Runtime implements SystemModuleInterface {
     system: System;
-    scenarios: Map<string, any>;
+    scenarios: Map<number, any>;
     plugins: Map<string, PluginContainer>;
     modules: Map<string, ModuleContainer>;
     // executingTasks: Map<string, TaskExecution>;

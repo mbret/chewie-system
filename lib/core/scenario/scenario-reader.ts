@@ -1,6 +1,7 @@
 "use strict";
 import {System} from "../../system";
 import {ModuleContainer} from "../plugins/modules/module-container";
+import {SystemError} from "../error";
 let self: ScenarioReader = null;
 
 /**
@@ -28,6 +29,11 @@ export class ScenarioReader {
     readScenario(scenario) {
         let self = this;
         this.logger.debug("Read scenario %s", scenario.id);
+
+        // avoid read same scenario in same time
+        if (this.system.runtime.scenarios.get(scenario.id)) {
+            return Promise.reject(new SystemError("Already running", "alreadyRunning"));
+        }
 
         // register scenario in runtime
         // it prevent running more than once and also help dealing through the system
@@ -58,6 +64,7 @@ export class ScenarioReader {
                 })
             })
             .catch(function(err) {
+                //@todo maybe remote it from Map ?
                 self.logger.error("An error occurred while reading scenario %s", scenario.name, err);
                 // self.system.runtime.scenarios.delete(scenario.name);
                 throw err;
@@ -90,12 +97,26 @@ export class ScenarioReader {
     }
 
     stopScenario(id) {
+
+        // avoid stopping same scenario multiple times
+        if (!this.system.runtime.scenarios.get(id)) {
+            return Promise.reject(new SystemError("Already stopped", "alreadyStopped"));
+        }
+
         let scenario = this.system.runtime.scenarios.get(id);
         this.system.runtime.scenarios.delete(id);
         return this.stopNodes(scenario, scenario.nodes)
     }
 
-    readNodes(scenario: any, nodes: any[], options: any) {
+    getPluginsIds(scenario: Scenario) {
+        let ids = [];
+        scenario.nodes.forEach(function(node) {
+            ids.push(node.pluginId);
+        });
+        return ids;
+    }
+
+    private readNodes(scenario: any, nodes: any[], options: any) {
         let promises = [];
         nodes.forEach(function(node) {
             promises.push(self.readNode(scenario, node, { lvl: options.lvl + 1 }));
@@ -104,7 +125,7 @@ export class ScenarioReader {
         return Promise.all(promises);
     }
 
-    readNode(scenario: any, node: any, options: any) {
+    private readNode(scenario: any, node: any, options: any) {
         let self = this;
         let moduleUniqueId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
 
@@ -130,7 +151,7 @@ export class ScenarioReader {
      * @param options
      * @returns {Promise<T>}
      */
-    stopNodes(scenario: any, nodes: any[], options: any = { lvl: -1 }) {
+    private stopNodes(scenario: any, nodes: any[], options: any = { lvl: -1 }) {
         nodes.forEach(function(node) {
             self.stopNode(scenario, node, { lvl: options.lvl + 1 });
         });
@@ -138,7 +159,7 @@ export class ScenarioReader {
         return Promise.resolve();
     }
 
-    stopNode(scenario: any, node: any, options: any) {
+    private stopNode(scenario: any, node: any, options: any) {
         // get the module instance
         let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
         let rtId = this.getRuntimeModuleKey(scenario.id, node.id, moduleId);
@@ -159,10 +180,10 @@ export class ScenarioReader {
             this.onTaskEnd(scenario, node, moduleId);
         }
 
-        this.stopNodes(scenario, node.nodes, options);
+        return this.stopNodes(scenario, node.nodes, options);
     }
 
-    loadModuleInstance(userId: number, pluginId: string, moduleId: string) {
+    private loadModuleInstance(userId: number, pluginId: string, moduleId: string) {
         let plugin = null;
         return Promise
             .resolve()
@@ -183,7 +204,7 @@ export class ScenarioReader {
      * @param node
      * @param id
      */
-    onTaskEnd(scenario, node, id) {
+    private onTaskEnd(scenario, node, id) {
         // remove from storage. At this point we do not have anymore reference of the instance in system
         // It's up to module to clean their stuff
         // this.system.runtime.modules.delete(this.getRuntimeModuleKey(scenario.id, node.id, id));
@@ -197,7 +218,7 @@ export class ScenarioReader {
      * @param moduleId
      * @returns {string}
      */
-    getRuntimeModuleKey(scenarioId, nodeId, moduleId) {
+    private getRuntimeModuleKey(scenarioId, nodeId, moduleId) {
         return "scenario:" + scenarioId + ":node:" + nodeId + ":module:" + moduleId;
     }
 }

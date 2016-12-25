@@ -11,9 +11,9 @@ import {EventEmitter} from "events";
 import * as Services from "./services";
 import {System} from "../../system";
 import {EventsWatcher} from "./services/events-watcher";
-let self: Server = null;
+let self: SharedServerApi = null;
 
-export class Server extends EventEmitter implements InitializeAbleInterface {
+export class SharedServerApi extends EventEmitter implements InitializeAbleInterface {
 
     io: any;
     logger: any;
@@ -36,6 +36,9 @@ export class Server extends EventEmitter implements InitializeAbleInterface {
 
         this.eventsWatcher = new EventsWatcher(this);
 
+        // export system to request handler
+        app.locals.system = this.system;
+
         // Include all services
         _.forEach(Services, function(module, key) {
             self.services[key.charAt(0).toLowerCase() + key.slice(1)] = new module(system);
@@ -50,18 +53,20 @@ export class Server extends EventEmitter implements InitializeAbleInterface {
                     return reject(err);
                 }
 
-                self.startServer(function(err){
-                    if(err){
-                        return reject(err);
-                    }
+                // setTimeout(function() {
+                    self.startServer(function(err){
+                        if(err){
+                            return reject(err);
+                        }
 
-                    self.eventsWatcher.watch();
+                        self.eventsWatcher.watch();
 
-                    self.logger.verbose('Initialized');
-                    self.emit("initialized");
+                        self.logger.verbose('Initialized');
+                        self.emit("initialized");
 
-                    return resolve();
-                });
+                        return resolve();
+                    });
+                // }, 2000);
             });
         });
     }

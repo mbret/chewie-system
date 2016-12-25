@@ -19,20 +19,7 @@ ApiHelper.prototype.findUserByUsername = function(username) {
         });
 };
 
-/**
- *
- * @param userId
- * @returns {*}
- */
-ApiHelper.prototype.findAllPluginsByUser = function(userId) {
-    return this.get(util.format("/users/%s/plugins", userId))
-        .then(function(response) {
-            if(response.statusCode !== 200) {
-                return null;
-            }
-            return response.body;
-        });
-};
+
 
 /**
  *
@@ -165,16 +152,6 @@ ApiHelper.prototype.findOrCreateUser = function(data) {
  */
 ApiHelper.prototype.findModuleByName = function(userId, pluginId, moduleName) {
     return this.get(util.format("/users/%s/plugins/%s/modules/%s", userId, pluginId, moduleName))
-        .then(function(response) {
-            if(response.statusCode !== 200) {
-                return null;
-            }
-            return response.body;
-        });
-};
-
-ApiHelper.prototype.findAllScenario = function(userId) {
-    return this.get(util.format("/users/%s/scenarios", userId))
         .then(function(response) {
             if(response.statusCode !== 200) {
                 return null;

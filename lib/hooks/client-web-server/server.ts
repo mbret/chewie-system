@@ -2,6 +2,7 @@
 import {System} from "../../system";
 import * as _ from "lodash";
 import {HookInterface, Hook} from "../../core/hook-interface";
+import {customResponses} from "./lib/custom-responses";
 let http = require('http');
 let kraken = require('kraken-js');
 let express = require('express');
@@ -14,18 +15,16 @@ let fs = require('fs');
 let privateKey = null;
 let certificate = null;
 let server;
-let self = null;
 
 export = class ClientWebServer extends Hook implements HookInterface, InitializeAbleInterface {
 
     constructor(system: System) {
         super(system);
-        self = this;
         this.logger = system.logger.Logger.getLogger('ClientWebServer');
     }
 
     initialize() {
-
+        let self = this;
         let useSSL = self.system.config.webServerSSL.activate;
         app.locals.system = this.system;
 
@@ -45,70 +44,7 @@ export = class ClientWebServer extends Hook implements HookInterface, Initialize
 
         // Prepare app
         app.use(kraken(options));
-
-        // @todo it should be moved elsewhere
-        app.use(function(req, res, next){
-
-            res.badRequest = function(data){
-                if(_.isString(data)) {
-                    data = {message: data};
-                }
-                data.data = data.data || {};
-                if (data.errors) {
-                    data.data.errors = data.errors;
-                }
-                var errResponse = {
-                    status: data.status || "error",
-                    code: data.code || "badRequest",
-                    message: data.message || "",
-                    data: data.data || {}
-                };
-
-                return res.status(400).send(errResponse);
-            };
-
-            res.created = function(data){
-                return res.status(201).send(data);
-            };
-
-            res.ok = function(data){
-                return res.status(200).send(data);
-            };
-
-            res.notFound = function(data){
-                var errResponse = {};
-                errResponse.status = "error";
-                errResponse.code = "notFound";
-                errResponse.message = data;
-                errResponse.data = {};
-                return res.status(404).send(errResponse);
-            };
-
-            res.updated = function(data){
-                return res.status(200).send(data);
-            };
-
-            res.serverError = function(err){
-                let errResponse = {};
-                errResponse.status = "error";
-                errResponse.code = "serverError";
-                errResponse.message = "An internal error occured";
-                errResponse.data = {};
-
-                // Handle Error object
-                if(err instanceof Error) {
-                    errResponse = _.merge(errResponse, {message: err.message, data: {stack: err.stack, code: err.code}});
-                }
-
-                if(_.isString(err)) {
-                    errResponse.message = err;
-                }
-
-                return res.status(500).send(errResponse)
-            };
-
-            return next();
-        });
+        app.use(customResponses);
 
         // use ssl ?
         if (useSSL) {

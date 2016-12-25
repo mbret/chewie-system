@@ -41,3 +41,14 @@ module.exports = function(sequelize, system){
     }
     );
 };
+
+interface Scenario {
+    id: number;
+    deviceId: string;
+    nodes: Array<ScenarioNode>;
+}
+
+interface ScenarioNode {
+    id: number;
+    pluginId: string;
+}

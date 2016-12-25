@@ -43,7 +43,7 @@ module.exports = function(server, router) {
         ScenarioDao.create(scenario)
             .then(function(created) {
                 server.logger.verbose("Scenario %s created", created.id);
-                server.io.emit("user:scenario:created", created);
+                server.io.emit("scenario:created", created);
 
                 return res.created(created);
             })
@@ -66,6 +66,33 @@ module.exports = function(server, router) {
                 return res.ok(results.map(function(res) {
                     return res.toJSON();
                 }));
+            })
+            .catch(res.serverError);
+    });
+
+    router.delete("/scenarios/:scenario", function(req, res) {
+        let id = parseInt(req.params.scenario);
+        let query = {
+            where: {
+                id: id
+            }
+        };
+
+        ScenarioDao.destroy(query)
+            .then(function(rows) {
+                if (rows === 0) {
+                    return res.notFound();
+                }
+                let deleted = {id: id};
+                server.io.emit("scenario:deleted", deleted);
+
+                // fetch new list of scenario to emit update events
+                ScenarioDao.findAll()
+                    .then(function(scenarios) {
+                        server.io.emit("scenarios:updated", scenarios.map( item => item.toJSON() ));
+                    });
+
+                return res.ok(deleted);
             })
             .catch(res.serverError);
     });

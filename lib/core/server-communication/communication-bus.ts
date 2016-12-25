@@ -34,7 +34,6 @@ export class CommunicationBus extends EventEmitter implements InitializeAbleInte
             self.socket = io.connect(self.sharedApiEndpoint, {reconnect: true, rejectUnauthorized: false});
 
             self.socket.on('connect', function() {
-                self.onConnect();
                 self.logger.verbose("Initialized");
             });
 
@@ -44,14 +43,5 @@ export class CommunicationBus extends EventEmitter implements InitializeAbleInte
         });
 
         return Promise.resolve();
-    }
-
-    onConnect() {
-        this.logger.verbose("connected to shared api server at %s", this.sharedApiEndpoint);
-        this.socket
-            .on("user:plugin:created", self.emit.bind(self, "user:plugin:created"))
-            .on("user:plugin:deleted", self.emit.bind(self, "user:plugin:deleted"))
-            .on("user:scenario:created", self.emit.bind(self, "user:scenario:created"))
-            .on("scenario:deleted", self.emit.bind(self, "scenario:deleted"));
     }
 }

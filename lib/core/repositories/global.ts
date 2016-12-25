@@ -6,10 +6,12 @@ var fs = require('fs-extra');
 var npm = require("npm");
 var child_process = require("child_process");
 var which = require('which');
+import { EventEmitter }  from "events";
 
-class Repository{
+class Repository extends EventEmitter {
 
     constructor(system){
+        super();
         this.logger = system.logger.Logger.getLogger('Repository');
         this.system = system;
         this.pluginsTmpDir = system.config.system.synchronizedPluginsDir;
@@ -22,17 +24,17 @@ class Repository{
      * @returns {Promise}
      */
     synchronize(plugins){
-        var self = this;
+        let self = this;
         return new Promise(function(resolve, reject){
             async.each(plugins, function(plugin, done){
 
-                var pluginDir = self.system.localRepository.getPluginDir(plugin.name);//, function(err, dir){
+                let pluginDir = self.system.localRepository.getPluginDir(plugin.name);//, function(err, dir){
                 self.system.localRepository.pluginExist(pluginDir)
                     .then(function(exist) {
                         if(!exist) {
                             return done(new Error('Unable to synchronize plugin ' + plugin.name + ' because the plugin directory ' + pluginDir + ' does not seems to exist anymore'));
                         }
-                        var dest = path.resolve(self.pluginsTmpDir, plugin.name);
+                        let dest = path.resolve(self.pluginsTmpDir, plugin.name);
 
                         // Copy local plugin dir into plugin tmp dir
                         // This directoy contain the plugin from all source (local, remote, etc)
@@ -44,6 +46,7 @@ class Repository{
                             self.logger.debug('Plugin [%s] synchronized to [%s]', plugin.name, dest);
                             self.logger.debug('Run npm install for plugin %s', plugin.name);
                             self.npmInstall(dest, function(err) {
+                                self.emit("plugin:synchronized", plugin);
                                 return done(err);
                             });
                         });
