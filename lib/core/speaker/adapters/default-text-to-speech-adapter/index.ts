@@ -1,8 +1,10 @@
 'use strict';
-
-const voxygen = require('./voxygen/index');
+import {VoxygenAdapter} from "./voxygen-adapter";
+import {System} from "../../../../system";
 
 class TextToSpeechDefaultAdapter {
+
+    system: System;
 
     constructor(system) {
         this.system = system;
@@ -18,7 +20,7 @@ class TextToSpeechDefaultAdapter {
      * @returns Promise
      */
     extract(text) {
-        return voxygen.extract(text, {locale: 'fr'});
+        return VoxygenAdapter.extract(text, {locale: 'fr', tmpDir: this.system.config.system.tmpDir});
     }
 }
 

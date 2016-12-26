@@ -1,10 +1,10 @@
 'use strict';
 
-var crypto = require('crypto');
-var fs = require('fs');
-var request = require('request');
-var os = require('os');
-var path = require('path');
+let crypto = require('crypto');
+let fs = require('fs');
+let request = require('request');
+let os = require('os');
+let path = require('path');
 
 /**
  * Voxygen unofficial module.
@@ -21,24 +21,24 @@ const defaultVoice = {
 const voxygenBasePath = "http://www.voxygen.fr/sites/all/modules/voxygen_voices/assets/proxy/index.php?method=redirect&voice=:voice&text=:text";
 const defaultTmpDir = os.tmpdir();
 
-class Adapter {
+export class VoxygenAdapter {
 
     static extract(text, options = {}) {
 
-        var self = this;
+        let self = this;
 
         return new Promise(function(resolve, reject) {
 
-            var locale = options.locale || defaultLocale;
-            var voice = options.voice || defaultVoice[locale];
-            var tmpDir = options.tmpDir || defaultTmpDir;
+            let locale = options.locale || defaultLocale;
+            let voice = options.voice || defaultVoice[locale];
+            let tmpDir = options.tmpDir || defaultTmpDir;
 
             // build extract url
-            var url = voxygenBasePath.replace(':voice', voice).replace(':text', encodeURI(text));
+            let url = voxygenBasePath.replace(':voice', voice).replace(':text', encodeURI(text));
 
             // build filename
-            var textMd5 = crypto.createHash('md5').update(text).digest('hex');
-            var fileName = path.join(tmpDir, '/node-voxygen-module-:voice-:text.mp3').replace(':voice', voice).replace(':text', textMd5);
+            let textMd5 = crypto.createHash('md5').update(text).digest('hex');
+            let fileName = path.join(tmpDir, '/node-voxygen-module-:voice-:text.mp3').replace(':voice', voice).replace(':text', textMd5);
 
             // try first to get tmp file instead of request voxygen api
             if(self._fileExistInTmpDir(fileName)) {
@@ -69,8 +69,9 @@ class Adapter {
     }
 
     static _fileExistInTmpDir(filename) {
+        let stats = null;
         try {
-            var stats = fs.lstatSync(filename);
+            stats = fs.lstatSync(filename);
         }
         catch (e) {
             if(e.code === 'ENOENT'){
@@ -83,5 +84,3 @@ class Adapter {
         return stats.isFile();
     }
 }
-
-module.exports = Adapter;

@@ -4,8 +4,8 @@
 // no matter where we actually lift from.
 process.chdir(__dirname);
 
-const chewie = require(__dirname + '/../..');
 const path = require("path");
+const chewie = require(__dirname +  '/../..');
 
 // Start the system
 chewie.start({

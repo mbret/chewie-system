@@ -8,17 +8,15 @@
     "type": "git",
     "url": "https://github.com/mbret/chewie-system.git"
   },
-  "licence": "Apache-2.0",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=6.5.0"
   },
   "scripts": {
     "postinstall": "npm run build && cd lib/hooks/client-web-server && npm install",
-    "build": "cd lib/hooks/client-web-server && npm run build",
-    "dev": "concurrently --raw \"npm run build\" \"cd lib/hooks/client-web-server && npm run dev\" \"npm run tsc:w\"",
+    "build": "concurrently --raw \"cd lib/hooks/client-web-server && npm run build\" \"tsc\"",
+    "dev": "concurrently --raw \"npm run build\" \"cd lib/hooks/client-web-server && npm run dev\" \"tsc -w\"",
     "test": "mocha",
-    "tsc": "tsc",
-    "tsc:w": "tsc -w",
     "foo": "./scripts/test.sh",
     "start-dev": "cd _dev && node _dev-windows/index.js"
   },

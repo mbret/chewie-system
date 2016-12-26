@@ -71,9 +71,9 @@ export class Speaker {
      * @returns {*}
      */
     playFile(filename, options = {}) {
-        var self = this;
-        var filename = filename.replace(new RegExp('\\' + path.sep, 'g'), '/');
-        var instance = new MplayerSpeakerAdapter(this.system);
+        let self = this;
+        filename = path.resolve(filename).replace(new RegExp('\\' + path.sep, 'g'), '/');
+        let instance = new MplayerSpeakerAdapter(this.system);
         this.logger.debug("File %s requested to play", filename);
 
         instance.once("stop", function() {
