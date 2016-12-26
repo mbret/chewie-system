@@ -20,7 +20,7 @@ import {Speaker} from "./core/speaker/speaker";
 import configurationLoader from "./configuration/loader";
 import LocalRepository from "./core/repositories/local";
 import Storage from "./core/storage/storage";
-import {SharedApiServiceHelper} from "./core/remote-service/sharedApiServiceHelper";
+import {SharedApiServiceHelper} from "./core/remote-service/shared-api-service-helper";
 import {SharedServerApi} from "./shared-server-api/lib/server";
 
 /**
@@ -62,15 +62,15 @@ export class System extends EventEmitter {
 
     /**
      * Application entry point.
-     * @param userConfig
+     * @param options
      * @param cb
      * @constructor
      */
-    public start(userConfig = {}, cb = function(err){}){
+    public start(options: any = {}, cb = function(err){}){
         let self = this;
 
         // load config
-        this.config = configurationLoader(userConfig);
+        this.config = configurationLoader(require(options.settings));
 
         // Build system logger
         let LOGGER = new Logger(self.config.log);
@@ -83,7 +83,7 @@ export class System extends EventEmitter {
             self.config.system.tmpDir,
             self.config.system.dataDir,
             self.config.system.pluginsTmpDir,
-            path.resolve(self.config.system.dataDir, 'plugins')
+            self.config.pluginsLocalRepositoryDir,
         ]);
 
         this.logger.Logger = LOGGER;

@@ -1,8 +1,10 @@
 'use strict';
 
 import {System} from "./system";
+import {hookMixin} from "./core/hook-interface";
 let util = require('util');
 let self = this;
+let _ = require("lodash");
 
 export class Bootstrap {
 
@@ -84,6 +86,16 @@ export class Bootstrap {
         hooksToLoad.forEach(function(moduleName) {
             self.logger.verbose("Initializing hook %s..", moduleName);
             let Module = require("./hooks/" + moduleName);
+
+            // monkey-patch hard way. The easy way is to store original method in var and call it after. But I like playing hard >_<
+            Module.prototype.emit = function() {
+                if (this instanceof require("events").EventEmitter) {
+                    this.constructor.EventEmitter.prototype.emit.apply(this, arguments);
+                    arguments[0] = "hooks:" + moduleName + ":" + arguments[0];
+                    self.system.emit.apply(self.system, arguments);
+                }
+            };
+
             let hook = new Module(self.system);
             promises.push(
                 hook.initialize()

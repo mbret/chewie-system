@@ -108,17 +108,14 @@ module.exports = {
         jwtSecret: 'zbla'
     },
 
-    pluginsLocalRepositoryDir: null,
+    pluginsLocalRepositoryDir: path.join(localAppDataDir, '.my-buddy/data/plugins-repository'),
 
     system: {
         tmpDir: path.join(os.tmpdir(), '.my-buddy'),
-        dataDir: path.join(localAppDataDir, '.my-buddy', 'data'),
-
-        // runtime set
-        // Either forced in config or set during runtime using tmpDir, dataDir, etc
-        synchronizedPluginsDir: undefined,
-        pluginsTmpDir: undefined,
-        pluginsDataDir: undefined,
+        dataDir: path.join(localAppDataDir, '.my-buddy/data'),
+        synchronizedPluginsDir: path.join(localAppDataDir, '.my-buddy/data/plugins-synchronized'),
+        pluginsTmpDir: path.join(os.tmpdir(), '.my-buddy/plugins-tmp-data'),
+        pluginsDataDir: path.join(localAppDataDir, '.my-buddy/data/plugins-data'),
 
         // By default there are no speaker adapter.
         // The system may run without adapter it will just no output sound.

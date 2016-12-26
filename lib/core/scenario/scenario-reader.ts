@@ -19,6 +19,10 @@ export class ScenarioReader {
         this.logger = this.system.logger.Logger.getLogger('ScenarioReader');
     }
 
+    isRunning(scenario: Scenario) {
+        return this.system.runtime.scenarios.get(scenario.id);
+    }
+
     /**
      * Read a scenario from data.
      * Scenario once read are never removed from runtime, even if it is done.
@@ -108,14 +112,6 @@ export class ScenarioReader {
         return this.stopNodes(scenario, scenario.nodes)
     }
 
-    getPluginsIds(scenario: Scenario) {
-        let ids = [];
-        scenario.nodes.forEach(function(node) {
-            ids.push(node.pluginId);
-        });
-        return ids;
-    }
-
     private readNodes(scenario: any, nodes: any[], options: any) {
         let promises = [];
         nodes.forEach(function(node) {
@@ -153,7 +149,7 @@ export class ScenarioReader {
      */
     private stopNodes(scenario: any, nodes: any[], options: any = { lvl: -1 }) {
         nodes.forEach(function(node) {
-            self.stopNode(scenario, node, { lvl: options.lvl + 1 });
+            return self.stopNode(scenario, node, { lvl: options.lvl + 1 });
         });
 
         return Promise.resolve();
@@ -189,7 +185,7 @@ export class ScenarioReader {
             .resolve()
             // Get plugin info
             .then(function() {
-                return self.system.sharedApiService.findPlugin(userId, pluginId);
+                return self.system.sharedApiService.getPlugin(pluginId);
             })
             // Load module instance
             .then(function(data) {

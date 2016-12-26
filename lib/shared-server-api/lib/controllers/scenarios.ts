@@ -43,7 +43,7 @@ module.exports = function(server, router) {
         ScenarioDao.create(scenario)
             .then(function(created) {
                 server.logger.verbose("Scenario %s created", created.id);
-                server.io.emit("scenario:created", created);
+                server.io.emit("scenarios:updated");
 
                 return res.created(created);
             })
@@ -84,7 +84,7 @@ module.exports = function(server, router) {
                     return res.notFound();
                 }
                 let deleted = {id: id};
-                server.io.emit("scenario:deleted", deleted);
+                server.io.emit("scenarios:updated", deleted);
 
                 // fetch new list of scenario to emit update events
                 ScenarioDao.findAll()

@@ -1,5 +1,6 @@
 "use strict";
 
+let util = require("util");
 import RemoteServiceHelper from "./remote-service-helper";
 import {System} from "../../system";
 let io = require('socket.io-client');
@@ -40,5 +41,20 @@ export class SharedApiServiceHelper extends RemoteServiceHelper implements Initi
 
     getAllPlugins() {
         return this.get("/devices/" + this.system.id + "/plugins");
+    }
+
+    /**
+     *
+     * @param pluginId
+     * @returns {*}
+     */
+    getPlugin(pluginId) {
+        return this.get(util.format("/devices/%s/plugins/%s", this.system.id, pluginId))
+            .then(function(response: any) {
+                if(response.statusCode !== 200) {
+                    return null;
+                }
+                return response.body;
+            });
     }
 }

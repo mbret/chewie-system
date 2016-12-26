@@ -1,12 +1,11 @@
-var myPackage = require("./package.json");
+let myPackage = require("./package.json");
 
 module.exports = {
-
     name: myPackage.name,
     description: myPackage.description,
     version: myPackage.version,
     author: myPackage.author,
-    bootstrap: "./bootstrap.js",
+    pluginInstance: "./plugin.js",
     modules: [
         {
             id: "startRadio",

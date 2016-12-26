@@ -1,0 +1,20 @@
+{
+  "profileToLoadOnStartup": "admin",
+  "system": {
+    "tmpDir": "./.my-buddy/tmp",
+    "dataDir": "./.my-buddy/data"
+  },
+  "pluginsLocalRepositoryDir": "./../plugins",
+  "sharedDatabase": {
+    "connexion": {
+      "storage": "./.my-buddy/storage/db.sqlite",
+      "dropOnStartup": false
+    }
+  },
+  "webServerSSL": {
+    "activate": true
+  },
+  "sharedApiSSL": {
+    "activate": true
+  }
+}

@@ -90,17 +90,10 @@ export class SharedServerApi extends EventEmitter implements InitializeAbleInter
                 throw error;
             }
 
-            let bind = typeof port === 'string'
-                ? 'Pipe ' + port
-                : 'Port ' + port;
-
             // handle specific listen errors with friendly messages
             switch (error.code) {
-                case 'EACCES':
-                    console.error(bind + ' requires elevated privileges');
-                    break;
                 case 'EADDRINUSE':
-                    console.error(bind + ' is already in use');
+                    self.logger.error("It seems that something is already running on port %s. The web server will not be able to start. Maybe a chewie app is already started ?", port);
                     break;
                 default:
                     break;

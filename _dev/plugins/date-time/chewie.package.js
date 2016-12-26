@@ -1,4 +1,4 @@
-var myPackage = require("./package.json");
+let myPackage = require("./package.json");
 
 module.exports = {
     name: myPackage.name,

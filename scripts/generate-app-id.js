@@ -2,7 +2,6 @@ let jsonfile = require('jsonfile');
 let Moniker = require('moniker');
 let path = require("path");
 let uuid = require("uuid");
-console.log(process.cwd());
 let file = path.join(process.cwd(), ".system");
 jsonfile.readFile(file, function(err, obj) {
     if (obj) {
@@ -10,7 +9,9 @@ jsonfile.readFile(file, function(err, obj) {
     } else {
         console.log("device-generated.json does not exist generate random id");
         jsonfile.writeFile(file, {id: uuid.v4(), name: Moniker.generator([Moniker.adjective, Moniker.noun]).choose()}, function (err) {
-            console.error(err)
+            if (err) {
+                console.error("err", err);
+            }
         });
     }
 });

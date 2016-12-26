@@ -1,11 +1,9 @@
 "use strict";
 
-import * as _ from "lodash";
 import * as path from "path"
 import {PluginHelper} from "./plugin-helper";
 import {PluginContainer} from "./plugin-container";
 import {System} from "../../system";
-import defaultBootstrap from "./plugin-default-bootstrap";
 
 export class PluginsLoader {
 
@@ -20,20 +18,34 @@ export class PluginsLoader {
     load(plugin: any) {
         let self = this;
         return new Promise(function(resolve, reject) {
-            let pluginBootstrap = self.getPluginBootstrap(plugin);
+            let PluginInstance = self.getPluginInstance(plugin);
+            let instance = new PluginInstance();
 
             // create container
-            let container = new PluginContainer(self.system, plugin, null);
-
+            let container = new PluginContainer(self.system, plugin, instance);
             let helper = new PluginHelper(self.system, container);
+
             // run plugin bootstrap
-            pluginBootstrap(helper, function(err) {
+            instance.onLoad(helper, function(err) {
                 if (err) {
                     return reject(err);
                 }
                 // add to global storage
                 self.system.runtime.plugins.set(container.plugin.name, container);
+                self.system.emit("plugins:updated");
                 return resolve(container);
+            });
+        });
+    }
+
+    unLoad(plugin: Plugin) {
+        let self = this;
+        let pluginContainer = self.system.runtime.plugins.get(plugin.name);
+        self.system.runtime.plugins.delete(plugin.name);
+        self.system.emit("plugins:updated");
+        return new Promise(function(resolve) {
+            pluginContainer.instance.onStop(function() {
+                return resolve();
             });
         });
     }
@@ -41,17 +53,16 @@ export class PluginsLoader {
     /**
      *
      * @param plugin
-     * @returns {any}
      */
-    getPluginBootstrap(plugin: any) {
+    getPluginInstance(plugin: any) {
         plugin.package = this.getPluginInfo(plugin.name);
 
-        if (!plugin.package.bootstrap) {
-            return defaultBootstrap;
+        if (!plugin.package.pluginInstance) {
+            return DefaultPluginInstance;
         }
 
         // get module instance path
-        let modulePath = plugin.package.bootstrap;
+        let modulePath = plugin.package.pluginInstance;
         // if path is relative we need to build absolute path because runtime is not inside the plugin dir
         // ./module will become D://foo/bar/plugins/module
         if (!path.isAbsolute(modulePath)) {
@@ -70,6 +81,20 @@ export class PluginsLoader {
      * @param name
      */
     getPluginInfo(name) {
-        return require(path.resolve(this.system.config.system.synchronizedPluginsDir, name, "plugin-package"));
+        return this.system.localRepository.loadPackageFile(path.resolve(this.system.config.system.synchronizedPluginsDir, name));
+    }
+}
+
+export interface PluginInstance {
+    onLoad(helper, cb);
+    onStop(cb);
+}
+
+export class DefaultPluginInstance implements PluginInstance {
+    onLoad(helper, cb) {
+        return cb();
+    }
+    onStop(cb) {
+        return cb();
     }
 }

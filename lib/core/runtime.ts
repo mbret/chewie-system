@@ -1,18 +1,16 @@
 'use strict';
 
 let _ = require('lodash');
-// let tasks = require("./plugins/tasks");
 import {System} from "../system";
 import {PluginContainer} from "./plugins/plugin-container";
 import {ProfileManager} from "./profile-manager";
 import {ModuleContainer} from "./plugins/modules/module-container";
 import {SystemModuleInterface} from "./system-module-interface";
-// import {TaskExecution} from "./plugins/tasks/task-execution";
 let util = require("util");
 
 export class Runtime implements SystemModuleInterface {
     system: System;
-    scenarios: Map<number, any>;
+    scenarios: Map<number, Scenario>;
     plugins: Map<string, PluginContainer>;
     modules: Map<string, ModuleContainer>;
     // executingTasks: Map<string, TaskExecution>;

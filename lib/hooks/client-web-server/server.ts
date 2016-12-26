@@ -9,7 +9,6 @@ let express = require('express');
 let app = express();
 let https = require('https');
 let async = require('async');
-let bodyParser = require("body-parser");
 let path = require('path');
 let fs = require('fs');
 let privateKey = null;
@@ -62,13 +61,19 @@ export = class ClientWebServer extends Hook implements HookInterface, Initialize
             self.logger.debug('Server listening on %s (%s from outside)', app.locals.url, app.locals.realUrl);
         });
 
-        return new Promise(function(resolve, reject) {
-            app.on('start', function () {
-                self.logger.debug('Application ready to serve requests.');
-                self.logger.debug('Environment: %s', app.kraken.get('env:env'));
-                return resolve();
-            });
+        server.on("error", function(err) {
+            if (err.code === "EADDRINUSE") {
+                self.logger.error("It seems that something is already running on port %s. The web client will not be able to start. Maybe a chewie app is already started ?", self.system.config.webServerPort);
+            } else {
+                self.logger.error("Error while starting client web server", err);
+            }
         });
 
+        app.once('start', function () {
+            self.logger.debug('Application ready to serve requests.');
+            self.logger.debug('Environment: %s', app.kraken.get('env:env'));
+        });
+
+        return Promise.resolve();
     }
 }

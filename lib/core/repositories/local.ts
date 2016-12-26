@@ -9,12 +9,14 @@ let self = null;
 
 export default class LocalRepository extends BaseRepository {
 
+    static PACKAGE_FILE_NAME = "chewie.package.js";
+    static PACKAGE_FILE_NAME_JSON = "chewie.package.json";
     localPath: string;
 
     constructor(system){
         super(system, system.logger.Logger.getLogger('LocalRepository'));
         self = this;
-        // @odo remove, use one path for now
+        // @todo remove, use one path for now
         this.localPath = system.config.pluginsLocalRepositoryDir;
     }
 
@@ -23,13 +25,14 @@ export default class LocalRepository extends BaseRepository {
      * @returns {Promise}
      */
     public getPluginsInfo() {
+        let self = this;
         return new Promise(function(resolve, reject) {
             self.getPluginDirs(function(err, dirs) {
                 if (err) {
                     return reject(err);
                 }
 
-                var pluginsInfo = [];
+                let pluginsInfo = [];
                 async.each(dirs, function(dir, cb) {
                     self.readPlugin(dir, function(err, info) {
                         if (err) {
@@ -57,6 +60,7 @@ export default class LocalRepository extends BaseRepository {
      * @returns {Promise}
      */
     getPluginInfo(name) {
+        let self = this;
         return new Promise(function(resolve, reject){
             let pluginDir = self.getPluginDir(name);
             self.pluginExist(pluginDir)
@@ -66,7 +70,7 @@ export default class LocalRepository extends BaseRepository {
                     }
                     return self.readPlugin(pluginDir, function(err, info) {
                         if (err) {
-                            self.logger.debug("The plugin %s is impossible to read. It either does not exist or is invalid. Err: %s", name, err.message);
+                            self.logger.debug("The plugin %s in %s is impossible to read. It either does not exist or is invalid. Err: %s", name, path.resolve(pluginDir), err.message);
                             return resolve(null);
                         }
                         return resolve(info);
@@ -77,11 +81,10 @@ export default class LocalRepository extends BaseRepository {
     }
 
     /**
-     *
      * @param cb
      */
     getPluginDirs(cb){
-        var dirs = [];
+        let dirs = [];
         // @todo remove array
         async.each([this.localPath], function(dir, done){
 
@@ -93,7 +96,7 @@ export default class LocalRepository extends BaseRepository {
 
                 // loop over all dirs
                 async.each(files, function(file, callback){
-                    var myFile = path.resolve(dir, file);
+                    let myFile = path.resolve(dir, file);
                     fs.stat(myFile, function(err, stat){
                         if(err){
                             return callback(err);
@@ -143,13 +146,17 @@ export default class LocalRepository extends BaseRepository {
         });
     }
 
-    private readPlugin(dirpath, cb){
-        var moduleInfo = null;
+    private readPlugin(dirpath, cb) {
+        let self = this;
+        let moduleInfo = null;
+        // we need to use full path because require is a bit different with relative path like "./../foo"
+        let moduleDirFullPath = path.resolve(dirpath);
+        // invalidate cache. We need this to ensure always having fresh info instead of the same "moduleInfo" var which may be changed further.
+        // also the plugin may be changed during runtime this way.
+        try { delete require.cache[require.resolve(path.join(moduleDirFullPath, LocalRepository.PACKAGE_FILE_NAME))]; } catch (err) {}
+        try { delete require.cache[require.resolve(path.join(moduleDirFullPath, LocalRepository.PACKAGE_FILE_NAME_JSON))]; } catch (err) {}
         try {
-            // invalidate cache. We need this to ensure always having fresh info instead of the same "moduleInfo" var which may be changed further.
-            // also the plugin may be changed during runtime this way.
-            delete require.cache[require.resolve(path.join(dirpath, 'plugin-package.js'))];
-            moduleInfo = require(path.join(dirpath, 'plugin-package.js'));
+            moduleInfo = this.loadPackageFile(moduleDirFullPath);
         } catch (err) {
             if (err.code === "MODULE_NOT_FOUND") {
                 return cb(new Error("Not a valid module and is invalid to load. err: " + err.code));
@@ -167,5 +174,23 @@ export default class LocalRepository extends BaseRepository {
             return cb(new Error("No version specified"));
         }
         return cb(null, moduleInfo);
+    }
+
+    /**
+     * Try to load js package file and then try json.
+     * @param moduleDirFullPath
+     */
+    public loadPackageFile(moduleDirFullPath) {
+        // first try to load js
+        try {
+            return require(path.join(moduleDirFullPath, LocalRepository.PACKAGE_FILE_NAME));
+        } catch (err) {
+            // then try the json
+            if (err.code === "MODULE_NOT_FOUND") {
+                return require(path.join(moduleDirFullPath, LocalRepository.PACKAGE_FILE_NAME_JSON));
+            } else {
+                throw err;
+            }
+        }
     }
 }

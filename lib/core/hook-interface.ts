@@ -26,3 +26,10 @@ export class Hook extends EventEmitter implements HookInterface {
         return this.system.logger.Logger.getLogger('Hook');
     }
 }
+
+export let hookMixin = {
+    emit(e) {
+        console.log("PAPA SHULTZ", e, super.emit);
+        super.emit.apply(this, arguments);
+    }
+};

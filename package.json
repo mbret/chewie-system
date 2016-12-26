@@ -18,6 +18,7 @@
     "start-dev": "cd _dev && node _dev-windows/index.js"
   },
   "dependencies": {
+    "@types/node": "^6.0.53",
     "async": "^2.1.4",
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",

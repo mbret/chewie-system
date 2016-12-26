@@ -14,6 +14,4 @@ module.exports = {
             }
         }
     },
-
-    pluginsLocalRepositoryDir: process.env.APP_ROOT_PATH + '/../plugins',
 };

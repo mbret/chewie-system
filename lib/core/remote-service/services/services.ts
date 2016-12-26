@@ -21,21 +21,7 @@ ApiHelper.prototype.findUserByUsername = function(username) {
 
 
 
-/**
- *
- * @param userId
- * @param pluginId
- * @returns {*}
- */
-ApiHelper.prototype.findPlugin = function(userId, pluginId) {
-    return this.get(util.format("/users/%s/plugins/%s", userId, pluginId))
-        .then(function(response) {
-            if(response.statusCode !== 200) {
-                return null;
-            }
-            return response.body;
-        });
-};
+
 
 /**
  *

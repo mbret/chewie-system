@@ -2,10 +2,19 @@
 
 let _ = require('lodash');
 import {HookInterface, Hook} from "../../core/hook-interface";
+import {System} from "../../system";
+import {ScenarioHelper} from "../../core/scenario/scenario-helper";
 
 export = class PluginsHook extends Hook implements HookInterface, InitializeAbleInterface {
 
-    initialize(){
+    scenariosHelper: ScenarioHelper;
+
+    constructor(system: System) {
+        super(system);
+        this.scenariosHelper = new ScenarioHelper(this.system);
+    }
+
+    initialize() {
         let self = this;
 
         // make sure shared api server is running
@@ -15,7 +24,7 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
                 .then(function(response: any) {
                     let plugins = response.body;
                     if (!plugins.length) {
-                        self.logger.verbose("There are no plugins to load");
+                        self.logger.verbose("There are no plugins to load and synchronize");
                     } else {
                         return self.synchronizePlugins(plugins);
                     }
@@ -27,7 +36,7 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
         });
 
         // listen for newly synchronized plugins
-        this.system.repository.on("plugin:synchronized", function(plugin) {
+        this.system.on("plugin:synchronized", function(plugin) {
             self.logger.verbose("New plugin %s synchronized detected", plugin.name);
             return self.loadPlugin(plugin);
         });
@@ -59,7 +68,6 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
     /**
      * - copy plugins to local dir
      * @param plugins
-     * @returns {any}
      */
     synchronizePlugins(plugins) {
         this.logger.verbose('Synchronizing plugins [%s]', _.map(plugins, "name"));
@@ -84,8 +92,7 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
         let self = this;
         this.logger.verbose('Unloading plugins [%s]', _.map(plugins, "name"));
         plugins.forEach(function(plugin) {
-            // @todo trigger plugin deletion
-            self.system.runtime.plugins.delete(plugin.name);
+            return self.system.pluginsLoader.unLoad(plugin);
         });
     }
 }

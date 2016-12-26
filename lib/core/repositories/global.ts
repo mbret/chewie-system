@@ -7,8 +7,11 @@ var npm = require("npm");
 var child_process = require("child_process");
 var which = require('which');
 import { EventEmitter }  from "events";
+import {System} from "../../system";
 
 class Repository extends EventEmitter {
+
+    system: System;
 
     constructor(system){
         super();
@@ -46,7 +49,7 @@ class Repository extends EventEmitter {
                             self.logger.debug('Plugin [%s] synchronized to [%s]', plugin.name, dest);
                             self.logger.debug('Run npm install for plugin %s', plugin.name);
                             self.npmInstall(dest, function(err) {
-                                self.emit("plugin:synchronized", plugin);
+                                self.system.emit("plugin:synchronized", plugin);
                                 return done(err);
                             });
                         });
