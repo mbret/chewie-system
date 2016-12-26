@@ -1,7 +1,6 @@
 'use strict';
 
-let Sequelize = require('sequelize');
-let _ = require('lodash');
+import * as Sequelize from "sequelize";
 
 module.exports = function(sequelize){
 

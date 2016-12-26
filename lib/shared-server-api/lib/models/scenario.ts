@@ -1,10 +1,8 @@
 'use strict';
-let Sequelize = require('sequelize');
-let uuid = require('uuid');
-let Base = require('./base');
-let _ = require('lodash');
 
-module.exports = function(sequelize, system){
+import * as Sequelize from "sequelize";
+
+module.exports = function(sequelize){
 
     return sequelize.define('scenario', {
 
@@ -42,13 +40,13 @@ module.exports = function(sequelize, system){
     );
 };
 
-interface Scenario {
+export interface Scenario {
     id: number;
     deviceId: string;
     nodes: Array<ScenarioNode>;
 }
 
-interface ScenarioNode {
+export interface ScenarioNode {
     id: number;
     pluginId: string;
 }
