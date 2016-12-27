@@ -16,5 +16,6 @@
   },
   "sharedApiSSL": {
     "activate": true
-  }
+  },
+  "forcePluginsSynchronizeAtStartup": true
 }

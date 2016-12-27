@@ -1,0 +1,1 @@
+// @todo implement a watcher cleaner to erase synchronized invalid plugins

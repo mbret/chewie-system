@@ -2,7 +2,7 @@
 
 import {System} from "../../../system";
 import {ModuleContainer} from "./module-container";
-var self = this;
+let self = this;
 
 export class ModuleHelper {
 
@@ -15,7 +15,7 @@ export class ModuleHelper {
         self = this;
         this.system = system;
         this.moduleContainer = moduleContainer;
-        this.logger = this.system.logger.Logger.getLogger('ModuleHelper');
+        this.logger = this.system.logger.Logger.getLogger('ModuleHelper:' + this.moduleContainer.uniqueId);
         this.shared = this.moduleContainer.pluginContainer.shared;
         this.id = moduleContainer.id;
     }

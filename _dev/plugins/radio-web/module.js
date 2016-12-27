@@ -36,7 +36,7 @@ class Module extends EventEmitter {
             Module.StopRadio(self.helper.shared.lastRunningRadio);
             self.helper.shared.lastRunningRadio = this;
 
-            this.player = self.helper.system.speaker.playFile(self.config[options.radioName]);
+            this.player = self.helper.system.speaker.playUrl(self.config[options.radioName]);
 
             this.player.once("stop", function() {
                 self.helper.logger.debug("Task %s stopped", self.helper.id);

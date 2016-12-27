@@ -4,6 +4,7 @@ import * as path from "path"
 import {PluginHelper} from "./plugin-helper";
 import {PluginContainer} from "./plugin-container";
 import {System} from "../../system";
+import {SystemError} from "../error";
 
 export class PluginsLoader {
 
@@ -15,25 +16,37 @@ export class PluginsLoader {
         this.logger = this.system.logger.Logger.getLogger('PluginsLoader');
     }
 
-    load(plugin: any) {
+    load(plugin: Plugin) {
         let self = this;
+
+        // avoid read same scenario in same time
+        if (this.system.runtime.plugins.get(plugin.name)) {
+            return Promise.reject(new SystemError("Plugin " + plugin.name + " already loaded. Trying to load a plugin while it has already be loaded", SystemError.ERROR_CODE_ALREADY_RUNNING));
+        }
+
+        // create container
+        let container = new PluginContainer(self.system, plugin, null);
+        let helper = new PluginHelper(self.system, container);
+
+        // add to global storage
+        self.system.runtime.plugins.set(plugin.name, container);
+
         return new Promise(function(resolve, reject) {
             let PluginInstance = self.getPluginInstance(plugin);
             let instance = new PluginInstance();
 
-            // create container
-            let container = new PluginContainer(self.system, plugin, instance);
-            let helper = new PluginHelper(self.system, container);
+            container.instance = instance;
 
             // run plugin bootstrap
             instance.onLoad(helper, function(err) {
                 if (err) {
+                    self.system.runtime.plugins.delete(plugin.name);
+                    self.system.emit("plugins:updated");
                     return reject(err);
+                } else {
+                    self.system.emit("plugins:updated");
+                    return resolve(container);
                 }
-                // add to global storage
-                self.system.runtime.plugins.set(container.plugin.name, container);
-                self.system.emit("plugins:updated");
-                return resolve(container);
             });
         });
     }
@@ -48,6 +61,10 @@ export class PluginsLoader {
                 return resolve();
             });
         });
+    }
+
+    isPluginLoaded(plugin: Plugin) {
+        return this.system.runtime.plugins.get(plugin.name);
     }
 
     /**

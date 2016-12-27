@@ -2,6 +2,7 @@
 import {System} from "../../system";
 import {ModuleContainer} from "../plugins/modules/module-container";
 import {SystemError} from "../error";
+import {Scenario} from "../../shared-server-api/lib/models/scenario";
 let self: ScenarioReader = null;
 
 /**

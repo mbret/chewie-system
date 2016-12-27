@@ -19,15 +19,31 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
 
         // make sure shared api server is running
         this.system.on("ready", function() {
+            // Fetch all plugins to synchronize the plugins not yet synchronized
             self.system.sharedApiService
                 .getAllPlugins()
                 .then(function(response: any) {
-                    let plugins = response.body;
-                    if (!plugins.length) {
-                        self.logger.verbose("There are no plugins to load and synchronize");
-                    } else {
-                        return self.synchronizePlugins(plugins);
-                    }
+                    let plugins: Array<Plugin> = response.body;
+                    self.logger.verbose("%s plugin(s) found, load all of them and synchronize if needed", plugins.length);
+                    plugins.forEach(function(plugin) {
+                        self.system.repository.pluginExist(plugin.name)
+                            // Synchronize
+                            .then(function(pluginStats) {
+                                if (self.system.config.forcePluginsSynchronizeAtStartup) {
+                                    self.logger.verbose("Force plugin %s to synchronize. Synchronizing..", plugin.name);
+                                }
+                                if (!pluginStats.exist || !pluginStats.isValid) {
+                                    self.logger.verbose("Plugin %s does not seems to be synchronizing yet. Synchronizing..", plugin.name);
+                                }
+                                if (self.system.config.forcePluginsSynchronizeAtStartup || !pluginStats.exist || !pluginStats.isValid) {
+                                    return self.system.repository.synchronize([plugin]);
+                                }
+                            })
+                            // Load
+                            .then(function() {
+                                return self.loadPlugin(plugin);
+                            })
+                    });
                 })
                 .catch(function(err) {
                     self.logger.warn("Unable to load plugins automatically", err.message);
@@ -45,7 +61,8 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
         this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
             if (plugin.deviceId === self.system.id) {
                 self.logger.verbose("New plugin %s created detected", plugin.name);
-                return self.synchronizePlugins([plugin]);
+                self.logger.verbose('Synchronizing plugin %s', plugin.name);
+                return this.system.repository.synchronize([plugin]);
             }
         });
 
@@ -65,23 +82,21 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
         return this.system.logger.Logger.getLogger('PluginsHook');
     }
 
-    /**
-     * - copy plugins to local dir
-     * @param plugins
-     */
-    synchronizePlugins(plugins) {
-        this.logger.verbose('Synchronizing plugins [%s]', _.map(plugins, "name"));
-        return this.system.repository.synchronize(plugins);
-    }
-
     loadPlugin(plugin) {
         let self = this;
         self.logger.verbose('Loading plugin %s', plugin.name);
-        return self.system.pluginsLoader
-            .load(plugin)
-            .then(function() {
-                self.logger.verbose("Plugin %s loaded", plugin.name);
-            });
+        return Promise.resolve(self.system.pluginsLoader.isPluginLoaded(plugin))
+            .then(function(loaded) {
+                if (loaded) {
+                    return Promise.resolve();
+                } else {
+                    return self.system.pluginsLoader.load(plugin)
+                        .then(function() {
+                            self.logger.verbose("Plugin %s loaded", plugin.name);
+                        });
+                }
+            })
+
     }
 
     /**

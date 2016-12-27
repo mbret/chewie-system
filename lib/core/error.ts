@@ -3,6 +3,7 @@
 export class SystemError extends Error implements Error {
     code: string;
 
+    public static ERROR_CODE_ALREADY_RUNNING = "alreadyRunning";
     public static CODE_PREFIX: string = "bError.";
 
     constructor(message, code) {

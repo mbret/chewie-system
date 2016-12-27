@@ -1,8 +1,10 @@
 "use strict";
 
+import * as _ from "lodash";
 import {HookInterface, Hook} from "../../core/hook-interface";
 import {System} from "../../system";
 import {ScenarioHelper} from "../../core/scenario/scenario-helper";
+import {Scenario} from "../../shared-server-api/lib/models/scenario";
 
 /**
  * Scenario are loaded automatically when:
@@ -46,21 +48,25 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
             return self.system.sharedApiService
                 .getAllScenarios()
                 .then(function(response: any) {
-                    let scenarios = response.body;
-                    if (!!scenarios.length) {
-                        self.logger.verbose("%s scenario(s) found, check current state(s) and start/stop scenario(s) if needed", scenarios.length);
-                        // run scenarios
-                        scenarios.forEach(function(scenario: Scenario) {
-                            // If scenario is not already running and is able to run now, then start it.
-                            if (self.scenariosHelper.isAbleToStart(scenario) && !self.system.scenarioReader.isRunning(scenario)) {
-                                return self.readScenario(scenario);
-                            }
-                            // Scenario is not able to start but is loaded, we need to stop it
-                            else if (!self.scenariosHelper.isAbleToStart(scenario) && self.system.scenarioReader.isRunning(scenario)) {
-                                return self.stopScenario(scenario.id);
-                            }
-                        });
-                    }
+                    let scenarios: Array<Scenario> = response.body;
+                    self.logger.verbose("%s scenario(s) found: ids=[%s], check current state(s) and start/stop scenario(s) if needed", scenarios.length, scenarios.map(function(e) { return e.id; }));
+                    // run or stop server scenarios
+                    scenarios.forEach(function(scenario: Scenario) {
+                        // If scenario is not already running and is able to run now, then start it.
+                        if (self.scenariosHelper.isAbleToStart(scenario) && !self.system.scenarioReader.isRunning(scenario)) {
+                            return self.readScenario(scenario);
+                        }
+                        // Scenario is not able to start but is loaded, we need to stop it
+                        else if (!self.scenariosHelper.isAbleToStart(scenario) && self.system.scenarioReader.isRunning(scenario)) {
+                            return self.stopScenario(scenario);
+                        }
+                    });
+                    // stop runtime scenario not present on server anymore
+                    self.system.runtime.scenarios.forEach(function(scenario) {
+                        if (!_.find(scenarios, {id: scenario.id}) && self.system.scenarioReader.isRunning(scenario)) {
+                            return self.stopScenario(scenario);
+                        }
+                    });
                 });
         }
 
