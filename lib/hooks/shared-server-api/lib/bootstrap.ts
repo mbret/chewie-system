@@ -60,22 +60,20 @@ module.exports = function(server, app, cb){
 
                 /**
                  * 400
-                 * @param data
-                 * @returns {*}
+                 * @param err
+                 * @param options
                  */
-                res.badRequest = function(data){
-                    if(_.isString(data)) {
-                        data = {message: data};
-                    }
-                    data.data = data.data || {};
-                    if (data.errors) {
-                        data.data.errors = data.errors;
+                res.badRequest = function(err, options = {}) {
+                    let message = "Bad request";
+                    let error = {};
+                    if(_.isString(err)) {
+                        message = err;
                     }
                     let errResponse = {
-                        status: data.status || "error",
-                        code: data.code || "badRequest",
-                        message: data.message || "",
-                        data: data.data || {}
+                        status: "error",
+                        code: "badRequest",
+                        message: message,
+                        data: err
                     };
 
                     return res.status(400).send(errResponse);

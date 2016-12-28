@@ -8,9 +8,10 @@
     "postinstall": "npm run build",
     "test": "grunt test",
     "build": "gulp build",
-    "dev": "concurrently --raw \"gulp build\" \"gulp watch\""
+    "dev": "./node_modules/.bin/concurrently --raw \"gulp build\" \"gulp watch\""
   },
   "dependencies": {
+    "concurrently": "^3.1.0",
     "construx": "^1.0.0",
     "construx-copier": "^1.0.0",
     "eslint": "^1.10.3",

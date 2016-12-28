@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import {HookInterface, Hook} from "../../core/hook-interface";
 import {System} from "../../system";
 import {ScenarioHelper} from "../../core/scenario/scenario-helper";
-import {Scenario} from "../../shared-server-api/lib/models/scenario";
+import {Scenario} from "../shared-server-api/lib/models/scenario";
 
 /**
  * Scenario are loaded automatically when:
@@ -27,9 +27,10 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
     initialize() {
         let self = this;
 
-        this.system.sharedApiService.io.on("scenarios:updated", function() {
-            self.logger.verbose("Scenarios updated on server, try to update scenarios state");
-            return updateScenarioState();
+        // Listen for scenarios update. Also the event data is a list of updated scenario (not deleted)
+        this.system.sharedApiService.io.on("scenarios:updated", function(updated) {
+            self.logger.verbose("Scenarios updated on server, try to update scenarios state and force reloading of scenarios [%s]", updated);
+            return updateScenarioState(updated);
         });
 
         // Listen for new plugin loaded / unloaded
@@ -43,7 +44,7 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
          * Run scenarios that need to be.
          * Stop scenario that need to be.
          */
-        function updateScenarioState() {
+        function updateScenarioState(scenariosToForceReload: Array<Scenario> = []) {
             // fetch all scenarios
             return self.system.sharedApiService
                 .getAllScenarios()
@@ -59,6 +60,10 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
                         // Scenario is not able to start but is loaded, we need to stop it
                         else if (!self.scenariosHelper.isAbleToStart(scenario) && self.system.scenarioReader.isRunning(scenario)) {
                             return self.stopScenario(scenario);
+                        }
+                        // Scenario is ok and running but must be reloaded because it has been updated on server
+                        else if (self.scenariosHelper.isAbleToStart(scenario) && self.system.scenarioReader.isRunning(scenario) && _.find(scenariosToForceReload, { id: scenario.id })) {
+                            return self.reloadScenario(scenario);
                         }
                     });
                     // stop runtime scenario not present on server anymore
@@ -100,6 +105,21 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
             })
             .catch(function(err) {
                 self.logger.error("Unable to stop scenario", err);
+            });
+    }
+
+    reloadScenario(scenario) {
+        let self = this;
+        self.logger.verbose("Trying to reload scenario %s", scenario.id);
+        return self.system.scenarioReader.stopScenario(scenario.id)
+            .then(function() {
+                return self.system.scenarioReader.readScenario(scenario);
+            })
+            .then(function() {
+                self.logger.verbose("Scenario %s reloaded", scenario.id);
+            })
+            .catch(function(err) {
+                self.logger.error("Unable to reload scenario " + scenario.id, err);
             });
     }
 }

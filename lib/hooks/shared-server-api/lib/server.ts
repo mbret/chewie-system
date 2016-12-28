@@ -7,26 +7,25 @@ let http = require("http");
 let fs          = require('fs');
 import * as _ from "lodash";
 let path        = require('path');
-import {EventEmitter} from "events";
 import * as Services from "./services";
-import {System} from "../../system";
 import {EventsWatcher} from "./services/events-watcher";
-let self: SharedServerApi = null;
+import {Hook, HookInterface} from "../../../core/hook-interface";
+import {System} from "../../../system";
 
-export class SharedServerApi extends EventEmitter implements InitializeAbleInterface {
+export = class SharedServerApiHook extends Hook implements HookInterface, InitializeAbleInterface {
 
     io: any;
     logger: any;
     server: any;
     services: any;
     system: System;
-    // set once the server is started and listening
     localAddress: string;
+    // set once the server is started and listening
     eventsWatcher: EventsWatcher;
 
     constructor(system){
-        super();
-        self = this;
+        super(system);
+        let self = this;
         this.logger = system.logger.Logger.getLogger('Api server');
 
         this.system = system;
@@ -62,16 +61,17 @@ export class SharedServerApi extends EventEmitter implements InitializeAbleInter
                         self.eventsWatcher.watch();
 
                         self.logger.verbose('Initialized');
-                        self.emit("initialized");
+                        // self.emit("initialized");
 
                         return resolve();
                     });
-                // }, 2000);
+                // }, 5000);
             });
         });
     }
 
     startServer(cb){
+        let self = this;
         let port = self.system.config.sharedApiPort;
 
         // use ssl ?
@@ -103,6 +103,7 @@ export class SharedServerApi extends EventEmitter implements InitializeAbleInter
 
         this.server.on('listening', function(){
             self.localAddress = 'https://localhost:' + self.server.address().port;
+            self.logger.verbose('The API is available at %s or %s for remote access', self.localAddress, self.system.config.sharedApiUrl);
             return cb();
         });
 

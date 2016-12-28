@@ -102,7 +102,6 @@ export class ScenarioReader {
     }
 
     stopScenario(id) {
-
         // avoid stopping same scenario multiple times
         if (!this.system.runtime.scenarios.get(id)) {
             return Promise.reject(new SystemError("Already stopped", "alreadyStopped"));
@@ -146,14 +145,14 @@ export class ScenarioReader {
      * @param scenario
      * @param nodes
      * @param options
-     * @returns {Promise<T>}
      */
     private stopNodes(scenario: any, nodes: any[], options: any = { lvl: -1 }) {
+        let wait = [];
         nodes.forEach(function(node) {
-            return self.stopNode(scenario, node, { lvl: options.lvl + 1 });
+            wait.push(self.stopNode(scenario, node, { lvl: options.lvl + 1 }));
         });
 
-        return Promise.resolve();
+        return Promise.all(wait);
     }
 
     private stopNode(scenario: any, node: any, options: any) {

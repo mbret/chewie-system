@@ -1,9 +1,8 @@
-'use strict';
+"use strict";
 
-let _ = require('lodash');
-let google = require('googleapis');
-let util= require('util');
-let validator = require('validator');
+const _ = require('lodash');
+const util= require('util');
+const validator = require('validator');
 
 module.exports = function(server, router) {
 
@@ -43,7 +42,7 @@ module.exports = function(server, router) {
         ScenarioDao.create(scenario)
             .then(function(created) {
                 server.logger.verbose("Scenario %s created", created.id);
-                server.io.emit("scenarios:updated");
+                server.io.emit("scenarios:updated", [created]);
 
                 return res.created(created);
             })
@@ -70,6 +69,26 @@ module.exports = function(server, router) {
             .catch(res.serverError);
     });
 
+    router.get('/scenarios/:scenario', function(req, res){
+        let id = req.params.scenario;
+        let search = {
+            id: id
+        };
+
+        ScenarioDao
+            .findOne({
+                where: search
+            })
+            .then(function(entry){
+                if(!entry){
+                    return res.notFound();
+                }
+
+                return res.ok(entry.toJSON());
+            })
+            .catch(res.serverError);
+    });
+
     router.delete("/scenarios/:scenario", function(req, res) {
         let id = parseInt(req.params.scenario);
         let query = {
@@ -84,15 +103,50 @@ module.exports = function(server, router) {
                     return res.notFound();
                 }
                 let deleted = {id: id};
-                server.io.emit("scenarios:updated", deleted);
-
-                // fetch new list of scenario to emit update events
-                ScenarioDao.findAll()
-                    .then(function(scenarios) {
-                        server.io.emit("scenarios:updated", scenarios.map( item => item.toJSON() ));
-                    });
+                server.io.emit("scenarios:updated");
 
                 return res.ok(deleted);
+            })
+            .catch(res.serverError);
+    });
+
+    router.put('/scenarios/:scenario', function(req, res) {
+        let scenario = req.params.scenario;
+        let name = req.body.name;
+        let description = req.body.description;
+
+        // validate body
+        let errors = {};
+
+        if (name !== undefined && (!_.isString(name) || _.isEmpty(name))) {
+            errors["name"] = "Invalid";
+        }
+
+        if(!_.isEmpty(errors)){
+            return res.badRequest(errors);
+        }
+
+        // filter
+        let toUpdate = {
+            name: name,
+            description: description
+        };
+
+        let where = { id: scenario };
+
+        ScenarioDao
+            .findOne({ where: where })
+            .then(function(entry){
+                if(!entry){
+                    return res.notFound();
+                }
+                return entry.update(toUpdate).then(function(entryUpdated){
+                    server.logger.verbose("Scenario %s updated", entryUpdated.id);
+                    server.io.emit("scenarios:updated", [entryUpdated.toJSON()]);
+                    server.system.sharedApiService.post("/notifications", {content: "Scenario " + entryUpdated.id + " for system " + entryUpdated.deviceId + " has been updated", type: "info"}, { failSilently: true });
+
+                    return res.ok(entryUpdated.toJSON());
+                });
             })
             .catch(res.serverError);
     });

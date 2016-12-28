@@ -21,7 +21,6 @@ import configurationLoader from "./configuration/loader";
 import LocalRepository from "./core/repositories/local";
 import Storage from "./core/storage/storage";
 import {SharedApiServiceHelper} from "./core/remote-service/shared-api-service-helper";
-import {SharedServerApi} from "./shared-server-api/lib/server";
 
 /**
  * System is the main program daemon.
@@ -30,7 +29,6 @@ import {SharedServerApi} from "./shared-server-api/lib/server";
 export class System extends EventEmitter {
 
     runtime: Runtime;
-    sharedApiServer: SharedServerApi;
     config: any;
     communicationBus: ServerCommunication.CommunicationBus;
     scenarioReader: ScenarioReader;
@@ -92,7 +90,6 @@ export class System extends EventEmitter {
         this.storage = new Storage(this);
         this.communicationBus = new ServerCommunication.CommunicationBus(this);
         this.runtime = new Runtime(this);
-        this.sharedApiServer = new SharedServerApi(this);
         this.sharedApiService = new SharedApiServiceHelper(this);
         this.speaker = new Speaker(this);
         this.localRepository = new LocalRepository(this);
@@ -170,9 +167,6 @@ export class System extends EventEmitter {
                 errorOnStartup(err);
                 return;
             }
-
-            //self.logger.info('The web interface is available at at %s or %s for remote access', self.webServer.getLocalAddress(), self.webServer.getRemoteAddress());
-            self.logger.verbose('The API is available at %s or %s for remote access', self.sharedApiServer.localAddress, self.config.sharedApiUrl);
 
             // Splash final information
             self.logger.info('=====================================');
