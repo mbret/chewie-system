@@ -13,7 +13,7 @@ module.exports = {
         {
             id: "date",
             name: "Date",
-            module: "./trigger.js",
+            module: "./triggers.js",
             type: "trigger",
             optionsConfig: [
                 {
@@ -31,7 +31,7 @@ module.exports = {
         {
             id: "interval",
             name: "Interval",
-            module: "./trigger.js",
+            module: "./triggers.js",
             type: "trigger",
             optionsConfig: [
                 {
@@ -48,7 +48,7 @@ module.exports = {
         {
             id: "timeout",
             name: "Wait for",
-            module: "./trigger.js",
+            module: "./triggers.js",
             type: "trigger",
             optionsConfig: [
                 {
@@ -67,26 +67,27 @@ module.exports = {
          */
         {
             id: "hoursRange",
-            description: "Allow you to trigger an action when entering a time range. Let's say you want to play some radio at 4pm and stop it at 5pm. " +
-            "There are some case where the system could not be able to trigger it at 4pm (restart, crash, etc). In this case you would still trigger the radio even at 4:30pm. This trigger allow you " +
-            "to handle these scenarios",
-            name: "Time range",
-            module: "./trigger.js",
+            description: "Choose a time.",
+            name: "Time",
+            module: "./triggers.js",
             type: "trigger",
             optionsConfig: [
                 {
                     name: "from",
-                    label: "From",
+                    label: "Time",
                     value: null,
                     type: "time", // RFC3339 (1970-01-01T02:47:00.000Z)
                     required: true
                 },
                 {
                     name: "to",
-                    label: "to",
+                    description: "Allow you to trigger an action when entering a time range. Let's say you want to play some radio at 4pm and stop it at 5pm. " +
+                    "There are some case where the system could not be able to trigger it at 4pm (restart, crash, etc). In this case you would still trigger the radio even at 4:30pm. This trigger allow you " +
+                    "to handle these scenarios",
+                    label: "Persist until",
                     value: null,
                     type: "time", // RFC3339 (1970-01-01T02:47:00.000Z)
-                    required: true
+                    required: false
                 },
                 // when true the recurrence will never stop.
                 // when false it stop after the first callback.

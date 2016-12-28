@@ -63,7 +63,7 @@ export default class LocalRepository extends BaseRepository {
         let self = this;
         return new Promise(function(resolve, reject){
             let pluginDir = self.getPluginDir(name);
-            self.pluginExist(pluginDir)
+            self.system.repository.pluginExistByDir(pluginDir)
                 .then(function(exist) {
                     if (!exist) {
                         return resolve(null);
@@ -126,24 +126,6 @@ export default class LocalRepository extends BaseRepository {
      */
     getPluginDir(name){
         return path.join(this.localPath, name);
-    }
-
-    pluginExist(dir) {
-        return new Promise(function(resolve, reject) {
-            let stats = null;
-            try {
-                stats = fs.lstatSync(dir);
-            } catch (err) {
-                if (err.code === "ENOENT") {
-                    return resolve(false);
-                }
-                return reject(err);
-            }
-            if (stats.isDirectory()) {
-                return resolve(true);
-            }
-            return resolve(false);
-        });
     }
 
     private readPlugin(dirpath, cb) {

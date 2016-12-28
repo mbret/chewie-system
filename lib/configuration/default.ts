@@ -109,6 +109,7 @@ module.exports = {
     },
 
     pluginsLocalRepositoryDir: path.join(localAppDataDir, '.my-buddy/data/plugins-repository'),
+    forcePluginsSynchronizeAtStartup: false,
 
     system: {
         tmpDir: path.join(os.tmpdir(), '.my-buddy'),

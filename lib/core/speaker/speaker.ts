@@ -71,10 +71,18 @@ export class Speaker {
      * @returns {*}
      */
     playFile(filename, options = {}) {
-        let self = this;
         filename = path.resolve(filename).replace(new RegExp('\\' + path.sep, 'g'), '/');
+        return this.playFileOrUrl(filename, options);
+    }
+
+    playUrl(url, options = {}) {
+        return this.playFileOrUrl(url, options);
+    }
+
+    protected playFileOrUrl(path, options = {}) {
+        let self = this;
         let instance = new MplayerSpeakerAdapter(this.system);
-        this.logger.debug("File %s requested to play", filename);
+        this.logger.debug("File %s requested to play", path);
 
         instance.once("stop", function() {
             self.currentInstance = null;
@@ -93,8 +101,8 @@ export class Speaker {
         // create new player
         self.currentInstance = instance;
 
-        self.logger.debug('Playing sound file %s', filename);
-        instance.play(filename);
+        self.logger.debug('Playing sound file %s', path);
+        instance.play(path);
 
         return instance;
         //var sound = this.speakerAdapter.playFile(filename);
