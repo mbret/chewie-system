@@ -32,7 +32,7 @@
         "csrf": {
           "enabled": true,
           "priority": 111,
-          "route": "/((?!api))*",
+          "route": "/((?!api|remote-api))*",
           "module": {
             "name": "lusca",
             "method": "csrf",

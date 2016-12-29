@@ -105,6 +105,7 @@ module.exports = {
     },
 
     hooks: {
+        "client-web-server": {},
         "shared-server-api": {
             port: 3001,
             // ssl configuration. By default it's not activated

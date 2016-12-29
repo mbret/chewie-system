@@ -62,7 +62,7 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
             if (plugin.deviceId === self.system.id) {
                 self.logger.verbose("New plugin %s created detected", plugin.name);
                 self.logger.verbose('Synchronizing plugin %s', plugin.name);
-                return this.system.repository.synchronize([plugin]);
+                return self.system.repository.synchronize([plugin]);
             }
         });
 

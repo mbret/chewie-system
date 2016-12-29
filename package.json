@@ -41,6 +41,7 @@
     "gulp-less": "^3.3.0",
     "gulp-order": "^1.1.1",
     "gulp-watch": "^4.3.11",
+    "http-proxy": "^1.16.2",
     "ip": "^1.1.4",
     "jsonfile": "^2.4.0",
     "jsonwebtoken": "^7.1.9",

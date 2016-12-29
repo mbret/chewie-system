@@ -1,7 +1,7 @@
 "use strict";
 
 import {EventEmitter} from "events";
-var MPlayer = require("./mplayer");
+let MPlayer = require("./mplayer");
 
 export class Adapter extends EventEmitter {
 
@@ -13,7 +13,7 @@ export class Adapter extends EventEmitter {
 
     constructor(system) {
         super();
-        var self = this;
+        let self = this;
         this.logger = system.logger.Logger.getLogger('MPlayerSpeakerAdapter');
         this.player = new MPlayer({debug: false, args: "-ao win32"});
         this.stopped = false;
@@ -28,7 +28,7 @@ export class Adapter extends EventEmitter {
                 self.stopped = true;
             })
             .on("error", function(err) {
-                self.logger.error("An error occurred with mplayer while trying to play %s (Note that it may still be played) => %s", self.lastFile, err);
+                self.logger.warn("An error occurred with mplayer while trying to play %s (Note that it may still be played) => %s", self.lastFile, err);
             });
     }
 

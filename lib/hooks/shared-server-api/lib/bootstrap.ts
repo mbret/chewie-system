@@ -134,6 +134,7 @@ module.exports = function(server, app, cb){
 
             // Error handler
             app.use(function(err, req, res, next) {
+                server.logger.error("Unexpected error", err);
                 // server.logger.error("An error has been thrown inside middleware and has been catch by 500 error handle: " + err.stack);
                 return res.serverError('Something broke! ' + err.stack);
             });
