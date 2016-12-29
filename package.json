@@ -14,8 +14,8 @@
   },
   "scripts": {
     "postinstall": "cd lib/hooks/client-web-server && npm install && cd ../../.. && npm run build",
-    "build": "./node_modules/.bin/concurrently --raw \"cd lib/hooks/client-web-server && npm run build\" \"./node_modules/.bin/tsc\"",
-    "dev": "./node_modules/.bin/concurrently --raw \"npm run build\" \"cd lib/hooks/client-web-server && npm run dev\" \"tsc -w\"",
+    "build": "concurrently --raw \"cd lib/hooks/client-web-server && npm run build\" \"tsc\"",
+    "dev": "concurrently --raw \"npm run build\" \"cd lib/hooks/client-web-server && npm run dev\" \"tsc -w\"",
     "test": "mocha",
     "foo": "./scripts/test.sh",
     "start-dev": "cd _dev && node _dev-windows/index.js"

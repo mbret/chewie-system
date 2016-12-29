@@ -8,7 +8,7 @@
     "postinstall": "npm run build",
     "test": "grunt test",
     "build": "gulp build",
-    "dev": "./node_modules/.bin/concurrently --raw \"gulp build\" \"gulp watch\""
+    "dev": "concurrently --raw \"gulp build\" \"gulp watch\""
   },
   "dependencies": {
     "concurrently": "^3.1.0",
@@ -18,7 +18,8 @@
     "express": "^4.12.2",
     "grunt-contrib-less": "^1.4.0",
     "grunt-copy-browser-modules": "^6.0.0",
-    "kraken-js": "^2.0.0"
+    "kraken-js": "^2.0.0",
+    "gulp": "^3.9.1"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
