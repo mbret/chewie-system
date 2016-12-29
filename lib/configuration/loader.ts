@@ -20,7 +20,7 @@ export default function(config: any) {
     _.merge(completeConfig, {
         appPath: appPath,
         systemIP: systemIP,
-        sharedApiUrl: completeConfig.sharedApiUrl || ((completeConfig.sharedApiSSL.activate ? "https" : "http") + "://" + (systemIP + ':' + completeConfig.sharedApiPort)),
+        // sharedApiUrl: completeConfig.sharedApiUrl || ((completeConfig.sharedApiSSL.activate ? "https" : "http") + "://" + (systemIP + ':' + completeConfig.sharedApiPort)),
         webServerUrl: webServerUrl,
         webServerRemoteUrl: webServerUrl.replace("localhost", systemIP)
     });

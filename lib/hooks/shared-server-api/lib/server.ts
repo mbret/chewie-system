@@ -20,14 +20,15 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
     services: any;
     system: System;
     localAddress: string;
+    config: any;
     // set once the server is started and listening
     eventsWatcher: EventsWatcher;
 
-    constructor(system){
+    constructor(system, config){
         super(system);
         let self = this;
         this.logger = system.logger.Logger.getLogger('Api server');
-
+        this.config = config;
         this.system = system;
         this.server = null;
         this.services = {};
@@ -72,12 +73,12 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
 
     startServer(cb){
         let self = this;
-        let port = self.system.config.sharedApiPort;
+        let port = self.config.port;
 
         // use ssl ?
-        if (this.system.config.sharedApiSSL.activate) {
-            let privateKey = fs.readFileSync(this.system.config.sharedApiSSL.key, 'utf8');
-            let certificate = fs.readFileSync(this.system.config.sharedApiSSL.cert, 'utf8');
+        if (this.config.ssl.activate) {
+            let privateKey = fs.readFileSync(this.config.ssl.key, 'utf8');
+            let certificate = fs.readFileSync(this.config.ssl.cert, 'utf8');
             this.server = https.createServer({key: privateKey, cert: certificate}, app);
         } else {
             this.server = http.createServer(app);

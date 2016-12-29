@@ -95,7 +95,7 @@ export class Bootstrap {
                 }
             };
 
-            let hook = new Module(self.system);
+            let hook = new Module(self.system, self.system.config.hooks[moduleName]);
             promises.push(
                 hook.initialize()
                     .then(function() {
