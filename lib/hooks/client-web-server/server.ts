@@ -48,7 +48,7 @@ export = class ClientWebServer extends Hook implements HookInterface, Initialize
 
         // Proxy web for shared remote api
         app.all("/remote-api/*", function(req, res) {
-            self.logger.error("Proxying %s to %s", req.url, req.app.locals.system.config.sharedApiUrl);
+            self.logger.verbose("Proxying %s to %s", req.url, req.app.locals.system.config.sharedApiUrl + "/" + req.url);
             req.url = req.url.replace("/remote-api", "");
             req.app.locals.proxy.web(req, res, { target: req.app.locals.system.config.sharedApiUrl, forward: req.url });
         });
