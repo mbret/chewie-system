@@ -3,6 +3,7 @@
 import _ = require("lodash");
 import ip  = require('ip');
 import path = require("path");
+const publicIp = require('public-ip');
 
 /**
  * Return the default config with some value calculated during runtime.
@@ -25,5 +26,24 @@ export default function(config: any) {
         webServerRemoteUrl: webServerUrl.replace("localhost", systemIP)
     });
 
-    return completeConfig;
+    return formatDynConfig(completeConfig);
 };
+
+function formatDynConfig(config) {
+    let promises = [];
+    _.forEach(config, function(entry: any, key: any) {
+        // external ip
+        if (typeof entry === "string") {
+            if (entry.search("{:publicIp}") >= 0) {
+                console.log("public ip detected");
+                promises.push(publicIp.v4().then(ip => {
+                    config[key] = config[key].replace("{:publicIp}", ip);
+                }));
+            }
+        }
+    });
+    return Promise.all(promises)
+        .then(function() {
+            return config;
+        });
+}

@@ -68,39 +68,46 @@ export class System extends EventEmitter {
         let self = this;
 
         // load config
-        this.config = configurationLoader(require(options.settings));
+        configurationLoader(require(options.settings))
+            .then(function(config) {
+                self.config = config;
 
-        // Build system logger
-        let LOGGER = new Logger(self.config.log);
-        this.logger = LOGGER.getLogger('System');
+                // Build system logger
+                let LOGGER = new Logger(self.config.log);
+                self.logger = LOGGER.getLogger('System');
 
-        this.logger.info('Start daemon');
+                self.logger.info('Start daemon');
 
-        // init required folders
-        utils.initDirsSync([
-            self.config.system.tmpDir,
-            self.config.system.dataDir,
-            self.config.system.pluginsTmpDir,
-            self.config.pluginsLocalRepositoryDir,
-        ]);
+                // init required folders
+                utils.initDirsSync([
+                    self.config.system.tmpDir,
+                    self.config.system.dataDir,
+                    self.config.system.pluginsTmpDir,
+                    self.config.pluginsLocalRepositoryDir,
+                ]);
 
-        this.logger.Logger = LOGGER;
-        this.logger.getLogger = LOGGER.getLogger.bind(LOGGER);
-        this.logger.info('Starting...');
-        this.storage = new Storage(this);
-        this.communicationBus = new ServerCommunication.CommunicationBus(this);
-        this.runtime = new Runtime(this);
-        this.sharedApiService = new SharedApiServiceHelper(this);
-        this.speaker = new Speaker(this);
-        this.localRepository = new LocalRepository(this);
-        this.repository = new repositories.Repository(this);
-        this.scenarioReader = new ScenarioReader(this);
-        this.moduleLoader = new ModuleLoader(this);
-        this.pluginsLoader = new PluginsLoader(this);
+                self.logger.Logger = LOGGER;
+                self.logger.getLogger = LOGGER.getLogger.bind(LOGGER);
+                self.logger.info('Starting...');
+                self.storage = new Storage(self);
+                self.communicationBus = new ServerCommunication.CommunicationBus(self);
+                self.runtime = new Runtime(self);
+                self.sharedApiService = new SharedApiServiceHelper(self);
+                self.speaker = new Speaker(self);
+                self.localRepository = new LocalRepository(self);
+                self.repository = new repositories.Repository(self);
+                self.scenarioReader = new ScenarioReader(self);
+                self.moduleLoader = new ModuleLoader(self);
+                self.pluginsLoader = new PluginsLoader(self);
 
-        this.init(function(err){
-            return cb(err);
-        });
+                self.init(function(err){
+                    return cb(err);
+                });
+            })
+            .catch(function(err) {
+                console.error("Unable to load configuration", err);
+                return cb(err);
+            });
     }
 
     /**
