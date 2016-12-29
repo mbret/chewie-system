@@ -3,7 +3,7 @@
 .my-buddy
 config.local.js
 node_modules
-
+yarn.lock
 data/storage/*
 !data/storage/.gitkeep
 
