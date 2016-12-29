@@ -34,6 +34,7 @@ function formatDynConfig(config) {
     _.forEach(config, function(entry: any, key: any) {
         // external ip
         if (typeof entry === "string") {
+            console.log(entry, entry.search("{:publicIp}"));
             if (entry.search("{:publicIp}") >= 0) {
                 console.log("public ip detected");
                 promises.push(publicIp.v4().then(ip => {
