@@ -14,7 +14,7 @@
   },
   "scripts": {
     "postinstall": "cd lib/hooks/client-web-server && npm install && cd ../../.. && npm run build",
-    "build": "cd lib/hooks/client-web-server && npm run build && cd ../../.. && tsc\"",
+    "build": "cd lib/hooks/client-web-server && npm run build && cd ../../.. && tsc",
     "dev": "concurrently --raw \"npm run build\" \"cd lib/hooks/client-web-server && npm run dev\" \"tsc -w\"",
     "test": "mocha",
     "foo": "./scripts/test.sh",
