@@ -8,6 +8,10 @@
     },
 
     "middleware": {
+      "errorHandler": {
+        "dumpExceptions": true,
+        "showStack": true
+      },
         "static": {
             "module": {
                 "arguments": [ "path:./.build" ]
