@@ -188,5 +188,37 @@ export = function(server, router) {
             .catch(res.serverError);
     });
 
+    /**
+     * Fetch modules for a user.
+     * You can filter modules by their types.
+     */
+    router.get('/devices/:device/plugins-modules', function(req, res) {
+        let modules = [];
+        // @todo doit être dans la db interne
+        // Get all plugin name
+        PluginsDao.findAll()
+            .then(function(plugins) {
+                plugins.forEach(function(plugin) {
+                    // let info = getPluginInfo(req, plugin.name);
+                    let tmp = plugin.package.modules
+                        .filter(function(item){
+                            if (!req.query.type) {
+                                return item;
+                            }
+                            return item.type === req.query.type;
+                        })
+                        .map(function(item){
+                            item.plugin = plugin;
+                            item.userOptions = plugin.userOptions[item.id];
+                            return item;
+                        });
+                    modules = modules.concat(tmp);
+                });
+
+                return res.ok(modules);
+            })
+            .catch(res.serverError);
+    });
+
     return router;
 };

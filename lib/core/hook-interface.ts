@@ -15,11 +15,13 @@ export class Hook extends EventEmitter implements HookInterface {
 
     protected system: System;
     protected logger: any;
+    protected config: any;
 
-    protected constructor(system: System) {
+    protected constructor(system: System, config: any) {
         super();
         this.system = system;
         this.logger = this.getLogger();
+        this.config = config;
     }
 
     getLogger() {

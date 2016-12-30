@@ -1,0 +1,55 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Scenarios</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <a ui-sref="dashboard.scenarios.index">Scenarios</a>
+            </li>
+            <li class="active">
+                <strong>Edit</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeIn">
+    <spinner-cube-grid class="m-xl" ng-show="!ready"></spinner-cube-grid>
+    <div class="animated fadeIn" ng-show="ready">
+        <h1 class="page-header">Editing scenario {{scenario.id}}</h1>
+        <form novalidate name="form" id="{{formId}}" ng-submit="confirm(form)">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>General</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="form-group">
+                        <label for="{{formId}}.name">Name</label>
+                        <div>
+                            <input type="text" id="{{formId}}.name" name="name" class="form-control" ng-required="true" ng-model="scenario.name" placeholder="ex: Week radio alarm clock" />
+                            <form-errors field="form.name"></form-errors>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="{{formId}}.description">Description</label>
+                        <div>
+                            <textarea name="description" id="{{formId}}.description" class="form-control" ng-model="scenario.description" placeholder="ex: My new scenario..."></textarea>
+                            <form-errors field="form.description"></form-errors>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Content</h5>
+                </div>
+                <div class="ibox-content">
+                    <form-nodes-selector nodes="scenario.nodes"></form-nodes-selector>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-lg" type="submit">Confirm</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,3 @@
+{
+  "sharedApiUrl": "https://{:publicIp}:3001"
+}

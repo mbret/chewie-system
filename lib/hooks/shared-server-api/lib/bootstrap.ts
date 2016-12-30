@@ -14,15 +14,13 @@ module.exports = function(server, app, cb){
 
     async.series([
 
-        // configure ORM
         function(done) {
             configureOrm(server, done);
         },
 
         function(done) {
-            app.use(bodyParser.json());       // to support JSON-encoded bodies
-
-            app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+            app.use(bodyParser.json()); // to support JSON-encoded bodies
+            app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
                 extended: true
             }));
 
@@ -42,40 +40,24 @@ module.exports = function(server, app, cb){
                 return next();
             });
 
-            // Require all controllers
-            try {
-                requireAll({
-                    dirname: __dirname + '/controllers',
-                    recursive: true,
-                    resolve: function(controller){
-                        controller(server, router);
-                    }
-                });
-            }
-            catch(err) {
-                return done(err);
-            }
-
             app.use(function(req, res, next){
 
                 /**
                  * 400
-                 * @param data
-                 * @returns {*}
+                 * @param err
+                 * @param options
                  */
-                res.badRequest = function(data){
-                    if(_.isString(data)) {
-                        data = {message: data};
-                    }
-                    data.data = data.data || {};
-                    if (data.errors) {
-                        data.data.errors = data.errors;
+                res.badRequest = function(err, options = {}) {
+                    let message = "Bad request";
+                    let error = {};
+                    if(_.isString(err)) {
+                        message = err;
                     }
                     let errResponse = {
-                        status: data.status || "error",
-                        code: data.code || "badRequest",
-                        message: data.message || "",
-                        data: data.data || {}
+                        status: "error",
+                        code: "badRequest",
+                        message: message,
+                        data: err
                     };
 
                     return res.status(400).send(errResponse);
@@ -108,36 +90,35 @@ module.exports = function(server, app, cb){
                  * @param err
                  * @returns {*}
                  */
-                res.serverError = function(err){
-                    server.logger.error("Error on response:", err);
-                    let errResponse = {};
-                    errResponse.status = "error";
-                    errResponse.code = "serverError";
-                    errResponse.message = "An internal error occured";
-                    errResponse.data = {};
-
-                    // Handle Error object
-                    if(err instanceof Error) {
-                        errResponse = _.merge(errResponse, {message: err.message, data: {stack: err.stack, code: err.code}});
-                    }
-
-                    if(_.isString(err)) {
-                        errResponse.message = err;
-                    }
-
-                    return res.status(500).send(errResponse)
+                res.serverError = function(err) {
+                    server.logger.error("Send 500 response", err);
+                    return serverError(res, err);
                 };
 
                 return next();
             });
+
+            // Require all controllers
+            try {
+                requireAll({
+                    dirname: __dirname + '/controllers',
+                    recursive: true,
+                    resolve: function(controller){
+                        controller(server, router);
+                    }
+                });
+            }
+            catch(err) {
+                return done(err);
+            }
 
             app.use('/', router); // @deprecated
             app.use('/api', router);
 
             // Error handler
             app.use(function(err, req, res, next) {
-                // server.logger.error("An error has been thrown inside middleware and has been catch by 500 error handle: " + err.stack);
-                return res.serverError('Something broke! ' + err.stack);
+                server.logger.error("An error has been thrown inside middleware and has been catch by 500 error handle: " + err.stack);
+                return serverError(res, err);
             });
 
             // extend validator module with some custom test
@@ -149,6 +130,25 @@ module.exports = function(server, app, cb){
             };
 
             return done();
+
+            function serverError(res, err){
+                let errResponse = {};
+                errResponse.status = "error";
+                errResponse.code = "serverError";
+                errResponse.message = "An internal error occured";
+                errResponse.data = {};
+
+                // Handle Error object
+                if(err instanceof Error) {
+                    errResponse = _.merge(errResponse, {message: err.message, data: {stack: err.stack, code: err.code}});
+                }
+
+                if(_.isString(err)) {
+                    errResponse.message = err;
+                }
+
+                return res.status(500).send(errResponse)
+            }
         }
     ], cb);
 };

@@ -11,13 +11,15 @@
     "dev": "concurrently --raw \"gulp build\" \"gulp watch\""
   },
   "dependencies": {
+    "concurrently": "^3.1.0",
     "construx": "^1.0.0",
     "construx-copier": "^1.0.0",
     "eslint": "^1.10.3",
     "express": "^4.12.2",
     "grunt-contrib-less": "^1.4.0",
     "grunt-copy-browser-modules": "^6.0.0",
-    "kraken-js": "^2.0.0"
+    "kraken-js": "^2.0.0",
+    "gulp": "^3.9.1"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

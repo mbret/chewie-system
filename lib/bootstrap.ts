@@ -28,6 +28,7 @@ export class Bootstrap {
 
         // register hooks (for now only core)
         hooksToLoad.push("client-web-server");
+        hooksToLoad.push("shared-server-api");
         hooksToLoad.push("scenarios");
         hooksToLoad.push("plugins");
 
@@ -35,7 +36,6 @@ export class Bootstrap {
             // Initialize core services
             .then(function() {
                 return Promise.all([
-                    self.system.sharedApiServer.initialize(),
                     self.system.speaker.initialize(),
                     self.system.communicationBus.initialize(),
                     self.system.sharedApiService.initialize(),
@@ -47,7 +47,6 @@ export class Bootstrap {
             .then(function() {
                 return self.system.sharedApiService.get("/ping")
                     .then(function() {
-                        // self.system.emit("shared-api-server:connected");
                         return Promise.resolve();
                     })
                     .catch(function() {
@@ -73,7 +72,7 @@ export class Bootstrap {
             if (initializing) {
                 self.logger.warn("The initialization process is still not done and seems to take an unusual long time. For some cases you may increase the time in config file.");
             }
-        }, 6000);
+        }, 10000);
     }
 
     /**
@@ -96,7 +95,7 @@ export class Bootstrap {
                 }
             };
 
-            let hook = new Module(self.system);
+            let hook = new Module(self.system, self.system.config.hooks[moduleName]);
             promises.push(
                 hook.initialize()
                     .then(function() {

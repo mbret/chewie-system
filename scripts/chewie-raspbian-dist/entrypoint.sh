@@ -5,5 +5,5 @@ git clone https://github.com/mbret/chewie-app.git
 echo "chewie-app cloned"
 cd /home/chewie-app
 echo "moved to /home/chewie-app"
-npm install
+yarn install
 npm run start

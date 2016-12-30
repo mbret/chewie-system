@@ -70,10 +70,12 @@ class RemoteServiceHelper {
     }
 
     /**
-     *
-     * @returns {Promise}
+     * @param url
+     * @param data
+     * @param options
+     * @returns {Promise<null>}
      */
-    post(url, data = {}, options = {}) {
+    post(url, data = {}, options: any = {}) {
         let self = this;
         options = self._buildOptions(options);
         return new Promise(function(resolve, reject) {
@@ -82,7 +84,11 @@ class RemoteServiceHelper {
                 .defaults({headers: { 'content-type': 'application/json'}})
                 .post(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
                     if(err) {
-                        return reject(err);
+                        if (options.failSilently) {
+                            return resolve(httpResponse);
+                        } else {
+                            return reject(err);
+                        }
                     }
 
                     return resolve(httpResponse);

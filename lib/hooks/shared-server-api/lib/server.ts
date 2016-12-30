@@ -7,28 +7,28 @@ let http = require("http");
 let fs          = require('fs');
 import * as _ from "lodash";
 let path        = require('path');
-import {EventEmitter} from "events";
 import * as Services from "./services";
-import {System} from "../../system";
 import {EventsWatcher} from "./services/events-watcher";
-let self: SharedServerApi = null;
+import {Hook, HookInterface} from "../../../core/hook-interface";
+import {System} from "../../../system";
 
-export class SharedServerApi extends EventEmitter implements InitializeAbleInterface {
+export = class SharedServerApiHook extends Hook implements HookInterface, InitializeAbleInterface {
 
     io: any;
     logger: any;
     server: any;
     services: any;
     system: System;
-    // set once the server is started and listening
     localAddress: string;
+    config: any;
+    // set once the server is started and listening
     eventsWatcher: EventsWatcher;
 
-    constructor(system){
-        super();
-        self = this;
-        this.logger = system.logger.Logger.getLogger('Api server');
-
+    constructor(system, config){
+        super(system, config);
+        let self = this;
+        this.logger = system.logger.Logger.getLogger('SharedServerApiHook');
+        this.config = config;
         this.system = system;
         this.server = null;
         this.services = {};
@@ -62,28 +62,29 @@ export class SharedServerApi extends EventEmitter implements InitializeAbleInter
                         self.eventsWatcher.watch();
 
                         self.logger.verbose('Initialized');
-                        self.emit("initialized");
+                        // self.emit("initialized");
 
                         return resolve();
                     });
-                // }, 2000);
+                // }, 5000);
             });
         });
     }
 
     startServer(cb){
-        let port = self.system.config.sharedApiPort;
+        let self = this;
+        let port = self.config.port;
 
         // use ssl ?
-        if (this.system.config.sharedApiSSL.activate) {
-            let privateKey = fs.readFileSync(this.system.config.sharedApiSSL.key, 'utf8');
-            let certificate = fs.readFileSync(this.system.config.sharedApiSSL.cert, 'utf8');
+        if (this.config.ssl.activate) {
+            let privateKey = fs.readFileSync(this.config.ssl.key, 'utf8');
+            let certificate = fs.readFileSync(this.config.ssl.cert, 'utf8');
             this.server = https.createServer({key: privateKey, cert: certificate}, app);
         } else {
             this.server = http.createServer(app);
         }
 
-        this.server.listen(port);
+        self.server.listen(port);
 
         this.server.on('error', function(error){
             if (error.syscall !== 'listen') {
@@ -103,6 +104,7 @@ export class SharedServerApi extends EventEmitter implements InitializeAbleInter
 
         this.server.on('listening', function(){
             self.localAddress = 'https://localhost:' + self.server.address().port;
+            self.logger.verbose('The API is available at %s or %s for remote access', self.localAddress, self.system.config.sharedApiUrl);
             return cb();
         });
 

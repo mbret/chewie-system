@@ -44,6 +44,13 @@ export interface Scenario {
     id: number;
     deviceId: string;
     nodes: Array<ScenarioNode>;
+    name: string;
+}
+
+export interface ScenarioUpdatable {
+    nodes?: Array<ScenarioNode>;
+    name?: string;
+    description?: string;
 }
 
 export interface ScenarioNode {

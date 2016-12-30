@@ -53,4 +53,8 @@ module.exports = function(server, socketServer){
             // server.system.bus.removeListener('user:updated', onUserUpdated);
         });
     });
+
+    socketServer.on("error", function(err) {
+        server.logger.error("Error on server socket", err);
+    });
 };

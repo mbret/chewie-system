@@ -56,26 +56,7 @@ module.exports = {
             .set('admin', 'Administrator')
             .set('user', 'User')
     },
-
-    // **************************************************
-    //                                                  *
-    //  Shared Api server configuration                 *
-    //                                                  *
-    // **************************************************
-    sharedApiPort: 3001,
-
-    // if set the system will use it instead of localhost & port provided.
-    // when set to null the value is set during runtime and should looks like "http://localhost:yourPort"
-    sharedApiUrl: null,
-
-    // ssl configuration. By default it's not activated
-    // in case of activation a default certificate and key is provided if needed
-    // but should never be used in production.
-    sharedApiSSL: {
-        activate: true,
-        key: __dirname + "/server.key",
-        cert: __dirname + "/server.crt",
-    },
+    sharedApiUrl: "https://localhost:3002",
 
     // **************************************************
     //                                                  *
@@ -121,5 +102,22 @@ module.exports = {
         // By default there are no speaker adapter.
         // The system may run without adapter it will just no output sound.
         speakerAdapter: null
+    },
+
+    hooks: {
+        "client-web-server": {
+            proxyServerPort: 3001
+        },
+        "shared-server-api": {
+            port: 3002,
+            // ssl configuration. By default it's not activated
+            // in case of activation a default certificate and key is provided if needed
+            // but should never be used in production.
+            ssl: {
+                activate: true,
+                key: __dirname + "/server.key",
+                cert: __dirname + "/server.crt",
+            },
+        }
     }
 };
