@@ -8,10 +8,6 @@
     },
 
     "middleware": {
-      "errorHandler": {
-        "dumpExceptions": true,
-        "showStack": true
-      },
         "static": {
             "module": {
                 "arguments": [ "path:./.build" ]
@@ -47,6 +43,13 @@
         "enabled": true,
         "module": {
           "name": "path:./lib/middleware/require-https"
+        }
+      },
+      "error-handler": {
+        "enabled": true,
+        "priority": 140,
+        "module": {
+          "name": "path:./lib/middleware/error-handler"
         }
       }
     }

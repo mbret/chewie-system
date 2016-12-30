@@ -31,6 +31,7 @@ export = class ClientWebServer extends Hook implements HookInterface, Initialize
         };
         let proxyServerPort = this.config.proxyServerPort;
         app.locals.system = this.system;
+        app.locals.server = this;
 
         /*
          * Create and configure application. Also exports application instance for use by tests.
