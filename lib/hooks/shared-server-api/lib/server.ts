@@ -25,7 +25,7 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
     eventsWatcher: EventsWatcher;
 
     constructor(system, config){
-        super(system);
+        super(system, config);
         let self = this;
         this.logger = system.logger.Logger.getLogger('SharedServerApiHook');
         this.config = config;

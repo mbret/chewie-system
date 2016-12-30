@@ -73,6 +73,7 @@ export = class ClientWebServer extends Hook implements HookInterface, Initialize
             // little hack, proxy-http does not expose server via api (officially)
             ._server.on("listening", function() {
                 self.logger.debug('Proxy server listening');
+                // then start client web server
                 server.listen(self.system.config.webServerPort);
             });
 

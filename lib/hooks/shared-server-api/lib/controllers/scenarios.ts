@@ -1,6 +1,7 @@
 "use strict";
 
-const _ = require('lodash');
+import * as _ from "lodash";
+import {Scenario, ScenarioUpdatable} from "../models/scenario";
 const util= require('util');
 const validator = require('validator');
 
@@ -18,17 +19,11 @@ module.exports = function(server, router) {
         let deviceId = req.params.device;
 
         // validate body
-        let errors = new Map();
+        let errors = {};
 
-        // check validity of nodes.
-        // They should have an unique id
-        nodes.forEach(function(node) {
-            if (!node.id || !Number.isInteger(node.id)) {
-                errors.set('nodes', 'Invalid or missing id');
-            }
-        });
+        checkScenario(req.body, errors);
 
-        if(errors.size > 0){
+        if(!_.isEmpty(errors)){
             return res.badRequest(errors);
         }
 
@@ -69,7 +64,7 @@ module.exports = function(server, router) {
             .catch(res.serverError);
     });
 
-    router.get('/scenarios/:scenario', function(req, res){
+    router.get('/scenarios/:scenario', function(req, res) {
         let id = req.params.scenario;
         let search = {
             id: id
@@ -113,27 +108,33 @@ module.exports = function(server, router) {
     router.put('/scenarios/:scenario', function(req, res) {
         let scenario = req.params.scenario;
         let name = req.body.name;
+        let nodes = req.body.nodes;
         let description = req.body.description;
+        let toUpdate: ScenarioUpdatable = {};
 
         // validate body
         let errors = {};
 
-        if (name !== undefined && (!_.isString(name) || _.isEmpty(name))) {
-            errors["name"] = "Invalid";
-        }
+        checkScenario(req.body, errors);
 
         if(!_.isEmpty(errors)){
             return res.badRequest(errors);
         }
 
         // filter
-        let toUpdate = {
-            name: name,
-            description: description
-        };
+        if (name) {
+            toUpdate.name = name;
+        }
+        if (description) {
+            toUpdate.description = description;
+        }
+        if (nodes) {
+            toUpdate.nodes = nodes;
+        }
 
         let where = { id: scenario };
 
+        console.log(toUpdate);
         ScenarioDao
             .findOne({ where: where })
             .then(function(entry){
@@ -150,6 +151,26 @@ module.exports = function(server, router) {
             })
             .catch(res.serverError);
     });
+
+    function checkScenario(scenario: Scenario, errors) {
+        // check validity of nodes.
+        // They should have an unique id
+        if (scenario.nodes) {
+            if (_.isEmpty(scenario.nodes)) {
+                errors["nodes"] = "You need at least one node";
+            } else {
+                scenario.nodes.forEach(function(node) {
+                    if (!node.id || !Number.isInteger(node.id)) {
+                        errors["nodes"] = 'Invalid or missing id';
+                    }
+                });
+            }
+        }
+
+        if (scenario.name !== undefined && (!_.isString(scenario.name) || _.isEmpty(scenario.name))) {
+            errors["name"] = "Invalid";
+        }
+    }
 
     return router;
 };
