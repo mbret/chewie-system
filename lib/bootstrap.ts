@@ -72,7 +72,7 @@ export class Bootstrap {
             if (initializing) {
                 self.logger.warn("The initialization process is still not done and seems to take an unusual long time. For some cases you may increase the time in config file.");
             }
-        }, 6000);
+        }, 10000);
     }
 
     /**

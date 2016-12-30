@@ -11,21 +11,25 @@ let https = require('https');
 let async = require('async');
 let path = require('path');
 let fs = require('fs');
-var httpProxy = require('http-proxy');
-let privateKey = null;
-let certificate = null;
-let server;
+let httpProxy = require('http-proxy');
+const socket = require('socket.io');
+let server, proxyServer;
 
 export = class ClientWebServer extends Hook implements HookInterface, InitializeAbleInterface {
 
-    constructor(system: System) {
-        super(system);
+    constructor(system: System, config: any) {
+        super(system, config);
         this.logger = system.logger.Logger.getLogger('ClientWebServer');
     }
 
     initialize() {
         let self = this;
         let useSSL = self.system.config.webServerSSL.activate;
+        let sslConf = {
+            key: fs.readFileSync(self.system.config.webServerSSL.key, 'utf8'),
+            cert: fs.readFileSync(self.system.config.webServerSSL.cert, 'utf8')
+        };
+        let proxyServerPort = this.config.proxyServerPort;
         app.locals.system = this.system;
 
         /*
@@ -42,53 +46,49 @@ export = class ClientWebServer extends Hook implements HookInterface, Initialize
             }
         };
 
-        app.locals.proxy = httpProxy.createProxyServer({
-            secure: false
-        });
-
-        // Proxy web for shared remote api
-        app.all("/remote-api/*", function(req, res) {
-            self.logger.verbose("Proxying %s to %s", req.url, req.app.locals.system.config.sharedApiUrl + "/" + req.url);
-            req.url = req.url.replace("/remote-api", "");
-            req.app.locals.proxy.web(req, res, { target: req.app.locals.system.config.sharedApiUrl, forward: req.url });
-        });
-
         // Prepare app
         app.use(kraken(options));
         app.use(customResponses);
 
-        // Create server
-        if (useSSL) {
-            server = https.createServer({
-                key: fs.readFileSync(self.system.config.webServerSSL.key, 'utf8'),
-                cert: fs.readFileSync(self.system.config.webServerSSL.cert, 'utf8')
-            }, app);
-        } else {
-            server = http.createServer(app);
-        }
+        // Web client server
+        server = https.createServer(sslConf, app);
 
-        // Proxy socket for shared remote api
-        server.on('upgrade', function (req, socket, head) {
-            app.locals.proxy.ws(req, socket, head);
+        // Proxy server for remote api
+        proxyServer = httpProxy.createProxyServer({
+            ssl: sslConf,
+            target: app.locals.system.config.sharedApiUrl,
+            secure: false,
+            ws: true
         });
 
-        app.locals.proxy.on('error', function(e) {
-            self.logger.error("Error on remote api proxy", e);
-        });
+        // wait for proxy server before listening web client server
+        proxyServer.listen(proxyServerPort)
+            .on("error", function(err) {
+                if (err.code === "EADDRINUSE") {
+                    self.logger.error("It seems that something is already running on port %s. The proxy will not be able to start. Maybe a chewie app is already started ?", proxyServerPort);
+                } else {
+                    self.logger.error("Error while starting proxy server", err);
+                }
+            })
+            // little hack, proxy-http does not expose server via api (officially)
+            ._server.on("listening", function() {
+                self.logger.debug('Proxy server listening');
+                server.listen(self.system.config.webServerPort);
+            });
 
-        server.listen(self.system.config.webServerPort);
-        server.on('listening', function () {
-            app.locals.url = self.system.config.webServerUrl;
-            app.locals.realUrl = self.system.config.webServerRemoteUrl;
-            self.logger.debug('Server listening on %s (%s from outside)', app.locals.url, app.locals.realUrl);
-        });
-        server.on("error", function(err) {
-            if (err.code === "EADDRINUSE") {
-                self.logger.error("It seems that something is already running on port %s. The web client will not be able to start. Maybe a chewie app is already started ?", self.system.config.webServerPort);
-            } else {
-                self.logger.error("Error while starting client web server", err);
-            }
-        });
+        server
+            .on('listening', function () {
+                app.locals.url = self.system.config.webServerUrl;
+                app.locals.realUrl = self.system.config.webServerRemoteUrl;
+                self.logger.debug('Server listening on %s (%s from outside)', app.locals.url, app.locals.realUrl);
+            })
+            .on("error", function(err) {
+                if (err.code === "EADDRINUSE") {
+                    self.logger.error("It seems that something is already running on port %s. The web client will not be able to start. Maybe a chewie app is already started ?", self.system.config.webServerPort);
+                } else {
+                    self.logger.error("Error while starting client web server", err);
+                }
+            });
 
         app.once('start', function () {
             self.logger.debug('Application ready to serve requests.');

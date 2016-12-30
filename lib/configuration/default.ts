@@ -56,7 +56,7 @@ module.exports = {
             .set('admin', 'Administrator')
             .set('user', 'User')
     },
-    sharedApiUrl: "https://localhost:3001",
+    sharedApiUrl: "https://localhost:3002",
 
     // **************************************************
     //                                                  *
@@ -105,9 +105,11 @@ module.exports = {
     },
 
     hooks: {
-        "client-web-server": {},
+        "client-web-server": {
+            proxyServerPort: 3001
+        },
         "shared-server-api": {
-            port: 3001,
+            port: 3002,
             // ssl configuration. By default it's not activated
             // in case of activation a default certificate and key is provided if needed
             // but should never be used in production.

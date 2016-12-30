@@ -84,7 +84,7 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
             this.server = http.createServer(app);
         }
 
-        this.server.listen(port);
+        self.server.listen(port);
 
         this.server.on('error', function(error){
             if (error.syscall !== 'listen') {
