@@ -81,16 +81,22 @@ export class Speaker {
 
     protected playFileOrUrl(path, options = {}) {
         let self = this;
+        let events = require('events');
         let instance = new MplayerSpeakerAdapter(this.system);
+        // let instance = events();
         this.logger.debug("File %s requested to play", path);
 
         instance.once("stop", function() {
-            self.currentInstance = null;
+            if (self.currentInstance === instance) {
+                self.currentInstance = null;
+            }
         });
 
         instance.once("error", function(err) {
             self.logger.error(err);
-            self.currentInstance = null;
+            if (self.currentInstance === instance) {
+                self.currentInstance = null;
+            }
         });
 
         // kill possible previous player

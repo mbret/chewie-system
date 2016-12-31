@@ -119,7 +119,8 @@ MPlayer.prototype = _.extend({
         }
     },
     stop: function() {
-        this.player.cmd('stop');
+        // @todo entraine des ECONNERESET avec le stdin, je sais pas trop pk, autant ne pas le faire vu qu'on kill derrière
+        // this.player.cmd('stop');
         this.kill();
     },
     seek: function(seconds) {

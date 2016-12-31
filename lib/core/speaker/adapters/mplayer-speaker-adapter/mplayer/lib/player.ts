@@ -18,7 +18,7 @@ Player.prototype = _.extend({
             args = this.options.args
         }
 
-        let instance = spawn('mplayer', defaultArgs.concat(args));
+        var instance = spawn('mplayer', defaultArgs.concat(args));
 
         this.setStatus();
 
@@ -40,13 +40,10 @@ Player.prototype = _.extend({
             // this.spawn();
         }.bind(this));
 
-        instance.on("error", function(err) {
-            console.log("piece of shit");
-        });
-
         this.instance = instance;
     },
     cmd: function(command, arguments) {
+        let self = this;
         arguments = arguments || [];
         if(typeof arguments.length === 'undefined') {
             arguments = [arguments];
@@ -60,6 +57,9 @@ Player.prototype = _.extend({
         //     this.spawn();
         // } else {
             this.instance.stdin.write([command].concat(arguments).join(' ') + '\n');
+            this.instance.stdin.on("error", function(err) {
+                self.emit("error", err);
+            });
         // }
     },
     getStatus: function() {
