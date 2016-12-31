@@ -86,27 +86,27 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
 
         self.server.listen(port);
 
-        this.server.on('error', function(error){
-            if (error.syscall !== 'listen') {
-                throw error;
-            }
+        this.server
+            .on('error', function(error){
+                if (error.syscall !== 'listen') {
+                    throw error;
+                }
 
-            // handle specific listen errors with friendly messages
-            switch (error.code) {
-                case 'EADDRINUSE':
-                    self.logger.error("It seems that something is already running on port %s. The web server will not be able to start. Maybe a chewie app is already started ?", port);
-                    break;
-                default:
-                    break;
-            }
-            return cb(error);
-        });
-
-        this.server.on('listening', function(){
-            self.localAddress = 'https://localhost:' + self.server.address().port;
-            self.logger.verbose('The API is available at %s or %s for remote access', self.localAddress, self.system.config.sharedApiUrl);
-            return cb();
-        });
+                // handle specific listen errors with friendly messages
+                switch (error.code) {
+                    case 'EADDRINUSE':
+                        self.logger.error("It seems that something is already running on port %s. The web server will not be able to start. Maybe a chewie app is already started ?", port);
+                        break;
+                    default:
+                        break;
+                }
+                return cb(error);
+            })
+            .on('listening', function(){
+                self.localAddress = 'https://localhost:' + self.server.address().port;
+                self.logger.verbose('The API is available at %s or %s for remote access', self.localAddress, self.system.config.sharedApiUrl);
+                return cb();
+            });
 
         this.io = io(self.server, {});
         require('./socket')(self, this.io);
