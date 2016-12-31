@@ -18,7 +18,7 @@ Player.prototype = _.extend({
             args = this.options.args
         }
 
-        var instance = spawn('mplayer', defaultArgs.concat(args));
+        var instance = spawn("node");//spawn('mplayer', defaultArgs.concat(args));
 
         this.setStatus();
 

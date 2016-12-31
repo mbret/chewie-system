@@ -101,8 +101,8 @@ export class Speaker {
         // create new player
         self.currentInstance = instance;
 
-        // self.logger.debug('Playing sound file %s', path);
-        // instance.play(path);
+        self.logger.debug('Playing sound file %s', path);
+        instance.play(path);
 
         return instance;
         //var sound = this.speakerAdapter.playFile(filename);
