@@ -18,7 +18,7 @@ Player.prototype = _.extend({
             args = this.options.args
         }
 
-        var instance = spawn("node");//spawn('mplayer', defaultArgs.concat(args));
+        let instance = spawn('mplayer', defaultArgs.concat(args));
 
         this.setStatus();
 
@@ -39,6 +39,10 @@ Player.prototype = _.extend({
             this.emit('playstop');
             // this.spawn();
         }.bind(this));
+
+        instance.on("error", function(err) {
+            console.log("piece of shit");
+        });
 
         this.instance = instance;
     },

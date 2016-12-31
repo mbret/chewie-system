@@ -14,11 +14,7 @@ module.exports = function (router) {
         if(typeof resourcePath === "string"){
             if(validator.isLength(resourcePath, {min:1})){
                 setImmediate(function() {
-                    try {
-                        req.app.locals.system.speaker.playFile(path.resolve(req.app.locals.system.config.resourcesDir, resourcePath));
-                    } catch (err) {
-                        console.log("biatch", err);
-                    }
+                    req.app.locals.system.speaker.playFile(path.resolve(req.app.locals.system.config.resourcesDir, resourcePath));
                 });
             }
         }
