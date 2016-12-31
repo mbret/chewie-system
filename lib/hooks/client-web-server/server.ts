@@ -88,7 +88,7 @@ export = class ClientWebServer extends Hook implements HookInterface, Initialize
                 if (err.code === "EADDRINUSE") {
                     self.logger.error("It seems that something is already running on port %s. The web client will not be able to start. Maybe a chewie app is already started ?", self.system.config.webServerPort);
                 } else {
-                    self.logger.error("Error while starting client web server", err);
+                    self.logger.error("Error on client web server", err);
                 }
             });
 

@@ -16,18 +16,22 @@ export class SharedApiServiceHelper extends RemoteServiceHelper implements Initi
         let self = this;
         this.io = io.connect(this.system.config.sharedApiUrl, {reconnect: true, rejectUnauthorized: false});
 
-        self.io.on('connect', function() {
-            self.loggerSocket.verbose("Connected to shared api server and listening");
-        });
-
-        self.io.on('connect_error', function() {
-            self.loggerSocket.verbose("Unable to connect to shared api server socket, trying again..");
-        });
+        self.io
+            .on('connect', function() {
+                self.loggerSocket.verbose("Connected to shared api server and listening");
+            })
+            .on('connect_error', function() {
+                self.loggerSocket.verbose("Unable to connect to shared api server socket, trying again..");
+            })
+            .on('connect_failed', function(err) {
+                self.loggerSocket.verbose("Connection failed", err);
+            })
+            .on("error", function(err) {
+                self.loggerSocket.verbose("Generic error", err);
+            });
     }
 
     initialize() {
-        let self = this;
-
         return Promise.resolve();
     }
 
