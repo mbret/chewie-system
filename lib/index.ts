@@ -2,7 +2,6 @@
 
 import {System} from "./system";
 
-console.log("fuck");process.exit();
 // Read the ctrl+c of windows to handle SIGINT correctly
 if (process.platform === "win32") {
     let rl = require("readline")
