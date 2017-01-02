@@ -1,5 +1,6 @@
 "use strict";
 import {System} from "../../system";
+import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 
 /**
  *
@@ -14,7 +15,7 @@ export class ScenarioHelper {
         this.logger = this.system.logger.Logger.getLogger('ScenarioReader');
     }
 
-    getPluginsIds(scenario: Scenario) {
+    getPluginsIds(scenario: ScenarioModel) {
         let ids = [];
         scenario.nodes.forEach(function(node) {
             ids.push(node.pluginId);
@@ -35,7 +36,7 @@ export class ScenarioHelper {
         return scenarios;
     }
 
-    isAbleToStart(scenario: Scenario) {
+    isAbleToStart(scenario: ScenarioModel) {
         let self = this;
         let ok = true;
         let pluginsIds = self.getPluginsIds(scenario);

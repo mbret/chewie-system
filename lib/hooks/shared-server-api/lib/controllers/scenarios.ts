@@ -1,7 +1,7 @@
 "use strict";
 
 import * as _ from "lodash";
-import {Scenario, ScenarioUpdatable} from "../models/scenario";
+import {ScenarioModel, ScenarioUpdatable} from "../models/scenario";
 const util= require('util');
 const validator = require('validator');
 
@@ -134,14 +134,13 @@ module.exports = function(server, router) {
 
         let where = { id: scenario };
 
-        console.log(toUpdate);
         ScenarioDao
             .findOne({ where: where })
             .then(function(entry){
                 if(!entry){
                     return res.notFound();
                 }
-                return entry.update(toUpdate).then(function(entryUpdated){
+                return entry.update(toUpdate).then(function(entryUpdated) {
                     server.logger.verbose("Scenario %s updated", entryUpdated.id);
                     server.io.emit("scenarios:updated", [entryUpdated.toJSON()]);
                     server.system.sharedApiService.post("/notifications", {content: "Scenario " + entryUpdated.id + " for system " + entryUpdated.deviceId + " has been updated", type: "info"}, { failSilently: true });
@@ -152,7 +151,7 @@ module.exports = function(server, router) {
             .catch(res.serverError);
     });
 
-    function checkScenario(scenario: Scenario, errors) {
+    function checkScenario(scenario: ScenarioModel, errors) {
         // check validity of nodes.
         // They should have an unique id
         if (scenario.nodes) {

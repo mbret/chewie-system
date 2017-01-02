@@ -2,7 +2,7 @@
 import {System} from "../../system";
 import {ModuleContainer} from "../plugins/modules/module-container";
 import {SystemError} from "../error";
-import {Scenario} from "../../shared-server-api/lib/models/scenario";
+import {ScenarioModel, ScenarioNodeModel} from "../../hooks/shared-server-api/lib/models/scenario";
 let self: ScenarioReader = null;
 
 /**
@@ -20,7 +20,7 @@ export class ScenarioReader {
         this.logger = this.system.logger.Logger.getLogger('ScenarioReader');
     }
 
-    isRunning(scenario: Scenario) {
+    isRunning(scenario: ScenarioModel) {
         return this.system.runtime.scenarios.get(scenario.id);
     }
 
@@ -31,7 +31,7 @@ export class ScenarioReader {
      *
      * @param scenario
      */
-    readScenario(scenario) {
+    readScenario(scenario: ScenarioModel) {
         let self = this;
         this.logger.debug("Read scenario %s", scenario.id);
 
@@ -121,7 +121,14 @@ export class ScenarioReader {
         return Promise.all(promises);
     }
 
-    private readNode(scenario: any, node: any, options: any) {
+    /**
+     * Read a node
+     * @param scenario
+     * @param node
+     * @param options
+     * @returns {Promise<U>}
+     */
+    private readNode(scenario: any, node: ScenarioNodeModel, options: any) {
         let self = this;
         let moduleUniqueId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
 

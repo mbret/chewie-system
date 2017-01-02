@@ -40,20 +40,21 @@ module.exports = function(sequelize){
     );
 };
 
-export interface Scenario {
+export interface ScenarioModel {
     id: number;
     deviceId: string;
-    nodes: Array<ScenarioNode>;
+    nodes: Array<ScenarioNodeModel>;
     name: string;
 }
 
 export interface ScenarioUpdatable {
-    nodes?: Array<ScenarioNode>;
+    nodes?: Array<ScenarioNodeModel>;
     name?: string;
     description?: string;
 }
 
-export interface ScenarioNode {
+export interface ScenarioNodeModel {
     id: number;
-    pluginId: string;
+    pluginId: string; // plugin name
+    // moduleId: string;
 }
