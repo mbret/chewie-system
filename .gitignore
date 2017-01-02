@@ -15,4 +15,4 @@ npm-debug.log*
 lib/**/*.js
 
 # intellij
-.iml
+*.iml
