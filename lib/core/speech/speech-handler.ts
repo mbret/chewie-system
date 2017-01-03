@@ -5,7 +5,7 @@ var _ = require('lodash');
 class SpeechHandler{
 
     constructor(system){
-        this.logger = system.logger.Logger.getLogger('SpeechHandler');
+        this.logger = system.logger.getLogger('SpeechHandler');
 
         this.commands = [];
     }

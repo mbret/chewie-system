@@ -79,7 +79,7 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
     }
 
     getLogger() {
-        return this.system.logger.Logger.getLogger('ScenariosHook');
+        return this.system.logger.getLogger('ScenariosHook');
     }
 
     /**

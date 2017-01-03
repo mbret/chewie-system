@@ -13,7 +13,7 @@ export class PluginsLoader {
 
     constructor(system) {
         this.system = system;
-        this.logger = this.system.logger.Logger.getLogger('PluginsLoader');
+        this.logger = this.system.logger.getLogger('PluginsLoader');
     }
 
     load(plugin: Plugin) {

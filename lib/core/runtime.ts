@@ -18,7 +18,7 @@ export class Runtime implements SystemModuleInterface {
     logger: any;
 
     constructor(system: System){
-        this.logger = system.logger.Logger.getLogger('Runtime');
+        this.logger = system.logger.getLogger('Runtime');
         this.system = system;
         this.profileManager = new ProfileManager(system);
         this.scenarios = new Map();

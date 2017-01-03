@@ -11,7 +11,7 @@ export default class Storage implements SystemModuleInterface, InitializeAbleInt
     constructor(system: System) {
         this.system = system;
         this.database = new Database(system);
-        this.logger = system.logger.Logger.getLogger('Storage');
+        this.logger = system.logger.getLogger('Storage');
     }
 
     initialize() {

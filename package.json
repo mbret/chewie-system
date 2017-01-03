@@ -27,6 +27,7 @@
     "@types/sequelize": "^4.0.39",
     "async": "^2.1.4",
     "body-parser": "^1.15.2",
+    "chalk": "^1.1.3",
     "concurrently": "^3.1.0",
     "ejs": "^2.5.3",
     "express": "^4.12.2",
@@ -50,8 +51,10 @@
     "moment": "^2.17.0",
     "moniker": "^0.1.2",
     "my-buddy-lib": "https://github.com/my-buddy/lib",
+    "node-emoji": "^1.4.3",
     "node-schedule": "^1.2.0",
     "npm": "^4.0.5",
+    "pad": "^1.0.2",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "public-ip": "^2.0.1",
@@ -69,7 +72,8 @@
     "uuid": "^3.0.1",
     "validator": "^6.2.0",
     "walk": "^2.3.9",
-    "which": "^1.2.12"
+    "which": "^1.2.12",
+    "winston": "^2.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",

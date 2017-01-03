@@ -9,7 +9,7 @@ class OutputAdaptersHandler{
      *
      */
     constructor(system){
-        this.logger = system.logger.Logger.getLogger('OutputAdaptersHandler');
+        this.logger = system.logger.getLogger('OutputAdaptersHandler');
 
         this.system = system;
         // Contain all message adapters of the system

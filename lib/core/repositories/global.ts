@@ -17,7 +17,7 @@ class Repository extends EventEmitter {
 
     constructor(system){
         super();
-        this.logger = system.logger.Logger.getLogger('Repository');
+        this.logger = system.logger.getLogger('Repository');
         this.system = system;
         this.pluginsTmpDir = system.config.system.synchronizedPluginsDir;
         this.npmPath = which.sync('npm');

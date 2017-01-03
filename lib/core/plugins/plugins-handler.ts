@@ -19,7 +19,7 @@ var utils = require('my-buddy-lib').utils;
 class PluginsHandler{
 
     constructor(system){
-        this.logger = system.logger.Logger.getLogger('PluginsHandler');
+        this.logger = system.logger.getLogger('PluginsHandler');
 
         this.system = system;
     }

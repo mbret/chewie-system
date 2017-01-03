@@ -19,7 +19,7 @@ export = class ClientWebServer extends Hook implements HookInterface, Initialize
 
     constructor(system: System, config: any) {
         super(system, config);
-        this.logger = system.logger.Logger.getLogger('ClientWebServer');
+        this.logger = system.logger.getLogger('ClientWebServer');
     }
 
     initialize() {

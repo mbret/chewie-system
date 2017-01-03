@@ -14,7 +14,7 @@ export default class LocalRepository extends BaseRepository {
     localPath: string;
 
     constructor(system){
-        super(system, system.logger.Logger.getLogger('LocalRepository'));
+        super(system, system.logger.getLogger('LocalRepository'));
         self = this;
         // @todo remove, use one path for now
         this.localPath = system.config.pluginsLocalRepositoryDir;

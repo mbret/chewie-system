@@ -25,7 +25,7 @@ export class Hook extends EventEmitter implements HookInterface {
     }
 
     getLogger() {
-        return this.system.logger.Logger.getLogger('Hook');
+        return this.system.logger.getLogger('Hook');
     }
 }
 

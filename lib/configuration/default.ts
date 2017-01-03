@@ -15,7 +15,7 @@ module.exports = {
     env: process.env.NODE_ENV || "development",
 
     log: {
-        level: 'debug'
+        level: "silly"
     },
 
     storageDatabaseConnexion: {

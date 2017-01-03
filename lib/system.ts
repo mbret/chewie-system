@@ -7,7 +7,6 @@ let repositories = require('./core/repositories');
 let utils = require('my-buddy-lib').utils;
 import path = require('path');
 let packageInfo = require(__dirname + '/../package.json');
-let Logger = require('my-buddy-lib').logger.Logger;
 import ip  = require('ip');
 import { EventEmitter }  from "events";
 import * as ServerCommunication from "./core/server-communication/index";
@@ -21,6 +20,7 @@ import configurationLoader from "./configuration/loader";
 import LocalRepository from "./core/repositories/local";
 import Storage from "./core/storage/storage";
 import {SharedApiServiceHelper} from "./core/remote-service/shared-api-service-helper";
+import {LoggerBuilder, LoggerInterface} from "./core/logger";
 
 /**
  * System is the main program daemon.
@@ -34,7 +34,7 @@ export class System extends EventEmitter {
     scenarioReader: ScenarioReader;
     moduleLoader: ModuleLoader;
     pluginsLoader: PluginsLoader;
-    logger: any;
+    logger: LoggerInterface;
     speaker: Speaker;
     localRepository: LocalRepository;
     repository: any;
@@ -73,10 +73,10 @@ export class System extends EventEmitter {
                 self.config = config;
 
                 // Build system logger
-                let LOGGER = new Logger(self.config.log);
-                self.logger = LOGGER.getLogger('System');
+                let loggerBuilder = new LoggerBuilder(self.config.log);
+                self.logger = loggerBuilder.getLogger('System');
 
-                self.logger.info('Start daemon');
+                self.logger.info(self.logger.emoji.get("point_up") + ' Start daemon');
 
                 // init required folders
                 utils.initDirsSync([
@@ -86,9 +86,8 @@ export class System extends EventEmitter {
                     self.config.pluginsLocalRepositoryDir,
                 ]);
 
-                self.logger.Logger = LOGGER;
-                self.logger.getLogger = LOGGER.getLogger.bind(LOGGER);
-                self.logger.info('Starting...');
+                // self.logger.Logger = loggerBuilder;
+                self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');
                 self.storage = new Storage(self);
                 self.communicationBus = new ServerCommunication.CommunicationBus(self);
                 self.runtime = new Runtime(self);

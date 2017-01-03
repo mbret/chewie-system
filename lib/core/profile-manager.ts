@@ -15,7 +15,7 @@ export class ProfileManager extends EventEmitter {
     constructor(system){
         super();
 
-        this.logger = system.logger.Logger.getLogger('ProfileManager');
+        this.logger = system.logger.getLogger('ProfileManager');
 
         this.system = system;
 

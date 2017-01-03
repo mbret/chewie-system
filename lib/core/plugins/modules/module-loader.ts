@@ -13,7 +13,7 @@ export class ModuleLoader {
 
     constructor(system) {
         this.system = system;
-        this.logger = this.system.logger.Logger.getLogger('ModuleLoader');
+        this.logger = this.system.logger.getLogger('ModuleLoader');
     }
 
     loadModule(plugin: any, moduleId) {

@@ -38,7 +38,7 @@ export default class Database implements InitializeAbleInterface {
                 // server.logger.verbose("ORM initialized");
                 // // Add the db as a storage for logs
                 // // Every logs since this point will be stored in db
-                // server.system.logger.Logger.addTransportForAllLoggers(new WinstonTransportSequelize({
+                // server.system.logger.addTransportForAllLoggers(new WinstonTransportSequelize({
                 //     sequelize: server.orm.sequelize,
                 //     model: server.orm.models.Logs,
                 //     level: server.system.config.log.level

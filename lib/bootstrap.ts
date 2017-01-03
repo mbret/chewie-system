@@ -14,7 +14,7 @@ export class Bootstrap {
     constructor(system) {
         self = this;
         this.system = system;
-        this.logger = system.logger.Logger.getLogger('Bootstrap');
+        this.logger = system.logger.getLogger('Bootstrap');
     }
 
     /**

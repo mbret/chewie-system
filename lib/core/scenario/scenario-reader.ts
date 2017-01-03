@@ -17,7 +17,7 @@ export class ScenarioReader {
     constructor(system) {
         self = this;
         this.system = system;
-        this.logger = this.system.logger.Logger.getLogger('ScenarioReader');
+        this.logger = this.system.logger.getLogger('ScenarioReader');
     }
 
     isRunning(scenario: ScenarioModel) {

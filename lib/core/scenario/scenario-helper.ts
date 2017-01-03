@@ -12,7 +12,7 @@ export class ScenarioHelper {
 
     constructor(system) {
         this.system = system;
-        this.logger = this.system.logger.Logger.getLogger('ScenarioReader');
+        this.logger = this.system.logger.getLogger('ScenarioReader');
     }
 
     getPluginsIds(scenario: ScenarioModel) {

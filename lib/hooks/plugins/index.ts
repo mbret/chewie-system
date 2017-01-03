@@ -79,7 +79,7 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
     }
 
     getLogger() {
-        return this.system.logger.Logger.getLogger('PluginsHook');
+        return this.system.logger.getLogger('PluginsHook');
     }
 
     loadPlugin(plugin) {

@@ -5,7 +5,7 @@ var async   = require('async');
 class ModuleHandler{
 
     constructor(system){
-        this.logger  = system.logger.Logger.getLogger('ModuleHandler');
+        this.logger  = system.logger.getLogger('ModuleHandler');
 
         this.system = system;
     }
