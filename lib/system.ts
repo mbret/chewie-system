@@ -76,6 +76,8 @@ export class System extends EventEmitter {
                 let loggerBuilder = new LoggerBuilder(self.config.log);
                 self.logger = loggerBuilder.getLogger('System');
 
+                // self.logger.debug("%s %s %s", "foo", {"damn": "gens"});
+                // process.exit();
                 self.logger.info(self.logger.emoji.get("point_up") + ' Start daemon');
 
                 // init required folders
