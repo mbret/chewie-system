@@ -37,7 +37,7 @@ module.exports = function(server, router) {
         ScenarioDao.create(scenario)
             .then(function(created) {
                 server.logger.verbose("Scenario %s created", created.id);
-                server.io.emit("scenarios:updated", [created]);
+                server.io.emit("scenarios:updated", { created: [created.id] });
 
                 return res.created(created);
             })
@@ -98,7 +98,7 @@ module.exports = function(server, router) {
                     return res.notFound();
                 }
                 let deleted = {id: id};
-                server.io.emit("scenarios:updated");
+                server.io.emit("scenarios:updated", { deleted: [id] });
 
                 return res.ok(deleted);
             })
@@ -142,7 +142,7 @@ module.exports = function(server, router) {
                 }
                 return entry.update(toUpdate).then(function(entryUpdated) {
                     server.logger.verbose("Scenario %s updated", entryUpdated.id);
-                    server.io.emit("scenarios:updated", [entryUpdated.toJSON()]);
+                    server.io.emit("scenarios:updated", { updated: [entryUpdated.id] });
                     server.system.sharedApiService.post("/notifications", {content: "Scenario " + entryUpdated.id + " for system " + entryUpdated.deviceId + " has been updated", type: "info"}, { failSilently: true });
 
                     return res.ok(entryUpdated.toJSON());

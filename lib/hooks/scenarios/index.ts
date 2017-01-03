@@ -19,8 +19,8 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
 
     scenariosHelper: ScenarioHelper;
 
-    constructor(system: System) {
-        super(system);
+    constructor(system: System, config) {
+        super(system, config);
         this.scenariosHelper = new ScenarioHelper(this.system);
     }
 
@@ -28,9 +28,10 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
         let self = this;
 
         // Listen for scenarios update. Also the event data is a list of updated scenario (not deleted)
-        this.system.sharedApiService.io.on("scenarios:updated", function(updated) {
-            self.logger.verbose("Scenarios updated on server, try to update scenarios state and force reloading of scenarios [%s]", updated);
-            return updateScenarioState(updated);
+        // data contain list of updated id
+        this.system.sharedApiService.io.on("scenarios:updated", function(data) {
+            self.logger.verbose("Scenarios updated on server, try to update scenarios state and force reloading of scenarios [%s]", data.updated);
+            return updateScenarioState(data.updated);
         });
 
         // Listen for new plugin loaded / unloaded
@@ -44,12 +45,12 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
          * Run scenarios that need to be.
          * Stop scenario that need to be.
          */
-        function updateScenarioState(scenariosToForceReload: Array<Scenario> = []) {
+        function updateScenarioState(scenariosToForceReload: Array<number> = []) {
             // fetch all scenarios
             return self.system.sharedApiService
                 .getAllScenarios()
                 .then(function(response: any) {
-                    let scenarios: Array<Scenario> = response.body;
+                    let scenarios: Array<ScenarioModel> = response.body;
                     self.logger.verbose("%s scenario(s) found: ids=[%s], check current state(s) and start/stop scenario(s) if needed", scenarios.length, scenarios.map(function(e) { return e.id; }));
                     // run or stop server scenarios
                     scenarios.forEach(function(scenario: ScenarioModel) {
@@ -62,7 +63,7 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
                             return self.stopScenario(scenario);
                         }
                         // Scenario is ok and running but must be reloaded because it has been updated on server
-                        else if (self.scenariosHelper.isAbleToStart(scenario) && self.system.scenarioReader.isRunning(scenario) && _.find(scenariosToForceReload, { id: scenario.id })) {
+                        else if (self.scenariosHelper.isAbleToStart(scenario) && self.system.scenarioReader.isRunning(scenario) && scenariosToForceReload.indexOf(scenario.id) > -1) {
                             return self.reloadScenario(scenario);
                         }
                     });
