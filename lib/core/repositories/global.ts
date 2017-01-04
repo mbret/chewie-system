@@ -20,7 +20,7 @@ class Repository extends EventEmitter {
         super();
         this.logger = system.logger.getLogger('Repository');
         this.system = system;
-        this.pluginsTmpDir = system.config.system.synchronizedPluginsDir;
+        this.pluginsTmpDir = path.join(this.system.config.system.dataDir, this.system.config.system.synchronizedPluginsDir);
         this.npmPath = which.sync('npm');
     }
 
@@ -107,6 +107,10 @@ class Repository extends EventEmitter {
         return new Promise(function(resolve, reject) {
             fs.stat(dir, function(err, stats) {
                 if (err) {
+                    // does not exist
+                    if (err.code === "ENOENT") {
+                        return resolve(pluginStats);
+                    }
                     return reject(err);
                 }
                 if (stats.isDirectory()) {

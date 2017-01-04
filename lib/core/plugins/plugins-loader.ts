@@ -10,10 +10,12 @@ export class PluginsLoader {
 
     system: System;
     logger: any;
+    synchronizedPluginsPath: string;
 
     constructor(system) {
         this.system = system;
         this.logger = this.system.logger.getLogger('PluginsLoader');
+        this.synchronizedPluginsPath = path.join(this.system.config.system.dataDir, this.system.config.system.synchronizedPluginsDir);
     }
 
     load(plugin: Plugin) {
@@ -83,7 +85,7 @@ export class PluginsLoader {
         // if path is relative we need to build absolute path because runtime is not inside the plugin dir
         // ./module will become D://foo/bar/plugins/module
         if (!path.isAbsolute(modulePath)) {
-            let pluginAbsolutePath = path.resolve(this.system.config.system.synchronizedPluginsDir, plugin.name);
+            let pluginAbsolutePath = path.resolve(this.synchronizedPluginsPath, plugin.name);
             modulePath = path.resolve(pluginAbsolutePath, modulePath);
         }
 
@@ -98,7 +100,7 @@ export class PluginsLoader {
      * @param name
      */
     getPluginInfo(name) {
-        return this.system.localRepository.loadPackageFile(path.resolve(this.system.config.system.synchronizedPluginsDir, name));
+        return this.system.localRepository.loadPackageFile(path.resolve(this.synchronizedPluginsPath, name));
     }
 }
 

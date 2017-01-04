@@ -95,7 +95,7 @@ module.exports = {
     system: {
         tmpDir: path.join(os.tmpdir(), '.my-buddy'),
         dataDir: path.join(localAppDataDir, '.my-buddy/data'),
-        synchronizedPluginsDir: path.join(localAppDataDir, '.my-buddy/data/plugins-synchronized'),
+        synchronizedPluginsDir: "plugins-synchronized", // under data dir
         pluginsTmpDir: path.join(os.tmpdir(), '.my-buddy/plugins-tmp-data'),
         pluginsDataDir: path.join(localAppDataDir, '.my-buddy/data/plugins-data'),
 

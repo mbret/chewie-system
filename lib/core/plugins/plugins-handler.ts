@@ -1,31 +1,22 @@
 'use strict';
 
-// var CoreModule = require(CORE_DIR + '/plugins/core-modules/core-module.js');
-// var ModuleContainer = require(CORE_DIR + '/plugins/task-modules/module-container.js');
-// var CoreModuleHelper = require(CORE_DIR + '/plugins/core-modules/core-module-helper.js');
-// var ModuleHelper = require(CORE_DIR + '/plugins/task-modules/module-helper.js');
-// var MessageAdapterContainer = require(CORE_DIR + '/plugins/output-adapters').OutputAdapter;
-// var MessageAdapterHelper = require(CORE_DIR + '/plugins/output-adapters').OutputAdapterHelper;
-// var TaskTriggerContainer = require(CORE_DIR + '/plugins/triggers/task-trigger-container.js');
-// var TaskTriggerHelper = require(CORE_DIR + '/plugins/triggers/task-trigger-helper.js');
-var async = require('async');
-var PluginContainer = require('./plugin-container.js');
-var PluginHelper   = require('./plugin-helper.js').PluginHelper;
-//var Modules = require(CORE_DIR + "/plugins/modules");
-var _ = require('lodash');
-var path = require('path');
-var utils = require('my-buddy-lib').utils;
+const async = require('async');
+const PluginContainer = require('./plugin-container.js');
+const PluginHelper   = require('./plugin-helper.js').PluginHelper;
+const _ = require('lodash');
+const path = require('path');
+const utils = require('my-buddy-lib').utils;
 
-class PluginsHandler{
+class PluginsHandler {
 
     constructor(system){
         this.logger = system.logger.getLogger('PluginsHandler');
-
         this.system = system;
+        this.synchronizedPluginsPath = path.join(this.system.config.system.dataDir, this.system.config.system.synchronizedPluginsDir);
     }
 
     getPluginAbsolutePath(pluginName) {
-        return path.resolve(this.system.config.system.synchronizedPluginsDir, pluginName);
+        return path.resolve(this.synchronizedPluginsPath, pluginName);
     }
 
     /**
