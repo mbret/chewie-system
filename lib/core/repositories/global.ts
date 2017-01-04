@@ -14,6 +14,7 @@ class Repository extends EventEmitter {
     system: System;
     pluginsTmpDir: string;
     logger: any;
+    npmPath: string;
 
     constructor(system){
         super();
@@ -33,20 +34,21 @@ class Repository extends EventEmitter {
         return new Promise(function(resolve, reject) {
             async.each(plugins, function(plugin, done) {
 
-                let pluginDir = self.system.localRepository.getPluginDir(plugin.name);//, function(err, dir){
+                let pluginDir = self.system.localRepository.getPluginDir(plugin.name);
                 self.pluginExistByDir(pluginDir)
-                    .then(function(exist) {
-                        if(!exist) {
+                    .then(function(stat) {
+                        if(!stat.exist) {
                             return done(new Error('Unable to synchronize plugin ' + plugin.name + ' because the plugin directory ' + pluginDir + ' does not seems to exist anymore'));
                         }
                         let dest = path.resolve(self.pluginsTmpDir, plugin.name);
-
+                        self.logger.silly("Plugin dir %s exist and is ready to be synchronized", pluginDir, stat);
                         self.pluginExistByDir(dest)
-                            .then(function() {
+                            .then(function(stat) {
                                 // @todo for now ignore existance, always force synchronize
                                 // Copy local plugin dir into plugin tmp dir
                                 // This directoy contain the plugin from all source (local, remote, etc)
                                 // They will also be npm installed to get all required dependancies
+                                self.logger.silly("Plugin dir %s will be copied from %s", pluginDir, dest, stat);
                                 fs.copy(pluginDir, dest, function(err){
                                     if(err){
                                         return done(err);
@@ -100,7 +102,7 @@ class Repository extends EventEmitter {
         return this.pluginExistByDir(this.getSynchronizedPluginDir(name));
     }
 
-    protected pluginExistByDir(dir) {
+    protected pluginExistByDir(dir): any {
         let pluginStats = { exist: false, isValid: false };
         return new Promise(function(resolve, reject) {
             fs.stat(dir, function(err, stats) {
