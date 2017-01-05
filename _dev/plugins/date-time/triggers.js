@@ -7,11 +7,13 @@ class Trigger {
     constructor(helper, info) {
         this.info = info;
         this.helper = helper;
+        this.intervals = [];
     }
 
     onNewDemand(options, cb) {
         if (this.info.id === "interval") {
-            this._watchInterval(options, cb);
+            let interval = this._watchInterval(options, cb);
+            this.intervals.push(interval);
         } else if (this.info.id === "date") {
             this._watchDate(options, cb);
         } else if (this.info.id === "timeout") {
@@ -25,14 +27,15 @@ class Trigger {
      * @todo
      */
     stop() {
-
+        this.intervals.forEach(function(interval) {
+            clearInterval(interval);
+        });
     }
 
     _watchInterval(options, cb) {
-        setInterval(function() {
-            cb({
-                dateTime: new Date()
-            });
+        let self = this;
+        return setInterval(function() {
+            cb(self.buildRes());
         }, options.interval);
     }
 
@@ -118,6 +121,12 @@ class Trigger {
                 j.cancelJob();
             }
         });
+    }
+
+    buildRes() {
+        return {
+            dateTime: new Date()
+        };
     }
 }
 

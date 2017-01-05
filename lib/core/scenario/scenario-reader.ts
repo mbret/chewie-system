@@ -81,9 +81,16 @@ export class ScenarioReader {
          * @param node
          * @param ingredients
          */
-        function onTrigger(scenario, node, ingredients = null) {
+        function onTrigger(scenario: ScenarioModel, node: ScenarioNodeModel, ingredients = null) {
             self.logger.debug("trigger execution", node.options, ingredients);
             self.logger.debug("Loop over sub nodes (-1) to ask new trigger demand");
+
+            // handle case of module developer forgot to clear trigger on stop
+            if (!self.isRunning(scenario)) {
+                self.logger.warn("The module '%s' from plugin '%s' just triggered a new demand. However the scenario is not running anymore. It probably means that a module is still running" +
+                    " (may be a timeout, interval or async treatment not closed). The trigger has been ignored but you should tell the author of the plugin about this warning", node.moduleId, node.pluginId);
+                return;
+            }
 
             node.nodes.forEach(function(subNode) {
                 let moduleUniqueId = ModuleContainer.getModuleUniqueId(subNode.pluginId, subNode.moduleId);

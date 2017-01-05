@@ -1,0 +1,9 @@
+{
+  "name": "mailgun",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Maxime Bret",
+  "dependencies": {
+    "mailgun.js": "2.0.1"
+  }
+}

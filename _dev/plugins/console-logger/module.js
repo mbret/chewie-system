@@ -3,7 +3,6 @@
 class Module {
 
     constructor(helper, info) {
-        super();
         this.info = info;
         this.helper = helper;
     }
