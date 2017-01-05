@@ -23,18 +23,18 @@ export class ScenarioHelper {
         return ids;
     }
 
-    getScenariosUsingPlugin(plugin: Plugin) {
-        let self = this;
-        let scenarios = [];
-        self.system.runtime.scenarios.forEach(function(scenario, id) {
-            let pluginsIds = self.getPluginsIds(scenario);
-            if (pluginsIds.indexOf(plugin.id) > 0) {
-                scenarios.push(scenario);
-            }
-        });
-
-        return scenarios;
-    }
+    // getScenariosUsingPlugin(plugin: Plugin) {
+    //     let self = this;
+    //     let scenarios = [];
+    //     self.system.scenarioReader.scenarios.forEach(function(scenario, id) {
+    //         let pluginsIds = self.getPluginsIds(scenario);
+    //         if (pluginsIds.indexOf(plugin.id) > 0) {
+    //             scenarios.push(scenario);
+    //         }
+    //     });
+    //
+    //     return scenarios;
+    // }
 
     isAbleToStart(scenario: ScenarioModel) {
         let self = this;

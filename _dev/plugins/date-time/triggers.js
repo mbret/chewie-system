@@ -30,13 +30,14 @@ class Trigger {
 
     _watchInterval(options, cb) {
         setInterval(function() {
-            cb();
+            cb({
+                dateTime: new Date()
+            });
         }, options.interval);
     }
 
     _watchDate(options, cb) {
         let date = new Date(options.date);
-        console.info("Watch for date", date.toString());
         schedule.scheduleJob(date, function(){
             return cb();
         });
@@ -44,7 +45,9 @@ class Trigger {
 
     _watchTimeout(options, cb) {
         setTimeout(function() {
-            cb();
+            cb({
+                dateTime: new Date()
+            });
         }, options.timeout);
     }
 
@@ -67,7 +70,9 @@ class Trigger {
 
         // execute classic schedule for the from time
         let j = schedule.scheduleJob(ruleFrom, function() {
-            cb();
+            cb({
+                dateTime: new Date()
+            });
             if (!repeat) {
                 j.cancel();
             }
@@ -95,7 +100,9 @@ class Trigger {
                 && fromDate.getTime() < now.getTime()
             ) {
                     if (toDate.getTime() >= now.getTime()) {
-                        cb();
+                        cb({
+                            dateTime: new Date()
+                        });
                     }
             }
         }

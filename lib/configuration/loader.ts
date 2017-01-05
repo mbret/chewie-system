@@ -23,7 +23,8 @@ export default function(config: any) {
         systemIP: systemIP,
         // sharedApiUrl: completeConfig.sharedApiUrl || ((completeConfig.sharedApiSSL.activate ? "https" : "http") + "://" + (systemIP + ':' + completeConfig.sharedApiPort)),
         webServerUrl: webServerUrl,
-        webServerRemoteUrl: webServerUrl.replace("localhost", systemIP)
+        webServerRemoteUrl: webServerUrl.replace("localhost", systemIP),
+        synchronizedPluginsPath: path.join(completeConfig.system.dataDir, completeConfig.system.synchronizedPluginsDir)
     });
 
     return formatDynConfig(completeConfig);

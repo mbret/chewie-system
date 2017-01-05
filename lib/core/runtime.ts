@@ -10,7 +10,6 @@ let util = require("util");
 
 export class Runtime implements SystemModuleInterface {
     system: System;
-    scenarios: Map<number, Scenario>;
     plugins: Map<string, PluginContainer>;
     modules: Map<string, ModuleContainer>;
     // executingTasks: Map<string, TaskExecution>;
@@ -21,7 +20,6 @@ export class Runtime implements SystemModuleInterface {
         this.logger = system.logger.getLogger('Runtime');
         this.system = system;
         this.profileManager = new ProfileManager(system);
-        this.scenarios = new Map();
         this.plugins = new Map();
         this.modules = new Map();
         // Contain tasks by their id

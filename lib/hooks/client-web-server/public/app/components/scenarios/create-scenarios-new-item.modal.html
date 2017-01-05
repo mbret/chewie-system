@@ -28,7 +28,7 @@
             <h3>Choose your trigger</h3>
             <div class="form-group">
                 <div class="radio radio-info radio-inline" ng-repeat="entry in triggersSelected">
-                    <input type="radio" id="{{formId}}-trigger-{{entry.id}}" value="{{entry.id}}" name="{{formId}}-module" ng-model="formData.moduleId" ng-required="true" ng-change="selectModule()">
+                    <input type="radio" id="{{formId}}-trigger-{{entry.id}}" value="{{entry.id}}" name="{{formId}}-module" ng-model="formData.moduleId" ng-required="true" ng-change="changeModule()">
                     <label for="{{formId}}-trigger-{{entry.id}}">{{entry.name}}</label>
                 </div>
             </div>
@@ -37,7 +37,7 @@
             <h3>Choose your task</h3>
             <div class="form-group">
                 <div class="radio radio-info radio-inline" ng-repeat="entry in tasksSelected">
-                    <input type="radio" id="{{formId}}-task-{{entry.id}}" value="{{entry.id}}" name="{{formId}}-module" ng-model="formData.moduleId" ng-required="true" ng-change="selectModule()">
+                    <input type="radio" id="{{formId}}-task-{{entry.id}}" value="{{entry.id}}" name="{{formId}}-module" ng-model="formData.moduleId" ng-required="true" ng-change="changeModule()">
                     <label for="{{formId}}-task-{{entry.id}}">{{entry.name}}</label>
                 </div>
             </div>

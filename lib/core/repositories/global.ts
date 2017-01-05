@@ -12,7 +12,6 @@ import {System} from "../../system";
 class Repository extends EventEmitter {
 
     system: System;
-    pluginsTmpDir: string;
     logger: any;
     npmPath: string;
 
@@ -20,7 +19,6 @@ class Repository extends EventEmitter {
         super();
         this.logger = system.logger.getLogger('Repository');
         this.system = system;
-        this.pluginsTmpDir = path.join(this.system.config.system.dataDir, this.system.config.system.synchronizedPluginsDir);
         this.npmPath = which.sync('npm');
     }
 
@@ -40,7 +38,7 @@ class Repository extends EventEmitter {
                         if(!stat.exist) {
                             return done(new Error('Unable to synchronize plugin ' + plugin.name + ' because the plugin directory ' + pluginDir + ' does not seems to exist anymore'));
                         }
-                        let dest = path.resolve(self.pluginsTmpDir, plugin.name);
+                        let dest = path.resolve(self.system.config.synchronizedPluginsPath, plugin.name);
                         self.logger.silly("Plugin dir %s exist and is ready to be synchronized", pluginDir, stat);
                         self.pluginExistByDir(dest)
                             .then(function(stat) {
@@ -91,7 +89,7 @@ class Repository extends EventEmitter {
     }
 
     getSynchronizedPluginDir(name) {
-        return path.resolve(this.pluginsTmpDir, name);
+        return path.resolve(this.system.config.synchronizedPluginsPath, name);
     }
 
     /**

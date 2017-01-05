@@ -56,5 +56,8 @@ export interface ScenarioUpdatable {
 export interface ScenarioNodeModel {
     id: number;
     pluginId: string; // plugin name
-    // moduleId: string;
+    type: string;
+    moduleId: string; // module name
+    options: any;
+    nodes: Array<ScenarioNodeModel>
 }

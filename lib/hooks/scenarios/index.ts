@@ -68,7 +68,7 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
                         }
                     });
                     // stop runtime scenario not present on server anymore
-                    self.system.runtime.scenarios.forEach(function(scenario) {
+                    self.system.scenarioReader.getRunningScenarios().forEach(function(scenario) {
                         if (!_.find(scenarios, {id: scenario.id}) && self.system.scenarioReader.isRunning(scenario)) {
                             return self.stopScenario(scenario);
                         }

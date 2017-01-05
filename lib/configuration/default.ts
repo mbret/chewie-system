@@ -1,15 +1,12 @@
 'use strict';
-let path = require('path');
-let os = require('os');
+
+import * as path from "path";
+import * as os from "os";
 
 // module base path
 let basePath = path.join(__dirname, '../..');
 let localAppDataDir = os.platform() === 'win32' || os.platform() === 'win64' ? process.env.LOCALAPPDATA : os.homedir();
 
-/**
- * This is the user config.
- *
- */
 module.exports = {
 
     env: process.env.NODE_ENV || "development",
