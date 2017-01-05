@@ -148,7 +148,8 @@ Player.prototype = _.extend({
          if(this.options.debug) {
             console.log('stderr: ' + error);
          }
-         this.emit("error", error + "");
+         // @todo mplayer emit stderr for warnings AND errors so the logs are just flooded. Just ignore it for now
+         // this.emit("error", error + "");
     },
     kill: function() {
         this.instance.kill();
