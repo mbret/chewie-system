@@ -15,7 +15,8 @@ export class Adapter extends EventEmitter {
         super();
         let self = this;
         this.logger = system.logger.getLogger('MPlayerSpeakerAdapter');
-        this.player = new MPlayer({debug: false, args: "-ao win32"});
+        // this.player = new MPlayer({debug: false, args: "-ao win32"});
+        this.player = new MPlayer({debug: false});
         this.stopped = false;
         this.ready = false;
         this.lastFile = null;
