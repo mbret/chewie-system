@@ -56,21 +56,21 @@
         <div ng-switch-when="date">
             <label for="{{fieldId}}">{{configOption.label}}</label>
             <span class="help-block m-b-none">{{configOption.description}}</span>
-            <input type="date" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" />
+            <input type="date" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" convert-date />
         </div>
 
         <!--time-->
         <div ng-switch-when="time">
             <label for="{{fieldId}}">{{configOption.label}}</label>
             <span class="help-block m-b-none">{{configOption.description}}</span>
-            <input type="time" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" />
+            <input type="time" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" convert-date />
         </div>
 
         <!--datetime-->
         <div ng-switch-when="datetime-local">
             <label for="{{fieldId}}">{{configOption.label}}</label>
             <span class="help-block m-b-none">{{configOption.description}}</span>
-            <input type="datetime-local" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" />
+            <input type="datetime-local" id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" convert-date />
         </div>
 
         <!--checkbox-->

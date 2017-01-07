@@ -34,3 +34,5 @@ Task:
 
 Generator
 https://github.com/expressjs/generator
+
+run pm2 for dev on linux: pm2 start "/usr/local/bin/npm" --name "chewie-system" -- run start-dev
