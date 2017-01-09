@@ -1,0 +1,9 @@
+{
+  "name": "raspicam",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Maxime Bret",
+  "dependencies": {
+    "raspicam": "0.2.12"
+  }
+}

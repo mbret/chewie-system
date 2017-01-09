@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 let async = require('async');
 import _  = require('lodash');
@@ -262,13 +262,5 @@ export class System extends EventEmitter {
      */
     private playSystemSound(file: string, options: any = undefined){
         return this.speaker.playFile(path.join(this.config.resourcesDir, 'system', file), options);
-    }
-
-    /**
-     * Register a synchronized task
-     * Example of available events: shutdown, ...
-     */
-    private registerTask(event: string, cb: Function) {
-        taskQueue.register(event, cb);
     }
 }
