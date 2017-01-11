@@ -7,6 +7,7 @@ let http = require("http");
 let fs          = require('fs');
 import * as _ from "lodash";
 let path        = require('path');
+let localConfig = require("./config");
 import * as Services from "./services";
 import {EventsWatcher} from "./services/events-watcher";
 import {Hook, HookInterface} from "../../../core/hook-interface";
@@ -28,7 +29,7 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
         super(system, config);
         let self = this;
         this.logger = system.logger.getLogger('SharedServerApiHook');
-        this.config = config;
+        this.config = _.merge(localConfig, config);
         this.system = system;
         this.server = null;
         this.services = {};
@@ -47,31 +48,22 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
 
     initialize(){
         let self = this;
-        return new Promise(function(resolve, reject) {
-            require(__dirname + '/bootstrap')(self, app, function(err){
-                if(err){
-                    return reject(err);
-                }
+        let bootstrap = require(__dirname + '/bootstrap');
+        return bootstrap(self, app)
+            .then(function(){
 
                 // setTimeout(function() {
-                    self.startServer(function(err){
-                        if(err){
-                            return reject(err);
-                        }
-
-                        self.eventsWatcher.watch();
-
-                        self.logger.verbose('Initialized');
-                        // self.emit("initialized");
-
-                        return resolve();
-                    });
+                return self.startServer().then(function(){
+                    self.eventsWatcher.watch();
+                    self.logger.verbose('Initialized');
+                    // self.emit("initialized");
+                    return Promise.resolve();
+                });
                 // }, 5000);
             });
-        });
     }
 
-    startServer(cb){
+    startServer(){
         let self = this;
         let port = self.config.port;
 
@@ -86,29 +78,31 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
 
         self.server.listen(port);
 
-        this.server
-            .on('error', function(error){
-                if (error.syscall !== 'listen') {
-                    throw error;
-                }
-
-                // handle specific listen errors with friendly messages
-                switch (error.code) {
-                    case 'EADDRINUSE':
-                        self.logger.error("It seems that something is already running on port %s. The web server will not be able to start. Maybe a chewie app is already started ?", port);
-                        break;
-                    default:
-                        break;
-                }
-                return cb(error);
-            })
-            .on('listening', function(){
-                self.localAddress = 'https://localhost:' + self.server.address().port;
-                self.logger.verbose('The API is available at %s or %s for remote access', self.localAddress, self.system.config.sharedApiUrl);
-                return cb();
-            });
-
         this.io = io(self.server, {});
         require('./socket')(self, this.io);
+
+        return new Promise(function(resolve, reject) {
+            self.server
+                .on('error', function(error){
+                    if (error.syscall !== 'listen') {
+                        throw error;
+                    }
+
+                    // handle specific listen errors with friendly messages
+                    switch (error.code) {
+                        case 'EADDRINUSE':
+                            self.logger.error("It seems that something is already running on port %s. The web server will not be able to start. Maybe a chewie app is already started ?", port);
+                            break;
+                        default:
+                            break;
+                    }
+                    return reject(error);
+                })
+                .on('listening', function(){
+                    self.localAddress = 'https://localhost:' + self.server.address().port;
+                    self.logger.verbose('The API is available at %s or %s for remote access', self.localAddress, self.system.config.sharedApiUrl);
+                    return resolve();
+                });
+        });
     }
 }

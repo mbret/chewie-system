@@ -5,10 +5,15 @@
     "dataDir": "./.my-buddy/data"
   },
   "pluginsLocalRepositoryDir": "./../plugins",
-  "sharedDatabase": {
-    "connexion": {
-      "storage": "./.my-buddy/storage/db.sqlite",
-      "dropOnStartup": false
+  "hooks": {
+    "shared-server-api": {
+      "sharedDatabase": {
+        "connexion": {
+          "storage": "./.my-buddy/storage/db.sqlite",
+          "dropOnStartup": false
+        },
+        "migrationLogs": true
+      }
     }
   },
   "forcePluginsSynchronizeAtStartup": true

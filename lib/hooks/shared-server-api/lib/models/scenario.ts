@@ -32,6 +32,12 @@ module.exports = function(sequelize){
                 this.setDataValue("nodes", JSON.stringify(val));
             }
         },
+
+        autoStart: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: true,
+            allowNull: false
+        }
     },
     {
         freezeTableName: true, // Model tableName will be the same as the model name

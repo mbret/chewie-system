@@ -4,154 +4,186 @@ let _           = require('lodash');
 let bodyParser  = require("body-parser");
 let utils       = require('my-buddy-lib').utils;
 let requireAll  = require('my-buddy-lib').requireAll;
-let WinstonTransportSequelize = require('my-buddy-lib').WinstonTransportSequelize;
+// let WinstonTransportSequelize = require('my-buddy-lib').WinstonTransportSequelize;
 let Sequelize = require('sequelize');
 let async = require("async");
 let validator = require("validator");
 let path = require("path");
+import * as DBMigrate from "db-migrate";
 
-module.exports = function(server, app, cb){
+module.exports = function(server, app){
+    return new Promise(function(resolve, reject) {
+        async.series([
 
-    async.series([
+            function(done) {
+                runMigration(server, done);
+            },
 
-        function(done) {
-            configureOrm(server, done);
-        },
+            function(done) {
+                configureOrm(server, done);
+            },
 
-        function(done) {
-            app.use(bodyParser.json()); // to support JSON-encoded bodies
-            app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
-                extended: true
-            }));
+            function(done) {
+                app.use(bodyParser.json()); // to support JSON-encoded bodies
+                app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
+                    extended: true
+                }));
 
-            app.use(function allowCrossDomain(req, res, next) {
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-                res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-                res.header("Access-Control-Allow-Credentials", "true");
-                next();
-            });
+                app.use(function allowCrossDomain(req, res, next) {
+                    res.header("Access-Control-Allow-Origin", "*");
+                    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+                    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                    res.header("Access-Control-Allow-Credentials", "true");
+                    next();
+                });
 
-            // logging http
-            // simple log of http request
-            // Only in console, nginx take control on production environment
-            app.use(function (req, res, next) {
-                server.logger.debug(req.hostname + " -> " + req.method + " (" + req.protocol + ") " + req.url);
-                return next();
-            });
+                // logging http
+                // simple log of http request
+                // Only in console, nginx take control on production environment
+                app.use(function (req, res, next) {
+                    server.logger.debug(req.hostname + " -> " + req.method + " (" + req.protocol + ") " + req.url);
+                    return next();
+                });
 
-            app.use(function(req, res, next){
+                app.use(function(req, res, next){
 
-                /**
-                 * 400
-                 * @param err
-                 * @param options
-                 */
-                res.badRequest = function(err, options = {}) {
-                    let message = "Bad request";
-                    let error = {};
-                    if(_.isString(err)) {
-                        message = err;
-                    }
-                    let errResponse = {
-                        status: "error",
-                        code: "badRequest",
-                        message: message,
-                        data: err
+                    /**
+                     * 400
+                     * @param err
+                     * @param options
+                     */
+                    res.badRequest = function(err, options = {}) {
+                        let message = "Bad request";
+                        let error = {};
+                        if(_.isString(err)) {
+                            message = err;
+                        }
+                        let errResponse = {
+                            status: "error",
+                            code: "badRequest",
+                            message: message,
+                            data: err
+                        };
+
+                        return res.status(400).send(errResponse);
                     };
 
-                    return res.status(400).send(errResponse);
+                    res.created = function(data){
+                        return res.status(201).send(data);
+                    };
+
+                    res.ok = function(data){
+                        return res.status(200).send(data);
+                    };
+
+                    res.notFound = function(data){
+                        let errResponse = {};
+                        errResponse.status = "error";
+                        errResponse.code = "notFound";
+                        errResponse.message = data;
+                        errResponse.data = {};
+                        return res.status(404).send(errResponse);
+                    };
+
+                    res.updated = function(data){
+                        return res.status(200).send(data);
+                    };
+
+                    /**
+                     * http://jsonapi.org/format/#errors-processing
+                     * https://labs.omniti.com/labs/jsend
+                     * @param err
+                     * @returns {*}
+                     */
+                    res.serverError = function(err) {
+                        server.logger.error("Send 500 response", err);
+                        return serverError(res, err);
+                    };
+
+                    return next();
+                });
+
+                // Require all controllers
+                try {
+                    requireAll({
+                        dirname: __dirname + '/controllers',
+                        recursive: true,
+                        resolve: function(controller){
+                            controller(server, router);
+                        }
+                    });
+                }
+                catch(err) {
+                    return done(err);
+                }
+
+                app.use('/', router); // @deprecated
+                app.use('/api', router);
+
+                // Error handler
+                app.use(function(err, req, res, next) {
+                    server.logger.error("An error has been thrown inside middleware and has been catch by 500 error handle: " + err.stack);
+                    return serverError(res, err);
+                });
+
+                // extend validator module with some custom test
+                validator.isModuleId = function(value) {
+                    return this.matches(value, /\w+:\w+/);
+                };
+                validator.isUsername = function(value) {
+                    return this.isAlpha(value);
                 };
 
-                res.created = function(data){
-                    return res.status(201).send(data);
-                };
+                return done();
 
-                res.ok = function(data){
-                    return res.status(200).send(data);
-                };
-
-                res.notFound = function(data){
+                function serverError(res, err){
                     let errResponse = {};
                     errResponse.status = "error";
-                    errResponse.code = "notFound";
-                    errResponse.message = data;
+                    errResponse.code = "serverError";
+                    errResponse.message = "An internal error occured";
                     errResponse.data = {};
-                    return res.status(404).send(errResponse);
-                };
 
-                res.updated = function(data){
-                    return res.status(200).send(data);
-                };
-
-                /**
-                 * http://jsonapi.org/format/#errors-processing
-                 * https://labs.omniti.com/labs/jsend
-                 * @param err
-                 * @returns {*}
-                 */
-                res.serverError = function(err) {
-                    server.logger.error("Send 500 response", err);
-                    return serverError(res, err);
-                };
-
-                return next();
-            });
-
-            // Require all controllers
-            try {
-                requireAll({
-                    dirname: __dirname + '/controllers',
-                    recursive: true,
-                    resolve: function(controller){
-                        controller(server, router);
+                    // Handle Error object
+                    if(err instanceof Error) {
+                        errResponse = _.merge(errResponse, {message: err.message, data: {stack: err.stack, code: err.code}});
                     }
-                });
-            }
-            catch(err) {
-                return done(err);
-            }
 
-            app.use('/', router); // @deprecated
-            app.use('/api', router);
+                    if(_.isString(err)) {
+                        errResponse.message = err;
+                    }
 
-            // Error handler
-            app.use(function(err, req, res, next) {
-                server.logger.error("An error has been thrown inside middleware and has been catch by 500 error handle: " + err.stack);
-                return serverError(res, err);
-            });
-
-            // extend validator module with some custom test
-            validator.isModuleId = function(value) {
-                return this.matches(value, /\w+:\w+/);
-            };
-            validator.isUsername = function(value) {
-                return this.isAlpha(value);
-            };
-
-            return done();
-
-            function serverError(res, err){
-                let errResponse = {};
-                errResponse.status = "error";
-                errResponse.code = "serverError";
-                errResponse.message = "An internal error occured";
-                errResponse.data = {};
-
-                // Handle Error object
-                if(err instanceof Error) {
-                    errResponse = _.merge(errResponse, {message: err.message, data: {stack: err.stack, code: err.code}});
+                    return res.status(500).send(errResponse)
                 }
-
-                if(_.isString(err)) {
-                    errResponse.message = err;
-                }
-
-                return res.status(500).send(errResponse)
             }
-        }
-    ], cb);
+        ], function(err) {
+            if (err) {
+                return reject(err);
+            }
+            return resolve();
+        });
+    });
 };
+
+function runMigration(server, done) {
+    server.logger.verbose("Run database migration");
+    let dbMigrateInstance = DBMigrate.getInstance(true, {
+        cwd: server.config.sharedDatabase.migrationDir,
+        config: {
+            dev: {
+                driver: "sqlite3",
+                filename: server.config.sharedDatabase.connexion.storage,
+            }
+        },
+        env: "dev"
+    });
+    dbMigrateInstance.silence(!server.config.sharedDatabase.migrationLogs);
+    dbMigrateInstance.up()
+        .then(function() {
+            server.logger.verbose("Database migration executed with success");
+            return done();
+        })
+        .catch(done);
+}
 
 /**
  * Orm initialization
@@ -162,12 +194,12 @@ module.exports = function(server, app, cb){
  */
 function configureOrm(server, done) {
     server.orm = {};
-    server.orm.sequelize = new Sequelize('database', 'admin', null, server.system.config.sharedDatabase.connexion);
+    server.orm.sequelize = new Sequelize('database', 'admin', null, server.config.sharedDatabase.connexion);
 
     let modelsPath = "./models";
 
     // init dir for storage first
-    utils.initDirsSync(path.dirname(server.system.config.sharedDatabase.connexion.storage));
+    utils.initDirsSync(path.dirname(server.config.sharedDatabase.connexion.storage));
 
     // Define models
     server.orm.models = {};
@@ -205,12 +237,12 @@ function configureOrm(server, done) {
     // create tables
     Promise
         .all([
-            server.orm.models.Logs.sync({force: server.system.config.sharedDatabase.connexion.dropOnStartup}),
-            server.orm.models.User.sync({force: server.system.config.sharedDatabase.connexion.dropOnStartup}),
-            server.orm.models.Plugins.sync({force: server.system.config.sharedDatabase.connexion.dropOnStartup}),
-            server.orm.models.Task.sync({force: server.system.config.sharedDatabase.connexion.dropOnStartup}),
-            server.orm.models.Scenario.sync({force: server.system.config.sharedDatabase.connexion.dropOnStartup}),
-            server.orm.models.Notification.sync({force: server.system.config.sharedDatabase.connexion.dropOnStartup}),
+            server.orm.models.Logs.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
+            server.orm.models.User.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
+            server.orm.models.Plugins.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
+            server.orm.models.Task.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
+            server.orm.models.Scenario.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
+            server.orm.models.Notification.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
         ])
         .then(function () {
             server.logger.verbose("ORM initialized");
@@ -225,7 +257,7 @@ function configureOrm(server, done) {
             // By default there is always one user. The administrator
             return server.orm.models.User.initAdmin();
         })
-        .then(function(){
+        .then(function() {
             return done();
         })
         .catch(done);
