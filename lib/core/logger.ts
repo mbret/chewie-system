@@ -13,7 +13,7 @@ export interface LoggerInterface {
     info(content: string);
     verbose(content: string);
     debug(content: string);
-    error(content: string);
+    error(...args: any[]);
     warn(content: string);
     getLogger(prepend: string): LoggerInterface;
     emoji: any;
@@ -40,12 +40,12 @@ export class LoggerBuilder {
         })];
     }
 
-    public addTransportForAllLoggers(transport){
-        this.transports.push(transport);
-        this.loggers.forEach(function(logger){
-            logger.add(transport, null, true);
-        });
-    };
+    // public addTransportForAllLoggers(transport){
+    //     this.transports.push(transport);
+    //     this.loggers.forEach(function(logger){
+    //         logger.add(transport, null, true);
+    //     });
+    // };
 
     /**
      * Create new instance of logger with specific filter.

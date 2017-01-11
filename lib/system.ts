@@ -2,6 +2,7 @@
 
 let async = require('async');
 import _  = require('lodash');
+const util = require("util");
 let taskQueue = require('my-buddy-lib').taskQueue;
 let repositories = require('./core/repositories');
 let utils = require('my-buddy-lib').utils;
@@ -203,8 +204,7 @@ export class System extends EventEmitter {
         });
 
         function errorOnStartup(err) {
-            self.logger.error("A critical error occurred during daemon startup. Process will be terminated.");
-            self.logger.error(err);
+            self.logger.error("A critical error occurred during daemon startup. Process will be terminated.", util.inspect(err, true));
             self.shutdown(1, null);
         }
     }

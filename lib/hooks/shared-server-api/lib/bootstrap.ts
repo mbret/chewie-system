@@ -235,14 +235,15 @@ function configureOrm(server, done) {
     server.logger.verbose("Synchronizing ORM");
 
     // create tables
+    // let force = server.config.sharedDatabase.connexion.dropOnStartup;
     Promise
         .all([
-            server.orm.models.Logs.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
-            server.orm.models.User.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
-            server.orm.models.Plugins.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
-            server.orm.models.Task.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
-            server.orm.models.Scenario.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
-            server.orm.models.Notification.sync({force: server.config.sharedDatabase.connexion.dropOnStartup}),
+            // server.orm.models.Logs.sync({force: force}),
+            // server.orm.models.User.sync({force: force}),
+            // server.orm.models.Plugins.sync({force: force}),
+            // server.orm.models.Task.sync({force: force}),
+            // server.orm.models.Scenario.sync({force: force}),
+            // server.orm.models.Notification.sync({force: force}),
         ])
         .then(function () {
             server.logger.verbose("ORM initialized");
