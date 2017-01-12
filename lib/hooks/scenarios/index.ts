@@ -60,8 +60,9 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
                             return self.readScenario(scenario);
                         }
                         // Scenario is not able to start but is loaded, we need to stop it
+                        // we will basically stop all scenarios with that id
                         else if (!self.scenariosHelper.isAbleToStart(scenario) && self.system.scenarioReader.isRunning(scenario)) {
-                            return self.stopScenario(scenario);
+                            return self.stopScenarios(scenario);
                         }
                         // Scenario is ok and running but must be reloaded because it has been updated on server
                         else if (self.scenariosHelper.isAbleToStart(scenario) && self.system.scenarioReader.isRunning(scenario) && shouldRestartBecauseOfServerUpdate) {
@@ -69,9 +70,11 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
                         }
                     });
                     // stop runtime scenario not present on server anymore
-                    self.system.scenarioReader.getRunningScenarios().forEach(function(scenario) {
-                        if (!_.find(scenarios, {id: scenario.id}) && self.system.scenarioReader.isRunning(scenario)) {
-                            return self.stopScenario(scenario);
+                    // get list of running scenarios (avoid having multiple scenario for same id with uniqWith)
+                    let uniqueRunningScenarios = _.uniqWith(self.system.scenarioReader.getRunningScenarios(), (a, b) => a.model.id === b.model.id);
+                    uniqueRunningScenarios.forEach(function(readable) {
+                        if (!_.find(scenarios, {id: readable.model.id}) && self.system.scenarioReader.isRunning(readable.model)) {
+                            return self.stopScenarios(readable.model);
                         }
                     });
                 });
@@ -98,10 +101,10 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
             });
     }
 
-    stopScenario(scenario) {
+    stopScenarios(scenario) {
         let self = this;
         self.logger.verbose("Trying to stop scenario %s", scenario.id);
-        return self.system.scenarioReader.stopScenario(scenario.id)
+        return self.system.scenarioReader.stopScenarios(scenario.id)
             .then(function() {
                 self.logger.verbose("Scenario %s stopped and suppressed from system", scenario.id);
             })
@@ -113,7 +116,7 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
     reloadScenario(scenario) {
         let self = this;
         self.logger.verbose("Trying to reload scenario %s", scenario.id);
-        return self.system.scenarioReader.stopScenario(scenario.id)
+        return self.system.scenarioReader.stopScenarios(scenario.id)
             .then(function() {
                 return self.system.scenarioReader.readScenario(scenario);
             })

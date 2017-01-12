@@ -46,26 +46,31 @@ module.exports = function(sequelize){
     );
 };
 
-export interface ScenarioModel {
+export class ScenarioModel {
     id: number;
     deviceId: string;
-    nodes: Array<ScenarioNodeModel>;
+    pluginId: string; // plugin name
+    nodes: Array<ScenarioModel>;
+    moduleId: string; // module name
     name: string;
+    // only when used as root
     autoStart: boolean;
+    type: string; // not for root
+    options: any; // not for root
 }
 
 export interface ScenarioUpdatable {
-    nodes?: Array<ScenarioNodeModel>;
+    nodes?: Array<ScenarioModel>;
     name?: string;
     description?: string;
     autoStart?: boolean;
 }
 
-export interface ScenarioNodeModel {
-    id: number;
-    pluginId: string; // plugin name
-    type: string;
-    moduleId: string; // module name
-    options: any;
-    nodes: Array<ScenarioNodeModel>,
-}
+// export interface ScenarioNodeModel {
+//     id: number;
+//     pluginId: string; // plugin name
+//     type: string;
+//     moduleId: string; // module name
+//     options: any;
+//     nodes: Array<ScenarioNodeModel>,
+// }

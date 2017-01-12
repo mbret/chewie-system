@@ -2,8 +2,22 @@
 import {System} from "../../system";
 import {ModuleContainer} from "../plugins/modules/module-container";
 import {SystemError} from "../error";
-import {ScenarioModel, ScenarioNodeModel} from "../../hooks/shared-server-api/lib/models/scenario";
+import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as _ from "lodash";
+import * as uuid from "node-uuid";
+
+/**
+ * Root scenario. Has an execution id
+ */
+class ScenarioReadable {
+    executionId: string;
+    model: ScenarioModel;
+
+    constructor(model: ScenarioModel) {
+        this.executionId = uuid.v4();
+        this.model = model;
+    }
+}
 
 /**
  * @todo pour le moment tout est instancié au début de la lecture. Au besoin une demande de trigger/task est envoyé à l'instance.
@@ -13,16 +27,16 @@ export class ScenarioReader {
 
     protected system: System;
     protected logger: any;
-    protected scenarios: Map<number, ScenarioModel>;
+    protected scenarios: Array<ScenarioReadable>;
 
     constructor(system) {
         this.system = system;
         this.logger = this.system.logger.getLogger('ScenarioReader');
-        this.scenarios = new Map();
+        this.scenarios = [];
     }
 
     public isRunning(scenario: ScenarioModel) {
-        return this.system.scenarioReader.scenarios.get(scenario.id);
+        return this.system.scenarioReader.scenarios.find((scenarioReadable) => scenario.id === scenarioReadable.model.id);
     }
 
     /**
@@ -37,13 +51,14 @@ export class ScenarioReader {
         this.logger.debug("Read scenario %s", scenario.id);
 
         // avoid read same scenario in same time
-        if (this.system.scenarioReader.scenarios.get(scenario.id)) {
+        if (this.isRunning(scenario)) {
             return Promise.reject(new SystemError("Already running", "alreadyRunning"));
         }
 
+        let scenarioReadable = new ScenarioReadable(scenario);
         // register scenario in runtime
         // it prevent running more than once and also help dealing through the system
-        this.system.scenarioReader.scenarios.set(scenario.id, scenario);
+        this.system.scenarioReader.scenarios.push(scenarioReadable);
 
         // execute each node
         return this
@@ -71,7 +86,7 @@ export class ScenarioReader {
             })
             .catch(function(err) {
                 // self.logger.error("An error occurred while reading scenario %s", scenario.name, err);
-                self.system.scenarioReader.scenarios.delete(scenario.id);
+                self.removeScenario(scenarioReadable);
                 throw err;
             });
 
@@ -81,7 +96,7 @@ export class ScenarioReader {
          * @param node
          * @param ingredients
          */
-        function onTrigger(scenario: ScenarioModel, node: ScenarioNodeModel, ingredients = null) {
+        function onTrigger(scenario: ScenarioModel, node: ScenarioModel, ingredients = null) {
             self.logger.debug("trigger execution", node.options, ingredients);
             self.logger.debug("Loop over sub nodes (-1) to ask new trigger demand");
 
@@ -127,19 +142,29 @@ export class ScenarioReader {
         }
     }
 
-    public stopScenario(id) {
-        // avoid stopping same scenario multiple times
-        if (!this.system.scenarioReader.scenarios.get(id)) {
-            return Promise.reject(new SystemError("Already stopped", "alreadyStopped"));
-        }
+    /**
+     * Stop all scenario relative to this id.
+     * @param id
+     */
+    public stopScenarios(id) {
+        let self = this;
+        let concerned = this.scenarios.filter((tmp) => tmp.model.id === id);
+        let promises = [];
+        concerned.forEach(function(readable) {
+            // avoid stopping same scenario multiple times
+            // if (!this.system.scenarioReader.scenarios.get(id)) {
+            //     return Promise.reject(new SystemError("Already stopped", "alreadyStopped"));
+            // }
 
-        let scenario = this.system.scenarioReader.scenarios.get(id);
-        this.system.scenarioReader.scenarios.delete(id);
-        return this.stopNodes(scenario, scenario.nodes)
+            self.removeScenario(readable);
+            promises.push(self.stopNodes(readable.model, readable.model.nodes));
+        });
+
+        return Promise.all(promises);
     }
 
-    public getRunningScenarios(): Array<ScenarioModel> {
-        return [...this.scenarios.values()];
+    public getRunningScenarios(): Array<ScenarioReadable> {
+        return this.scenarios;
     }
 
     protected readNodes(scenario: any, nodes: any[], options: any) {
@@ -159,7 +184,7 @@ export class ScenarioReader {
      * @param options
      * @returns {Promise<U>}
      */
-    protected readNode(scenario: any, node: ScenarioNodeModel, options: any) {
+    protected readNode(scenario: any, node: ScenarioModel, options: any) {
         let self = this;
         let moduleUniqueId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
 
@@ -256,5 +281,10 @@ export class ScenarioReader {
      */
     protected getRuntimeModuleKey(scenarioId, nodeId, moduleId) {
         return "scenario:" + scenarioId + ":node:" + nodeId + ":module:" + moduleId;
+    }
+
+    protected removeScenario(scenarioReadable: ScenarioReadable) {
+        let index = this.scenarios.indexOf(scenarioReadable);
+        return this.scenarios.splice(index, 1);
     }
 }

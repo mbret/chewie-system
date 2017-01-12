@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<div class="wrapper wrapper-content" id="task-list">
+<div class="wrapper wrapper-content" id="scenarios-list">
 
     <div class="row">
         <div class="col-lg-3">
@@ -36,7 +36,7 @@
             </div>
             <div class="tabs-container">
                 <uib-tabset class="tabs-left">
-                    <uib-tab heading="{{scenario.name}}" ng-repeat="scenario in scenarios" >
+                    <uib-tab heading="{{scenario.name}}" ng-repeat="scenario in scenarios">
                         <div class="panel-body">
                             <strong>Created:</strong> {{scenario.createdAt | date}}<br>
                             <strong>Description</strong> {{scenario.description}}<br>

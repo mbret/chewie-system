@@ -1,0 +1,70 @@
+<div class="modal-header">
+    <h3 class="modal-title">Select an item</h3>
+</div>
+<div class="modal-body">
+    <form name="form" id="{{formId}}">
+        <h3>Choose your scenario</h3>
+        <div class="form-group">
+            <div class="radio radio-info radio-inline" ng-repeat="scenario in scenarios">
+                <input type="radio" id="{{formId}}-trigger-plugin-{{scenario.id}}" value="{{scenario.id}}" name="{{formId}}-scenario" ng-model="formData.scenario" ng-required="true" >
+                <label for="{{formId}}-trigger-plugin-{{scenario.id}}">{{scenario.name}}</label>
+            </div>
+            <form-errors field="form[formId + '-scenario']"></form-errors>
+        </div>
+        <!--<h4>Tasks</h4>-->
+        <!--<div class="form-group">-->
+            <!--<div class="radio radio-info radio-inline" ng-repeat="plugin in taskPlugins">-->
+                <!--<input type="radio" id="{{formId}}-task-plugin-{{plugin.id}}" value="{{plugin.name}}" name="{{formId}}-plugin" ng-model="formData.pluginId" ng-required="true"  ng-change="selectPlugin('task')">-->
+                <!--<label for="{{formId}}-task-plugin-{{plugin.id}}">{{plugin.name}}</label>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<form-errors field="form[formId + '-plugin']">-->
+            <!--<small class="text-danger" ng-message="required">Please pick a plugin</small>-->
+        <!--</form-errors>-->
+
+        <!--&lt;!&ndash;Choose module&ndash;&gt;-->
+        <!--<div ng-if="formData.pluginId && formData.type == 'trigger'">-->
+            <!--<h3>Choose your trigger</h3>-->
+            <!--<div class="form-group">-->
+                <!--<div class="radio radio-info radio-inline" ng-repeat="entry in triggersSelected">-->
+                    <!--<input type="radio" id="{{formId}}-trigger-{{entry.id}}" value="{{entry.id}}" name="{{formId}}-module" ng-model="formData.moduleId" ng-required="true" ng-change="changeModule()">-->
+                    <!--<label for="{{formId}}-trigger-{{entry.id}}">{{entry.name}}</label>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div ng-if="formData.pluginId && formData.type == 'task'">-->
+            <!--<h3>Choose your task</h3>-->
+            <!--<div class="form-group">-->
+                <!--<div class="radio radio-info radio-inline" ng-repeat="entry in tasksSelected">-->
+                    <!--<input type="radio" id="{{formId}}-task-{{entry.id}}" value="{{entry.id}}" name="{{formId}}-module" ng-model="formData.moduleId" ng-required="true" ng-change="changeModule()">-->
+                    <!--<label for="{{formId}}-task-{{entry.id}}">{{entry.name}}</label>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<form-errors field="form[formId + '-module']"></form-errors>-->
+
+        <!--&lt;!&ndash;Configure trigger module&ndash;&gt;-->
+        <!--<div ng-if="formData.moduleId && formData.type == 'trigger'">-->
+            <!--<h3 class="modal-title">Configure your trigger</h3>-->
+            <!--<div uib-alert class="alert-info" ng-if="triggerSelected.description">{{triggerSelected.description}}</div>-->
+            <!--<div class="form-group">-->
+                <!--<label for="triggerName">Name of your trigger</label>-->
+                <!--<span class="help-block m-b-none">You may set a custom name for your trigger or leave it blank and use default name "{{triggerSelected.name}}"</span>-->
+                <!--<input type="text" id="triggerName" name="triggerName" class="form-control" ng-required="false" ng-model="formData.name" placeholder="{{triggerSelected.name}}"/>-->
+            <!--</div>-->
+
+            <!--<module-form-options config-options="triggerSelected.optionsConfig" ng-model="formData.options" prefix="1"></module-form-options>-->
+        <!--</div>-->
+
+        <!--&lt;!&ndash;Configure task module&ndash;&gt;-->
+        <!--<div ng-if="formData.moduleId && formData.type == 'task'">-->
+            <!--<h3 class="modal-title">Configure your task</h3>-->
+            <!--<module-form-options config-options="taskSelected.optionsConfig" ng-model="formData.options" prefix="1"></module-form-options>-->
+        <!--</div>-->
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" type="button" ng-click="confirm(form)">Confirm</button>
+</div>

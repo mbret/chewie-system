@@ -17,7 +17,8 @@ class Trigger {
         } else if (this.info.id === "date") {
             this._watchDate(options, cb);
         } else if (this.info.id === "timeout") {
-            this._watchTimeout(options, cb);
+            let interval = this._watchTimeout(options, cb);
+            this.intervals.push(interval);
         } else if (this.info.id === "hoursRange") {
             this._watchHoursRange(options, cb);
         }
@@ -47,10 +48,9 @@ class Trigger {
     }
 
     _watchTimeout(options, cb) {
-        setTimeout(function() {
-            cb({
-                dateTime: new Date()
-            });
+        let self = this;
+        return setTimeout(function() {
+            cb(self.buildRes());
         }, options.timeout);
     }
 
