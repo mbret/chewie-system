@@ -60,7 +60,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
                         {
                             serie: true,
                             name: 'angular-flot',
-                            files: [ 'js/plugins/flot/jquery.flot.js', 'js/plugins/flot/jquery.flot.time.js', 'js/plugins/flot/jquery.flot.tooltip.min.js', 'js/plugins/flot/jquery.flot.spline.js', 'js/plugins/flot/jquery.flot.resize.js', 'js/plugins/flot/jquery.flot.pie.js', 'js/plugins/flot/curvedLines.js', 'js/plugins/flot/angular-flot.js', ]
+                            files: [ 'js/plugins/flot/jquery.flot.js', 'js/plugins/flot/jquery.flot.time.js', 'js/plugins/flot/jquery.flot.tooltip.min.js', 'js/plugins/flot/jquery.flot.spline.js', 'js/plugins/flot/jquery.flot.resize.js', 'js/plugins/flot/jquery.flot.pie.js', 'js/plugins/flot/curvedLines.js', 'js/plugins/flot/angular-flot.js' ]
                         },
                         {
                             serie: true,
@@ -623,6 +623,11 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
             templateUrl: "views/project_detail.html",
             data: { pageTitle: 'Project detail' }
         })
+        .state('app.activity_stream', {
+            url: "/activity_stream",
+            templateUrl: "views/activity_stream.html",
+            data: { pageTitle: 'Activity stream' }
+        })
         .state('app.file_manager', {
             url: "/file_manager",
             templateUrl: "views/file_manager.html",
@@ -1040,6 +1045,11 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
             templateUrl: "views/spinners.html",
             data: { pageTitle: 'Spinners' }
         })
+        .state('miscellaneous.spinners_usage', {
+            url: "/spinners_usage",
+            templateUrl: "views/spinners_usage.html",
+            data: { pageTitle: 'Spinners usage' }
+        })
         .state('miscellaneous.validation', {
             url: "/validation",
             templateUrl: "views/validation.html",
@@ -1124,6 +1134,20 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
                 }
             }
         })
+        .state('miscellaneous.password_meter', {
+            url: "/password_meter",
+            templateUrl: "views/password_meter.html",
+            data: { pageTitle: 'Password meter' },
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['js/plugins/pwstrength/pwstrength-bootstrap.min.js', 'js/plugins/pwstrength/zxcvbn.js']
+                        }
+                    ]);
+                }
+            }
+        })
         .state('miscellaneous.clipboard', {
             url: "/clipboard",
             templateUrl: "views/clipboard.html",
@@ -1137,6 +1161,20 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, IdlePro
                         {
                             name: 'ngclipboard',
                             files: ['js/plugins/ngclipboard/ngclipboard.min.js']
+                        }
+                    ]);
+                }
+            }
+        })
+        .state('miscellaneous.text_spinners', {
+            url: "/text_spinners",
+            templateUrl: "views/text_spinners.html",
+            data: { pageTitle: 'Text spinners' },
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['css/plugins/textSpinners/spinners.css']
                         }
                     ]);
                 }

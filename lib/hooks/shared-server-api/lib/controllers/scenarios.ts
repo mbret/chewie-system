@@ -16,7 +16,9 @@ module.exports = function(server, router) {
         let name = req.body.name;
         let description = req.body.description;
         let nodes = req.body.nodes;
+        let toCreate = null;
         let deviceId = req.params.device;
+        let autoStart = req.body.autoStart;
 
         // validate body
         let errors = {};
@@ -27,14 +29,15 @@ module.exports = function(server, router) {
             return res.badRequest(errors);
         }
 
-        let scenario = {
+        toCreate = {
             name: name,
             description: description,
             nodes: nodes,
-            deviceId: deviceId
+            deviceId: deviceId,
+            autoStart: _.isBoolean(autoStart) ? autoStart : undefined
         };
 
-        ScenarioDao.create(scenario)
+        ScenarioDao.create(toCreate)
             .then(function(created) {
                 server.logger.verbose("Scenario %s created", created.id);
                 server.io.emit("scenarios:updated", { created: [created.id] });
@@ -111,6 +114,7 @@ module.exports = function(server, router) {
         let nodes = req.body.nodes;
         let description = req.body.description;
         let toUpdate: ScenarioUpdatable = {};
+        let autoStart = req.body.autoStart;
 
         // validate body
         let errors = {};
@@ -130,6 +134,9 @@ module.exports = function(server, router) {
         }
         if (nodes) {
             toUpdate.nodes = nodes;
+        }
+        if (_.isBoolean(autoStart)) {
+            toUpdate.autoStart = autoStart;
         }
 
         let where = { id: scenario };
@@ -168,6 +175,10 @@ module.exports = function(server, router) {
 
         if (scenario.name !== undefined && (!_.isString(scenario.name) || _.isEmpty(scenario.name))) {
             errors["name"] = "Invalid";
+        }
+
+        if (scenario.autoStart !== undefined && !_.isBoolean(scenario.autoStart)) {
+            errors["autoStart"] = "Invalid";
         }
     }
 

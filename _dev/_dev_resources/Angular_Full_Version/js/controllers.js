@@ -46,6 +46,7 @@
  *  - jstreeCtrl
  *  - datamapsCtrl
  *  - pdfCtrl
+ *  - passwordMeterCtrl
  *
  *
  */
@@ -1512,21 +1513,21 @@ function modalDemoCtrl($scope, $uibModal) {
 
         var modalInstance = $uibModal.open({
             templateUrl: 'views/modal_example.html',
-            controller: ModalInstanceCtrl
+            controller: 'ModalInstanceCtrl'
         });
     };
 
     $scope.open1 = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'views/modal_example1.html',
-            controller: ModalInstanceCtrl
+            controller: 'ModalInstanceCtrl'
         });
     };
 
     $scope.open2 = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'views/modal_example2.html',
-            controller: ModalInstanceCtrl,
+            controller: 'ModalInstanceCtrl',
             windowClass: "animated fadeIn"
         });
     };
@@ -1535,14 +1536,14 @@ function modalDemoCtrl($scope, $uibModal) {
         var modalInstance = $uibModal.open({
             templateUrl: 'views/modal_example3.html',
             size: size,
-            controller: ModalInstanceCtrl
+            controller: 'ModalInstanceCtrl'
         });
     };
 
     $scope.open4 = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'views/modal_example2.html',
-            controller: ModalInstanceCtrl,
+            controller: 'ModalInstanceCtrl',
             windowClass: "animated flipInY"
         });
     };
@@ -3472,6 +3473,65 @@ function pdfCtrl($scope) {
     $scope.httpHeaders = { Authorization: 'Bearer some-aleatory-token' };
 }
 
+function passwordMeterCtrl($scope){
+
+    var options1 = {};
+    options1.ui = {
+        container: "#pwd-container1",
+        showVerdictsInsideProgressBar: true,
+        viewports: {
+            progress: ".pwstrength_viewport_progress"
+        }
+    };
+    options1.common = {
+        debug: false,
+    };
+    $scope.option1 = options1;
+
+    var options2 = {};
+    options2.ui = {
+        container: "#pwd-container2",
+        showStatus: true,
+        showProgressBar: false,
+        viewports: {
+            verdict: ".pwstrength_viewport_verdict"
+        }
+    };
+    $scope.option2 = options2;
+
+    var options3 = {};
+    options3.ui = {
+        container: "#pwd-container3",
+        showVerdictsInsideProgressBar: true,
+        viewports: {
+            progress: ".pwstrength_viewport_progress2"
+        }
+    };
+    options3.common = {
+        debug: true,
+        usernameField: "#username"
+    };
+    $scope.option3 = options3;
+
+    var options4 = {};
+    options4.ui = {
+        container: "#pwd-container4",
+        viewports: {
+            progress: ".pwstrength_viewport_progress4",
+            verdict: ".pwstrength_viewport_verdict4"
+        }
+    };
+    options4.common = {
+        zxcvbn: true,
+        zxcvbnTerms: ['samurai', 'shogun', 'bushido', 'daisho', 'seppuku'],
+        userInputs: ['#year', '#familyname']
+    };
+    $scope.option4 = options4;
+
+
+
+}
+
 /**
  *
  * Pass all functions into module
@@ -3517,5 +3577,6 @@ angular
     .controller('tourCtrl', tourCtrl)
     .controller('jstreeCtrl', jstreeCtrl)
     .controller('datamapsCtrl', datamapsCtrl)
-    .controller('pdfCtrl', pdfCtrl);
+    .controller('pdfCtrl', pdfCtrl)
+    .controller('passwordMeterCtrl', passwordMeterCtrl);
 

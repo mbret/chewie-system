@@ -51,12 +51,14 @@ export interface ScenarioModel {
     deviceId: string;
     nodes: Array<ScenarioNodeModel>;
     name: string;
+    autoStart: boolean;
 }
 
 export interface ScenarioUpdatable {
     nodes?: Array<ScenarioNodeModel>;
     name?: string;
     description?: string;
+    autoStart?: boolean;
 }
 
 export interface ScenarioNodeModel {
@@ -65,5 +67,5 @@ export interface ScenarioNodeModel {
     type: string;
     moduleId: string; // module name
     options: any;
-    nodes: Array<ScenarioNodeModel>
+    nodes: Array<ScenarioNodeModel>,
 }

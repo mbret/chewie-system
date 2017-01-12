@@ -82,7 +82,7 @@
         </p>
 
         <div class="form-group">
-        <label class="font-noraml">Basic example with <strong>ng-model</strong></label>
+        <label class="font-normal">Basic example with <strong>ng-model</strong></label>
 
         <div>
             <select chosen id="states" class="chosen-select"  tabindex="4" ng-model="state" ng-options="s for s in main.states">
@@ -90,7 +90,7 @@
         </div>
         </div>
         <div class="form-group">
-        <label class="font-noraml">Multi select</label>
+        <label class="font-normal">Multi select</label>
 
         <div>
         <select multiple chosen class="chosen-select"  tabindex="4">
@@ -586,7 +586,7 @@
         </p>
 
         <div class="form-group" id="data_1">
-            <label class="font-noraml">Simple date input format</label>
+            <label class="font-normal">Simple date input format</label>
 
             <div class="input-group date">
                 <input type="datetime" class="form-control" date-time ng-model="sampleDate" view="date" auto-close="true" min-view="date" format="YYYY-MM-DD">
@@ -595,7 +595,7 @@
         </div>
 
         <div class="form-group" id="data_2">
-            <label class="font-noraml">One Year view</label>
+            <label class="font-normal">One Year view</label>
 
             <div class="input-group date">
                 <input type="datetime" class="form-control" date-time ng-model="sampleDate" view="year" auto-close="true">
@@ -604,7 +604,7 @@
         </div>
 
         <div class="form-group" id="data_4">
-            <label class="font-noraml">Month select</label>
+            <label class="font-normal">Month select</label>
 
             <div class="input-group date">
                 <input type="datetime" class="form-control" date-time ng-model="sampleDate" view="month" auto-close="true">
@@ -613,7 +613,7 @@
         </div>
 
         <div class="form-group" id="data_3">
-            <label class="font-noraml">Hours view</label>
+            <label class="font-normal">Hours view</label>
 
             <div class="input-group date">
                 <input type="datetime" class="form-control" date-time ng-model="sampleDate" view="hours" auto-close="true">
@@ -623,7 +623,7 @@
 
 
         <div class="form-group" id="data_5">
-            <label class="font-noraml">Range select</label>
+            <label class="font-normal">Range select</label>
 
             <div uib-dropdown>
                 <a class="btn btn-primary btn-sm" uib-dropdown-toggle>
@@ -831,6 +831,7 @@
             <br/>
             <br/>
             <input type="checkbox" class="js-switch" ui-switch="{color:'#1AB394'}" ng-model="swich3"/>
+            <input type="checkbox" class="js-switch" ui-switch="{color:'#f8ac59'}" disabled ng-model="main.checkOne"/>
         </div>
     </div>
 

@@ -36,6 +36,11 @@ export class ScenarioHelper {
     //     return scenarios;
     // }
 
+    /**
+     * Ensure all plugins are loaded.
+     * @param scenario
+     * @returns {boolean}
+     */
     isAbleToStart(scenario: ScenarioModel) {
         let self = this;
         let ok = true;

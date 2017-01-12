@@ -2,6 +2,7 @@
 
 import {EventEmitter} from "events";
 let MPlayer = require("./mplayer");
+let os = require("os");
 
 export class Adapter extends EventEmitter {
 
@@ -15,8 +16,11 @@ export class Adapter extends EventEmitter {
         super();
         let self = this;
         this.logger = system.logger.getLogger('MPlayerSpeakerAdapter');
-        // this.player = new MPlayer({debug: false, args: "-ao win32"});
-        this.player = new MPlayer({debug: false});
+        let options: any = {debug: false};
+        if (os.platform() === "win32") {
+            options.args = "-ao win32"; // avoid repeat loop
+        }
+        this.player = new MPlayer(options);
         this.stopped = false;
         this.ready = false;
         this.lastFile = null;

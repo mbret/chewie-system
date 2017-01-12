@@ -26,7 +26,7 @@
                 </div>
             </li>
             <li ng-class="{active: $state.includes('dashboards')}">
-                <a href="index.html"><i class="fa fa-th-large"></i> <span class="nav-label">{{ 'DASHBOARD' | translate }}</span> <span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">{{ 'DASHBOARD' | translate }}</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('dashboards')}">
                     <li ui-sref-active="active"><a ui-sref="dashboards.dashboard_1">{{ 'DASHBOARD' | translate }} v.1</a></li>
                     <li ui-sref-active="active"><a ui-sref="dashboards.dashboard_2">{{ 'DASHBOARD' | translate }} v.2</a></li>
@@ -40,7 +40,7 @@
             </li>
 
             <li ng-class="{active: $state.includes('charts')}">
-                <a href=""><i class="fa fa-bar-chart-o"></i> <span class="nav-label">{{ 'GRAPHS' | translate }}</span><span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">{{ 'GRAPHS' | translate }}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('charts')}">
                     <li ui-sref-active="active"><a ui-sref="charts.flot_chart">Flot Charts</a></li>
                     <li ui-sref-active="active"><a ui-sref="charts.rickshaw_chart">Rickshaw Charts</a></li>
@@ -52,7 +52,7 @@
                 </ul>
             </li>
             <li ng-class="{active: $state.includes('mailbox')}">
-                <a ui-sref="inbox"><i class="fa fa-envelope"></i> <span class="nav-label">{{ 'MAILBOX' | translate }} </span><span class="label label-warning pull-right">16/24</span></a>
+                <a href="#"><i class="fa fa-envelope"></i> <span class="nav-label">{{ 'MAILBOX' | translate }} </span><span class="label label-warning pull-right">16/24</span></a>
                 <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('mailbox')}">
                     <li ui-sref-active="active"><a ui-sref="mailbox.inbox">Inbox</a></li>
                     <li ui-sref-active="active"><a ui-sref="mailbox.email_view">Email view</a></li>
@@ -67,7 +67,7 @@
                 <a ui-sref="widgets"><i class="fa fa-flask"></i> <span class="nav-label">{{ 'WIDGETS' | translate }}</span></a>
             </li>
             <li ng-class="{active: $state.includes('forms')}">
-                <a href=""><i class="fa fa-edit"></i> <span class="nav-label">{{ 'FORMS' | translate }}</span><span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-edit"></i> <span class="nav-label">{{ 'FORMS' | translate }}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('forms')}">
                     <li ui-sref-active="active"><a ui-sref="forms.basic_form">Basic form</a></li>
                     <li ui-sref-active="active"><a ui-sref="forms.advanced_plugins">Advanced Plugins</a></li>
@@ -79,7 +79,7 @@
                 </ul>
             </li>
             <li ng-class="{active: $state.includes('app')}">
-                <a href=""><i class="fa fa-desktop"></i> <span class="nav-label">{{ 'APPVIEWS' | translate }}</span>  <span class="pull-right label label-primary">SPECIAL</span></a>
+                <a href="#"><i class="fa fa-desktop"></i> <span class="nav-label">{{ 'APPVIEWS' | translate }}</span>  <span class="pull-right label label-primary">SPECIAL</span></a>
                 <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('app')}">
                     <li ui-sref-active="active"><a ui-sref="app.contacts">Contacts</a></li>
                     <li ui-sref-active="active"><a ui-sref="app.profile">Profile</a></li>
@@ -87,6 +87,7 @@
                     <li ui-sref-active="active"><a ui-sref="app.contacts_2">Contacts v.2</a></li>
                     <li ui-sref-active="active"><a ui-sref="app.projects">Projects</a></li>
                     <li ui-sref-active="active"><a ui-sref="app.project_detail">Project detail</a></li>
+                    <li ui-sref-active="active"><a ui-sref="app.activity_stream">Activity stream</a></li>
                     <li ui-sref-active="active"><a ui-sref="app.teams_board">Teams board</a></li>
                     <li ui-sref-active="active"><a ui-sref="app.social_feed">Social feed</a></li>
                     <li ui-sref-active="active"><a ui-sref="app.clients">Clients</a></li>
@@ -103,7 +104,7 @@
                 </ul>
             </li>
             <li ng-class="{active: $state.includes('pages')}">
-                <a href=""><i class="fa fa-files-o"></i> <span class="nav-label">{{ 'OTHERPAGES' | translate }}</span><span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-files-o"></i> <span class="nav-label">{{ 'OTHERPAGES' | translate }}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('pages')}">
                     <li ui-sref-active="active"><a ui-sref="pages.search_results">Search results</a></li>
                     <li><a ui-sref="lockscreen">Lockscreen</a></li>
@@ -117,7 +118,7 @@
                 </ul>
             </li>
             <li ng-class="{active: $state.includes('miscellaneous')}">
-                <a href=""><i class="fa fa-globe"></i> <span class="nav-label">{{ 'MISCELLANEOUS' | translate }}</span> <span class="label label-info pull-right">NEW</span></a>
+                <a href="#"><i class="fa fa-globe"></i> <span class="nav-label">{{ 'MISCELLANEOUS' | translate }}</span> <span class="label label-info pull-right">NEW</span></a>
                 <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('miscellaneous')}">
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.notify">Notification</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.nestable_list">Nestable list</a></li>
@@ -129,7 +130,9 @@
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.sweet_alert">Sweet alert</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.idle_timer">Idle timer</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.truncate">Truncate</a></li>
+                    <li ui-sref-active="active"><a ui-sref="miscellaneous.password_meter">Password meter</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.spinners">Spinners</a></li>
+                    <li ui-sref-active="active"><a ui-sref="miscellaneous.spinners_usage">Spinners usage</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.live_favicon">Live favicon</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.google_maps">Google maps</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.datamaps">Datamaps</a></li>
@@ -137,6 +140,7 @@
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.code_editor">Code editor</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.modal_window">Modal window</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.clipboard">Clipboard</a></li>
+                    <li ui-sref-active="active"><a ui-sref="miscellaneous.text_spinners">Text spinners</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.forum_view">Forum view</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.validation">Validation</a></li>
                     <li ui-sref-active="active"><a ui-sref="miscellaneous.tree_view">Tree view</a></li>
@@ -148,7 +152,7 @@
                 </ul>
             </li>
             <li ng-class="{active: $state.includes('ui')}">
-                <a href=""><i class="fa fa-flask"></i> <span class="nav-label">{{ 'UIELEMENTS' | translate }}</span><span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-flask"></i> <span class="nav-label">{{ 'UIELEMENTS' | translate }}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('ui')}">
                     <li ui-sref-active="active"><a ui-sref="ui.typography">Typography</a></li>
                     <li ui-sref-active="active"><a ui-sref="ui.icons">Icons</a></li>
@@ -166,7 +170,7 @@
                 <a ui-sref="grid_options"><i class="fa fa-laptop"></i> <span class="nav-label">{{ 'GRIDOPTIONS' | translate }}</span></a>
             </li>
             <li ng-class="{active: $state.includes('tables')}">
-                <a href=""><i class="fa fa-table"></i> <span class="nav-label">{{ 'TABLES' | translate }}</span><span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-table"></i> <span class="nav-label">{{ 'TABLES' | translate }}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('tables')}">
                     <li ui-sref-active="active"><a ui-sref="tables.static_table">Static Tables</a></li>
                     <li ui-sref-active="active"><a ui-sref="tables.data_tables">Data Tables</a></li>
@@ -187,7 +191,7 @@
                 </ul>
             </li>
             <li ng-class="{active: $state.includes('gallery')}">
-                <a href=""><i class="fa fa-picture-o"></i> <span class="nav-label">{{ 'GALLERY' | translate }}</span><span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-picture-o"></i> <span class="nav-label">{{ 'GALLERY' | translate }}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse" ng-class="{in: $state.includes('gallery')}">
                     <li ui-sref-active="active"><a ui-sref="gallery.basic_gallery">Lightbox Gallery</a></li>
                     <li ui-sref-active="active"><a ui-sref="gallery.slick_gallery">Slick Carousel</a></li>

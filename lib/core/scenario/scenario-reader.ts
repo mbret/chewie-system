@@ -111,11 +111,14 @@ export class ScenarioReader {
 
         function runTask(moduleContainer, node, ingredients = null) {
             // parse options for eventual ingredients replacements
+            // only string options are interpolated
             if (ingredients) {
                 _.forEach(node.options, function(value, key) {
-                    _.forEach(ingredients, function(ingredientValue, ingredientKey) {
-                        node.options[key] = value.replace("{{" + ingredientKey + "}}", ingredientValue);
-                    });
+                    if (_.isString(value)) {
+                        _.forEach(ingredients, function(ingredientValue, ingredientKey) {
+                            node.options[key] = value.replace("{{" + ingredientKey + "}}", ingredientValue);
+                        });
+                    }
                 });
             }
 

@@ -54,8 +54,9 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
                     self.logger.verbose("%s scenario(s) found: ids=[%s], check current state(s) and start/stop scenario(s) if needed", scenarios.length, scenarios.map(function(e) { return e.id; }));
                     // run or stop server scenarios
                     scenarios.forEach(function(scenario: ScenarioModel) {
+                        let shouldRestartBecauseOfServerUpdate = scenariosToForceReload.indexOf(scenario.id) > -1;
                         // If scenario is not already running and is able to run now, then start it.
-                        if (self.scenariosHelper.isAbleToStart(scenario) && !self.system.scenarioReader.isRunning(scenario)) {
+                        if (self.scenariosHelper.isAbleToStart(scenario) && !self.system.scenarioReader.isRunning(scenario) && scenario.autoStart) {
                             return self.readScenario(scenario);
                         }
                         // Scenario is not able to start but is loaded, we need to stop it
@@ -63,7 +64,7 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
                             return self.stopScenario(scenario);
                         }
                         // Scenario is ok and running but must be reloaded because it has been updated on server
-                        else if (self.scenariosHelper.isAbleToStart(scenario) && self.system.scenarioReader.isRunning(scenario) && scenariosToForceReload.indexOf(scenario.id) > -1) {
+                        else if (self.scenariosHelper.isAbleToStart(scenario) && self.system.scenarioReader.isRunning(scenario) && shouldRestartBecauseOfServerUpdate) {
                             return self.reloadScenario(scenario);
                         }
                     });
