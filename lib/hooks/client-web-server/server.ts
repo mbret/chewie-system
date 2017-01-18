@@ -12,10 +12,10 @@ let async = require('async');
 let path = require('path');
 let fs = require('fs');
 let httpProxy = require('http-proxy');
-const socket = require('socket.io');
+let socket = require('socket.io');
 let server, proxyServer;
 
-export = class ClientWebServer extends Hook implements HookInterface, InitializeAbleInterface {
+export default class ClientWebServer extends Hook implements HookInterface, InitializeAbleInterface {
 
     constructor(system: System, config: any) {
         super(system, config);
@@ -91,6 +91,23 @@ export = class ClientWebServer extends Hook implements HookInterface, Initialize
                     self.logger.error("Error on client web server", err);
                 }
             });
+
+        app.locals.io = socket(server, {});
+        app.locals.io
+            .on('connection', function (socket) {
+                self.logger.debug("Socket connected");
+                socket.on('disconnect', function(){
+                    self.logger.debug("Socket disconnected");
+                });
+            })
+            .on("error", function(err) {
+                self.logger.error("Error on server socket", err);
+            });
+
+        // listen for running scenarios update
+        this.system.on("running-scenarios:updated", function() {
+            app.locals.io.emit("running-scenarios:updated");
+        });
 
         app.once('start', function () {
             self.logger.debug('Application ready to serve requests.');

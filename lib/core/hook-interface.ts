@@ -13,8 +13,8 @@ export interface HookInterface {
 
 export class Hook extends EventEmitter implements HookInterface {
 
-    protected system: System;
-    protected logger: any;
+    public system: System;
+    public logger: any;
     protected config: any;
 
     protected constructor(system: System, config: any) {

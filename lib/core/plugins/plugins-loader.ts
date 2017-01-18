@@ -1,10 +1,12 @@
 "use strict";
 
+import * as _ from "lodash";
 import * as path from "path"
 import {PluginHelper} from "./plugin-helper";
 import {PluginContainer} from "./plugin-container";
 import {System} from "../../system";
 import {SystemError} from "../error";
+const util = require("util");
 
 export class PluginsLoader {
 
@@ -22,35 +24,41 @@ export class PluginsLoader {
         let self = this;
 
         // avoid read same scenario in same time
-        if (this.system.runtime.plugins.get(plugin.name)) {
-            return Promise.reject(new SystemError("Plugin " + plugin.name + " already loaded. Trying to load a plugin while it has already be loaded", SystemError.ERROR_CODE_ALREADY_RUNNING));
+        if (self.system.runtime.plugins.get(plugin.name)) {
+            return Promise.reject(new SystemError("Plugin " + plugin.name + " already loaded. Trying to load a plugin while it has already be loaded", SystemError.ERROR_CODE_PLUGIN_ALREADY_LOADED));
         }
 
-        // create container
-        let container = new PluginContainer(self.system, plugin, null);
-        let helper = new PluginHelper(self.system, container);
+        // first check if plugin is synchronized
+        return this
+            .synchronize(plugin)
+            // Once synchronized we can load the plugin
+            .then(function() {
+                // create container
+                let container = new PluginContainer(self.system, plugin, null);
+                let helper = new PluginHelper(self.system, container);
 
-        // add to global storage
-        self.system.runtime.plugins.set(plugin.name, container);
+                // add to global storage
+                self.system.runtime.plugins.set(plugin.name, container);
 
-        return new Promise(function(resolve, reject) {
-            let PluginInstance = self.getPluginInstance(plugin);
-            let instance = new PluginInstance();
+                return new Promise(function(resolve, reject) {
+                    let PluginInstance = self.getPluginInstance(plugin);
+                    let instance = _.assign(new DefaultPluginInstance(), new PluginInstance());
 
-            container.instance = instance;
+                    container.instance = instance;
 
-            // run plugin bootstrap
-            instance.onLoad(helper, function(err) {
-                if (err) {
-                    self.system.runtime.plugins.delete(plugin.name);
-                    self.system.emit("plugins:updated");
-                    return reject(err);
-                } else {
-                    self.system.emit("plugins:updated");
-                    return resolve(container);
-                }
+                    // run plugin bootstrap
+                    instance.onLoad(helper, function(err) {
+                        if (err) {
+                            self.system.runtime.plugins.delete(plugin.name);
+                            self.system.emit("plugins:updated");
+                            return reject(err);
+                        } else {
+                            self.system.emit("plugins:updated");
+                            return resolve(container);
+                        }
+                    });
+                });
             });
-        });
     }
 
     unLoad(plugin: Plugin) {
@@ -101,6 +109,29 @@ export class PluginsLoader {
      */
     getPluginInfo(name) {
         return this.system.localRepository.loadPackageFile(path.resolve(this.synchronizedPluginsPath, name));
+    }
+
+    /**
+     * Synchronize if needed a plugin
+     * @param plugin
+     */
+    protected synchronize(plugin: Plugin) {
+        let self = this;
+        // first check if plugin is synchronized
+        return this.system.repository
+            .pluginExist(plugin.name)
+            // Synchronize if needed
+            .then(function(pluginStats) {
+                if (self.system.config.forcePluginsSynchronizeAtStartup) {
+                    self.logger.verbose("Force plugin %s to synchronize. Synchronizing..", plugin.name);
+                }
+                if (!pluginStats.exist || !pluginStats.isValid) {
+                    self.logger.verbose("Plugin %s does not seems to be synchronizing yet. Synchronizing..", plugin.name);
+                }
+                if (self.system.config.forcePluginsSynchronizeAtStartup || !pluginStats.exist || !pluginStats.isValid) {
+                    return self.system.repository.synchronize([plugin]);
+                }
+            });
     }
 }
 

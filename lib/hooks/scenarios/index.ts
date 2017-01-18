@@ -71,8 +71,9 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
                     });
                     // stop runtime scenario not present on server anymore
                     // get list of running scenarios (avoid having multiple scenario for same id with uniqWith)
-                    let uniqueRunningScenarios = _.uniqWith(self.system.scenarioReader.getRunningScenarios(), (a, b) => a.model.id === b.model.id);
-                    uniqueRunningScenarios.forEach(function(readable) {
+                    // if the running scenario id is not present in list of scenarios, then we stop all runnings scenarios for this id
+                    let uniqueIdRunningScenarios = _.uniqWith(self.system.scenarioReader.getRunningScenarios(), (a, b) => a.model.id === b.model.id);
+                    uniqueIdRunningScenarios.forEach(function(readable) {
                         if (!_.find(scenarios, {id: readable.model.id}) && self.system.scenarioReader.isRunning(readable.model)) {
                             return self.stopScenarios(readable.model);
                         }
@@ -101,15 +102,20 @@ export = class ScenariosHook extends Hook implements HookInterface, InitializeAb
             });
     }
 
+    /**
+     * Stop all scenarios relative to this scenario
+     * @param scenario
+     * @returns {Promise<U>}
+     */
     stopScenarios(scenario) {
         let self = this;
         self.logger.verbose("Trying to stop scenario %s", scenario.id);
         return self.system.scenarioReader.stopScenarios(scenario.id)
             .then(function() {
-                self.logger.verbose("Scenario %s stopped and suppressed from system", scenario.id);
+                self.logger.verbose("Scenarios relative to id %s are stopped and suppressed from system", scenario.id);
             })
             .catch(function(err) {
-                self.logger.error("Unable to stop scenario", err);
+                self.logger.error("Unable to stop scenarios for id %s", scenario.id, err);
             });
     }
 

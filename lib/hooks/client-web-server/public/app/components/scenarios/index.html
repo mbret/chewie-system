@@ -42,9 +42,8 @@
                             <strong>Description</strong> {{scenario.description}}<br>
                             <hr>
                             <button class="btn btn-danger" ng-click="remove(scenario)"><i class="fa fa-trash"></i> Delete</button>
-                            <button class="btn btn-warning" ng-click="edit(scenario)"><i class="fa fa-trash"></i> Edit</button>
-                            <button ng-if="scenario.active">Deactivate scenario</button>
-                            <button ng-if="!scenario.active">Activate scenario</button>
+                            <button class="btn btn-warning" ng-click="edit(scenario)"><i class="fa fa-edit"></i> Edit</button>
+                            <button class="btn btn-default" ng-click="run(scenario)"><i class="fa fa-play-circle-o"></i> Run</button>
                         </div>
                     </uib-tab>
                 </uib-tabset>
@@ -52,4 +51,34 @@
         </div>
     </div>
 
+    <div class="row m-t-lg">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Running scenarios</h5>
+                    <div ibox-tools></div>
+                </div>
+                <div class="ibox-content">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="scenario in runningScenarios">
+                                <td title="scenario.executionId">{{scenario.executionId|truncate:10}}</td>
+                                <td>{{scenario.model.name}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-warning text-"> <i class="fa fa-stop"></i> Stop</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

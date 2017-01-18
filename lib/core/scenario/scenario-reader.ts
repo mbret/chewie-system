@@ -5,6 +5,7 @@ import {SystemError} from "../error";
 import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as _ from "lodash";
 import * as uuid from "node-uuid";
+import {ScenarioHelper} from "./scenario-helper";
 
 /**
  * Root scenario. Has an execution id
@@ -28,11 +29,13 @@ export class ScenarioReader {
     protected system: System;
     protected logger: any;
     protected scenarios: Array<ScenarioReadable>;
+    protected scenarioHelper: ScenarioHelper;
 
     constructor(system) {
         this.system = system;
         this.logger = this.system.logger.getLogger('ScenarioReader');
         this.scenarios = [];
+        this.scenarioHelper = new ScenarioHelper(this.system);
     }
 
     public isRunning(scenario: ScenarioModel) {
@@ -45,49 +48,60 @@ export class ScenarioReader {
      * It could be occurs when a trigger is one-time. A scenario is either active or inactive.
      *
      * @param scenario
+     * @param options
      */
-    public readScenario(scenario: ScenarioModel) {
+    public readScenario(scenario: ScenarioModel, options: any = {}) {
         let self = this;
+        options = _.merge({ loadPlugins: false }, options);
+
         this.logger.debug("Read scenario %s", scenario.id);
 
-        // avoid read same scenario in same time
-        if (this.isRunning(scenario)) {
-            return Promise.reject(new SystemError("Already running", "alreadyRunning"));
-        }
-
-        let scenarioReadable = new ScenarioReadable(scenario);
-        // register scenario in runtime
-        // it prevent running more than once and also help dealing through the system
-        this.system.scenarioReader.scenarios.push(scenarioReadable);
-
-        // execute each node
-        return this
-            .readNodes(scenario, scenario.nodes, { lvl: -1 })
-            // Once they are all registered and loaded
-            // we run the first root trigger and tasks
+        return Promise.resolve(null)
+            // Ensure plugins are loaded if option is set
             .then(function() {
-                self.logger.debug("All nodes loaded, run the root nodes..");
-                scenario.nodes.forEach(function (node) {
-                    let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
-                    let rtId = self.getRuntimeModuleKey(scenario.id, node.id, moduleId);
-                    let module = self.system.runtime.modules.get(rtId);
-
-                    if (node.type === "trigger") {
-                        // Create the first demand for trigger at lvl 0 (root)
-                        self.logger.debug("Create a new demand for trigger module from plugin %s", node.pluginId);
-                        module.instance.onNewDemand(node.options, onTrigger.bind(self, scenario, node));
-                    }
-
-                    if (node.type === "task") {
-                        // Run automatically task at lvl 0 (root) will be forbidden later eventually
-                        runTask(module, node);
-                    }
-                })
+                if (options.loadPlugins) {
+                    self.logger.debug("Ensure plugins are loaded or load it if needed");
+                    return self.loadPlugins(scenario);
+                }
+                return Promise.resolve();
             })
-            .catch(function(err) {
-                // self.logger.error("An error occurred while reading scenario %s", scenario.name, err);
-                self.removeScenario(scenarioReadable);
-                throw err;
+            .then(function() {
+                let scenarioReadable = new ScenarioReadable(scenario);
+                // register scenario in runtime
+                // it prevent running more than once and also help dealing through the system
+                self.system.scenarioReader.scenarios.push(scenarioReadable);
+
+                // execute each node
+                return self
+                    .readNodes(scenarioReadable, scenario.nodes, { lvl: -1 })
+                    // Once they are all registered and loaded
+                    // we run the first root trigger and tasks
+                    .then(function() {
+                        self.logger.debug("All nodes loaded, run the root nodes..");
+                        scenario.nodes.forEach(function (node) {
+                            let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
+                            let rtId = self.getRuntimeModuleKey(scenarioReadable.executionId, node.id, moduleId);
+                            let module = self.system.runtime.modules.get(rtId);
+
+                            if (node.type === "trigger") {
+                                // Create the first demand for trigger at lvl 0 (root)
+                                self.logger.debug("Create a new demand for trigger module from plugin %s", node.pluginId);
+                                module.instance.onNewDemand(node.options, onTrigger.bind(self, scenarioReadable, node));
+                            }
+
+                            if (node.type === "task") {
+                                // Run automatically task at lvl 0 (root) will be forbidden later eventually
+                                runTask(module, node);
+                            }
+                        });
+
+                        self.system.emit("running-scenarios:updated");
+                    })
+                    .catch(function(err) {
+                        // self.logger.error("An error occurred while reading scenario %s", scenario.name, err);
+                        self.removeScenario(scenarioReadable);
+                        throw err;
+                    });
             });
 
         /**
@@ -96,12 +110,12 @@ export class ScenarioReader {
          * @param node
          * @param ingredients
          */
-        function onTrigger(scenario: ScenarioModel, node: ScenarioModel, ingredients = null) {
+        function onTrigger(scenario: ScenarioReadable, node: ScenarioModel, ingredients = null) {
             self.logger.debug("trigger execution", node.options, ingredients);
             self.logger.debug("Loop over sub nodes (-1) to ask new trigger demand");
 
             // handle case of module developer forgot to clear trigger on stop
-            if (!self.isRunning(scenario)) {
+            if (!self.isRunning(scenario.model)) {
                 self.logger.warn("The module '%s' from plugin '%s' just triggered a new demand. However the scenario is not running anymore. It probably means that a module is still running" +
                     " (may be a timeout, interval or async treatment not closed). The trigger has been ignored but you should tell the author of the plugin about this warning", node.moduleId, node.pluginId);
                 return;
@@ -109,7 +123,7 @@ export class ScenarioReader {
 
             node.nodes.forEach(function(subNode) {
                 let moduleUniqueId = ModuleContainer.getModuleUniqueId(subNode.pluginId, subNode.moduleId);
-                let runtimeModuleContainer = self.system.runtime.modules.get(self.getRuntimeModuleKey(scenario.id, subNode.id, moduleUniqueId));
+                let runtimeModuleContainer = self.system.runtime.modules.get(self.getRuntimeModuleKey(scenario.executionId, subNode.id, moduleUniqueId));
 
                 if (subNode.type === "trigger") {
                     self.logger.debug("Create a new demand for trigger module from plugin %s", subNode.pluginId);
@@ -151,23 +165,29 @@ export class ScenarioReader {
         let concerned = this.scenarios.filter((tmp) => tmp.model.id === id);
         let promises = [];
         concerned.forEach(function(readable) {
-            // avoid stopping same scenario multiple times
-            // if (!this.system.scenarioReader.scenarios.get(id)) {
-            //     return Promise.reject(new SystemError("Already stopped", "alreadyStopped"));
-            // }
-
+            self.logger.verbose("Stopping scenario %s (execution id %s) ...", id, readable.executionId);
             self.removeScenario(readable);
-            promises.push(self.stopNodes(readable.model, readable.model.nodes));
+            promises.push(
+                self.stopNodes(readable, readable.model.nodes)
+                    .then(function() {
+                        self.logger.debug("scenario %s (execution id %s) stopped!", id, readable.executionId);
+                        return Promise.resolve();
+                    })
+            );
         });
 
-        return Promise.all(promises);
+        return Promise.all(promises)
+            .then(function() {
+                self.system.emit("running-scenarios:updated");
+                return Promise.resolve();
+            });
     }
 
     public getRunningScenarios(): Array<ScenarioReadable> {
         return this.scenarios;
     }
 
-    protected readNodes(scenario: any, nodes: any[], options: any) {
+    protected readNodes(scenario: ScenarioReadable, nodes: any[], options: any) {
         let self = this;
         let promises = [];
         nodes.forEach(function(node) {
@@ -184,23 +204,19 @@ export class ScenarioReader {
      * @param options
      * @returns {Promise<U>}
      */
-    protected readNode(scenario: any, node: ScenarioModel, options: any) {
+    protected readNode(scenario: ScenarioReadable, node: ScenarioModel, options: any) {
         let self = this;
         let moduleUniqueId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
 
         return Promise
-            .resolve(self.loadModuleInstance(scenario.userId, node.pluginId, node.moduleId))
+            .resolve(self.loadModuleInstance(null, node.pluginId, node.moduleId))
             .then(function(container) {
 
                 // add to global storage
-                self.system.runtime.modules.set(self.getRuntimeModuleKey(scenario.id, node.id, moduleUniqueId), container);
+                self.system.runtime.modules.set(self.getRuntimeModuleKey(scenario.executionId, node.id, moduleUniqueId), container);
 
                 return self.readNodes(scenario, node.nodes, options);
             });
-            // .catch(function(err) {
-            //     self.logger.error("An error occurred during scenario reading", err);
-            //     throw err;
-            // });
     }
 
     /**
@@ -209,7 +225,7 @@ export class ScenarioReader {
      * @param nodes
      * @param options
      */
-    protected stopNodes(scenario: any, nodes: any[], options: any = { lvl: -1 }) {
+    protected stopNodes(scenario: ScenarioReadable, nodes: any[], options: any = { lvl: -1 }) {
         let self = this;
         let wait = [];
         nodes.forEach(function(node) {
@@ -219,10 +235,10 @@ export class ScenarioReader {
         return Promise.all(wait);
     }
 
-    protected stopNode(scenario: any, node: any, options: any) {
+    protected stopNode(scenario: ScenarioReadable, node: any, options: any) {
         // get the module instance
         let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
-        let rtId = this.getRuntimeModuleKey(scenario.id, node.id, moduleId);
+        let rtId = this.getRuntimeModuleKey(scenario.executionId, node.id, moduleId);
         let module = this.system.runtime.modules.get(rtId);
 
         this.logger.debug("Stopping %s", rtId);
@@ -237,13 +253,13 @@ export class ScenarioReader {
         }
 
         if (node.type === "task") {
-            this.onTaskEnd(scenario, node, moduleId);
+            this.onTaskEnd(scenario.model, node, moduleId);
         }
 
         return this.stopNodes(scenario, node.nodes, options);
     }
 
-    protected loadModuleInstance(userId: number, pluginId: string, moduleId: string) {
+    protected loadModuleInstance(userId: number = null, pluginId: string, moduleId: string) {
         let self = this;
         let plugin = null;
         return Promise
@@ -273,18 +289,43 @@ export class ScenarioReader {
     }
 
     /**
-     * For now every module has its own instance, even if there are x time the same module
-     * @param scenarioId
+     * For now every module has its own instance, even if there are x time the same module.
+     * This method should return an unique key that is used by only one node.
+     * @param scenarioExecutionId
      * @param nodeId
      * @param moduleId
      * @returns {string}
      */
-    protected getRuntimeModuleKey(scenarioId, nodeId, moduleId) {
-        return "scenario:" + scenarioId + ":node:" + nodeId + ":module:" + moduleId;
+    protected getRuntimeModuleKey(scenarioExecutionId: string, nodeId, moduleId) {
+        return "scenario:" + scenarioExecutionId + ":node:" + nodeId + ":module:" + moduleId;
     }
 
     protected removeScenario(scenarioReadable: ScenarioReadable) {
         let index = this.scenarios.indexOf(scenarioReadable);
         return this.scenarios.splice(index, 1);
+    }
+
+    protected loadPlugins(scenario: ScenarioModel) {
+        let self = this;
+        // get a list of concerned plugins
+        let ids = self.scenarioHelper.getPluginsIds(scenario);
+        let promises = [];
+        // load every plugins related to scenarios
+        ids.forEach(function(id) {
+            promises.push(
+                self.system.sharedApiService
+                    .getPlugin(id)
+                    .then(function(plugin) {
+                        return self.system.pluginsLoader.load(plugin)
+                            .catch(function(err) {
+                                if (err.code === SystemError.ERROR_CODE_PLUGIN_ALREADY_LOADED) {
+                                    return Promise.resolve();
+                                }
+                                throw err;
+                            });
+                    })
+            )
+        });
+        return Promise.all(promises);
     }
 }

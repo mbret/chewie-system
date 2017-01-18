@@ -1,6 +1,7 @@
 "use strict";
 import {System} from "../../system";
 import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
+import * as _ from "lodash";
 
 /**
  *
@@ -20,7 +21,7 @@ export class ScenarioHelper {
         scenario.nodes.forEach(function(node) {
             ids.push(node.pluginId);
         });
-        return ids;
+        return _.uniq(ids);
     }
 
     // getScenariosUsingPlugin(plugin: Plugin) {

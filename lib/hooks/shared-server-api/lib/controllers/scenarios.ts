@@ -67,7 +67,7 @@ module.exports = function(server, router) {
             .catch(res.serverError);
     });
 
-    router.get('/scenarios/:scenario', function(req, res) {
+    router.get('/devices/:device/scenarios/:scenario', function(req, res) {
         let id = req.params.scenario;
         let search = {
             id: id

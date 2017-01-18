@@ -6,6 +6,7 @@ module.exports = {
     author: myPackage.author,
     version: myPackage.version,
     title: "Date & Time",
+    pluginInstance: "./plugin.js",
     modules: [
         /**
          * Module to trigger at a specific date

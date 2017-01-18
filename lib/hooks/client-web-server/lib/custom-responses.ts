@@ -1,5 +1,7 @@
 "use strict";
 
+import * as _ from "lodash";
+
 // @todo should be moved as middleware
 export function customResponses(req, res, next){
 
@@ -30,7 +32,7 @@ export function customResponses(req, res, next){
     };
 
     res.notFound = function(data){
-        var errResponse = {};
+        var errResponse: any = {};
         errResponse.status = "error";
         errResponse.code = "notFound";
         errResponse.message = data;
@@ -42,8 +44,8 @@ export function customResponses(req, res, next){
         return res.status(200).send(data);
     };
 
-    res.serverError = function(err){
-        let errResponse = {};
+    res.serverError = function(err: any){
+        let errResponse: any = {};
         errResponse.status = "error";
         errResponse.code = "serverError";
         errResponse.message = "An internal error occured";

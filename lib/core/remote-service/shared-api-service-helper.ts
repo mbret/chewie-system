@@ -3,6 +3,7 @@
 let util = require("util");
 import RemoteServiceHelper from "./remote-service-helper";
 import {System} from "../../system";
+import {ApiResponseError, ApiResponseNotFoundError} from "./response-error";
 let io = require('socket.io-client');
 
 export class SharedApiServiceHelper extends RemoteServiceHelper implements InitializeAbleInterface {
@@ -59,6 +60,19 @@ export class SharedApiServiceHelper extends RemoteServiceHelper implements Initi
                     return null;
                 }
                 return response.body;
+            });
+    }
+
+    getScenario(id) {
+        return this.get(util.format("/devices/%s/scenarios/%s", this.system.id, id))
+            .then(function(response: any) {
+                return response.body;
+            })
+            .catch(function(err: ApiResponseError) {
+                if (err instanceof ApiResponseNotFoundError) {
+                    return null;
+                }
+                throw err;
             });
     }
 }

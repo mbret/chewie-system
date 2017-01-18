@@ -7,30 +7,23 @@ class Trigger {
     constructor(helper, info) {
         this.info = info;
         this.helper = helper;
-        this.intervals = [];
+        this.interval = null;
     }
 
     onNewDemand(options, cb) {
         if (this.info.id === "interval") {
-            let interval = this._watchInterval(options, cb);
-            this.intervals.push(interval);
+            this.interval = this._watchInterval(options, cb);
         } else if (this.info.id === "date") {
             this._watchDate(options, cb);
         } else if (this.info.id === "timeout") {
-            let interval = this._watchTimeout(options, cb);
-            this.intervals.push(interval);
+            this.interval = this._watchTimeout(options, cb);
         } else if (this.info.id === "hoursRange") {
             this._watchHoursRange(options, cb);
         }
     }
 
-    /**
-     * @todo
-     */
     stop() {
-        this.intervals.forEach(function(interval) {
-            clearInterval(interval);
-        });
+        clearInterval(this.interval);
     }
 
     _watchInterval(options, cb) {

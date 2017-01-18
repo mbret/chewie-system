@@ -22,6 +22,7 @@ import LocalRepository from "./core/repositories/local";
 import Storage from "./core/storage/storage";
 import {SharedApiServiceHelper} from "./core/remote-service/shared-api-service-helper";
 import {LoggerBuilder, LoggerInterface} from "./core/logger";
+import {HookInterface} from "./core/hook-interface";
 
 /**
  * System is the main program daemon.
@@ -41,6 +42,7 @@ export class System extends EventEmitter {
     repository: any;
     sharedApiService: SharedApiServiceHelper;
     storage: Storage;
+    hooks: Array<HookInterface>
     info: any;
     id: string;
     name: string;
@@ -52,6 +54,7 @@ export class System extends EventEmitter {
         super();
         this.id = info.id;
         this.name = info.name;
+        this.hooks = [];
         this.info = {
             startedAt: new Date(),
             version: packageInfo.version,

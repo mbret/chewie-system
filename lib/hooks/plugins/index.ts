@@ -26,23 +26,7 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
                     let plugins: Array<Plugin> = response.body;
                     self.logger.verbose("%s plugin(s) found, load all of them and synchronize if needed", plugins.length);
                     plugins.forEach(function(plugin) {
-                        self.system.repository.pluginExist(plugin.name)
-                            // Synchronize
-                            .then(function(pluginStats) {
-                                if (self.system.config.forcePluginsSynchronizeAtStartup) {
-                                    self.logger.verbose("Force plugin %s to synchronize. Synchronizing..", plugin.name);
-                                }
-                                if (!pluginStats.exist || !pluginStats.isValid) {
-                                    self.logger.verbose("Plugin %s does not seems to be synchronizing yet. Synchronizing..", plugin.name);
-                                }
-                                if (self.system.config.forcePluginsSynchronizeAtStartup || !pluginStats.exist || !pluginStats.isValid) {
-                                    return self.system.repository.synchronize([plugin]);
-                                }
-                            })
-                            // Load
-                            .then(function() {
-                                return self.loadPlugin(plugin);
-                            })
+                        return self.loadPlugin(plugin);
                     });
                 })
                 .catch(function(err) {
@@ -52,17 +36,17 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
         });
 
         // listen for newly synchronized plugins
-        this.system.on("plugin:synchronized", function(plugin) {
-            self.logger.verbose("New plugin %s synchronized detected", plugin.name);
-            return self.loadPlugin(plugin);
-        });
+        // this.system.on("plugin:synchronized", function(plugin) {
+        //     self.logger.verbose("New plugin %s synchronized detected", plugin.name);
+        //     return self.loadPlugin(plugin);
+        // });
 
         // Listen for new plugin
         this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
             if (plugin.deviceId === self.system.id) {
                 self.logger.verbose("New plugin %s created detected", plugin.name);
                 self.logger.verbose('Synchronizing plugin %s', plugin.name);
-                return self.system.repository.synchronize([plugin]);
+                return self.loadPlugin(plugin);
             }
         });
 
@@ -95,8 +79,7 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
                             self.logger.verbose("Plugin %s loaded", plugin.name);
                         });
                 }
-            })
-
+            });
     }
 
     /**

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "test",
   "author": "test",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "postinstall": "npm run build",
     "test": "grunt test",
