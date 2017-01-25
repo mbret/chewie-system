@@ -37,4 +37,21 @@ module.exports = function (router) {
             })
             .catch(res.serverError);
     });
+
+    router.delete("/scenarios/:scenario", function(req, res) {
+        let scenarioId = req.params.scenario;
+        let server: ClientWebServer = req.app.locals.server;
+
+        if (!server.system.scenarioReader.hasScenario(scenarioId)) {
+            return res.notFound("Invalid execution id");
+        }
+
+        server.system.scenarioReader.stopScenario(scenarioId)
+            .then(function() {
+                return res.ok();
+            })
+            .catch(function(err) {
+                return res.serverError(err);
+            });
+    });
 };

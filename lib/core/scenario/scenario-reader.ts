@@ -25,6 +25,10 @@ export class ScenarioReader {
         this.scenarioHelper = new ScenarioHelper(this.system);
     }
 
+    public hasScenario(executionId: string) {
+        return this.scenarios.find((elt) => elt.executionId === executionId);
+    }
+
     public isRunning(scenario: ScenarioModel) {
         return this.system.scenarioReader.scenarios.find((scenarioReadable) => scenario.id === scenarioReadable.model.id);
     }
@@ -75,15 +79,28 @@ export class ScenarioReader {
                         self.logger.debug("[scenario:%s] root nodes are now running!", scenario.id);
                         self.system.emit("running-scenarios:updated");
 
-                        // listen for the last task being ran and stop the scenario if needed
-                        scenarioReadable.on("task:stop", function() {
+                        // function on event task:stop
+                        // We check if the scenario should stop
+                        let onTaskStop = () => {
                             if (!scenarioReadable.hasRunningTasks()) {
                                 // no more running task, we should stop the scenario
                                 self.logger.verbose("[scenario:%s] event task:stop intercepted, there are no more task running, automatically stopping the scenario.", scenario.id);
+                                self.stopScenario(scenarioReadable.executionId)
+                                    .then(function() {
+                                        scenarioReadable.removeListener("task:stop", onTaskStop);
+                                    })
+                                    .catch(function(err) {
+                                        self.logger.error("[scenario:%s] error while trying to stopping the scenario automatically!", scenario.id, err.message);
+                                        throw err;
+                                    });
                             } else {
                                 self.logger.verbose("[scenario:%s] event task:stop intercepted, there are still some tasks running", scenario.id);
                             }
-                        });
+                        };
+                        // listen for the last task being ran and stop the scenario if needed
+                        scenarioReadable.on("task:stop", onTaskStop);
+
+                        return Promise.resolve();
                     })
                     //as soon an error occurs we remove the scenario. A scenario is either running well or not.
                     .catch(function(err) {
@@ -103,18 +120,26 @@ export class ScenarioReader {
         let concerned = this.scenarios.filter((tmp) => tmp.model.id === id);
         let promises = [];
         concerned.forEach(function(readable) {
-            self.logger.verbose("Stopping scenario %s (execution id %s) ...", id, readable.executionId);
-            self.removeScenario(readable);
-            promises.push(
-                self.stopNodes(readable, readable.model.nodes)
-                    .then(function() {
-                        self.logger.debug("scenario %s (execution id %s) stopped!", id, readable.executionId);
-                        return Promise.resolve();
-                    })
-            );
+            promises.push(self.stopScenario(readable.executionId));
         });
 
-        return Promise.all(promises)
+        return Promise.all(promises);
+    }
+
+    public stopScenario(executionId: string) {
+        let self = this;
+        let scenario = this.scenarios.find((elt) => elt.executionId === executionId);
+        if (!scenario) {
+            return Promise.reject(new Error("Scenario " + executionId + " is not running"));
+        }
+        self.logger.verbose("Stopping scenario %s (execution id %s) ...", scenario.model.id, scenario.executionId);
+        self.removeScenario(scenario);
+        return self
+            .stopNodes(scenario, scenario.model.nodes)
+            .then(function() {
+                self.logger.debug("scenario %s (execution id %s) stopped!", scenario.model.id, scenario.executionId);
+                return Promise.resolve();
+            })
             .then(function() {
                 self.system.emit("running-scenarios:updated");
                 return Promise.resolve();

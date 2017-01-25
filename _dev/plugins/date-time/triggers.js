@@ -30,7 +30,12 @@ class Trigger {
     }
 
     stop() {
-        clearInterval(this.interval);
+        // detect timeout
+        if (this.interval && this.interval._idleTimeout) {
+            clearTimeout(this.interval);
+        } else {
+            clearInterval(this.interval);
+        }
     }
 
     _watchInterval(options, cb) {
