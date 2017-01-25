@@ -2,6 +2,7 @@
 
 import {System} from "../../../system";
 import {PluginContainer} from "../plugin-container";
+import {ModuleInstanceInterface} from "./module-instance-interface";
 // import * as uuid from "node-uuid";
 
 export class ModuleContainer {
@@ -9,7 +10,7 @@ export class ModuleContainer {
     system: System;
     pluginContainer: PluginContainer;
     module: any;
-    instance: any;
+    instance: ModuleInstanceInterface;
     uniqueId: string;
     id: string;
     logger: any;

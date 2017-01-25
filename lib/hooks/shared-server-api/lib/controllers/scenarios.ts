@@ -70,7 +70,7 @@ module.exports = function(server, router) {
     router.get('/devices/:device/scenarios/:scenario', function(req, res) {
         let id = req.params.scenario;
         let search = {
-            id: id
+            id: parseInt(id)
         };
 
         ScenarioDao
@@ -108,7 +108,7 @@ module.exports = function(server, router) {
             .catch(res.serverError);
     });
 
-    router.put('/scenarios/:scenario', function(req, res) {
+    router.put('/devices/:device/scenarios/:scenario', function(req, res) {
         let scenario = req.params.scenario;
         let name = req.body.name;
         let nodes = req.body.nodes;

@@ -11,7 +11,7 @@ export class PluginContainer {
     logger: any;
     shared: any;
 
-    constructor(system, plugin, instance){
+    constructor(system, plugin, instance: PluginInstance){
         this.system = system;
         this.logger = this.system.logger.getLogger('PluginContainer');
         this.instance = instance;

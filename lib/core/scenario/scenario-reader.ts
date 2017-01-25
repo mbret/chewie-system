@@ -4,21 +4,8 @@ import {ModuleContainer} from "../plugins/modules/module-container";
 import {SystemError} from "../error";
 import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as _ from "lodash";
-import * as uuid from "node-uuid";
 import {ScenarioHelper} from "./scenario-helper";
-
-/**
- * Root scenario. Has an execution id
- */
-class ScenarioReadable {
-    executionId: string;
-    model: ScenarioModel;
-
-    constructor(model: ScenarioModel) {
-        this.executionId = uuid.v4();
-        this.model = model;
-    }
-}
+import ScenarioReadable from "./scenario-readable";
 
 /**
  * @todo pour le moment tout est instancié au début de la lecture. Au besoin une demande de trigger/task est envoyé à l'instance.
@@ -71,89 +58,40 @@ export class ScenarioReader {
                 // it prevent running more than once and also help dealing through the system
                 self.system.scenarioReader.scenarios.push(scenarioReadable);
 
-                // execute each node
-                return self
-                    .readNodes(scenarioReadable, scenario.nodes, { lvl: -1 })
+                return Promise.resolve()
+                    // execute each node
+                    .then(function() {
+                        self.logger.verbose("[scenario:%s] load all nodes...", scenario.id);
+                        return self.readNodes(scenarioReadable, scenario.nodes, { lvl: -1 });
+                    })
                     // Once they are all registered and loaded
                     // we run the first root trigger and tasks
                     .then(function() {
-                        self.logger.debug("All nodes loaded, run the root nodes..");
-                        scenario.nodes.forEach(function (node) {
-                            let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
-                            let rtId = self.getRuntimeModuleKey(scenarioReadable.executionId, node.id, moduleId);
-                            let module = self.system.runtime.modules.get(rtId);
+                        self.logger.debug("[scenario:%s] all nodes have been loaded!", scenario.id);
+                        self.logger.verbose("[scenario:%s] Run the root nodes..", scenario.id);
+                        return self.runNodes(scenarioReadable, scenario.nodes);
+                    })
+                    .then(function() {
+                        self.logger.debug("[scenario:%s] root nodes are now running!", scenario.id);
+                        self.system.emit("running-scenarios:updated");
 
-                            if (node.type === "trigger") {
-                                // Create the first demand for trigger at lvl 0 (root)
-                                self.logger.debug("Create a new demand for trigger module from plugin %s", node.pluginId);
-                                module.instance.onNewDemand(node.options, onTrigger.bind(self, scenarioReadable, node));
-                            }
-
-                            if (node.type === "task") {
-                                // Run automatically task at lvl 0 (root) will be forbidden later eventually
-                                runTask(module, node);
+                        // listen for the last task being ran and stop the scenario if needed
+                        scenarioReadable.on("task:stop", function() {
+                            if (!scenarioReadable.hasRunningTasks()) {
+                                // no more running task, we should stop the scenario
+                                self.logger.verbose("[scenario:%s] event task:stop intercepted, there are no more task running, automatically stopping the scenario.", scenario.id);
+                            } else {
+                                self.logger.verbose("[scenario:%s] event task:stop intercepted, there are still some tasks running", scenario.id);
                             }
                         });
-
-                        self.system.emit("running-scenarios:updated");
                     })
+                    //as soon an error occurs we remove the scenario. A scenario is either running well or not.
                     .catch(function(err) {
                         // self.logger.error("An error occurred while reading scenario %s", scenario.name, err);
                         self.removeScenario(scenarioReadable);
                         throw err;
                     });
             });
-
-        /**
-         * read the triggers -1 and create a new demand
-         * @param scenario
-         * @param node
-         * @param ingredients
-         */
-        function onTrigger(scenario: ScenarioReadable, node: ScenarioModel, ingredients = null) {
-            self.logger.debug("trigger execution", node.options, ingredients);
-            self.logger.debug("Loop over sub nodes (-1) to ask new trigger demand");
-
-            // handle case of module developer forgot to clear trigger on stop
-            if (!self.isRunning(scenario.model)) {
-                self.logger.warn("The module '%s' from plugin '%s' just triggered a new demand. However the scenario is not running anymore. It probably means that a module is still running" +
-                    " (may be a timeout, interval or async treatment not closed). The trigger has been ignored but you should tell the author of the plugin about this warning", node.moduleId, node.pluginId);
-                return;
-            }
-
-            node.nodes.forEach(function(subNode) {
-                let moduleUniqueId = ModuleContainer.getModuleUniqueId(subNode.pluginId, subNode.moduleId);
-                let runtimeModuleContainer = self.system.runtime.modules.get(self.getRuntimeModuleKey(scenario.executionId, subNode.id, moduleUniqueId));
-
-                if (subNode.type === "trigger") {
-                    self.logger.debug("Create a new demand for trigger module from plugin %s", subNode.pluginId);
-                    runtimeModuleContainer.instance.onNewDemand(subNode.options, function (ingredients) {
-                        onTrigger(scenario, subNode, ingredients);
-                    });
-                }
-
-                if (subNode.type === "task") {
-                    runTask(runtimeModuleContainer, subNode, ingredients);
-                }
-            });
-        }
-
-        function runTask(moduleContainer, node, ingredients = null) {
-            // parse options for eventual ingredients replacements
-            // only string options are interpolated
-            if (ingredients) {
-                _.forEach(node.options, function(value, key) {
-                    if (_.isString(value)) {
-                        _.forEach(ingredients, function(ingredientValue, ingredientKey) {
-                            node.options[key] = value.replace("{{" + ingredientKey + "}}", ingredientValue);
-                        });
-                    }
-                });
-            }
-
-            self.logger.debug("Create a new demand for task module from plugin %s", node.pluginId, node.options);
-            moduleContainer.instance.run(node.options, self.onTaskEnd.bind(self, scenario, node, moduleContainer.uniqueId));
-        }
     }
 
     /**
@@ -185,6 +123,135 @@ export class ScenarioReader {
 
     public getRunningScenarios(): Array<ScenarioReadable> {
         return this.scenarios;
+    }
+
+    /**
+     * @param scenario
+     * @param nodes
+     */
+    protected runNodes(scenario: ScenarioReadable, nodes: Array<ScenarioModel>): Promise<void> {
+        let self = this;
+        nodes.forEach(function (node) {
+            let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
+            let rtId = self.getRuntimeModuleKey(scenario.executionId, node.id, moduleId);
+            let module = self.system.runtime.modules.get(rtId);
+
+            // we register the "thing" that a task is still running
+            scenario.runningTasks.push(1);
+
+            // wait for next tick so that we have time to attach events on promise chain.
+            setImmediate(function() {
+                if (node.type === "trigger") {
+                    // Create the first demand for trigger at lvl 0 (root)
+                    self.logger.debug("Create a new demand for trigger module from plugin %s", node.pluginId);
+                    module.instance.onNewDemand(node.options,
+                        function() {
+                            // handle case of module developer forgot to clear trigger on stop
+                            if (!self.isRunning(scenario.model)) {
+                                self.logger.warn("The module '%s' from plugin '%s' just triggered a new demand. However the scenario is not running anymore. It probably means that a module is still running" +
+                                    " (may be a timeout, interval or async treatment not closed). The trigger has been ignored but you should tell the author of the plugin about this warning", node.moduleId, node.pluginId);
+                                return;
+                                // @todo
+                            } else {
+                                // onTrigger(scenario, node);
+                                return self.runNodes(scenario, node.nodes);
+                            }
+                        },
+                        function() {
+                            scenario.runningTasks.pop();
+                            scenario.emit("task:stop");
+                        }
+                    );
+                }
+                // Tasks are one shot (one time running)
+                // This is the most common case, just run the function and wait for its callback
+                else {
+                    runTask(module, node, null, function() {
+                        scenario.runningTasks.pop();
+                        scenario.emit("task:stop");
+                    });
+                }
+            });
+        });
+
+        return Promise.resolve();
+
+        // /**
+        //  * read the triggers -1 and create a new demand
+        //  * @param scenario
+        //  * @param node
+        //  * @param ingredients
+        //  */
+        // function onTrigger(scenario: ScenarioReadable, node: ScenarioModel, ingredients = null) {
+        //     self.logger.debug("trigger execution", node.options, ingredients);
+        //     self.logger.debug("Loop over sub nodes (-1) to ask new trigger demand");
+        //
+        //     // handle case of module developer forgot to clear trigger on stop
+        //     if (!self.isRunning(scenario.model)) {
+        //         self.logger.warn("The module '%s' from plugin '%s' just triggered a new demand. However the scenario is not running anymore. It probably means that a module is still running" +
+        //             " (may be a timeout, interval or async treatment not closed). The trigger has been ignored but you should tell the author of the plugin about this warning", node.moduleId, node.pluginId);
+        //         return;
+        //     }
+        //
+        //     node.nodes.forEach(function(subNode) {
+        //         let moduleUniqueId = ModuleContainer.getModuleUniqueId(subNode.pluginId, subNode.moduleId);
+        //         let runtimeModuleContainer = self.system.runtime.modules.get(self.getRuntimeModuleKey(scenario.executionId, subNode.id, moduleUniqueId));
+        //
+        //         if (subNode.type === "trigger") {
+        //             self.logger.debug("Create a new demand for trigger module from plugin %s", subNode.pluginId);
+        //             runtimeModuleContainer.instance.onNewDemand(subNode.options,
+        //                 function (ingredients) {
+        //                     onTrigger(scenario, subNode, ingredients);
+        //                 },
+        //                 function() {
+        //
+        //                 }
+        //             );
+        //         }
+        //
+        //         if (subNode.type === "task") {
+        //             runTask(runtimeModuleContainer, subNode, ingredients, function() {
+        //
+        //             });
+        //         }
+        //     });
+        // }
+
+        /**
+         * @param moduleContainer
+         * @param node
+         * @param ingredients
+         * @param done
+         */
+        function runTask(moduleContainer: ModuleContainer, node, ingredients = null, done: Function) {
+            // parse options for eventual ingredients replacements
+            // only string options are interpolated
+            if (ingredients) {
+                _.forEach(node.options, function(value, key) {
+                    if (_.isString(value)) {
+                        _.forEach(ingredients, function(ingredientValue, ingredientKey) {
+                            node.options[key] = value.replace("{{" + ingredientKey + "}}", ingredientValue);
+                        });
+                    }
+                });
+            }
+
+            self.logger.debug("Create a new demand for task module from plugin %s", node.pluginId, node.options);
+            moduleContainer.instance.run(node.options, done);
+        }
+
+
+        /**
+         * @param scenario
+         * @param node
+         * @param id
+         */
+        // function onTaskEnd(scenario, node, id) {
+            // remove from storage. At this point we do not have anymore reference of the instance in system
+            // It's up to module to clean their stuff
+            // this.system.runtime.modules.delete(this.getRuntimeModuleKey(scenario.id, node.id, id));
+            // this.logger.debug("Task %s from plugin %s has been done and deleted from runtime storage", node.moduleId, node.pluginId);
+        // }
     }
 
     protected readNodes(scenario: ScenarioReadable, nodes: any[], options: any) {
@@ -253,7 +320,7 @@ export class ScenarioReader {
         }
 
         if (node.type === "task") {
-            this.onTaskEnd(scenario.model, node, moduleId);
+            // this.onTaskEnd(scenario.model, node, moduleId);
         }
 
         return this.stopNodes(scenario, node.nodes, options);
@@ -274,18 +341,6 @@ export class ScenarioReader {
                 self.logger.debug("Load module instance from plugin %s", plugin.name);
                 return self.system.moduleLoader.loadModule(plugin, moduleId);
             });
-    }
-
-    /**
-     * @param scenario
-     * @param node
-     * @param id
-     */
-    protected onTaskEnd(scenario, node, id) {
-        // remove from storage. At this point we do not have anymore reference of the instance in system
-        // It's up to module to clean their stuff
-        // this.system.runtime.modules.delete(this.getRuntimeModuleKey(scenario.id, node.id, id));
-        // this.logger.debug("Task %s from plugin %s has been done and deleted from runtime storage", node.moduleId, node.pluginId);
     }
 
     /**

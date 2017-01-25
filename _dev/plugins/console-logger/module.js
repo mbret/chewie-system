@@ -7,8 +7,9 @@ class Module {
         this.helper = helper;
     }
 
-    run(options) {
+    run(options, done) {
         console.log(options.content);
+        return done();
     }
 }
 

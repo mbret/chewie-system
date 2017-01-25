@@ -10,13 +10,20 @@ class Trigger {
         this.interval = null;
     }
 
-    onNewDemand(options, cb) {
+    onNewDemand(options, cb, done) {
+        let self = this;
         if (this.info.id === "interval") {
             this.interval = this._watchInterval(options, cb);
         } else if (this.info.id === "date") {
             this._watchDate(options, cb);
         } else if (this.info.id === "timeout") {
-            this.interval = this._watchTimeout(options, cb);
+            this.interval = this._watchTimeout(options, function(res) {
+                self.stop();
+                // trigger cb
+                cb(res);
+                // end of trigger module
+                return done();
+            });
         } else if (this.info.id === "hoursRange") {
             this._watchHoursRange(options, cb);
         }
