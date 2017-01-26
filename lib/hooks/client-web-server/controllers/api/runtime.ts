@@ -1,6 +1,8 @@
 'use strict';
 import {ScenarioModel} from "../../../shared-server-api/lib/models/scenario";
 import ClientWebServer from "../../server";
+import ScenarioReadable from "../../../../core/scenario/scenario-readable";
+import {SystemError} from "../../../../core/error";
 
 module.exports = function (router) {
 
@@ -30,7 +32,7 @@ module.exports = function (router) {
 
                 setImmediate(function() {
                     // read scenario and explicitly lad plugins if they are not available
-                    return server.system.scenarioReader.readScenario(scenario, { loadPlugins: true });
+                    return server.system.scenarioReader.startScenario(scenario, { loadPlugins: true });
                 });
 
                 return res.ok(scenario);
@@ -42,16 +44,21 @@ module.exports = function (router) {
         let scenarioId = req.params.scenario;
         let server: ClientWebServer = req.app.locals.server;
 
-        if (!server.system.scenarioReader.hasScenario(scenarioId)) {
-            return res.notFound("Invalid execution id");
-        }
+        return server.system.scenarioReader.isRunning(scenarioId)
+            .then(function(running) {
+                if (!running) {
+                    return res.notFound("Invalid execution id");
+                }
 
-        server.system.scenarioReader.stopScenario(scenarioId)
-            .then(function() {
-                return res.ok();
-            })
-            .catch(function(err) {
-                return res.serverError(err);
+                server.system.scenarioReader.stopScenario(scenarioId)
+                    .then(function() {
+                        return res.ok();
+                    })
+                    .catch(function(err) {
+                        if (err.code !== SystemError.ERROR_CODE_SCENARIO_NOT_FOUND) {
+                            return res.serverError(err);
+                        }
+                    });
             });
     });
 };

@@ -14,6 +14,7 @@ export class ModuleContainer {
     uniqueId: string;
     id: string;
     logger: any;
+    stopped: boolean;
 
     constructor(system, pluginContainer, moduleInfo, instance){
         this.system = system;
@@ -25,9 +26,15 @@ export class ModuleContainer {
         this.instance = instance;
         this.pluginContainer = pluginContainer;
         this.module = moduleInfo;
+        this.stopped = false;
     }
 
     static getModuleUniqueId(pluginId: string, moduleId: string) {
         return pluginId + ":" + moduleId;
+    }
+
+    public stopInstance() {
+        this.stopped = true;
+        return this.instance.stop();
     }
 }
