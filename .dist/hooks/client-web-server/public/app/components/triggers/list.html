@@ -1,0 +1,19 @@
+<div class="container-fluid">
+    <h1 class="page-header">Modules</h1>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="tabs-container">
+                <uib-tabset class="tabs-left">
+                    <uib-tab heading="{{module.name}}" ng-repeat="module in modules">
+                        <div class="panel-body">
+                            <p><strong>Plugin: </strong>{{ module.pluginId }}</p>
+                            <p><strong>About: </strong>{{ module.config.description || "No description" }}</p>
+                            <p><a class="btn btn-primary" ui-sref="dashboard.taskTriggers.config({ id: module.id })">Configuration</a></p>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
+</div>

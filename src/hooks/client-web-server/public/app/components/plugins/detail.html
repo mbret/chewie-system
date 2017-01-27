@@ -1,0 +1,40 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Plugins</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="">
+                <a ui-sref="dashboard.plugins">Plugins</a>
+            </li>
+            <li class="active">
+                <strong>Detail</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content">
+
+    <h1 class="page-header">Detail of {{plugin.name}}</h1>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Plugin options</h5>
+                    <div class="ibox-tools"></div>
+                </div>
+                <div class="ibox-content">
+                    <form method="get" name="pluginForm" ng-submit="submit(pluginForm)">
+
+                        <module-form-options config-options="plugin.pluginPackage.options" ng-model="formData.options" prefix="'plugin'"></module-form-options>
+
+                        <input class="btn btn-primary" type="submit" value="Valider"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

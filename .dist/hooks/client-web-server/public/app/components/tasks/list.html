@@ -1,0 +1,103 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Tâches planifiées</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>Tâches planifiées</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content" id="task-list">
+
+    <h1 class="page-header">My tasks</h1>
+
+    <div class="panel panel-info" ng-if="tasks.length == 0">
+        <div class="panel-heading">
+            <i class="fa fa-info-circle"></i> No tasks
+        </div>
+        <div class="panel-body">
+            <p>
+                You don't have any tasks yet. Go to <a href="">new task</a> to create one.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="tabs-container">
+                <uib-tabset class="tabs-left">
+                    <uib-tab heading="{{task.name}}" ng-repeat="task in tasks">
+                        <div class="panel-body">
+                            <ng-lockable ng-lockable="task.locked">
+                                <p>
+                                    <a class="btn btn-default" type="button" ui-sref="">Edit the task</a>
+                                </p>
+                                <strong>Module:</strong> {{task.module}}<br>
+                                <strong>Created:</strong> {{task.createdAt | date}}<br>
+                                <strong>Activated:</strong> {{task.active ? 'yes' : 'no'}}<br>
+                                <strong>Description:</strong> {{task.description}}<br>
+                                <strong>Options:</strong> {{task.options}}
+                                <div class="m-t-sm m-b-sm"></div>
+                                <div class="alert alert-info">You can either start or stop the task. When the the task is started the triggers are all running.</div>
+                                <button class="btn btn-primary" ng-click="executeTask(task)">
+                                    Execute
+                                </button>
+                                <!--<a class="btn btn-primary" type="button" ng-click="toggleTaskActive(task)" ng-if="!task.active">-->
+                                    <!--Activate the task-->
+                                <!--</a>-->
+                                <!--<a class="btn btn-warning" type="button" ng-click="toggleTaskActive(task)" ng-if="task.active">-->
+                                    <!--Deactivate the task-->
+                                <!--</a>-->
+                                <div class="m-t-sm m-b-md"></div>
+                                <h3>Executions:</h3>
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Type</th>
+                                        <!--<th>User</th>-->
+                                        <!--<th>Next invocation</th>-->
+                                        <!--<th>Schedule</th>-->
+                                        <!--<th>Outputs</th>-->
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="execution in executingTasks">
+                                        <td title="{{execution.id}}">{{execution.id | truncate : 10}}</td>
+                                        <td>{{execution.type == 1 ? "Direct" : "Scenario"}}</td>
+                                        <!--<td title="{{trigger.options}}">{{trigger.options | json | truncate : 20}}</td>-->
+                                        <!--<td>{{trigger.nextInvocation | date : 'medium' }}</td>-->
+                                        <!--<td title="{{trigger.schedule}}">-->
+                                            <!--<span ng-if="trigger.schedule">{{trigger.schedule | json | truncate : 20}}</span>-->
+                                            <!--<span ng-if="trigger.type == 'manual'">manual</span>-->
+                                        <!--</td>-->
+                                        <!--<td>-->
+                                            <!--{{trigger.outputAdapters}}-->
+                                        <!--</td>-->
+                                        <!--Actions-->
+                                        <td class="text-center">
+                                            <button ng-click="stopTask(execution)" class="">Stop</button>
+                                            <!--<span ng-if="(trigger.type === 'manual') && task.active">-->
+                                                <!--<a class="font-lg" ng-click="runTask(task, trigger)">-->
+                                                    <!--<i class="fa fa-play-circle-o"></i>-->
+                                                <!--</a>-->
+                                            <!--</span>-->
+                                            <!--<i class="fa fa-lock cursor-pointer" ng-if="!task.active" uib-tooltip="Task is not active" tooltip-class="tooltip-inline"></i>-->
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </ng-lockable>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
+</div>

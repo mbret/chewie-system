@@ -5,10 +5,13 @@
   ],
   "compilerOptions": {
     "module": "commonjs",
-    "sourceMap": false,
     "removeComments": true,
     "strictNullChecks": false,
     "moduleResolution": "Node",
-    "target": "es6"
+    "target": "es6",
+    "alwaysStrict": true,
+    "outDir": "./.dist",
+    "sourceMap": true,
+    "sourceRoot": "./src"
   }
 }

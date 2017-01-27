@@ -1,0 +1,53 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Modules</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>New task</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content">
+    <h1 class="page-header">Modules</h1>
+
+    <div class="panel panel-info" ng-if="modules.length == 0">
+        <div class="panel-heading">
+            <i class="fa fa-info-circle"></i> You don't have any module yet
+        </div>
+        <div class="panel-body">
+            <p>
+                Before creating a task you need to install a plugin that contain task module.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="tabs-container">
+                <uib-tabset class="tabs-left">
+                    <uib-tab ng-repeat="module in modules">
+                        <uib-tab-heading><b class="ui-text">{{module.displayName || module.name}}</b> ({{module.plugin.name}})</uib-tab-heading>
+                        <div class="panel-body">
+                            From plugin: <strong>{{module.plugin.name}}</strong>
+                            <hr>
+                            <p>
+                                <strong>Description: </strong>{{ module.description || "No description" }}<br>
+                            </p>
+                            <p>
+                                <strong>ID: </strong>{{ module.id }}<br>
+                                <strong>Original module name: </strong>{{ module.name }}<br>
+                                <strong>Has output support: </strong>{{ module.outputSupport }}
+                            </p>
+                            <p><a class="btn btn-primary" ui-sref="dashboard.tasks.createForm({plugin: module.plugin.name, module: module.name})">Create a new task</a></p>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
+</div>

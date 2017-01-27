@@ -32,6 +32,9 @@ Task:
 - weather
 - incoming calendar events (google)
 
+# Project keywords
+semaphore lock db-migration nodejs javascript rest server-http shared-resources vocal-synthesis system speaker module plugins mobilizable-system 
+
 Generator
 https://github.com/expressjs/generator
 

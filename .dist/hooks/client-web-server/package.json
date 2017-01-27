@@ -1,0 +1,16 @@
+{
+  "name": "client-web-server",
+  "version": "0.1.0",
+  "description": "test",
+  "author": "test",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "npm run build",
+    "test": "grunt test",
+    "build": "gulp build",
+    "build-dev": "gulp build-dev",
+    "dev": "concurrently --raw \"gulp build --from-source\" \"gulp watch --from-source\""
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

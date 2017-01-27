@@ -1,0 +1,65 @@
+<div class="modal-header">
+    <h3 class="modal-title">Ajouter une tâche programmée</h3>
+</div>
+<div class="modal-body">
+    <form novalidate name="form" >
+
+        {{form.$valid}}
+        {{task}}
+        <task-options config-options="module.config.taskOptions" options="task.options" ></task-options>
+
+        <div class="form-group">
+            <div class="btn-group">
+                <label class="btn btn-default" ng-model="schedule.method" uib-btn-radio="'interval'" uncheckable>Intervalle</label>
+                <label class="btn btn-default" ng-model="schedule.method" uib-btn-radio="'moment'" uncheckable>Moment</label>
+                <label class="btn btn-default" ng-model="schedule.method" uib-btn-radio="'range'" uncheckable>Intervalle de date</label>
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="schedule.method === 'interval'">
+            <label for="interval">Intervalle (en secondes)</label>
+            <input id="interval" type="text" class="form-control" ng-required="schedule.method === 'interval'" ng-model="schedule.interval" />
+        </div>
+
+        <div ng-show="schedule.method === 'moment'">
+
+            <h4>Type de moment</h4>
+
+            <div class="form-group" >
+                <div class="btn-group">
+                    <label class="btn btn-default" ng-model="schedule.subMoment" uib-btn-radio="'date'" uncheckable>Date</label>
+                    <label class="btn btn-default" ng-model="schedule.subMoment" uib-btn-radio="'hours'" uncheckable>Heure</label>
+                </div>
+            </div>
+
+            <div class="form-group" ng-show="schedule.subMoment === 'date'">
+                <label >Intervalle</label>
+                <input type="text" class="form-control" date-range-picker ng-model="schedule.date" options="dateRangePickerOptions" />
+            </div>
+
+            <div ng-show="schedule.subMoment === 'hours'">
+                <div class="form-group" >
+                    <label >Jours</label>
+                    <select size="7" class="form-control" ng-required="schedule.method === 'hours'" multiple ng-multiple="true" ng-model="schedule.selectedDays" ng-options="day.name for day in schedule.days"></select>
+                </div>
+                <div class="form-group" ng-show="schedule.subMoment === 'hours'">
+                    <label >Heure</label>
+                    <input type="time" min="00:00" ng-model="schedule.hours" class="form-control" ng-required="schedule.method === 'hours'"/>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label>Actions</label>
+            <div>
+                <task-actions actions="task.actions"></task-actions>
+            </div>
+        </div>
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="submitForm(form)">Enregistrer</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>

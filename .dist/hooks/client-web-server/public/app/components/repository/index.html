@@ -1,0 +1,102 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Repository</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>Browse</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeIn">
+
+    <!--Installed plugins-->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>Installed plugins</h5>
+        </div>
+        <div class="ibox-content">
+            <p>You can visualize all your installed plugins. Your installed plugins are located inside <span class="label">{{APP_CONFIG.pluginsInstallationDir}}</span></p>
+            <div class="flex-container flex--flow-row">
+                <div class="brick-repository m-r" ng-repeat="plugin in $ctrl.installed">
+                    <div class="contact-box">
+                        <!--<div ng-hide="plugin.extraInfo" class="text-center">-->
+                            <!--<p>Fetching plugin data...</p>-->
+                        <!--</div>-->
+                        <!--<a ui-sref="dashboard.repository.installedDetail({name: plugin.name})" ng-lockable="!plugin.extraInfo">-->
+                        <a ui-sref="dashboard.repository.installedDetail({name: plugin.name})">
+                            <!--<div ng-hide="plugin.extraInfo">-->
+                                <!--<div class="text-center">-->
+                                    <!--<h3>{{plugin.title || plugin.name}}</h3>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="col-sm-5" ng-show="plugin.extraInfo">-->
+                            <div class="col-sm-5">
+                                <div class="text-center">
+                                    <h3>{{plugin.package.title || plugin.name}}</h3>
+                                    <small>({{plugin.name}})</small>
+                                </div>
+                            </div>
+                            <!--<div class="col-sm-7" ng-show="plugin.extraInfo">-->
+                            <div class="col-sm-7" >
+                                <strong>from {{plugin.package.author}}</strong>
+                                <br><small>(v{{plugin.version}})</small>
+                                <p>{{plugin.package.description}}</p>
+                            </div>
+                            <div class="clearfix"></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <uib-tabset>
+            <uib-tab heading="Local repository">
+                <div class="panel-body">
+                    <p>
+                        You can browse here the plugins you have placed in <span class="label">{{APP_CONFIG.pluginsLocalRepositoryDir}}</span>. You can place manually plugin or use the buttons to download a plugin from various
+                        sources.
+                    </p>
+                    <hr>
+                    <p>
+                        <button class="btn btn-success " type="button" ng-click="$ctrl.downloadFromGithub()"><i class="fa fa-download"></i>&nbsp;&nbsp;<span class="bold">Download from github</span></button>
+                    </p>
+                    <div class="m-t" masonry="{ gutter: 25 }" load-images="false" preserve-order column-width="300" reload-on-resize>
+
+                        <!--<div class="masonry-brick brick-repository" ng-repeat="plugin in $ctrl.plugins" ng-class="{'brick-repository&#45;&#45;selected': $ctrl.installed[plugin.name]}">-->
+                        <div class="masonry-brick brick-repository" ng-repeat="plugin in $ctrl.plugins" >
+                            <div class="contact-box">
+                                <a ui-sref="dashboard.repository.localDetail({name: plugin.name})">
+                                    <div class="col-sm-5">
+                                        <div class="text-center">
+                                            <h3>{{plugin.title || plugin.name}}</h3>
+                                            <small>({{plugin.name}})</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <strong>from {{plugin.author}}</strong>
+                                        <br><small>(v{{plugin.version}})</small>
+                                        <p>{{plugin.description}}</p>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </uib-tab>
+            <uib-tab heading="Remote repository">
+                <div class="panel-body">
+                    Not yet available.
+                </div>
+            </uib-tab>
+        </uib-tabset>
+    </div>
+</div>

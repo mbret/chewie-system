@@ -1,0 +1,18 @@
+.debug-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 9999;
+}
+.debug-bar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.debug-bar ul li {
+    float: left;
+}
+.debug-bar button.active {
+    background-color: #18a689;
+    color: #FFFFFF;
+}

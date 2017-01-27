@@ -1,0 +1,128 @@
+<!doctype html>
+<html ng-app="app.buddy">
+<head>
+    <meta charset="utf-8">
+    <title>My buddy</title>
+    <!--http://www.flaticon.com/-->
+    <link rel="icon" type="image/png" href="resources/favicon-2.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="/vendors/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css">
+    <link rel="stylesheet" href="/vendors/angular-toastr/dist/angular-toastr.min.css">
+    <link rel="stylesheet" href="/vendors/angular-ui-tree/dist/angular-ui-tree.css">
+    <link rel="stylesheet" href="/app/components/debug/style.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nanogallery/5.9.1/css/nanogallery.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+
+    <!-- Include Date Range Picker -->
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+</head>
+<body class="{{bodyClasses}}">
+
+    <div ui-view ></div>
+
+    <!-- Form messages template -->
+    <ng-include src="'app/views/messages.html'"></ng-include>
+
+    <debug-bar></debug-bar>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.2.1/annyang.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.0.3/sprintf.min.js"></script>
+
+    <!--<script src="https://apis.google.com/js/client:platform.js"></script>-->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <!--<script src="https://cdn.WebRTC-Experiment.com/RecordRTC.js"></script>-->
+
+    <!--Get app configuration-->
+    <script src="configuration.js"></script>
+
+    <!-- inject:js -->
+    <script src="/node_modules/sprintf-js/dist/sprintf.min.js"></script>
+    <script src="/node_modules/jquery/dist/jquery.js"></script>
+    <script src="/node_modules/lodash/lodash.js"></script>
+    <script src="/node_modules/angular/angular.js"></script>
+    <script src="/node_modules/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="/node_modules/angular-logger/dist/angular-logger.min.js"></script>
+    <script src="/node_modules/angular-messages/angular-messages.js"></script>
+    <script src="/node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"></script>
+    <script src="/node_modules/socket.io-client/dist/socket.io.slim.js"></script>
+    <script src="/node_modules/angular-socket-io/socket.min.js"></script>
+    <script src="/vendors/iCheck/icheck.js"></script>
+    <script src="/vendors/masonry/dist/masonry.pkgd.min.js"></script>
+    <script src="/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="/vendors/angular-daterangepicker/js/angular-daterangepicker.min.js"></script>
+    <script src="/vendors/angular-toastr/dist/angular-toastr.min.js"></script>
+    <script src="/vendors/angular-toastr/dist/angular-toastr.tpls.min.js"></script>
+    <script src="/vendors/angular-translate/angular-translate.min.js"></script>
+    <script src="/vendors/angular-oauth2/dist/angular-oauth2.min.js"></script>
+    <script src="/vendors/angular-cookies/angular-cookies.min.js"></script>
+    <script src="/vendors/query-string/query-string.js"></script>
+    <script src="/vendors/angular-ui-tree/dist/angular-ui-tree.js"></script>
+    <script src="/vendors/angular-masonry/angular-masonry.js"></script>
+    <script src="/vendors/ngstorage/ngStorage.js"></script>
+    <script src="/app/app.module.js"></script>
+    <script src="/app/components/scenarios/scenarios.module.js"></script>
+    <script src="/app/shared/module.js"></script>
+    <script src="/app/components/auth/module.js"></script>
+    <script src="/app/components/core/module.js"></script>
+    <script src="/app/components/debug/module.js"></script>
+    <script src="/app/components/google/module.js"></script>
+    <script src="/app/components/home/module.js"></script>
+    <script src="/app/components/modules/module.js"></script>
+    <script src="/app/components/playground/module.js"></script>
+    <script src="/app/components/plugins/module.js"></script>
+    <script src="/app/components/profile/module.js"></script>
+    <script src="/app/components/profile-selection/module.js"></script>
+    <script src="/app/components/repository/module.js"></script>
+    <script src="/app/components/screens/module.js"></script>
+    <script src="/app/components/system/module.js"></script>
+    <script src="/app/components/tasks/module.js"></script>
+    <script src="/app/components/tasks-old/module.js"></script>
+    <script src="/app/components/triggers/module.js"></script>
+    <script src="/app/app.config.js"></script>
+    <script src="/app/shared/alerts.service.js"></script>
+    <script src="/app/shared/directives.js"></script>
+    <script src="/app/shared/filters.js"></script>
+    <script src="/app/shared/services.js"></script>
+    <script src="/app/shared/spinners.directive.js"></script>
+    <script src="/app/components/auth/authentication.service.js"></script>
+    <script src="/app/components/auth/controllers.js"></script>
+    <script src="/app/components/core/constants.js"></script>
+    <script src="/app/components/core/controllers.js"></script>
+    <script src="/app/components/core/convert-date.directive.js"></script>
+    <script src="/app/components/core/directives.js"></script>
+    <script src="/app/components/core/http.interceptor.js"></script>
+    <script src="/app/components/core/module-form-options.directive.js"></script>
+    <script src="/app/components/google/services.js"></script>
+    <script src="/app/components/home/controllers.js"></script>
+    <script src="/app/components/modules/controllers.js"></script>
+    <script src="/app/components/playground/controllers.js"></script>
+    <script src="/app/components/plugins/controllers.js"></script>
+    <script src="/app/components/profile/controllers.js"></script>
+    <script src="/app/components/profile-selection/controllers.js"></script>
+    <script src="/app/components/repository/controllers.js"></script>
+    <script src="/app/components/screens/controllers.js"></script>
+    <script src="/app/components/screens/services.js"></script>
+    <script src="/app/components/scenarios/create.controller.js"></script>
+    <script src="/app/components/scenarios/edit.controller.js"></script>
+    <script src="/app/components/scenarios/form-nodes-selector.directive.js"></script>
+    <script src="/app/components/scenarios/index.controller.js"></script>
+    <script src="/app/components/scenarios/scenarios-configure-node.controller.js"></script>
+    <script src="/app/components/scenarios/scenarios-create.controller.js"></script>
+    <script src="/app/components/scenarios/scenarios-form-node-add-existing-scenario.controller.js"></script>
+    <script src="/app/components/system/controllers.js"></script>
+    <script src="/app/components/tasks/controllers.js"></script>
+    <script src="/app/components/tasks/new-task-controllers.js"></script>
+    <script src="/app/components/tasks/tasksService.js"></script>
+    <script src="/app/components/tasks-old/controllers.js"></script>
+    <script src="/app/components/triggers/controllers.js"></script>
+    <script src="/app/components/triggers/services.js"></script>
+    <script src="/app/shared/icheck/icheck.directive.js"></script>
+    <script src="/app/shared/services/screens-service.js"></script>
+    <!-- endinject -->
+    </body>
+</html>
