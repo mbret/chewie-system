@@ -23,12 +23,22 @@ module.exports = function (gulp, config) {
             let target = gulp.src("./public/index.html");
 
             // It's not necessary to read the files (will speed up things), we're only after their paths:
-            let appStream = gulp.src(streams.app, {read: false});
-            let vendorStream = gulp.src(config.vendorsToInject, {read: false});
+            let appStream = gulp.src(streams.app, {
+                read: false,
+                cwd: config.distAppPath
+            });
+            let vendorsStream = gulp.src(config.vendorsToInject, {
+                read: false,
+                cwd: config.distAppPath
+            });
+            let vendorsNodeModulesStream = gulp.src(config.vendorsNodeModulesToInject, {
+                read: false,
+                cwd: config.basePath
+            });
 
             return target
-                .pipe(inject(series(vendorStream, appStream), {
-                    ignorePath: '/public/',
+                .pipe(inject(series(vendorsNodeModulesStream, vendorsStream, appStream), {
+                    ignorePath: "/public",
                 }))
                 .pipe(gulp.dest(config.buildPath));
         }

@@ -10,16 +10,23 @@ const requireAll = require("require-all");
 let basePath = __dirname + "/../../..";
 let path = require("path");
 let buildPath = __dirname + "/.build";
+let copyOfNodeModulesDestPath = "./public/node_modules";
+let distAppPath = path.join(basePath, "/.dist/hooks/client-web-server");
 
 // --from-source for when working from sources
 if (argv.fromSource) {
-    buildPath = path.join(basePath, "/.dist/hooks/client-web-server/.build");
+    buildPath = path.join(distAppPath, ".build");
+    copyOfNodeModulesDestPath = path.join(distAppPath, copyOfNodeModulesDestPath);
 }
 
 let config = {
+    fromSource: argv.fromSource,
     publicPath: __dirname + "/public",
     buildPath: buildPath,
+    basePath: basePath,
     nodeModulesPath: path.join(basePath, "node_modules"),
+    copyOfNodeModulesDestPath: copyOfNodeModulesDestPath,
+    distAppPath: distAppPath,
     env: process.env.NODE_ENV,
     nodeModulesToCopy: [
         "socket.io-client",
@@ -34,19 +41,21 @@ let config = {
         "angular-logger",
         "sprintf-js",
     ],
-    vendorsToInject: [
-        "./public/node_modules/sprintf-js/dist/sprintf.min.js",
-        "./public/node_modules/jquery/dist/jquery.js",
-        "./public/node_modules/jquery-slimscroll/dist/jquery.slimscroll.js",
-        "./public/node_modules/lodash/lodash.js",
-        "./public/node_modules/angular/angular.js",
-        "./public/node_modules/angular-ui-router/release/angular-ui-router.js",
+    vendorsNodeModulesToInject: [
+        "./node_modules/sprintf-js/dist/sprintf.min.js",
+        "./node_modules/jquery/dist/jquery.js",
+        "./node_modules/jquery-slimscroll/dist/jquery.slimscroll.js",
+        "./node_modules/lodash/lodash.js",
+        "./node_modules/angular/angular.js",
+        "./node_modules/angular-ui-router/release/angular-ui-router.js",
         // require momentjs & sprintfjs
-        "./public/node_modules/angular-logger/dist/angular-logger.min.js",
-        "./public/node_modules/angular-messages/angular-messages.js",
-        "./public/node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js",
-        "./public/node_modules/socket.io-client/dist/socket.io.slim.js",
-        "./public/node_modules/angular-socket-io/socket.min.js",
+        "./node_modules/angular-logger/dist/angular-logger.min.js",
+        "./node_modules/angular-messages/angular-messages.js",
+        "./node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js",
+        "./node_modules/socket.io-client/dist/socket.io.slim.js",
+        "./node_modules/angular-socket-io/socket.min.js",
+    ],
+    vendorsToInject: [
         "./public/vendors/iCheck/icheck.js",
         "./public/vendors/masonry/dist/masonry.pkgd.min.js",
         "./public/vendors/bootstrap-daterangepicker/daterangepicker.js",

@@ -9,7 +9,7 @@ module.exports = function (gulp, config) {
                 .src(config.nodeModulesToCopy.map(function(name) {
                     return path.join(config.nodeModulesPath, name + "/**/*");
                 }), { base: config.nodeModulesPath })
-                .pipe(gulp.dest(config.copyOfNodeModulesDestPath))
+                .pipe(gulp.dest(path.join(config.buildPath, "node_modules")))
         }
     };
 };

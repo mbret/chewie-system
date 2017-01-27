@@ -27,13 +27,17 @@ module.exports = function (gulp, config) {
                 read: false,
                 cwd: config.distAppPath
             });
-            let vendorStream = gulp.src(config.vendorsToInject, {
+            let vendorsStream = gulp.src(config.vendorsToInject, {
                 read: false,
                 cwd: config.distAppPath
             });
+            let vendorsNodeModulesStream = gulp.src(config.vendorsNodeModulesToInject, {
+                read: false,
+                cwd: config.basePath
+            });
 
             return target
-                .pipe(inject(series(vendorStream, appStream), {
+                .pipe(inject(series(vendorsNodeModulesStream, vendorsStream, appStream), {
                     ignorePath: "/public",
                 }))
                 .pipe(gulp.dest(config.buildPath));

@@ -91,3 +91,4 @@ class ClientWebServer extends hook_interface_1.Hook {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ClientWebServer;
+//# sourceMappingURL=server.js.map
