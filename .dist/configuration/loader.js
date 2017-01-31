@@ -9,12 +9,14 @@ function default_1(config) {
     let systemIP = ip.address();
     let appPath = process.cwd();
     let webServerUrl = ((completeConfig.webServerSSL.activate ? "https" : "http") + "://localhost:" + completeConfig.webServerPort);
+    let dataPath = path.join(completeConfig.system.appDataChewiePath, completeConfig.system.dataDir);
     _.merge(completeConfig, {
         appPath: appPath,
         systemIP: systemIP,
+        dataPath: dataPath,
         webServerUrl: webServerUrl,
         webServerRemoteUrl: webServerUrl.replace("localhost", systemIP),
-        synchronizedPluginsPath: path.join(completeConfig.system.dataDir, completeConfig.system.synchronizedPluginsDir)
+        synchronizedPluginsPath: path.join(dataPath, completeConfig.system.synchronizedPluginsDir)
     });
     return formatDynConfig(completeConfig);
 }

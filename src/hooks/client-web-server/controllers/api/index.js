@@ -91,7 +91,7 @@ module.exports = function (router) {
                 "systemIP": config.systemIP,
                 "databaseStorageDir": config.hooks["shared-server-api"].sharedDatabase.connexion.storage,
                 "tmpDir": config.system.tmpDir,
-                "dataDir": config.system.dataDir,
+                "dataDir": config.dataPath,
                 "pluginsTmpDir": config.system.pluginsTmpDir,
                 "pluginsDataDir": config.system.pluginsDataDir,
             },
@@ -121,8 +121,8 @@ module.exports = function (router) {
             },
             // data dir size
             function(cb) {
-                getSize(config.system.dataDir, function(err, size){
-                    viewData.sizes.dataDir = size;
+                getSize(config.dataPath, function(err, size){
+                    viewData.sizes.dataPath = size;
                     return cb(err);
                 });
             },

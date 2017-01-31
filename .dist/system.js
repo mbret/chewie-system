@@ -45,6 +45,7 @@ class System extends events_1.EventEmitter {
                 self.config.system.pluginsTmpDir,
                 self.config.pluginsLocalRepositoryDir,
             ]);
+            self.logger.verbose("App data path is located to %s", self.config.dataPath);
             self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');
             self.storage = new storage_1.default(self);
             self.communicationBus = new ServerCommunication.CommunicationBus(self);

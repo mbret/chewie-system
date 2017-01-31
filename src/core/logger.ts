@@ -11,7 +11,7 @@ const PROJECT_ROOT = path.join(__dirname, '../..');
 
 export interface LoggerInterface {
     info(content: string);
-    verbose(content: string);
+    verbose(...args: any[]);
     debug(content: string);
     error(...args: any[]);
     warn(content: string);

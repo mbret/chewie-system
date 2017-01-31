@@ -15,7 +15,7 @@ export class ModuleLoader {
     constructor(system) {
         this.system = system;
         this.logger = this.system.logger.getLogger('ModuleLoader');
-        this.synchronizedPluginsPath = path.join(this.system.config.system.dataDir, this.system.config.system.synchronizedPluginsDir);
+        this.synchronizedPluginsPath = path.join(this.system.config.dataPath, this.system.config.system.synchronizedPluginsDir);
     }
 
     loadModule(plugin: any, moduleId) {

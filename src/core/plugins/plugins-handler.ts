@@ -12,7 +12,7 @@ class PluginsHandler {
     constructor(system){
         this.logger = system.logger.getLogger('PluginsHandler');
         this.system = system;
-        this.synchronizedPluginsPath = path.join(this.system.config.system.dataDir, this.system.config.system.synchronizedPluginsDir);
+        this.synchronizedPluginsPath = path.join(this.system.config.dataPath, this.system.config.system.synchronizedPluginsDir);
     }
 
     getPluginAbsolutePath(pluginName) {

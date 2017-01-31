@@ -92,6 +92,9 @@ export class System extends EventEmitter {
                     self.config.pluginsLocalRepositoryDir,
                 ]);
 
+                // log various paths for debug conveniences
+                self.logger.verbose("App data path is located to %s", self.config.dataPath);
+
                 // self.logger.Logger = loggerBuilder;
                 self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');
                 self.storage = new Storage(self);

@@ -3,7 +3,7 @@
   "profileToLoadOnStartup": "admin",
   "system": {
     "tmpDir": "./.my-buddy/tmp",
-    "dataDir": "./.my-buddy/data"
+    "appDataChewiePath": "./.chewie"
   },
   "pluginsLocalRepositoryDir": "./../plugins",
   "hooks": {

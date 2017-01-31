@@ -63,6 +63,7 @@
     "my-buddy-lib": "https://github.com/my-buddy/lib",
     "node-emoji": "^1.4.3",
     "node-schedule": "^1.2.0",
+    "node-uuid": "^1.4.7",
     "npm": "^4.1.2",
     "pad": "^1.0.2",
     "passport": "^0.3.2",

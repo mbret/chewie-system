@@ -5,7 +5,7 @@ import * as os from "os";
 
 // module base path
 let basePath = path.join(__dirname, '../..');
-let localAppDataDir = os.platform() === 'win32' || os.platform() === 'win64' ? process.env.LOCALAPPDATA : os.homedir();
+let localAppDataDir = os.platform() === 'win32' ? process.env.LOCALAPPDATA : os.homedir();
 
 module.exports = {
 
@@ -68,11 +68,12 @@ module.exports = {
     forcePluginsSynchronizeAtStartup: false,
 
     system: {
-        tmpDir: path.join(os.tmpdir(), '.my-buddy'),
-        dataDir: path.join(localAppDataDir, '.my-buddy/data'),
+        tmpDir: path.join(os.tmpdir(), 'chewie'),
+        pluginsTmpDir: path.join(os.tmpdir(), 'chewie/plugins-tmp-data'),
+        dataDir: "data",
+        appDataChewiePath: path.join(localAppDataDir, "chewie"),
+        pluginsDataDir: path.join(localAppDataDir, 'chewie/data/plugins-data'),
         synchronizedPluginsDir: "plugins-synchronized", // under data dir
-        pluginsTmpDir: path.join(os.tmpdir(), '.my-buddy/plugins-tmp-data'),
-        pluginsDataDir: path.join(localAppDataDir, '.my-buddy/data/plugins-data'),
 
         // By default there are no speaker adapter.
         // The system may run without adapter it will just no output sound.
