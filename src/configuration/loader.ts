@@ -16,7 +16,7 @@ export default function(config: any) {
     let systemIP = ip.address();
     let appPath = process.cwd();
     let webServerUrl = ((completeConfig.webServerSSL.activate ? "https" : "http") + "://localhost:" + completeConfig.webServerPort);
-    let dataPath = path.join(completeConfig.system.appDataChewiePath, completeConfig.system.dataDir);
+    let dataPath = path.join(completeConfig.system.appDataPath, "data");
 
     // Set some config only possible during runtime
     _.merge(completeConfig, {

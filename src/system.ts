@@ -87,13 +87,13 @@ export class System extends EventEmitter {
                 // init required folders
                 utils.initDirsSync([
                     self.config.system.tmpDir,
-                    self.config.system.dataDir,
+                    self.config.system.appDataPath,
                     self.config.system.pluginsTmpDir,
                     self.config.pluginsLocalRepositoryDir,
                 ]);
 
                 // log various paths for debug conveniences
-                self.logger.verbose("App data path is located to %s", self.config.dataPath);
+                self.logger.verbose("App data path is located to %s (resolved)", path.resolve(process.cwd(), self.config.system.appDataPath));
 
                 // self.logger.Logger = loggerBuilder;
                 self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');

@@ -7,7 +7,7 @@ class ModuleLoader {
     constructor(system) {
         this.system = system;
         this.logger = this.system.logger.getLogger('ModuleLoader');
-        this.synchronizedPluginsPath = path.join(this.system.config.dataPath, this.system.config.system.synchronizedPluginsDir);
+        this.synchronizedPluginsPath = path.join(this.system.config.system.appDataPath, this.system.config.system.synchronizedPluginsDir);
     }
     loadModule(plugin, moduleId) {
         let moduleInfo = _.find(plugin.package.modules, function (module) {

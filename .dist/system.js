@@ -41,11 +41,11 @@ class System extends events_1.EventEmitter {
             self.logger.info(self.logger.emoji.get("point_up") + ' Start daemon');
             utils.initDirsSync([
                 self.config.system.tmpDir,
-                self.config.system.dataDir,
+                self.config.system.appDataPath,
                 self.config.system.pluginsTmpDir,
                 self.config.pluginsLocalRepositoryDir,
             ]);
-            self.logger.verbose("App data path is located to %s", self.config.dataPath);
+            self.logger.verbose("App data path is located to %s (resolved)", path.resolve(process.cwd(), self.config.system.appDataPath));
             self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');
             self.storage = new storage_1.default(self);
             self.communicationBus = new ServerCommunication.CommunicationBus(self);

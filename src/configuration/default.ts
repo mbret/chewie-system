@@ -70,8 +70,7 @@ module.exports = {
     system: {
         tmpDir: path.join(os.tmpdir(), 'chewie'),
         pluginsTmpDir: path.join(os.tmpdir(), 'chewie/plugins-tmp-data'),
-        dataDir: "data",
-        appDataChewiePath: path.join(localAppDataDir, "chewie"),
+        appDataPath: path.join(localAppDataDir, "chewie"),
         pluginsDataDir: path.join(localAppDataDir, 'chewie/data/plugins-data'),
         synchronizedPluginsDir: "plugins-synchronized", // under data dir
 
