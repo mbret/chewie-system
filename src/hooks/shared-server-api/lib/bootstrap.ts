@@ -14,7 +14,7 @@ import * as DBMigrate from "db-migrate";
 import * as bluebird from "bluebird";
 let ensureFile = bluebird.promisify(fsExtra.ensureFile);
 
-module.exports = function(server, app){
+module.exports = function(server, app) {
 
     return Promise.resolve()
         // first we ensure storage file exist
@@ -207,7 +207,9 @@ function runMigration(server) {
 function configureOrm(server) {
     server.orm = {};
 
-    server.orm.sequelize = new Sequelize('database', 'admin', null, server.config.storageFilePath);
+    server.orm.sequelize = new Sequelize('database', 'admin', null, _.merge(server.config.sharedDatabase.connexion, {
+        storage: server.config.storageFilePath
+    }));
 
     let modelsPath = "./models";
 

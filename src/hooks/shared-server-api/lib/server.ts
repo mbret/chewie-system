@@ -25,7 +25,7 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
     // set once the server is started and listening
     eventsWatcher: EventsWatcher;
 
-    constructor(system, userHookConfig){
+    constructor(system, userHookConfig) {
         super(system, userHookConfig);
         let self = this;
         this.logger = system.logger.getLogger('SharedServerApiHook');
@@ -57,14 +57,12 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
         return bootstrap(self, app)
             .then(function(){
 
-                // setTimeout(function() {
                 return self.startServer().then(function(){
                     self.eventsWatcher.watch();
                     self.logger.verbose('Initialized');
                     // self.emit("initialized");
                     return Promise.resolve();
                 });
-                // }, 5000);
             });
     }
 

@@ -425,3 +425,4 @@ moment.locale('en', {
 });
 console.log(moment.version);
 moment.defaultFormat = 'YYYY-MM-DD HH:mm';
+//# sourceMappingURL=moment-tests.js.map

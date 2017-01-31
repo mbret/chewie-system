@@ -139,7 +139,7 @@ class System extends events_1.EventEmitter {
                 return done(err);
             }
             let userBootstrap = self.config.bootstrap ? require(path.resolve(process.cwd(), self.config.bootstrap)) : null;
-            if (userBootstrap.bootstrap) {
+            if (userBootstrap && userBootstrap.bootstrap) {
                 let initializing = true;
                 self.logger.debug("A user bootstrap has been found, run it");
                 userBootstrap.bootstrap(self, function (err) {

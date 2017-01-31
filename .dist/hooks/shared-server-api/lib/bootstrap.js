@@ -153,7 +153,9 @@ function runMigration(server) {
 }
 function configureOrm(server) {
     server.orm = {};
-    server.orm.sequelize = new Sequelize('database', 'admin', null, server.config.storageFilePath);
+    server.orm.sequelize = new Sequelize('database', 'admin', null, _.merge(server.config.sharedDatabase.connexion, {
+        storage: server.config.storageFilePath
+    }));
     let modelsPath = "./models";
     server.orm.models = {};
     server.orm.models.Logs = require(modelsPath + '/logs')(server.orm.sequelize, server);
