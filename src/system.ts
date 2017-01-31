@@ -235,11 +235,12 @@ export class System extends EventEmitter {
             }
 
             // run user bootstrap if exist
-            let UserBootstrapModule = self.config.bootstrap || null;
-            if (UserBootstrapModule) {
+            // bootstrap key is a string and we suppose is relative to correct file.
+            // as require is always relative to the file containing the call we need to resolve from cwd
+            let userBootstrap: any = self.config.bootstrap ? require(path.resolve(process.cwd(), self.config.bootstrap)) : null;
+            if (userBootstrap.bootstrap) {
                 let initializing = true;
                 self.logger.debug("A user bootstrap has been found, run it");
-                let userBootstrap = new UserBootstrapModule();
                 userBootstrap.bootstrap(self, function(err) {
                     initializing = false;
                     return done(err);
