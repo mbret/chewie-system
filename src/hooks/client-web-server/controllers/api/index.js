@@ -89,7 +89,7 @@ module.exports = function (router) {
             "config": {
                 "env": config.env,
                 "systemIP": config.systemIP,
-                "databaseStorageDir": config.hooks["shared-server-api"].sharedDatabase.connexion.storage,
+                "databaseStorageDir": config.hooks["shared-server-api"].storageFilePath,
                 "tmpDir": config.system.tmpDir,
                 "dataDir": config.system.appDataPath,
                 "pluginsTmpDir": config.system.pluginsTmpDir,
@@ -107,7 +107,7 @@ module.exports = function (router) {
         async.parallel([
             // storage dir size
             function(cb) {
-                getSize(config.hooks["shared-server-api"].sharedDatabase.connexion.storage, function(err, size){
+                getSize(config.hooks["shared-server-api"].storageFilePath, function(err, size){
                     viewData.sizes.databaseStorageDir = size;
                     return cb(err);
                 });

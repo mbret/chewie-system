@@ -83,17 +83,5 @@ module.exports = {
         "client-web-server": {
             proxyServerPort: 3001
         },
-        "shared-server-api": {
-            ssl: {
-                key: basePath + "/resources/.ssh/server.key",
-                cert: basePath + "/resources/.ssh/server.crt",
-            },
-            sharedDatabase: {
-                connexion: {
-                    // SQLite only
-                    storage: path.join(localAppDataDir, '.my-buddy', 'storage/shared-database.sqlite'),
-                }
-            }
-        }
     }
 };

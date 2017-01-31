@@ -20,6 +20,8 @@ export default class Database implements InitializeAbleInterface {
     }
 
     initialize() {
+        return Promise.resolve();
+
         let sequelize = new Sequelize('database', 'admin', null, this.system.config.storageDatabaseConnexion);
         let modelsPath = this.config.modelsPath;
 

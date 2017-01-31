@@ -1,4 +1,5 @@
 'use strict';
+const _ = require("lodash");
 const hook_interface_1 = require("../../core/hook-interface");
 const custom_responses_1 = require("./lib/custom-responses");
 let http = require('http');
@@ -12,9 +13,11 @@ let fs = require('fs');
 let httpProxy = require('http-proxy');
 let socket = require('socket.io');
 let server, proxyServer;
+let localConfig = require("./hook-config");
 class ClientWebServer extends hook_interface_1.Hook {
     constructor(system, config) {
         super(system, config);
+        this.config = _.merge(localConfig, config);
         this.logger = system.logger.getLogger('ClientWebServer');
     }
     initialize() {

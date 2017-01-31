@@ -15,7 +15,7 @@ let ensureFile = bluebird.promisify(fsExtra.ensureFile);
 module.exports = function (server, app) {
     return Promise.resolve()
         .then(function () {
-        return ensureFile(server.config.sharedDatabase.connexion.storage);
+        return ensureFile(server.config.storageFilePath);
     })
         .then(function () {
         return runMigration(server);
@@ -136,7 +136,7 @@ function runMigration(server) {
         config: {
             dev: {
                 driver: "sqlite3",
-                filename: server.config.sharedDatabase.connexion.storage,
+                filename: server.config.storageFilePath,
             }
         },
         env: "dev"
@@ -155,7 +155,7 @@ function configureOrm(server) {
     server.orm = {};
     server.orm.sequelize = new Sequelize('database', 'admin', null, server.config.sharedDatabase.connexion);
     let modelsPath = "./models";
-    utils.initDirsSync(path.dirname(server.config.sharedDatabase.connexion.storage));
+    utils.initDirsSync(path.dirname(server.config.storageFilePath));
     server.orm.models = {};
     server.orm.models.Logs = require(modelsPath + '/logs')(server.orm.sequelize, server);
     server.orm.models.User = require(modelsPath + '/user')(server.orm.sequelize, server);

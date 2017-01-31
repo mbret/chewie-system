@@ -7,7 +7,7 @@ let http = require("http");
 let fs          = require('fs');
 import * as _ from "lodash";
 let path        = require('path');
-let localConfig = require("./config");
+let localConfig = require("../hook-config");
 import * as Services from "./services";
 import {EventsWatcher} from "./services/events-watcher";
 import {Hook, HookInterface} from "../../../core/hook-interface";
@@ -25,11 +25,13 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
     // set once the server is started and listening
     eventsWatcher: EventsWatcher;
 
-    constructor(system, config){
-        super(system, config);
+    constructor(system, userHookConfig){
+        super(system, userHookConfig);
         let self = this;
         this.logger = system.logger.getLogger('SharedServerApiHook');
-        this.config = _.merge(localConfig, config);
+        this.config = _.merge(localConfig, {
+            storageFilePath: path.join(system.config.system.appDataPath, "storage", localConfig.storageFileName)
+        }, userHookConfig);
         this.system = system;
         this.server = null;
         this.services = {};
@@ -44,6 +46,9 @@ export = class SharedServerApiHook extends Hook implements HookInterface, Initia
         _.forEach(Services, function(module, key) {
             self.services[key.charAt(0).toLowerCase() + key.slice(1)] = new module(system);
         });
+
+        // log various paths for debug conveniences
+        self.logger.verbose("Storage file is located to %s", self.config.storageFilePath);
     }
 
     initialize(){

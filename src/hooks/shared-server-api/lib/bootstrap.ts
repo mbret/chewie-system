@@ -19,7 +19,7 @@ module.exports = function(server, app){
     return Promise.resolve()
         // first we ensure storage file exist
         .then(function() {
-            return ensureFile(server.config.sharedDatabase.connexion.storage);
+            return ensureFile(server.config.storageFilePath);
         })
         // then we run migration (from database creation to last update)
         .then(function() {
@@ -181,7 +181,7 @@ function runMigration(server) {
         config: {
             dev: {
                 driver: "sqlite3",
-                filename: server.config.sharedDatabase.connexion.storage,
+                filename: server.config.storageFilePath,
             }
         },
         env: "dev"
@@ -211,7 +211,7 @@ function configureOrm(server) {
     let modelsPath = "./models";
 
     // init dir for storage first
-    utils.initDirsSync(path.dirname(server.config.sharedDatabase.connexion.storage));
+    utils.initDirsSync(path.dirname(server.config.storageFilePath));
 
     // Define models
     server.orm.models = {};

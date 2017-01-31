@@ -13,6 +13,7 @@ class Database {
         };
     }
     initialize() {
+        return Promise.resolve();
         let sequelize = new Sequelize('database', 'admin', null, this.system.config.storageDatabaseConnexion);
         let modelsPath = this.config.modelsPath;
         mkdirp.sync(path.dirname(this.system.config.storageDatabaseConnexion.storage));
