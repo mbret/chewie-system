@@ -12,7 +12,10 @@ gulp.task("copy", function() {
         .src([
             // copy all json files to dist (hooks installation, etc)
             "./src/**/*",
-            "!./src/**/*.ts"
+            "!./src/**/*.ts",
+            "!./src/**/README.json",
+            "!./src/**/.gitkeep",
+            "!./src/**/.gitignore"
         ])
         .pipe(gulp.dest("./.dist"));
 });
