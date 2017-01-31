@@ -26,5 +26,5 @@ module.exports = {
         migrationLogs: false
     },
     // SQLite only. Located inside app data /storage directory.
-    storageFileName: "shared-database.sqlite",
+    storageFileName: "shared-database.db",
 };

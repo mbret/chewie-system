@@ -22,6 +22,6 @@ module.exports = {
         migrationDir: __dirname + "/db-migrate",
         migrationLogs: false
     },
-    storageFileName: "shared-database.sqlite",
+    storageFileName: "shared-database.db",
 };
 //# sourceMappingURL=hook-config.js.map

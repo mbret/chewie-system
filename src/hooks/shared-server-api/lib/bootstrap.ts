@@ -181,7 +181,7 @@ function runMigration(server) {
         config: {
             dev: {
                 driver: "sqlite3",
-                filename: server.config.storageFilePath,
+                filename: path.resolve(process.cwd(), server.config.storageFilePath),
             }
         },
         env: "dev"
@@ -206,12 +206,10 @@ function runMigration(server) {
  */
 function configureOrm(server) {
     server.orm = {};
-    server.orm.sequelize = new Sequelize('database', 'admin', null, server.config.sharedDatabase.connexion);
+
+    server.orm.sequelize = new Sequelize('database', 'admin', null, server.config.storageFilePath);
 
     let modelsPath = "./models";
-
-    // init dir for storage first
-    utils.initDirsSync(path.dirname(server.config.storageFilePath));
 
     // Define models
     server.orm.models = {};

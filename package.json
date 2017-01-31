@@ -78,7 +78,7 @@
     "socket.io": "^1.7.1",
     "socket.io-client": "^1.7.1",
     "sprintf-js": "^1.0.3",
-    "sqlite3": "^3.1.6",
+    "sqlite3": "^3.1.8",
     "stream-series": "^0.1.1",
     "uuid": "^3.0.1",
     "validator": "^6.2.0",
