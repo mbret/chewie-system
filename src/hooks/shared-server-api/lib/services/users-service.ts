@@ -3,8 +3,8 @@
 var _ = require('lodash');
 var validator = require("validator");
 
-export function UsersService(system){
-    this.system = system;
+export function UsersService(server){
+    this.system = server.system;
 }
 
 UsersService.prototype.formatUser = function(user){

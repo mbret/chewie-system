@@ -21,13 +21,6 @@ module.exports = function (server, router) {
         })
             .catch(res.serverError);
     });
-    router.get("/runtime/executing-tasks", function (req, res) {
-        var tasks = [];
-        server.system.runtime.executingTasks.forEach(function (tmp) {
-            tasks.push(tmp);
-        });
-        return res.ok(server.services.taskService.taskExecutionToJson(tasks));
-    });
     router.delete("/runtime/executing-tasks/:execution", function (req, res) {
         var id = req.params.execution;
         var executingTask = server.system.runtime.executingTasks.get(id);

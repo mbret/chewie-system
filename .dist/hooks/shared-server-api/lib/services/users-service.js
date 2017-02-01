@@ -1,8 +1,8 @@
 "use strict";
 var _ = require('lodash');
 var validator = require("validator");
-function UsersService(system) {
-    this.system = system;
+function UsersService(server) {
+    this.system = server.system;
 }
 exports.UsersService = UsersService;
 UsersService.prototype.formatUser = function (user) {
