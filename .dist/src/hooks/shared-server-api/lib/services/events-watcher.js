@@ -15,5 +15,6 @@ class EventsWatcher {
         });
     }
 }
-exports.EventsWatcher = EventsWatcher;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = EventsWatcher;
 //# sourceMappingURL=events-watcher.js.map

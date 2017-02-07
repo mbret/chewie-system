@@ -1,7 +1,7 @@
 "use strict";
 var _ = require('lodash');
-function NotificationsService(system) {
-    this.system = system;
+function NotificationsService(server) {
+    this.system = server.system;
 }
 exports.NotificationsService = NotificationsService;
 NotificationsService.prototype.push = function (request, type, message) {
