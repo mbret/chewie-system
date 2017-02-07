@@ -2,8 +2,8 @@
 
 var _ = require('lodash');
 
-export function NotificationsService(system){
-    this.system = system;
+export function NotificationsService(server){
+    this.system = server.system;
 }
 
 NotificationsService.prototype.push = function(request, type, message){

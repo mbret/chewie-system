@@ -14,11 +14,13 @@ let fs = require('fs');
 let httpProxy = require('http-proxy');
 let socket = require('socket.io');
 let server, proxyServer;
+let localConfig = require("./hook-config");
 
 export default class ClientWebServer extends Hook implements HookInterface, InitializeAbleInterface {
 
     constructor(system: System, config: any) {
         super(system, config);
+        this.config = _.merge(localConfig, config);
         this.logger = system.logger.getLogger('ClientWebServer');
     }
 

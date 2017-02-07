@@ -1,8 +1,9 @@
 {
+  "bootstrap": "./config/bootstrap.js",
   "profileToLoadOnStartup": "admin",
   "system": {
     "tmpDir": "./.my-buddy/tmp",
-    "dataDir": "./.my-buddy/data"
+    "appDataPath": "./.chewie"
   },
   "pluginsLocalRepositoryDir": "./../plugins",
   "hooks": {

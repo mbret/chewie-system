@@ -13,6 +13,11 @@ gulp.task("copy", function() {
             // copy all json files to dist (hooks installation, etc)
             "./src/**/*",
             "!./src/**/*.ts",
+            "!./src/**/README.md",
+            "!./src/**/.gitkeep",
+            "!./src/**/.gitignore",
+            "!./src/**/package.json",
+            "!./src/**/*.ts",
             // ignore public from client-web-server hook to avoid large data
             "!./src/hooks/client-web-server/public/**/*"
         ])

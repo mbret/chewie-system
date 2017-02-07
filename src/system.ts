@@ -87,10 +87,13 @@ export class System extends EventEmitter {
                 // init required folders
                 utils.initDirsSync([
                     self.config.system.tmpDir,
-                    self.config.system.dataDir,
+                    self.config.system.appDataPath,
                     self.config.system.pluginsTmpDir,
                     self.config.pluginsLocalRepositoryDir,
                 ]);
+
+                // log various paths for debug conveniences
+                self.logger.verbose("App data path is located to %s (resolved)", path.resolve(process.cwd(), self.config.system.appDataPath));
 
                 // self.logger.Logger = loggerBuilder;
                 self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');
@@ -235,11 +238,12 @@ export class System extends EventEmitter {
             }
 
             // run user bootstrap if exist
-            let UserBootstrapModule = self.config.bootstrap || null;
-            if (UserBootstrapModule) {
+            // bootstrap key is a string and we suppose is relative to correct file.
+            // as require is always relative to the file containing the call we need to resolve from cwd
+            let userBootstrap: any = self.config.bootstrap ? require(path.resolve(process.cwd(), self.config.bootstrap)) : null;
+            if (userBootstrap && userBootstrap.bootstrap) {
                 let initializing = true;
                 self.logger.debug("A user bootstrap has been found, run it");
-                let userBootstrap = new UserBootstrapModule();
                 userBootstrap.bootstrap(self, function(err) {
                     initializing = false;
                     return done(err);

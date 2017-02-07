@@ -41,10 +41,11 @@ class System extends events_1.EventEmitter {
             self.logger.info(self.logger.emoji.get("point_up") + ' Start daemon');
             utils.initDirsSync([
                 self.config.system.tmpDir,
-                self.config.system.dataDir,
+                self.config.system.appDataPath,
                 self.config.system.pluginsTmpDir,
                 self.config.pluginsLocalRepositoryDir,
             ]);
+            self.logger.verbose("App data path is located to %s (resolved)", path.resolve(process.cwd(), self.config.system.appDataPath));
             self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');
             self.storage = new storage_1.default(self);
             self.communicationBus = new ServerCommunication.CommunicationBus(self);
@@ -137,11 +138,10 @@ class System extends events_1.EventEmitter {
             if (err) {
                 return done(err);
             }
-            let UserBootstrapModule = self.config.bootstrap || null;
-            if (UserBootstrapModule) {
+            let userBootstrap = self.config.bootstrap ? require(path.resolve(process.cwd(), self.config.bootstrap)) : null;
+            if (userBootstrap && userBootstrap.bootstrap) {
                 let initializing = true;
                 self.logger.debug("A user bootstrap has been found, run it");
-                let userBootstrap = new UserBootstrapModule();
                 userBootstrap.bootstrap(self, function (err) {
                     initializing = false;
                     return done(err);

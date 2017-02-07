@@ -16,15 +16,17 @@ export default function(config: any) {
     let systemIP = ip.address();
     let appPath = process.cwd();
     let webServerUrl = ((completeConfig.webServerSSL.activate ? "https" : "http") + "://localhost:" + completeConfig.webServerPort);
+    let dataPath = path.join(completeConfig.system.appDataPath, "data");
 
     // Set some config only possible during runtime
     _.merge(completeConfig, {
         appPath: appPath,
         systemIP: systemIP,
+        dataPath: dataPath,
         // sharedApiUrl: completeConfig.sharedApiUrl || ((completeConfig.sharedApiSSL.activate ? "https" : "http") + "://" + (systemIP + ':' + completeConfig.sharedApiPort)),
         webServerUrl: webServerUrl,
         webServerRemoteUrl: webServerUrl.replace("localhost", systemIP),
-        synchronizedPluginsPath: path.join(completeConfig.system.dataDir, completeConfig.system.synchronizedPluginsDir)
+        synchronizedPluginsPath: path.join(dataPath, completeConfig.system.synchronizedPluginsDir)
     });
 
     return formatDynConfig(completeConfig);
