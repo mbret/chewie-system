@@ -12,6 +12,7 @@ let path = require("path");
 let buildPath = __dirname + "/.build";
 let copyOfNodeModulesDestPath = "./public/node_modules";
 let distAppPath = path.join(basePath, "/.dist/hooks/client-web-server");
+let srcAppPath = path.join(basePath, "src/hooks/client-web-server");
 
 // --from-source for when working from sources
 if (argv.fromSource) {
@@ -24,6 +25,7 @@ let config = {
     publicPath: __dirname + "/public",
     buildPath: buildPath,
     basePath: basePath,
+    srcAppPath: srcAppPath,
     nodeModulesPath: path.join(basePath, "node_modules"),
     copyOfNodeModulesDestPath: copyOfNodeModulesDestPath,
     distAppPath: distAppPath,

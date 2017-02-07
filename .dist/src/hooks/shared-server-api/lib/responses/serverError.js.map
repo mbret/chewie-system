@@ -1,0 +1,1 @@
+{"version":3,"file":"serverError.js","sourceRoot":"D:/Workspace/chewie-system/src/","sources":["src/hooks/shared-server-api/lib/responses/serverError.ts"],"names":[],"mappings":"AAAA,YAAY,CAAC;AAEb,MAAM,CAAC,OAAO,GAAG,UAAS,GAAG;IACzB,MAAM,CAAC,IAAI,CAAC,QAAQ,CAAC,IAAI,CAAC,GAAG,CAAC,CAAC;AACnC,CAAC,CAAC"}

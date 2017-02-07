@@ -51,4 +51,3 @@ module.exports = function (router) {
         });
     });
 };
-//# sourceMappingURL=index.js.map

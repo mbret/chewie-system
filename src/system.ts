@@ -72,7 +72,7 @@ export class System extends EventEmitter {
         let self = this;
 
         // load config
-        configurationLoader(require(options.settings))
+        configurationLoader(options.settings)
             .then(function(config) {
                 self.config = config;
 

@@ -84,4 +84,3 @@ module.exports = class ScenariosHook extends hook_interface_1.Hook {
         });
     }
 };
-//# sourceMappingURL=index.js.map

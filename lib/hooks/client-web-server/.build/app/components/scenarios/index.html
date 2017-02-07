@@ -1,0 +1,84 @@
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Scenarios</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a ui-sref="dashboard.home">Home</a>
+            </li>
+            <li class="active">
+                <strong>Scenarios</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content" id="scenarios-list">
+
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Actions</h5>
+                </div>
+                <div class="ibox-content">
+                    <a class="btn btn-primary" type="button" ui-sref="dashboard.scenarios.create">Create a new scenario</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="page-header">My scenarios</h1>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-info" ng-if="scenarios.length < 1">
+                You do not have any scenario yet.
+            </div>
+            <div class="tabs-container">
+                <uib-tabset class="tabs-left">
+                    <uib-tab heading="{{scenario.name}}" ng-repeat="scenario in scenarios">
+                        <div class="panel-body">
+                            <strong>Created:</strong> {{scenario.createdAt | date}}<br>
+                            <strong>Description</strong> {{scenario.description}}<br>
+                            <hr>
+                            <button class="btn btn-danger" ng-click="remove(scenario)"><i class="fa fa-trash"></i> Delete</button>
+                            <button class="btn btn-warning" ng-click="edit(scenario)"><i class="fa fa-edit"></i> Edit</button>
+                            <button class="btn btn-default" ng-click="run(scenario)"><i class="fa fa-play-circle-o"></i> Run</button>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
+        </div>
+    </div>
+
+    <div class="row m-t-lg">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>Running scenarios</h5>
+                    <div ibox-tools></div>
+                </div>
+                <div class="ibox-content">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="scenario in runningScenarios">
+                                <td title="scenario.executionId">{{scenario.executionId|truncate:10}}</td>
+                                <td>{{scenario.model.name}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-warning text-"> <i class="fa fa-stop"></i> Stop</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

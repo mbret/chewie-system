@@ -3,10 +3,15 @@ module.exports = function (gulp, config) {
         name: "copy-public",
         fn: function() {
             gulp
-                .src([
-                    "./public/**/**",
-                    "!./public/{css,css/**}"
-                ])
+                .src(
+                    [
+                        "./public/**/**",
+                        "!./public/{css,css/**}"
+                    ],
+                    {
+                        cwd: config.srcAppPath
+                    }
+                )
                 .pipe(gulp.dest(config.buildPath));
         }
     };

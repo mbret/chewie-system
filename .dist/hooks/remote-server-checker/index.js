@@ -17,4 +17,3 @@ module.exports = class RemoteServerHook extends hook_interface_1.Hook {
         return Promise.resolve();
     }
 };
-//# sourceMappingURL=index.js.map

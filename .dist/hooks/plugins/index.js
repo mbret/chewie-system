@@ -66,4 +66,3 @@ module.exports = class PluginsHook extends hook_interface_1.Hook {
         });
     }
 };
-//# sourceMappingURL=index.js.map

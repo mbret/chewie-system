@@ -18,4 +18,3 @@ module.exports = function (router) {
             .catch(res.serverError);
     });
 };
-//# sourceMappingURL=repositories.js.map
