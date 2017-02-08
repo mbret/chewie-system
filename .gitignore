@@ -16,3 +16,4 @@ lib/**/*.js
 
 # intellij
 *.iml
+.dist

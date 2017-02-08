@@ -58,7 +58,7 @@ module.exports = {
     // coreHooksDir: path.resolve(basePath, "lib/hooks"),
 
     // Run a specific profile at startup. The value must match an user username.
-    profileToLoadOnStartup: null,
+    // profileToLoadOnStartup: null,
 
     auth: {
         jwtSecret: 'zbla'

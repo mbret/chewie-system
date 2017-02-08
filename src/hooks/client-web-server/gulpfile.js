@@ -9,16 +9,16 @@ let gulp = require('gulp');
 const requireAll = require("require-all");
 let basePath = __dirname + "/../../..";
 let path = require("path");
-let buildPath = __dirname + "/.build";
-let copyOfNodeModulesDestPath = "./public/node_modules";
+// let buildPath = __dirname + "/.build";
+// let copyOfNodeModulesDestPath = "./public/node_modules";
 let distAppPath = path.join(basePath, "/.dist/hooks/client-web-server");
 let srcAppPath = path.join(basePath, "src/hooks/client-web-server");
 
 // --from-source for when working from sources
-if (argv.fromSource) {
-    buildPath = path.join(distAppPath, ".build");
-    copyOfNodeModulesDestPath = path.join(distAppPath, copyOfNodeModulesDestPath);
-}
+// if (argv.fromSource) {
+let buildPath = path.join(distAppPath, ".build");
+let copyOfNodeModulesDestPath = path.join(distAppPath, copyOfNodeModulesDestPath);
+// }
 
 let config = {
     fromSource: argv.fromSource,

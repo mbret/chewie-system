@@ -13,12 +13,11 @@
     "node": ">=6.5.0"
   },
   "scripts": {
-    "build-hook-client-web-server": "cd ./.dist/hooks/client-web-server && npm run build",
+    "build-hook-client-web-server": "cd ./src/hooks/client-web-server && npm run build",
     "build": "gulp build && npm run build-hook-client-web-server && tsc",
     "dev-hook-client-web-server": "cd ./src/hooks/client-web-server && npm run dev",
     "dev": "concurrently --raw \"npm run build\" \"npm run dev-hook-client-web-server\" \"tsc -w\"",
     "test": "mocha",
-    "foo": "./scripts/test.sh",
     "start-dev": "cd .dev && node _dev-windows/index.js"
   },
   "dependencies": {
@@ -94,15 +93,6 @@
     "eslint-config-standard": "^6.2.0",
     "eslint-plugin-promise": "^3.3.0",
     "eslint-plugin-standard": "^2.0.0",
-    "grunt": "^1.0.1",
-    "grunt-cli": "^1.2.0",
-    "grunt-config-dir": "^0.3.2",
-    "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-less": "^1.4.0",
-    "grunt-copy-browser-modules": "^6.0.0",
-    "grunt-copy-to": "^0.0.12",
-    "grunt-eslint": "^19.0.0",
-    "grunt-mocha-cli": "^3.0.0",
     "gulp-angular-filesort": "^1.1.1",
     "gulp-clean": "^0.3.2",
     "gulp-inject": "^4.1.0",
