@@ -8,17 +8,19 @@ import {ScenarioHelper} from "../../core/scenario/scenario-helper";
 export = class PluginsHook extends Hook implements HookInterface, InitializeAbleInterface {
 
     scenariosHelper: ScenarioHelper;
+    listeners: any;
 
-    constructor(system: System) {
-        super(system);
+    constructor(system: System, config: any) {
+        super(system, config);
         this.scenariosHelper = new ScenarioHelper(this.system);
+        this.listeners = {};
     }
 
     initialize() {
         let self = this;
 
         // make sure shared api server is running
-        this.system.on("ready", function() {
+        this.system.once("ready", function() {
             // Fetch all plugins to synchronize the plugins not yet synchronized
             self.system.sharedApiService
                 .getAllPlugins()
@@ -35,14 +37,8 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
                 });
         });
 
-        // listen for newly synchronized plugins
-        // this.system.on("plugin:synchronized", function(plugin) {
-        //     self.logger.verbose("New plugin %s synchronized detected", plugin.name);
-        //     return self.loadPlugin(plugin);
-        // });
-
         // Listen for new plugin
-        this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
+        self.listeners.pluginCreated = this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
             if (plugin.deviceId === self.system.id) {
                 self.logger.verbose("New plugin %s created detected", plugin.name);
                 self.logger.verbose('Synchronizing plugin %s', plugin.name);
@@ -51,13 +47,21 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
         });
 
         // Listen for plugin deletion
-        this.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
+        self.listeners.pluginDeleted = this.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
             // ensure we are on the right device
             if (plugin.deviceId === self.system.id && self.system.runtime.plugins.get(plugin.name)) {
                 self.logger.verbose("Plugin %s deletion detected", plugin.name);
                 self.unLoadPlugins([plugin]);
             }
         });
+
+        return Promise.resolve();
+    }
+
+    onShutdown() {
+        // clean listeners
+        this.system.sharedApiService.io.removeListener("plugin:deleted", this.listeners.pluginDeleted);
+        this.system.sharedApiService.io.removeListener("plugin:created", this.listeners.pluginCreated);
 
         return Promise.resolve();
     }

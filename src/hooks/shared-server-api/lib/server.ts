@@ -20,7 +20,9 @@ let validator = require("validator");
 import * as fsExtra from "fs-extra";
 import * as DBMigrate from "db-migrate";
 import * as Bluebird from "bluebird";
+import {debug} from "../../../shared/debug";
 let ensureFile = Bluebird.promisify(fsExtra.ensureFile);
+let debugDefault = debug("hooks:shared-server-api");
 
 export default class SharedServerApiHook extends Hook implements HookInterface, InitializeAbleInterface {
 
@@ -55,7 +57,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
         });
 
         // log various paths for debug conveniences
-        self.logger.verbose("Storage file is located to %s", self.config.storageFilePath);
+        debugDefault("Storage file is located to %s", self.config.storageFilePath);
     }
 
     public initialize() {
@@ -82,7 +84,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
             .then(function() {
                 return self.startServer().then(function(){
                     self.services.eventsWatcher.watch();
-                    self.logger.verbose('Initialized');
+                    debugDefault('Initialized');
                     // self.emit("initialized");
                     return Promise.resolve();
                 });
@@ -126,7 +128,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
                 })
                 .on('listening', function(){
                     self.localAddress = 'https://localhost:' + self.server.address().port;
-                    self.logger.verbose('The API is available at %s or %s for remote access', self.localAddress, self.system.config.sharedApiUrl);
+                    debugDefault('The API is available at %s or %s for remote access', self.localAddress, self.system.config.sharedApiUrl);
                     return resolve();
                 });
         });
@@ -134,7 +136,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
 
     protected runMigration() {
         let server = this;
-        server.logger.verbose("Run database migration");
+        debugDefault("Run database migration");
         let dbMigrateInstance = DBMigrate.getInstance(true, {
             cwd: server.config.sharedDatabase.migrationDir,
             config: {
@@ -148,7 +150,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
         dbMigrateInstance.silence(!server.config.sharedDatabase.migrationLogs);
         return dbMigrateInstance.up()
             .then(function() {
-                server.logger.verbose("Database migration executed with success");
+                debugDefault("Database migration executed with success");
             })
             .catch(function(err) {
                 server.logger.error("runMigration failed");
@@ -207,7 +209,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
         return server.orm.models.User
             .initAdmin()
             .then(function() {
-                server.logger.verbose("ORM initialized");
+                debugDefault("ORM initialized");
             });
     }
 
@@ -230,7 +232,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
         // simple log of http request
         // Only in console, nginx take control on production environment
         app.use(function (req, res, next) {
-            server.logger.debug(req.hostname + " -> " + req.method + " (" + req.protocol + ") " + req.url);
+            debugDefault(req.hostname + " -> " + req.method + " (" + req.protocol + ") " + req.url);
             return next();
         });
 

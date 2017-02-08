@@ -3,10 +3,10 @@
 let async = require('async');
 import _  = require('lodash');
 const util = require("util");
-let taskQueue = require('my-buddy-lib').taskQueue;
 let repositories = require('./core/repositories');
 let utils = require('my-buddy-lib').utils;
 import path = require('path');
+let queue = require('queue');
 let packageInfo = require(__dirname + '/../package.json');
 import ip  = require('ip');
 import { EventEmitter }  from "events";
@@ -42,10 +42,11 @@ export class System extends EventEmitter {
     repository: any;
     sharedApiService: SharedApiServiceHelper;
     storage: Storage;
-    hooks: Array<HookInterface>
+    hooks: Array<HookInterface>;
     info: any;
     id: string;
     name: string;
+    protected shutdownQueue: any;
 
     /**
      * System constructor
@@ -60,6 +61,7 @@ export class System extends EventEmitter {
             version: packageInfo.version,
             nodeVersions: process.versions
         };
+        this.shutdownQueue = queue();
     }
 
     /**
@@ -122,8 +124,9 @@ export class System extends EventEmitter {
      * @param processCode null|0 by default
      * @param restart
      */
-    public shutdown(processCode = undefined, restart = undefined){
-        if(!processCode){
+    public shutdown(processCode = undefined, restart = undefined) {
+        let self = this;
+        if (!processCode) {
             processCode = 0; // no problem
         }
 
@@ -131,14 +134,21 @@ export class System extends EventEmitter {
 
         // Process each task on shutdown
         this.logger.verbose('Process all registered shutdown task before shutdown');
-        taskQueue.proceed('shutdown', { stopOnError: false }, function(){
+        this.shutdownQueue.start(function(err) {
             // ignore error
+            if (err) {
+                self.logger.error("Some errors on shutdown task queue processing", err);
+            }
             process.exit(restart ? 42 : processCode);
         });
     }
 
     public restart(){
         this.shutdown(0, true);
+    }
+
+    public registerTaskOnShutdown(fn: Function) {
+        this.shutdownQueue.push(fn);
     }
 
     private init(cb) {

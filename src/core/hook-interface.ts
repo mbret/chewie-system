@@ -27,6 +27,10 @@ export class Hook extends EventEmitter implements HookInterface {
     getLogger() {
         return this.system.logger.getLogger('Hook');
     }
+
+    onShutdown() {
+        return Promise.resolve();
+    }
 }
 
 export let hookMixin = {

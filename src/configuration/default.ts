@@ -80,8 +80,9 @@ module.exports = {
     },
 
     hooks: {
-        "client-web-server": {
-            proxyServerPort: 3001
-        },
+        "client-web-server": true,
+        "shared-server-api": true,
+        "scenarios": true,
+        "plugins": true
     }
 };

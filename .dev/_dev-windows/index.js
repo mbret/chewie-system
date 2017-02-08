@@ -9,5 +9,5 @@ const chewie = require(__dirname +  '/../..');
 
 // Start the system
 chewie.start({
-    settings: path.join(__dirname, "config/settings.json")
+    settings: require(path.join(__dirname, "config/settings.json"))
 });

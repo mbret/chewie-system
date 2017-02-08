@@ -8,12 +8,14 @@
   "pluginsLocalRepositoryDir": "./../plugins",
   "hooks": {
     "shared-server-api": {
-      "sharedDatabase": {
-        "connexion": {
-          "storage": "./.my-buddy/storage/db.sqlite",
-          "dropOnStartup": false
-        },
-        "migrationLogs": true
+      "config": {
+        "sharedDatabase": {
+          "connexion": {
+            "storage": "./.my-buddy/storage/db.sqlite",
+            "dropOnStartup": false
+          },
+          "migrationLogs": true
+        }
       }
     }
   },

@@ -66,14 +66,14 @@ export class LoggerBuilder {
         logger.emoji = emoji;
 
         // monkey patch to get stack
-        let debug = logger.debug;
-        logger.debug = function() {
-            debug.apply(logger, formatLogArguments(arguments));
-        };
-        let verbose = logger.verbose;
-        logger.verbose = function() {
-            verbose.apply(logger, formatLogArguments(arguments));
-        };
+        // let debug = logger.debug;
+        // logger.debug = function() {
+        //     debug.apply(logger, formatLogArguments(arguments));
+        // };
+        // let verbose = logger.verbose;
+        // logger.verbose = function() {
+        //     verbose.apply(logger, formatLogArguments(arguments));
+        // };
 
         this.loggers.push(logger);
 
@@ -81,7 +81,7 @@ export class LoggerBuilder {
     };
 
     // https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json
-    private stylize(prepend, msg, level){
+    private stylize(prepend, msg, level) {
         // prepend = '[' + prepend + ']';
         // prepend = pad(level + " " + prepend, 20) + ' ';
         prepend = pad("❤ " + prepend, 25) + ' ';
@@ -90,7 +90,7 @@ export class LoggerBuilder {
         if (stack) {
             msg = msg.replace(rx, chalk.gray(stack[1]));
         }
-        switch(level){
+        switch(level) {
             case 'silly':
                 return chalk.magenta(prepend) + ' ' + chalk.gray(msg);
             case 'debug':

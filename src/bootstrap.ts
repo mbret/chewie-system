@@ -1,36 +1,23 @@
-'use strict';
-
 import {System} from "./system";
-import {hookMixin} from "./core/hook-interface";
-let util = require('util');
-let self = this;
-let _ = require("lodash");
+import util = require('util');
+import _ = require("lodash");
+import {debug} from "./shared/debug";
+import * as Bluebird from "bluebird";
 
 export class Bootstrap {
 
     system: System;
-    logger: any;
 
     constructor(system) {
-        self = this;
         this.system = system;
-        this.logger = system.logger.getLogger('Bootstrap');
     }
 
     /**
-     *
      * @param done
      */
-    bootstrap(done) {
+    public bootstrap(done) {
         let self = this;
         let initializing = true;
-        let hooksToLoad = [];
-
-        // register hooks (for now only core)
-        hooksToLoad.push("client-web-server");
-        hooksToLoad.push("shared-server-api");
-        hooksToLoad.push("scenarios");
-        hooksToLoad.push("plugins");
 
         Promise.resolve()
             // Initialize core services
@@ -40,7 +27,7 @@ export class Bootstrap {
                     self.system.communicationBus.initialize(),
                     self.system.sharedApiService.initialize(),
                     self.system.storage.initialize(),
-                    self._loadHooks(hooksToLoad),
+                    self.loadHooks(),
                 ]);
             })
             // For now we need the shared api server to be connected
@@ -50,7 +37,7 @@ export class Bootstrap {
                         return Promise.resolve();
                     })
                     .catch(function() {
-                        self.logger.warn("Please check that the remote server is running before starting the system");
+                        self.system.logger.warn("Please check that the remote server is running before starting the system");
                         throw new Error("Waiting for remote api server starting");
                     });
             })
@@ -70,39 +57,69 @@ export class Bootstrap {
         // Warning for abnormal time
         setTimeout(function() {
             if (initializing) {
-                self.logger.warn("The initialization process is still not done and seems to take an unusual long time. For some cases you may increase the time in config file.");
+                self.system.logger.warn("The initialization process is still not done and seems to take an unusual long time. For some cases you may increase the time in config file.");
             }
         }, 10000);
     }
 
     /**
-     * @returns {Object}
      * @private
      */
-    _loadHooks(hooksToLoad) {
+    protected loadHooks() {
         let self = this;
         let promises = [];
-        hooksToLoad.forEach(function(moduleName) {
-            self.logger.verbose("Initializing hook %s..", moduleName);
-            let Module = require("./hooks/" + moduleName);
+        _.forEach(self.system.config.hooks, function(config, name) {
+            debug("hooks")("Check hook config for %s", name);
+
+            // normalize config
+            if (typeof config === "boolean") {
+                config = { activated: config };
+            }
+            // set default hook user config
+            config.config = config.config || {};
+            config.modulePath = config.modulePath || "./hooks/" + name;
+
+            // hook is deactivated
+            if (config.activated === false) {
+                debug("hooks")("Hook %s is deactivated", name);
+                return promises.push(Promise.resolve());
+            }
+
+            // first we try to lookup core module. We always use core hooks as priority
+            let hookModule = null;
+            try { hookModule = require(config.modulePath); } catch(e) {}
+
+            // if core hook does not exist we try to load node_module  hook
+            try { hookModule = require(name); } catch(e) {}
+
+            // Hook module not found
+            if (!hookModule) {
+                return promises.push(Promise.reject(new Error("The hook " + hookModule + " does not seems to exist. Please check that you have installed the module in your dependencies.")));
+            }
 
             // monkey-patch hard way. The easy way is to store original method in var and call it after. But I like playing hard >_<
-            Module.prototype.emit = function() {
+            hookModule.prototype.emit = function() {
                 if (this instanceof require("events").EventEmitter) {
                     this.constructor.EventEmitter.prototype.emit.apply(this, arguments);
-                    arguments[0] = "hooks:" + moduleName + ":" + arguments[0];
+                    arguments[0] = "hooks:" + name + ":" + arguments[0];
                     self.system.emit.apply(self.system, arguments);
                 }
             };
 
-            let hook = new Module(self.system, self.system.config.hooks[moduleName]);
-            self.system.hooks[moduleName] = hook;
+            // we pass the user config to the hook so it can override its own config
+            let hook = new hookModule(self.system, self.system.config.hooks[name].config);
+            self.system.registerTaskOnShutdown((cb) => {
+                hook.onShutdown()
+                    .then(() => {cb()})
+                    .catch(cb);
+            });
+            self.system.hooks[name] = hook;
             promises.push(
                 hook.initialize()
                     .then(function() {
-                        self.logger.verbose("Hook %s initialized", moduleName);
+                        debug("hooks")("Hook %s initialized", name);
                         setImmediate(function() {
-                            self.system.emit("hook:" + moduleName + ":initialized");
+                            self.system.emit("hook:" + name + ":initialized");
                         });
                     })
             );

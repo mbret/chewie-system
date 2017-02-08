@@ -1,6 +1,7 @@
 "use strict";
 
 import {System} from "./system";
+import {generate} from "./shared/generate-app-id";
 
 // Read the ctrl+c of windows to handle SIGINT correctly
 if (process.platform === "win32") {
@@ -16,7 +17,7 @@ if (process.platform === "win32") {
 }
 
 // generate app id
-require("child_process").execSync("node " + __dirname + "/../scripts/generate-app-id.js", { stdio: 'inherit', cwd: process.cwd() });
+let systemData = generate();
 
 // Export new app and pass .system info to it
-module.exports = new System(require('jsonfile').readFileSync(require("path").join(process.cwd(), ".system")));
+module.exports = new System(systemData);
