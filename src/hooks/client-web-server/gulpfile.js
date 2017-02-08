@@ -10,14 +10,14 @@ const requireAll = require("require-all");
 let basePath = __dirname + "/../../..";
 let path = require("path");
 // let buildPath = __dirname + "/.build";
-// let copyOfNodeModulesDestPath = "./public/node_modules";
+let copyOfNodeModulesDestPath = "./public/node_modules";
 let distAppPath = path.join(basePath, "/.dist/hooks/client-web-server");
 let srcAppPath = path.join(basePath, "src/hooks/client-web-server");
 
 // --from-source for when working from sources
 // if (argv.fromSource) {
 let buildPath = path.join(distAppPath, ".build");
-let copyOfNodeModulesDestPath = path.join(distAppPath, copyOfNodeModulesDestPath);
+copyOfNodeModulesDestPath = path.join(distAppPath, copyOfNodeModulesDestPath);
 // }
 
 let config = {
@@ -58,20 +58,20 @@ let config = {
         "./node_modules/angular-socket-io/socket.min.js",
     ],
     vendorsToInject: [
-        "./public/vendors/iCheck/icheck.js",
-        "./public/vendors/masonry/dist/masonry.pkgd.min.js",
-        "./public/vendors/bootstrap-daterangepicker/daterangepicker.js",
-        "./public/vendors/angular-daterangepicker/js/angular-daterangepicker.min.js",
-        "./public/vendors/angular-socket-io/*.min.js",
-        "./public/vendors/angular-toastr/dist/*.min.js",
-        "./public/vendors/angular-translate/*.min.js",
-        "./public/vendors/angular-oauth2/dist/*.min.js",
-        "./public/vendors/angular-cookies/*.min.js",
-        "./public/vendors/query-string/*.js",
-        "./public/vendors/angular-logger/dist/*.min.js",
-        "./public/vendors/angular-ui-tree/dist/angular-ui-tree.js",
-        "./public/vendors/angular-masonry/angular-masonry.js",
-        "./public/vendors/ngstorage/ngStorage.js"
+        "vendors/iCheck/icheck.js",
+        "vendors/masonry/dist/masonry.pkgd.min.js",
+        "vendors/bootstrap-daterangepicker/daterangepicker.js",
+        "vendors/angular-daterangepicker/js/angular-daterangepicker.min.js",
+        "vendors/angular-socket-io/*.min.js",
+        "vendors/angular-toastr/dist/*.min.js",
+        "vendors/angular-translate/*.min.js",
+        "vendors/angular-oauth2/dist/*.min.js",
+        "vendors/angular-cookies/*.min.js",
+        "vendors/query-string/*.js",
+        "vendors/angular-logger/dist/*.min.js",
+        "vendors/angular-ui-tree/dist/angular-ui-tree.js",
+        "vendors/angular-masonry/angular-masonry.js",
+        "vendors/ngstorage/ngStorage.js"
     ],
     taskLoadConfig: {
         // simples

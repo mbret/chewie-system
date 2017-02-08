@@ -2,17 +2,6 @@ const path = require("path");
 const inject = require('gulp-inject');
 const series = require('stream-series');
 
-let streams = {
-    app: [
-        './public/app/**/*.module.js',
-        './public/app/**/module.js',
-        './public/app/**/*.js',
-
-        // ignore screens file for now
-        '!./public/app/screens/**/*.js'
-    ]
-};
-
 /**
  * Inject the js files from several stream into index.ejs
  */
@@ -23,13 +12,20 @@ module.exports = function (gulp, config) {
             let target = gulp.src("./public/index.html");
 
             // It's not necessary to read the files (will speed up things), we're only after their paths:
-            let appStream = gulp.src(streams.app, {
+            let appStream = gulp.src([
+                'app/**/*.module.js',
+                'app/**/module.js',
+                'app/**/*.js',
+
+                // ignore screens file for now
+                '!app/screens/**/*.js'
+            ], {
                 read: false,
-                cwd: config.distAppPath
+                cwd: config.distAppPath + "/.build"
             });
             let vendorsStream = gulp.src(config.vendorsToInject, {
                 read: false,
-                cwd: config.distAppPath
+                cwd: config.distAppPath + "/.build"
             });
             let vendorsNodeModulesStream = gulp.src(config.vendorsNodeModulesToInject, {
                 read: false,
