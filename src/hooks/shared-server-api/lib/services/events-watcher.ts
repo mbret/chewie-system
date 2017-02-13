@@ -1,6 +1,6 @@
 "use strict";
 import {NotificationsFormatter} from "./notifications-formatter";
-import {SharedServerApiHook} from "../server";
+import SharedServerApiHook from "../server";
 
 export default class EventsWatcher {
 

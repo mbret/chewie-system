@@ -1,15 +1,12 @@
-'use strict';
-var _ = require('lodash');
+let _ = require('lodash');
 
-class Base{
+export default class Base {
 
     static toJSON(datas){
-        var res = [];
+        let res = [];
         _.forEach(datas, function(data){
             res.push(data.toJSON());
         });
         return res;
     }
 }
-
-module.exports = Base;

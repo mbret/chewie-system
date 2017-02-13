@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var google = require('googleapis');
 var util= require('util');
-var validator = require('validator');
+import * as validator from "validator";
 
 module.exports = function(server, router){
 
@@ -50,7 +50,7 @@ module.exports = function(server, router){
      */
     router.get('/users/:id', function(req, res){
         var id = req.params.id;
-        var search = {};
+        var search: any = {};
 
         if(validator.isInt(id)) {
             search.id = id;
@@ -75,7 +75,7 @@ module.exports = function(server, router){
     router.put('/users/:id', function(req, res){
         var id = req.params.id;
         var config = req.body.config;
-        var toUpdate = {};
+        var toUpdate: any = {};
 
         // validate body
         var errors = new Map();

@@ -1,11 +1,12 @@
 "use strict";
 
 import * as _ from "lodash";
-import {HookInterface, Hook} from "../../core/hook-interface";
+import {HookInterface} from "../../core/hook-interface";
 import {System} from "../../system";
 import {ScenarioHelper} from "../../core/scenario/scenario-helper";
 import {ScenarioModel} from "../shared-server-api/lib/models/scenario";
 import {SystemError} from "../../core/error";
+import {Hook} from "../../core/hooks";
 
 /**
  * Scenario are loaded automatically when:

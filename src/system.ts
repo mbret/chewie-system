@@ -15,14 +15,14 @@ import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
 import {Bootstrap} from "./bootstrap";
 import {Runtime} from "./core/runtime";
-import {PluginsLoader} from "./core/plugins/plugins-loader";
 import {Speaker} from "./core/speaker/speaker";
 import configurationLoader from "./configuration/loader";
-import LocalRepository from "./core/repositories/local";
+import LocalRepository from "./core/repositories/local-repository";
 import Storage from "./core/storage/storage";
 import {SharedApiServiceHelper} from "./core/remote-service/shared-api-service-helper";
 import {LoggerBuilder, LoggerInterface} from "./core/logger";
 import {HookInterface} from "./core/hook-interface";
+import {GarbageCollector} from "./core/garbage-collector";
 
 /**
  * System is the main program daemon.
@@ -35,10 +35,10 @@ export class System extends EventEmitter {
     communicationBus: ServerCommunication.CommunicationBus;
     scenarioReader: ScenarioReader;
     moduleLoader: ModuleLoader;
-    pluginsLoader: PluginsLoader;
     logger: LoggerInterface;
     speaker: Speaker;
     localRepository: LocalRepository;
+    garbageCollector: GarbageCollector;
     repository: any;
     sharedApiService: SharedApiServiceHelper;
     storage: Storage;
@@ -62,6 +62,7 @@ export class System extends EventEmitter {
             nodeVersions: process.versions
         };
         this.shutdownQueue = queue();
+        this.garbageCollector = new GarbageCollector(this);
     }
 
     /**
@@ -108,7 +109,6 @@ export class System extends EventEmitter {
                 self.repository = new repositories.Repository(self);
                 self.scenarioReader = new ScenarioReader(self);
                 self.moduleLoader = new ModuleLoader(self);
-                self.pluginsLoader = new PluginsLoader(self);
 
                 self.init(function(err){
                     return cb(err);

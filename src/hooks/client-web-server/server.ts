@@ -1,8 +1,9 @@
 'use strict';
 import {System} from "../../system";
 import * as _ from "lodash";
-import {HookInterface, Hook} from "../../core/hook-interface";
+import {HookInterface} from "../../core/hook-interface";
 import {customResponses} from "./lib/custom-responses";
+import {Hook} from "../../core/hooks";
 let http = require('http');
 let kraken = require('kraken-js');
 let express = require('express');

@@ -1,5 +1,5 @@
 {
-  "bootstrap": "./config/bootstrap.js",
+  "bootstrap": "./bootstrap.js",
   "profileToLoadOnStartup": "admin",
   "system": {
     "tmpDir": "./.my-buddy/tmp",

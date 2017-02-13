@@ -87,14 +87,15 @@ export class Bootstrap {
 
             // first we try to lookup core module. We always use core hooks as priority
             let hookModule = null;
-            try { hookModule = require(config.modulePath); } catch(e) {}
-
-            // if core hook does not exist we try to load node_module  hook
-            try { hookModule = require(name); } catch(e) {}
+            try { hookModule = require(config.modulePath); } catch(e) {
+                console.log(hookModule);
+                // if core hook does not exist we try to load node_module  hook
+                try { hookModule = require(name); } catch(e) {}
+            }
 
             // Hook module not found
             if (!hookModule) {
-                return promises.push(Promise.reject(new Error("The hook " + hookModule + " does not seems to exist. Please check that you have installed the module in your dependencies.")));
+                return promises.push(Promise.reject(new Error("The hook " + name + " does not seems to exist. Please check that you have installed the module in your dependencies.")));
             }
 
             // monkey-patch hard way. The easy way is to store original method in var and call it after. But I like playing hard >_<

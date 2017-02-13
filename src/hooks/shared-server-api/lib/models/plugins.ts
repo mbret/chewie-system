@@ -1,9 +1,9 @@
 'use strict';
 
-let Sequelize = require('sequelize');
-let Base = require('./base');
-let _ = require('lodash');
-let validator = require("validator");
+import * as Sequelize from "sequelize";
+import Base from "./base";
+import * as _ from "lodash";
+import * as validator from "validator";
 
 module.exports = function(sequelize){
 
@@ -17,7 +17,7 @@ module.exports = function(sequelize){
      * @returns {*|{}}
      * @constructor
      */
-    let Model = function(){
+    function Model(){
         return sequelize.define('plugins', {
 
             deviceId: {
@@ -123,9 +123,9 @@ module.exports = function(sequelize){
                 },
             }
         });
-    };
+    }
 
-    var myModel = new Model();
+    let myModel = new Model();
 
     // myModel.findAllModulesByUserId = function(id){
     //     return myModel.findAll({where: {userId: id}})
@@ -160,7 +160,7 @@ module.exports = function(sequelize){
     };
 
     myModel.findByIdOrName = function(idOrName) {
-        var search = {};
+        var search: any = {};
         if(validator.isInt(idOrName)) {
             search.id = idOrName;
         }

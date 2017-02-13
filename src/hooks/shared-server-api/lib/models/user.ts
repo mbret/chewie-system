@@ -1,9 +1,10 @@
 'use strict';
-var Sequelize = require('sequelize');
-var uuid = require('uuid');
-var Base = require('./base');
-var _ = require('lodash');
-var validator = require("validator");
+
+import * as Sequelize from "sequelize";
+import * as uuid from "uuid";
+import * as validator from "validator";
+import * as _ from "lodash";
+import Base from "./base";
 
 module.exports = function(sequelize, system){
 
@@ -101,7 +102,7 @@ module.exports = function(sequelize, system){
     };
 
     User.findByIdOrUsername = function(idOrUsername) {
-        var search = {};
+        let search: any = {};
         if(validator.isInt(idOrUsername)) {
             search.id = idOrUsername;
         }

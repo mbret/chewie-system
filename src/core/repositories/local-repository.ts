@@ -5,12 +5,12 @@ let fs = require('fs');
 let path = require('path');
 import BaseRepository = require("./base");
 import * as async from "async";
+import {debug} from "../../shared/debug";
+import {PluginsLoader} from "../plugins/plugins-loader";
 let self = null;
 
 export default class LocalRepository extends BaseRepository {
 
-    static PACKAGE_FILE_NAME = "chewie.package.js";
-    static PACKAGE_FILE_NAME_JSON = "chewie.package.json";
     localPath: string;
 
     constructor(system){
@@ -24,7 +24,7 @@ export default class LocalRepository extends BaseRepository {
      *
      * @returns {Promise}
      */
-    public getPluginsInfo() {
+    public fetchAllPluginsPackageInfo() {
         let self = this;
         return new Promise(function(resolve, reject) {
             self.getPluginDirs(function(err, dirs) {
@@ -37,7 +37,7 @@ export default class LocalRepository extends BaseRepository {
                     self.readPlugin(dir, function(err, info) {
                         if (err) {
                             // just ignore the module if it is on error
-                            self.logger.debug("The module at " + dir + " has been ignored because of error on load", err.message);
+                            debug("repositories:local")("The module at %s has been ignored because of error (%s) on load", dir, err.message);
                             return cb(null);
                         }
                         pluginsInfo.push(info);
@@ -128,17 +128,20 @@ export default class LocalRepository extends BaseRepository {
         return path.join(this.localPath, name);
     }
 
-    private readPlugin(dirpath, cb) {
+    /**
+     *
+     * @param dirPath
+     * @param cb
+     * @returns {any}
+     */
+    private readPlugin(dirPath, cb) {
         let self = this;
         let moduleInfo = null;
+        let pluginsLoader = new PluginsLoader(this.system);
         // we need to use full path because require is a bit different with relative path like "./../foo"
-        let moduleDirFullPath = path.resolve(dirpath);
-        // invalidate cache. We need this to ensure always having fresh info instead of the same "moduleInfo" var which may be changed further.
-        // also the plugin may be changed during runtime this way.
-        try { delete require.cache[require.resolve(path.join(moduleDirFullPath, LocalRepository.PACKAGE_FILE_NAME))]; } catch (err) {}
-        try { delete require.cache[require.resolve(path.join(moduleDirFullPath, LocalRepository.PACKAGE_FILE_NAME_JSON))]; } catch (err) {}
+        let moduleDirFullPath = path.resolve(dirPath);
         try {
-            moduleInfo = this.loadPackageFile(moduleDirFullPath);
+            moduleInfo = pluginsLoader.loadPackageFile(moduleDirFullPath);
         } catch (err) {
             if (err.code === "MODULE_NOT_FOUND") {
                 return cb(new Error("Not a valid module and is invalid to load. err: " + err.code));
@@ -156,23 +159,5 @@ export default class LocalRepository extends BaseRepository {
             return cb(new Error("No version specified"));
         }
         return cb(null, moduleInfo);
-    }
-
-    /**
-     * Try to load js package file and then try json.
-     * @param moduleDirFullPath
-     */
-    public loadPackageFile(moduleDirFullPath) {
-        // first try to load js
-        try {
-            return require(path.join(moduleDirFullPath, LocalRepository.PACKAGE_FILE_NAME));
-        } catch (err) {
-            // then try the json
-            if (err.code === "MODULE_NOT_FOUND") {
-                return require(path.join(moduleDirFullPath, LocalRepository.PACKAGE_FILE_NAME_JSON));
-            } else {
-                throw err;
-            }
-        }
     }
 }

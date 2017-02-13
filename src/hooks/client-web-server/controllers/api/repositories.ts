@@ -6,7 +6,7 @@ module.exports = function(router){
      * Return all plugins from local repository.
      */
     router.get('/local/plugins', function(req, res){
-        req.app.locals.system.localRepository.getPluginsInfo()
+        req.app.locals.system.localRepository.fetchAllPluginsPackageInfo()
             .then(function(data) {
                 return res.ok(data);
             })

@@ -1,7 +1,7 @@
 'use strict';
 
 import {System} from "../../system";
-import {PluginInstance} from "./plugins-loader";
+import {PluginInstance} from "./plugin-instance-interface";
 
 export class PluginContainer {
 
