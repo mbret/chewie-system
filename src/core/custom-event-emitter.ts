@@ -1,16 +1,14 @@
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
+import { EventEmitter }  from "events";
 
-class CustomEventEmitter extends EventEmitter{
+export class CustomEventEmitter extends EventEmitter {
 
     constructor(){
         super();
     }
 
-    emit(e){
-        super.emit.apply(this, arguments);
-    }
+    // emit(event: string | symbol, ...args: any[]): boolean {
+    //     super.emit.apply(this, arguments);
+    // }
 }
-
-module.exports = CustomEventEmitter;

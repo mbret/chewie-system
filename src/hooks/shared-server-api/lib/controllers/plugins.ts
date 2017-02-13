@@ -114,7 +114,7 @@ export = function(server, router) {
         let pluginId = req.params.plugin;
         let userOptions = req.body.userOptions;
         let pluginPackage = req.body.pluginPackage;
-        let toUpdate = {};
+        let toUpdate: any = {};
 
         // validate body
         let errors = new Map();

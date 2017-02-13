@@ -1,5 +1,6 @@
 "use strict";
-import {HookInterface, Hook} from "../../core/hook-interface";
+import {HookInterface} from "../../core/hook-interface";
+import {Hook} from "../../core/hooks";
 
 export = class RemoteServerHook extends Hook implements HookInterface, InitializeAbleInterface {
     initialize(){

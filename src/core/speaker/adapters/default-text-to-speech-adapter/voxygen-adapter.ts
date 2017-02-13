@@ -23,7 +23,7 @@ const defaultTmpDir = os.tmpdir();
 
 export class VoxygenAdapter {
 
-    static extract(text, options = {}) {
+    static extract(text, options: any = {}) {
 
         let self = this;
 

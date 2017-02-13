@@ -1,5 +1,5 @@
 module.exports = {
-    OutputAdapter: require('./output-adapter'),
-    OutputAdapterHelper: require('./output-adapter-helper'),
-    OutputAdaptersHandler: require('./output-adapters-handler')
+    // OutputAdapter: require('./output-adapter'),
+    // OutputAdapterHelper: require('./output-adapter-helper'),
+    // OutputAdaptersHandler: require('./output-adapters-handler')
 };

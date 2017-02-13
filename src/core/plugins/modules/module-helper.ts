@@ -10,6 +10,7 @@ export class ModuleHelper {
     logger: any;
     moduleContainer: ModuleContainer;
     shared: any;
+    id: string;
 
     constructor(system, moduleContainer) {
         self = this;

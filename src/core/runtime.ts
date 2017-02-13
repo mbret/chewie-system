@@ -15,6 +15,7 @@ export class Runtime implements SystemModuleInterface {
     // executingTasks: Map<string, TaskExecution>;
     profileManager: ProfileManager;
     logger: any;
+    // executingTasks: Map;
 
     constructor(system: System){
         this.logger = system.logger.getLogger('Runtime');
@@ -23,7 +24,7 @@ export class Runtime implements SystemModuleInterface {
         this.plugins = new Map();
         this.modules = new Map();
         // Contain tasks by their id
-        this.executingTasks = new Map();
+        // this.executingTasks = new Map();
     }
 
     hasActiveProfile() {

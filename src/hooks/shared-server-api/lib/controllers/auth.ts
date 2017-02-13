@@ -12,7 +12,7 @@ module.exports = function(server, router){
     router.post('/auth/signin', function(req, res){
 
         let username = req.body.login;
-        let search = {};
+        let search: any = {};
 
         if(!username || !validator.isUsername(username)) {
             return res.badRequest("bad credentials");

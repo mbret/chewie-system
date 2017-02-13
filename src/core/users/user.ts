@@ -1,6 +1,5 @@
 'use strict';
-
-var CustomEventEmitter = require('../custom-event-emitter');
+import {CustomEventEmitter} from "../custom-event-emitter";
 
 class User extends CustomEventEmitter {
 

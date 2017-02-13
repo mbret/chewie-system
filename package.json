@@ -24,7 +24,6 @@
   "dependencies": {
     "@types/async": "^2.0.38",
     "@types/bluebird": "^3.0.37",
-    "@types/es6-promise": "0.0.32",
     "@types/fs-extra": "0.0.37",
     "@types/ip": "0.0.29",
     "@types/lodash": "^4.14.44",

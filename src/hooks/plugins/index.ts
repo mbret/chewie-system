@@ -8,6 +8,7 @@ import {Hook} from "../../core/hooks";
 import {PluginsLoader} from "../../core/plugins/plugins-loader";
 import {debug} from "../../shared/debug";
 import {SystemError} from "../../core/error";
+import {Plugin} from "../shared-server-api/lib/models/plugins";
 
 export = class PluginsHook extends Hook implements HookInterface, InitializeAbleInterface {
 
