@@ -9,6 +9,10 @@ let gulp = require('gulp');
 const requireAll = require("require-all");
 let basePath = __dirname + "/../../..";
 let path = require("path");
+const clean = require('gulp-clean');
+const less = require('gulp-less');
+const inject = require('gulp-inject');
+const series = require('stream-series');
 // let buildPath = __dirname + "/.build";
 let copyOfNodeModulesDestPath = "./public/node_modules";
 let distAppPath = path.join(basePath, "/.dist/hooks/client-web-server");
@@ -46,7 +50,7 @@ let config = {
     vendorsNodeModulesToInject: [
         "./node_modules/sprintf-js/dist/sprintf.min.js",
         "./node_modules/jquery/dist/jquery.js",
-        "./node_modules/jquery-slimscroll/dist/jquery.slimscroll.js",
+        "./node_modules/jquery-slimscroll/jquery.slimscroll.min.js",
         "./node_modules/lodash/lodash.js",
         "./node_modules/angular/angular.js",
         "./node_modules/angular-ui-router/release/angular-ui-router.js",
@@ -72,31 +76,77 @@ let config = {
         "vendors/angular-ui-tree/dist/angular-ui-tree.js",
         "vendors/angular-masonry/angular-masonry.js",
         "vendors/ngstorage/ngStorage.js"
-    ],
-    taskLoadConfig: {
-        // simples
-        // copy public assets from /src/../public to /.dist/../.build
-        "copy-public": [],
-        "build-less": [],
-        "watch-less": [],
-        "watch-public": [],
-        "inject-js": ["copy-public", "copy-node-modules"],
-        "copy-node-modules": [],
-        // primaries
-        "build": ["build-less", "inject-js"],
-        "watch": ["watch-less", "watch-public"],
-        "clean": []
-    }
+    ]
 };
 
-// load tasks
-requireAll({
-    dirname: __dirname + "/tasks",
-    recursive: true,
-    resolve: function (task) {
-        let taskToLoad = task(gulp, config);
-        if (config.taskLoadConfig[taskToLoad.name] !== undefined) {
-            return gulp.task(taskToLoad.name, config.taskLoadConfig[taskToLoad.name], taskToLoad.fn);
-        }
-    },
+gulp.task("copy-node-modules", function() {
+    // @todo use options.cwd for src (cwd: config.distAppPath)
+    return gulp
+        .src(config.nodeModulesToCopy.map(function(name) {
+            return path.join(config.nodeModulesPath, name + "/**/*");
+        }), { base: config.nodeModulesPath })
+        .pipe(gulp.dest(path.join(config.buildPath, "node_modules")));
+});
+gulp.task("copy-public", function() {
+    return gulp
+        .src([
+                "./public/**/**",
+                "!./public/{css,css/**}"
+            ], {
+                cwd: config.srcAppPath
+            }
+        )
+        .pipe(gulp.dest(config.buildPath));
+});
+gulp.task("inject-js", gulp.series(gulp.parallel("copy-public", "copy-node-modules"), function() {
+    let target = gulp.src("./public/index.html");
+
+    // It's not necessary to read the files (will speed up things), we're only after their paths:
+    let appStream = gulp.src([
+        'app/**/*.module.js',
+        'app/**/module.js',
+        'app/**/*.js',
+
+        // ignore screens file for now
+        '!app/screens/**/*.js'
+    ], {
+        read: false,
+        cwd: config.distAppPath + "/.build"
+    });
+    let vendorsStream = gulp.src(config.vendorsToInject, {
+        read: false,
+        cwd: config.distAppPath + "/.build"
+    });
+    let vendorsNodeModulesStream = gulp.src(config.vendorsNodeModulesToInject, {
+        read: false,
+        cwd: config.basePath
+    });
+
+    return target
+        .pipe(inject(series(vendorsNodeModulesStream, vendorsStream, appStream), {
+            ignorePath: "/public",
+        }))
+        .pipe(gulp.dest(config.buildPath));
+}));
+gulp.task("watch-less", function() {
+    return gulp.watch([
+        "public/css/**/*.less"
+    ], ["build-less"]);
+});
+gulp.task("watch-public", function() {
+    return gulp.watch([
+        "./public/**/**",
+        "!./public/css"
+    ], ["inject-js", "copy-node-modules"]);
+});
+gulp.task("build-less", function() {
+    return gulp.src("./public/css/style.less")
+        .pipe(less())
+        .pipe(gulp.dest(path.join(config.buildPath, "/css")));
+});
+
+gulp.task("build", gulp.parallel("build-less", "inject-js"));
+gulp.task("watch", gulp.parallel("watch-less", "watch-public"));
+gulp.task("clean", function() {
+    return gulp.src(config.buildPath, {read: false}).pipe(clean());
 });

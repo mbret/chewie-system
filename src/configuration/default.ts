@@ -80,6 +80,7 @@ module.exports = {
     },
 
     hooks: {
+        "auth-services-token-generator": true,
         "client-web-server": true,
         "shared-server-api": true,
         "scenarios": true,

@@ -34,6 +34,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
     localAddress: string;
     config: any;
     orm: any;
+    app: any;
 
     constructor(system, userHookConfig) {
         super(system, userHookConfig);
@@ -47,6 +48,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
         this.services = {};
         this.io = null;
         this.orm = {};
+        this.app = app;
 
         // export system to request handler
         app.locals.system = this.system;
