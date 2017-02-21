@@ -3,6 +3,9 @@
 let _ = require("lodash");
 
 export class ApiResponseError extends Error {
+
+    response: any;
+
     constructor(response) {
         super();
 

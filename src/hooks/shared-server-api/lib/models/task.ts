@@ -1,7 +1,7 @@
 'use strict';
+import Base from "./base";
 var Sequelize = require('sequelize');
 var uuid = require('uuid');
-var Base = require('./base');
 var _ = require('lodash');
 
 module.exports = function(sequelize, system){

@@ -1,6 +1,7 @@
 'use strict';
-var Sequelize = require('sequelize');
-var _ = require('lodash');
+import * as Sequelize from "sequelize";
+import * as _ from "lodash";
+
 module.exports = function (sequelize) {
     return sequelize.define('notification', {
         // user id

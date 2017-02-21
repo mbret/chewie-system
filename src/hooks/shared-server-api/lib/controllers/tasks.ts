@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
-var validator = require('validator');
+import * as validator from "validator";
 var util = require('util');
 var Errors = require("./../errors");
 
@@ -100,7 +100,7 @@ module.exports = function(server, router) {
         var userId = req.params.user;
         var pluginId = req.params.plugin;
         var data = req.body || {};
-        var task = {};
+        var task: any = {};
 
         // Check params
         var errors = {};
@@ -178,7 +178,7 @@ module.exports = function(server, router) {
                                         return reject(err);
                                     });
                             // }
-                        }).then(function(task){
+                        }).then(function(task: any){
                             server.logger.verbose("Task %d created", task.id);
                             // register new task event + avoid generate error during request
                             setImmediate(function(){
@@ -204,7 +204,7 @@ module.exports = function(server, router) {
         var taskId = req.params.task;
         var userId = req.params.user;
         var active = req.body.active;
-        var toUpdate = {};
+        var toUpdate: any = {};
 
         // validate body
         var errors = new Map();

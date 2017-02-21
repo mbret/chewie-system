@@ -1,9 +1,9 @@
 'use strict';
 
-let Sequelize = require('sequelize');
-let Base = require('./base');
-let _ = require('lodash');
-let validator = require("validator");
+import * as Sequelize from "sequelize";
+import Base from "./base";
+import * as _ from "lodash";
+import * as validator from "validator";
 
 module.exports = function(sequelize){
 
@@ -17,8 +17,7 @@ module.exports = function(sequelize){
      * @returns {*|{}}
      * @constructor
      */
-    let Model = function(){
-        return sequelize.define('plugins', {
+    let Model = sequelize.define('plugins', {
 
             deviceId: {
                 type: Sequelize.STRING,
@@ -104,10 +103,10 @@ module.exports = function(sequelize){
                     })
                 },
 
-                hasModuleByName: function(name){
-                    var module = this.getModuleByName(name);
-                    return module ? true : false;
-                },
+                // hasModuleByName: function(name){
+                //     var module = this.getModuleByName(name);
+                //     return module ? true : false;
+                // },
 
                 hasModule: function(id){
                     var module = this.getModule(id);
@@ -123,9 +122,6 @@ module.exports = function(sequelize){
                 },
             }
         });
-    };
-
-    var myModel = new Model();
 
     // myModel.findAllModulesByUserId = function(id){
     //     return myModel.findAll({where: {userId: id}})
@@ -138,29 +134,29 @@ module.exports = function(sequelize){
     //         });
     // };
 
-    myModel.findAllPluginModulesByUserId = function(id, pluginId){
-        return myModel.findAll({where: {userId: id, id: pluginId}})
+    Model.findAllPluginModulesByUserId = function(id, pluginId){
+        return Model.findAll({where: {userId: id, id: pluginId}})
             .then(function(data){
                 var modules = [];
                 _.forEach(data, function(plugin){
                     modules = modules.concat(plugin.getModules());
                 });
                 return modules;
-            })
-    };
-
-    myModel.hasModuleByName = function(userId, pluginName, moduleName){
-        return myModel.findOne({where: {userId: userId, name: pluginName}})
-            .then(function(plugin){
-                if(!plugin){
-                    return false;
-                }
-                return plugin.hasModuleByName(moduleName);
             });
     };
 
-    myModel.findByIdOrName = function(idOrName) {
-        var search = {};
+    // Model.prototype.hasModuleByName = function(userId, pluginName, moduleName){
+    //     return Model.findOne({where: {userId: userId, name: pluginName}})
+    //         .then(function(plugin){
+    //             if(!plugin){
+    //                 return false;
+    //             }
+    //             return plugin.hasModuleByName(moduleName);
+    //         });
+    // };
+
+    Model.findByIdOrName = function(idOrName) {
+        var search: any = {};
         if(validator.isInt(idOrName)) {
             search.id = idOrName;
         }
@@ -168,15 +164,16 @@ module.exports = function(sequelize){
             search.name = idOrName;
         }
 
-        return myModel.findOne({where: search});
+        return Model.findOne({where: search});
     };
 
-    myModel.toJSON = Base.toJSON;
+    Model.toJSON = Base.toJSON;
 
-    return myModel;
+    return Model;
 };
 
-interface Plugin {
+export interface Plugin {
     id: number;
     deviceId: string;
+    name: string;
 }

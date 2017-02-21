@@ -6,6 +6,7 @@ import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as _ from "lodash";
 import {ScenarioHelper} from "./scenario-helper";
 import ScenarioReadable from "./scenario-readable";
+import {PluginsLoader} from "../plugins/plugins-loader";
 const Semaphore = require('semaphore');
 
 /**
@@ -19,6 +20,7 @@ export class ScenarioReader {
     protected scenarios: Array<ScenarioReadable>;
     protected scenarioHelper: ScenarioHelper;
     protected semaphores: any;
+    protected pluginsLoader: PluginsLoader;
 
     constructor(system) {
         this.system = system;
@@ -26,6 +28,7 @@ export class ScenarioReader {
         this.scenarios = [];
         this.scenarioHelper = new ScenarioHelper(this.system);
         this.semaphores = {};
+        this.pluginsLoader = new PluginsLoader(system);
     }
 
     public isRunning(executionId: string) {
@@ -221,9 +224,9 @@ export class ScenarioReader {
                 self.system.sharedApiService
                     .getPlugin(id)
                     .then(function(plugin) {
-                        return self.system.pluginsLoader.load(plugin)
+                        return self.pluginsLoader.mount(plugin)
                             .catch(function(err) {
-                                if (err.code === SystemError.ERROR_CODE_PLUGIN_ALREADY_LOADED) {
+                                if (err.code === SystemError.ERROR_CODE_PLUGIN_ALREADY_MOUNTED) {
                                     return Promise.resolve();
                                 }
                                 throw err;

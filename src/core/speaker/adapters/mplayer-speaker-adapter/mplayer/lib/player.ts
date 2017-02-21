@@ -3,10 +3,10 @@ var spawn = require('child_process').spawn,
     _ = require('lodash');
 
 var defaultArgs = ['-msglevel', 'global=6', '-msglevel', 'cplayer=4', '-idle', '-slave', '-fs', '-noborder'];
-var Player = function(options) {
+function Player(options) {
     this.options = options;
     this.spawn();
-};
+}
 
 Player.prototype = _.extend({
     spawn: function() {

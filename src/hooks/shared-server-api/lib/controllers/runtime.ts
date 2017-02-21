@@ -1,6 +1,6 @@
 'use strict';
 
-import {TaskExecution} from "../../../core/plugins/tasks/task-execution";
+// import {TaskExecution} from "../../../core/plugins/tasks/task-execution";
 var util = require('util');
 
 module.exports = function(server, router){
@@ -113,17 +113,17 @@ module.exports = function(server, router){
     //     return res.ok(server.services.taskService.taskExecutionToJson(tasks));
     // });
 
-    router.delete("/runtime/executing-tasks/:execution", function(req, res) {
-        var id = req.params.execution;
-        var executingTask = server.system.runtime.executingTasks.get(id);
-        if (!executingTask) {
-            return res.notFound();
-        }
-
-        // stop
-        server.system.runtime.stopTask(executingTask);
-        return res.ok();
-    });
+    // router.delete("/runtime/executing-tasks/:execution", function(req, res) {
+    //     var id = req.params.execution;
+    //     var executingTask = server.system.runtime.executingTasks.get(id);
+    //     if (!executingTask) {
+    //         return res.notFound();
+    //     }
+    //
+    //     // stop
+    //     server.system.runtime.stopTask(executingTask);
+    //     return res.ok();
+    // });
 
     /**
      * Execute a task for one of its trigger

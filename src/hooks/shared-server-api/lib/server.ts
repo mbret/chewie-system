@@ -9,7 +9,7 @@ import * as _ from "lodash";
 let path        = require('path');
 let localConfig = require("../hook-config");
 import * as Services from "./services";
-import {Hook, HookInterface} from "../../../core/hook-interface";
+import {HookInterface} from "../../../core/hook-interface";
 import {System} from "../../../system";
 let router = require('express').Router();
 let bodyParser  = require("body-parser");
@@ -21,6 +21,7 @@ import * as fsExtra from "fs-extra";
 import * as DBMigrate from "db-migrate";
 import * as Bluebird from "bluebird";
 import {debug} from "../../../shared/debug";
+import {Hook} from "../../../core/hooks";
 let ensureFile = Bluebird.promisify(fsExtra.ensureFile);
 let debugDefault = debug("hooks:shared-server-api");
 

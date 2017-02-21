@@ -1,7 +1,7 @@
 "use strict";
 import {EventEmitter} from "events";
 import {System} from "../system";
-import {SystemError, ErrorCodePrefix} from "./error";
+import {SystemError} from "./error";
 var taskQueue = require('my-buddy-lib').taskQueue;
 var _ = require('lodash');
 
@@ -34,59 +34,59 @@ export class ProfileManager extends EventEmitter {
      * @param username
      * @returns Promise.<Instance>
      */
-    startProfile(username) {
-        let self = this;
-
-        return Promise.resolve()
-            .then(function() {
-                // get profile id
-                return self.system.sharedApiService
-                    .findUserByUsername(username)
-                    .then(function(user){
-
-                        // no user found with this username
-                        if(!user){
-                            throw new SystemError('No user found with username ' + username, SystemError.CODE_PREFIX + "1");
-                        }
-
-                        self.logger.debug('Profile %s starting', username);
-
-                        if(self.lock){
-                            self.logger.warn('Trying to start a profile but system is still lock');
-                            return Promise.reject(new Error('Not available yet to start'));
-                        }
-
-                        // load user
-                        self.profile = user;
-
-                        // async
-                        // Profile start may take some times, during this time we should not allow profile to stop.
-                        self.lock = true;
-                        self.system.emit("profile:start", self.profile);
-                        return new Promise(function(resolve, reject) {
-                            taskQueue.proceed('profile:start', null, function(errs){
-                                if(errs) {
-                                    let txt = 'Unable to start profile. One or more errors has been thrown on starting task processing. Below are the errors:';
-                                    _.forEach(errs.errors, function(err, index) {
-                                        txt += "\n[Error " + ++index + "]";
-                                        txt += "\n" + err.stack;
-                                    });
-                                    return reject(new Error(txt));
-                                }
-                                setTimeout(function(){
-                                    self.lock = false;
-                                    self.system.emit('profile:start:complete');
-                                    self.logger.debug('Profile %s started', username);
-                                    return resolve();
-                                }, 1);
-                            });
-                        });
-                    });
-            })
-            .catch(function(err){
-                throw new SystemError("Error while starting profile " + username + "\n" + err.stack, err.code);
-            });
-    }
+    // startProfile(username) {
+    //     let self = this;
+    //
+    //     return Promise.resolve()
+    //         .then(function() {
+    //             // get profile id
+    //             return self.system.sharedApiService
+    //                 .findUserByUsername(username)
+    //                 .then(function(user){
+    //
+    //                     // no user found with this username
+    //                     if(!user){
+    //                         throw new SystemError('No user found with username ' + username, SystemError.CODE_PREFIX + "1");
+    //                     }
+    //
+    //                     self.logger.debug('Profile %s starting', username);
+    //
+    //                     if(self.lock){
+    //                         self.logger.warn('Trying to start a profile but system is still lock');
+    //                         return Promise.reject(new Error('Not available yet to start'));
+    //                     }
+    //
+    //                     // load user
+    //                     self.profile = user;
+    //
+    //                     // async
+    //                     // Profile start may take some times, during this time we should not allow profile to stop.
+    //                     self.lock = true;
+    //                     self.system.emit("profile:start", self.profile);
+    //                     return new Promise(function(resolve, reject) {
+    //                         taskQueue.proceed('profile:start', null, function(errs){
+    //                             if(errs) {
+    //                                 let txt = 'Unable to start profile. One or more errors has been thrown on starting task processing. Below are the errors:';
+    //                                 _.forEach(errs.errors, function(err, index) {
+    //                                     txt += "\n[Error " + ++index + "]";
+    //                                     txt += "\n" + err.stack;
+    //                                 });
+    //                                 return reject(new Error(txt));
+    //                             }
+    //                             setTimeout(function(){
+    //                                 self.lock = false;
+    //                                 self.system.emit('profile:start:complete');
+    //                                 self.logger.debug('Profile %s started', username);
+    //                                 return resolve();
+    //                             }, 1);
+    //                         });
+    //                     });
+    //                 });
+    //         })
+    //         .catch(function(err){
+    //             throw new SystemError("Error while starting profile " + username + "\n" + err.stack, err.code);
+    //         });
+    // }
 
     /**
      * Stop the current profile.

@@ -2,7 +2,9 @@
 var util = require('util');
 var ApiResponseError = require("../response-error");
 
-function ApiHelper() {}
+function ApiHelper() {
+
+}
 
 /**
  *

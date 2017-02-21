@@ -4,9 +4,11 @@ var _ = require('lodash');
 
 class SpeechHandler{
 
+    logger: any;
+    commands: any;
+
     constructor(system){
         this.logger = system.logger.getLogger('SpeechHandler');
-
         this.commands = [];
     }
 
