@@ -131,13 +131,13 @@ gulp.task("inject-js", gulp.series(gulp.parallel("copy-public", "copy-node-modul
 gulp.task("watch-less", function() {
     return gulp.watch([
         "public/css/**/*.less"
-    ], ["build-less"]);
+    ], gulp.series("build-less"));
 });
 gulp.task("watch-public", function() {
     return gulp.watch([
         "./public/**/**",
         "!./public/css"
-    ], ["inject-js", "copy-node-modules"]);
+    ], gulp.parallel("inject-js", "copy-node-modules"));
 });
 gulp.task("build-less", function() {
     return gulp.src("./public/css/style.less")

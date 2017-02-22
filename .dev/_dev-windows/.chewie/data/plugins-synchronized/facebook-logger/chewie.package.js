@@ -9,12 +9,12 @@ module.exports = {
         {
             id: "log",
             module: "./module.js",
-            name: 'Log in console',
+            name: 'Log the profile in console',
             type: 'task',
             optionsConfig: [
                 {
-                    name: 'content',
-                    label: 'Content',
+                    name: 'accessToken',
+                    label: 'Access Token',
                     type: 'text',
                     required: true
                 }

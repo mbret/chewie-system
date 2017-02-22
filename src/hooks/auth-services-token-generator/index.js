@@ -1,9 +1,12 @@
 const EventEmitter = require("events");
+let _ = require("lodash");
 let router = require('express').Router();
-let passport = require('passport');
-let FacebookStrategy = require('passport-facebook').Strategy;
 let FB = require('fb');
 let debug = require('debug');
+let express = require("express");
+let STORAGE_KEY = "saved-auth";
+let STORAGE_KEY_FACEBOOK = STORAGE_KEY + ":facebook";
+let DEBUG_KEY = "chewie:hooks:auth-services-token-generator";
 
 /**
  * class AuthServiceTokenGenerator
@@ -14,117 +17,107 @@ let debug = require('debug');
  */
 class AuthServiceTokenGenerator extends EventEmitter {
 
-    constructor(system, config) {
+    constructor(system, config, helper) {
         super();
-        let self = this;
         this.system = system;
+        this.config = config;
+        this.helper = helper;
         this.logger = this.system.logger.getLogger('hooks:auth-services-token-generator');
-
-        // @todo
-        debug("chewie:hooks:auth-services-token-generator")("coucou");
-
-        // https://localhost:3002/hooks/auth-services-token-generator/auth/facebook/callback
-        passport.use(new FacebookStrategy({
-                clientID: "105360643322915",
-                clientSecret: "8bc30ee85e377983e29062b2b45add99",
-                callbackURL: "https://localhost:3002/hooks/auth-services-token-generator/auth/facebook/callback"
-            },
-            function(accessToken, refreshToken, profile, done) {
-                // console.log(accessToken, refreshToken, profile);
-                return done(null, {
-                    accessToken: accessToken,
-                    refreshToken: refreshToken,
-                    profile: profile,
-                });
-            }
-        ));
-
-        // Redirect the user to Facebook for authentication.  When complete,
-        // Facebook will redirect the user back to the application at
-        //     /auth/facebook/callback
-        router.get('/auth/facebook', passport.authenticate('facebook'));
-
-        // Facebook will redirect the user to this URL after approval.  Finish the
-        // authentication process by attempting to obtain an access token.  If
-        // access was granted, the user will be logged in.  Otherwise,
-        // authentication has failed.
-        router.get('/auth/facebook/callback', function(req, res, next) {
-            passport.authenticate('facebook', {session:false}, function(err, data, info) {
-                if (err) {
-                    return res.serverError(err);
-                }
-                FB.setAccessToken(data.accessToken);
-                FB.api('oauth/access_token', {
-                    client_id: '105360643322915',
-                    client_secret: '8bc30ee85e377983e29062b2b45add99',
-                    grant_type:"fb_exchange_token",
-                    fb_exchange_token: FB.getAccessToken()
-                }, function (response) {
-                    if(!response || response.error) {
-                        console.log(!response ? 'error occurred' : response.error);
-                        return res.serverError(response.error);
-                    }
-
-                    return res.ok({
-                        longLivingToken: response,
-                        data: data,
-                        info: info
-                    });
-                });
-
-            })(req, res, next);
-        });
-
-        router.get("/foo", function(req, res) {
-            self.foo();
-            return res.ok();
-        })
     }
 
     initialize() {
         let self = this;
+
+        // Register partial web app and server routes
         this.system.on("hook:shared-server-api:initialized", function() {
             let sharedServerApi = self.system.hooks["shared-server-api"];
-            sharedServerApi.app.use('/hooks/auth-services-token-generator', passport.initialize());
+            require(__dirname + "/partial-server-routes")(self, router);
+            sharedServerApi.app.use("/hooks/auth-services-token-generator", express.static(__dirname + "/public"));
             sharedServerApi.app.use('/hooks/auth-services-token-generator', router);
         });
 
+        // Run watchers
         this.system.on("ready", function() {
+            // display helpful info to user to console.
             self.logger.info("The direct routes to retrieve access token are:" +
                 "\nFacebook: https://localhost:3002/hooks/auth-services-token-generator/auth/facebook" +
                 "\nGoogle: https://localhost:3002/hooks/auth-services-token-generator/auth/google");
+
+            // check and refresh active tokens
+            self.helper.getStorage(STORAGE_KEY_FACEBOOK)
+                .then(function(data) {
+                    _.forEach(data, function(value, key) {
+                        self._watchFacebookToken(key);
+                    });
+                });
         });
 
-        return Promise.resolve();
+        // init the hook storage
+        return this.helper.initStorage(STORAGE_KEY_FACEBOOK, {});
     }
 
     onShutdown() {
+        this.emit("shutdown");
         return Promise.resolve();
     }
 
-    foo() {
-        FB.setAccessToken('EAABf0yZB39CMBALQhcZACUi29Q700vFRrIHIgbrWAT2IHnxQDyybf9ZCzW8BTlt3La0JnPeJCRK9B8pVvC992E3JNY3ZA4WyKQDim9wBR2b9aOk7FVHR4ggHr68FomAYtzKTb06yjScxXtFneua0pAd7STuR8ZCQ90fiP2pK4SeKaP0awp1Hj');
-        FB.api('me', function (res) {
-            if(!res || res.error) {
-                console.log(!res ? 'error occurred' : res.error);
-                return;
-            }
-            console.log(res.id);
-            console.log(res.name);
-        });
-        FB.api('oauth/access_token', {
-            client_id: '105360643322915',
-            client_secret: '8bc30ee85e377983e29062b2b45add99',
-            grant_type:"fb_exchange_token",
-            fb_exchange_token:FB.getAccessToken()
-        }, function (res) {
-            if(!res || res.error) {
-                console.log(!res ? 'error occurred' : res.error);
-                return;
-            }
+    _retrieveFacebookLongLivingToken(accessToken, appSecret) {
+        let self = this;
+        FB.setAccessToken(accessToken);
+        return new Promise(function(resolve, reject) {
+            FB.api('oauth/access_token', {
+                client_id: self.config.facebook.appId,
+                client_secret: appSecret,
+                grant_type: "fb_exchange_token",
+                fb_exchange_token: FB.getAccessToken()
+            }, function(response) {
+                // { error:
+                // { message: 'Error validating access token: Session has expired on Wednesday, 22-Feb-17 11:00:00 PST. The current time is Wednesday, 22-Feb-17 11:00:50 PST.',
+                //     type: 'OAuthException',
+                //     code: 190,
+                //     error_subcode: 463,
+                //     fbtrace_id: 'DKBd6eFwMOy' } }
+                if(!response || response.error) {
+                    console.log(response);
+                    return reject(new Error(response.error.message));
+                }
 
-            console.log(res);
+                return resolve(response);
+            });
         });
+    }
+
+    _watchFacebookToken(name) {
+        let self = this;
+        debug(DEBUG_KEY)("start watching facebook token refresh for %s", name);
+
+        // always retrieve a new token
+        refreshToken();
+        let timer = setInterval(refreshToken, 86400000); // every 24 hours
+        self.on("shutdown", function() {
+            clearInterval(timer);
+        });
+
+        function refreshToken() {
+            self.helper.getStorage(STORAGE_KEY_FACEBOOK)
+                .then(function(data) {
+                    if (!data[name]) {
+                        return new Error("Storage " + STORAGE_KEY_FACEBOOK + " should exist for name " + name);
+                    }
+                    self._retrieveFacebookLongLivingToken(data[name].accessToken, data[name].appSecret)
+                        .then(function(response) {
+                            return self.helper.setStorage(STORAGE_KEY_FACEBOOK, {
+                                [name]: {accessToken: response.access_token}
+                            }, {partial: true})
+                                .then(function() {
+                                    debug(DEBUG_KEY)("Facebook access token for [%s] has been updated and is valid for approximately %s days", name, Math.round(response.expires / 60 / 60 / 24));
+                                });
+                        })
+                })
+                .catch(function(err) {
+                    console.error(err);
+                });
+        }
     }
 }
 

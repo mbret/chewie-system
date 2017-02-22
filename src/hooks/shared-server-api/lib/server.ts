@@ -185,6 +185,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
         server.orm.models.Task = require(modelsPath + '/task')(server.orm.sequelize, server);
         server.orm.models.Scenario = require(modelsPath + '/scenario')(server.orm.sequelize, server);
         server.orm.models.Notification = require(modelsPath + '/notification')(server.orm.sequelize, server);
+        server.orm.models.HookData = require(modelsPath + '/hook-data').define(server.orm.sequelize, server);
 
         // server.orm.models.User.hasMany(server.orm.models.Plugins);
         server.orm.models.User.hasMany(server.orm.models.Task);
@@ -251,12 +252,13 @@ export default class SharedServerApiHook extends Hook implements HookInterface, 
                 let error = {};
                 if(_.isString(err)) {
                     message = err;
+                    err = {};
                 }
                 let errResponse = {
                     status: "error",
-                    code: "badRequest",
-                    message: message,
-                    data: err
+                    code: err.code || "badRequest",
+                    message: err.message || message,
+                    data: err.data || {}
                 };
 
                 return res.status(400).send(errResponse);

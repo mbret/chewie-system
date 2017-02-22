@@ -7,6 +7,13 @@
   },
   "pluginsLocalRepositoryDir": "./../plugins",
   "hooks": {
+    "auth-services-token-generator": {
+      "config": {
+        "facebook": {
+          "appId": "105360643322915"
+        }
+      }
+    },
     "shared-server-api": {
       "config": {
         "sharedDatabase": {

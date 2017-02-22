@@ -56,6 +56,7 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
         // Listen for plugin deletion
         self.customListeners.pluginDeleted = this.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
             // ensure we are on the right device
+            throw new Error("todo biatch");
             if (plugin.deviceId === self.system.id && self.system.runtime.plugins.get(plugin.name)) {
                 self.logger.verbose("Plugin %s deletion detected", plugin.name);
                 self.unLoadPlugins([plugin]);

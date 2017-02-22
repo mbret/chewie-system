@@ -24,53 +24,49 @@ class Repository extends EventEmitter {
 
     /**
      * Synchronize an app plugins to its repository.
-     * @param plugins a database object
+     * @param plugin a database object
      * @returns {Promise}
      */
-    synchronize(plugins) {
+    synchronize(plugin) {
         let self = this;
-        return new Promise(function(resolve, reject) {
-            async.each(plugins, function(plugin, done) {
+        let pluginDir = self.system.localRepository.getPluginDir(plugin.name);
+        let dest = path.resolve(self.system.config.synchronizedPluginsPath, plugin.name);
 
-                let pluginDir = self.system.localRepository.getPluginDir(plugin.name);
-                self.pluginExistByDir(pluginDir)
-                    .then(function(stat) {
-                        if(!stat.exist) {
-                            return done(new Error('Unable to synchronize plugin ' + plugin.name + ' because the plugin directory ' + pluginDir + ' does not seems to exist anymore'));
-                        }
-                        let dest = path.resolve(self.system.config.synchronizedPluginsPath, plugin.name);
-                        self.logger.silly("Plugin dir %s exist and is ready to be synchronized", pluginDir, stat);
-                        self.pluginExistByDir(dest)
-                            .then(function(stat) {
-                                // @todo for now ignore existance, always force synchronize
-                                // Copy local plugin dir into plugin tmp dir
-                                // This directoy contain the plugin from all source (local, remote, etc)
-                                // They will also be npm installed to get all required dependancies
-                                self.logger.silly("Plugin dir %s will be copied from %s", pluginDir, dest, stat);
-                                fs.copy(pluginDir, dest, function(err){
-                                    if(err){
-                                        return done(err);
-                                    }
-                                    self.logger.debug('Plugin [%s] synchronized to [%s]', plugin.name, dest);
-                                    self.logger.debug('Run npm install for plugin %s', plugin.name);
-                                    self.npmInstall(dest, function(err) {
-                                        self.system.emit("plugin:synchronized", plugin);
-                                        return done(err);
-                                    });
-                                });
-                            })
-                    })
-                    .catch(done);
-            }, function(err){
-                if(err){
-                    return reject(err);
+        return self.pluginExistByDir(pluginDir)
+            .then(function(stat) {
+                if(!stat.exist) {
+                    throw new Error('Unable to synchronize plugin ' + plugin.name + ' because the plugin directory ' + pluginDir + ' does not seems to exist anymore');
                 }
-                return resolve();
+                self.logger.verbose("Plugin dir %s exist and is ready to be synchronized", pluginDir, stat);
+                return self.pluginExistByDir(dest)
+                    .then(function(stat) {
+                        // @todo for now ignore existance, always force synchronize
+                        // Copy local plugin dir into plugin tmp dir
+                        // This directoy contain the plugin from all source (local, remote, etc)
+                        // They will also be npm installed to get all required dependancies
+                        self.logger.verbose("Plugin dir %s will be copied to %s", pluginDir, dest, stat);
+                        return new Promise(function(resolve, reject) {
+                            fs.copy(pluginDir, dest, function(err){
+                                if(err) {
+                                    return reject(err);
+                                }
+                                self.logger.debug('Plugin [%s] synchronized to [%s]', plugin.name, dest);
+                                self.logger.debug('Run npm install for plugin %s', plugin.name);
+                                return self.npmInstall(dest)
+                                    .then(function() {
+                                        self.system.emit("plugin:synchronized", plugin);
+                                        return resolve();
+                                    });
+                            });
+                        });
+                    });
+            })
+            .then(function() {
+                return dest;
             });
-        });
     }
 
-    npmInstall(pluginDir, cb) {
+    npmInstall(pluginDir) {
         let self = this;
         const ls = child_process.spawn(this.npmPath, ['install'], { cwd: pluginDir });
 
@@ -82,9 +78,11 @@ class Repository extends EventEmitter {
             //self.logger.debug(`stderr: ${data}`);
         });
 
-        ls.on('close', (code) => {
-            self.logger.debug(`${pluginDir} npm install child process exited with code ${code}`);
-            return cb();
+        return new Promise(function(resolve, reject) {
+            ls.on('close', (code) => {
+                self.logger.debug(`${pluginDir} npm install child process exited with code ${code}`);
+                return resolve();
+            });
         });
     }
 

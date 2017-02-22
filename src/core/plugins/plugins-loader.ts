@@ -81,9 +81,6 @@ export class PluginsLoader {
                         let container = new PluginContainer(self.system, plugin, null);
                         let helper = new PluginHelper(self.system, container);
 
-                        // add to global storage
-                        PluginsLoader.plugins.push(container);
-
                         // require the class export of plugin & create the instance
                         // also in case of missing attribute we merge it with DefaultPluginInstance that contains everything needed
                         let PluginClass = self.getPluginClass(plugin);
@@ -91,6 +88,9 @@ export class PluginsLoader {
 
                         // we attach instance to container to work with it later
                         container.instance = instance;
+
+                        // add to global storage
+                        PluginsLoader.plugins.push(container);
 
                         // mount plugin instance
                         instance.mount(function(err) {
@@ -108,7 +108,7 @@ export class PluginsLoader {
                     .catch(function(err) {
                         // mount failed, just cancel everything
                         PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== plugin.name);
-                        self.system.runtime.plugins.delete(plugin.name);
+                        // self.system.runtime.plugins.delete(plugin.name);
                         semaphore.leave();
                         return reject(err);
                     });
@@ -184,6 +184,13 @@ export class PluginsLoader {
     }
 
     /**
+     * Useful to test if a plugin is loaded
+     */
+    public getPluginContainerByName(pluginName) {
+        return PluginsLoader.plugins.find((container) => container.plugin.name === pluginName)
+    }
+
+    /**
      * Synchronize if needed a plugin
      * @param plugin
      */
@@ -201,8 +208,11 @@ export class PluginsLoader {
                     self.logger.verbose("Plugin %s does not seems to be synchronizing yet. Synchronizing..", plugin.name);
                 }
                 if (self.system.config.forcePluginsSynchronizeAtStartup || !pluginStats.exist || !pluginStats.isValid) {
-                    debug("plugins")("%s has been synchronized", plugin.name);
-                    return self.system.repository.synchronize([plugin]);
+                    return self.system.repository.synchronize(plugin)
+                        .then(function(dir) {
+                            debug("plugins")("%s has been synchronized to %s", plugin.name, dir);
+                            return dir;
+                        });
                 }
             });
     }

@@ -3,6 +3,7 @@ import util = require('util');
 import * as _ from "lodash";
 import {debug} from "./shared/debug";
 import * as Bluebird from "bluebird";
+import {HookHelper} from "./core/hook-helper";
 
 export class Bootstrap {
 
@@ -88,10 +89,13 @@ export class Bootstrap {
             // first we try to lookup core module. We always use core hooks as priority
             let hookModule = null;
             debug("hooks")("Trying to load Hook %s as core module at %s", name, config.modulePath);
-            try { hookModule = require(config.modulePath); } catch(e) {
+            try { hookModule = require(config.modulePath); } catch(err) {
+                if (err.code !== "MODULE_NOT_FOUND") { throw err; };
                 // if core hook does not exist we try to load node_module  hook
                 debug("hooks")("Trying to load Hook %s as simple module dependency", name);
-                try { hookModule = require(name); } catch(e) {}
+                try { hookModule = require(name); } catch(err) {
+                    if (err.code !== "MODULE_NOT_FOUND") { throw err; };
+                }
             }
 
             // Hook module not found
@@ -111,7 +115,7 @@ export class Bootstrap {
             };
 
             // we pass the user config to the hook so it can override its own config
-            let hook = new hookModule(self.system, self.system.config.hooks[name].config);
+            let hook = new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name));
             self.system.registerTaskOnShutdown((cb) => {
                 hook.onShutdown()
                     .then(() => {cb()})

@@ -5,17 +5,20 @@ import * as path from "path"
 import {ModuleHelper} from "./module-helper";
 import {ModuleContainer} from "./module-container";
 import {System} from "../../../system";
+import {PluginsLoader} from "../plugins-loader";
 
 export class ModuleLoader {
 
     system: System;
     logger: any;
     synchronizedPluginsPath: string;
+    pluginsLoader: PluginsLoader;
 
     constructor(system) {
         this.system = system;
         this.logger = this.system.logger.getLogger('ModuleLoader');
-        this.synchronizedPluginsPath = path.join(this.system.config.system.appDataPath, this.system.config.system.synchronizedPluginsDir);
+        this.synchronizedPluginsPath = this.system.config.synchronizedPluginsPath;
+        this.pluginsLoader = new PluginsLoader(system);
     }
 
     loadModule(plugin: any, moduleId) {
@@ -34,7 +37,7 @@ export class ModuleLoader {
         }
 
         // create container
-        let container = new ModuleContainer(this.system, this.system.runtime.plugins.get(plugin.name), moduleInfo, null);
+        let container = new ModuleContainer(this.system, this.pluginsLoader.getPluginContainerByName(plugin.name), moduleInfo, null);
 
         // now require the module & fill empty required methods
         let Module = require(modulePath);

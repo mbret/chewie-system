@@ -1,7 +1,7 @@
 "use strict";
 
 import {System} from "../../system";
-import {ApiResponseError, ApiResponseNotFoundError} from "./response-error";
+import {ApiResponseError, ApiResponseNotFoundError, ApiResponseBadRequestError} from "./response-error";
 
 let request = require("request");
 let _ = require("lodash");
@@ -48,15 +48,21 @@ class RemoteServiceHelper {
             return cb(error);
         }
 
+        response.status = response.statusCode;
         try {
             response.body = JSON.parse(response.body);
         } catch(err) {}
+        response.data = response.body
 
         if (response.statusCode === 500) {
 
             // Build an error object that will wrap response
             // So we have a valid Error object and still able to handle response
             return cb(new ApiResponseError(response));
+        }
+
+        if (response.statusCode === 400) {
+            return cb(new ApiResponseBadRequestError(response));
         }
 
         if (response.statusCode === 404) {
@@ -96,15 +102,20 @@ class RemoteServiceHelper {
         });
     }
 
-    put(url, data, options) {
+    put(url, data, options: any = {}) {
         let self = this;
         options = self._buildOptions(options);
         return new Promise(function(resolve, reject) {
             let opt = _.merge({}, options, {uri: url, body: data, json: true});
             request
-                .put(_.merge(options, {form: data}), self._handleResponse.bind(self, (function(err, httpResponse) {
+                .defaults({headers: { 'content-type': 'application/json'}})
+                .put(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
                     if(err) {
-                        return reject(err);
+                        if (options.failSilently) {
+                            return resolve(httpResponse);
+                        } else {
+                            return reject(err);
+                        }
                     }
 
                     return resolve(httpResponse);
