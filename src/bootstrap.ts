@@ -86,6 +86,9 @@ export class Bootstrap {
                 return promises.push(Promise.resolve());
             }
 
+            require("shit");
+            console.log(require.main.filename);
+
             // first we try to lookup core module. We always use core hooks as priority
             let hookModule = null;
             debug("hooks")("Trying to load Hook %s as core module at %s", name, config.modulePath);
@@ -95,13 +98,13 @@ export class Bootstrap {
                 // if core hook does not exist we try to load node_module  hook
                 debug("hooks")("The hook %s does not seems to be a core module so we try to load as node dependency", name);
                 try { hookModule = require(name); } catch(err) {
-                    if (err.code !== "MODULE_NOT_FOUND") { throw err; };
+                    if (err.code !== "MODULE_NOT_FOUND") {
+                        throw err;
+                    } else {
+                        // Hook module not found
+                        throw new Error("The hook " + name + " does not seems to exist. Please check that you have installed the module as a dependency. Error: " + err);
+                    }
                 }
-            }
-
-            // Hook module not found
-            if (!hookModule) {
-                return promises.push(Promise.reject(new Error("The hook " + name + " does not seems to exist. Please check that you have installed the module as a dependency.")));
             }
 
             // monkey-patch hard way. The easy way is to store original method in var and call it after. But I like playing hard >_<

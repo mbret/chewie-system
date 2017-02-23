@@ -8,5 +8,32 @@ const chewie = require(__dirname +  '/../..');
 
 // Start the system
 chewie.start({
-    settings: require("./settings.json")
+    settings: {
+        bootstrap: {
+            bootstrap: function(system, done) {
+                return done();
+            }
+        },
+        "profileToLoadOnStartup": "admin",
+        "system": {
+            "tmpDir": "./.my-buddy/tmp",
+            "appDataPath": "./.chewie"
+        },
+        "pluginsLocalRepositoryDir": "./../plugins",
+        "hooks": {
+            "chewie-hook-thirdparty-auth-provider": true,
+            "shared-server-api": {
+                "config": {
+                    "sharedDatabase": {
+                        "connexion": {
+                            "storage": "./.my-buddy/storage/db.sqlite",
+                            "dropOnStartup": false
+                        },
+                        "migrationLogs": true
+                    }
+                }
+            }
+        },
+        "forcePluginsSynchronizeAtStartup": true
+    }
 });

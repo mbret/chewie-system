@@ -1,5 +1,5 @@
 module.exports = {
-    LocalRepository: require('./local'),
+    LocalRepository: require('./local-repository'),
     RemoteRepository: require('./remote'),
     Repository: require('./global')
 };
