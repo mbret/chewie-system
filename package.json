@@ -19,8 +19,7 @@
     "dev-hook-client-web-server": "cd ./src/hooks/client-web-server && npm run dev",
     "watch": "concurrently --raw \"gulp watch\" \"tsc -w\"",
     "dev": "concurrently --raw \"npm run build\" \"npm run dev-hook-client-web-server\" \"npm run watch\"",
-    "test": "cross-env DEBUG=chewie* mocha",
-    "start-dev": "cross-env DEBUG=chewie* node .dev/_dev-windows/index.js"
+    "test": "cross-env DEBUG=chewie* mocha"
   },
   "dependencies": {
     "@types/async": "^2.0.38",
