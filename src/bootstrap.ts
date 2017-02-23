@@ -78,7 +78,7 @@ export class Bootstrap {
             }
             // set default hook user config
             config.config = config.config || {};
-            config.modulePath = config.modulePath || "./hooks/" + name;
+            let modulePath = config.modulePath || "./hooks/" + name;
 
             // hook is deactivated
             if (config.activated === false) {
@@ -86,23 +86,25 @@ export class Bootstrap {
                 return promises.push(Promise.resolve());
             }
 
-            require("shit");
-            console.log(require.main.filename);
-
             // first we try to lookup core module. We always use core hooks as priority
             let hookModule = null;
-            debug("hooks")("Trying to load Hook %s as core module at %s", name, config.modulePath);
-            try { hookModule = require(config.modulePath); } catch(err) {
-                // @WARING DEV: MODULE_NOT_FOUND may appears on core module if one of its dependency is not installed (and will throw false error)
-                if (err.code !== "MODULE_NOT_FOUND") { throw err; };
-                // if core hook does not exist we try to load node_module  hook
-                debug("hooks")("The hook %s does not seems to be a core module so we try to load as node dependency", name);
-                try { hookModule = require(name); } catch(err) {
-                    if (err.code !== "MODULE_NOT_FOUND") {
-                        throw err;
-                    } else {
-                        // Hook module not found
-                        throw new Error("The hook " + name + " does not seems to exist. Please check that you have installed the module as a dependency. Error: " + err);
+            if (_.isString(config.modulePath)) {
+                debug("hooks")("Trying to load Hook %s from path %s", name, config.module);
+                hookModule = require(modulePath);
+            } else {
+                debug("hooks")("Trying to load Hook %s as core module at %s", name, modulePath);
+                try { hookModule = require(modulePath); } catch(err) {
+                    // @WARING DEV: MODULE_NOT_FOUND may appears on core module if one of its dependency is not installed (and will throw false error)
+                    if (err.code !== "MODULE_NOT_FOUND") { throw err; };
+                    // if core hook does not exist we try to load node_module  hook
+                    debug("hooks")("The hook %s does not seems to be a core module so we try to load as node dependency", name);
+                    try { hookModule = require(name); } catch(err) {
+                        if (err.code !== "MODULE_NOT_FOUND") {
+                            throw err;
+                        } else {
+                            // Hook module not found
+                            throw new Error("The hook " + name + " does not seems to exist. Please check that you have installed the module as a dependency. Error: " + err);
+                        }
                     }
                 }
             }
