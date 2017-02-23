@@ -25,7 +25,7 @@ import {Hook} from "../../../core/hooks";
 let ensureFile = Bluebird.promisify(fsExtra.ensureFile);
 let debugDefault = debug("hooks:shared-server-api");
 
-export default class SharedServerApiHook extends Hook implements HookInterface, InitializeAbleInterface {
+export default class SharedServerApiHook extends Hook implements HookInterface {
 
     io: any;
     logger: any;

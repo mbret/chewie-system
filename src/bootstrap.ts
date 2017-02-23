@@ -2,7 +2,6 @@ import {System} from "./system";
 import util = require('util');
 import _ = require("lodash");
 import {debug} from "./shared/debug";
-import * as Bluebird from "bluebird";
 
 export class Bootstrap {
 

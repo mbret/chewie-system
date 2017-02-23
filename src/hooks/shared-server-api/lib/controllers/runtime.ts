@@ -11,13 +11,13 @@ module.exports = function(server, router){
     /**
      * Reject all request method except OPTIONS when no active profile exist.
      */
-    router.all("/runtime/tasks*", function(req, res, next) {
-        if(req.method === "OPTIONS" || server.system.runtime.hasActiveProfile()) {
-            return next();
-        }
-
-        return res.badRequest({code: "noActiveProfile"});
-    });
+    // router.all("/runtime/tasks*", function(req, res, next) {
+    //     if(req.method === "OPTIONS" || server.system.runtime.hasActiveProfile()) {
+    //         return next();
+    //     }
+    //
+    //     return res.badRequest({code: "noActiveProfile"});
+    // });
 
     /**
      * Get the list of running tasks.
@@ -88,22 +88,22 @@ module.exports = function(server, router){
     /**
      * Execute a task
      */
-    router.post("/runtime/tasks/:task", function(req, res) {
-        var id = parseInt(req.params.task);
-
-        // check task
-        TaskDao.findById(id)
-            .then(function(task) {
-                if (!task) {
-                    return res.notFound();
-                }
-
-                // execute the task
-                server.system.runtime.executeTask(task);
-                return res.created();
-            })
-            .catch(res.serverError);
-    });
+    // router.post("/runtime/tasks/:task", function(req, res) {
+    //     var id = parseInt(req.params.task);
+    //
+    //     // check task
+    //     TaskDao.findById(id)
+    //         .then(function(task) {
+    //             if (!task) {
+    //                 return res.notFound();
+    //             }
+    //
+    //             // execute the task
+    //             server.system.runtime.executeTask(task);
+    //             return res.created();
+    //         })
+    //         .catch(res.serverError);
+    // });
 
     // router.get("/runtime/executing-tasks", function(req, res) {
     //     var tasks = [];

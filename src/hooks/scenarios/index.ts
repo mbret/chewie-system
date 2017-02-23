@@ -17,7 +17,7 @@ import {Hook} from "../../core/hooks";
  * - the scenario has been deleted
  * - runtime plugins updated (loaded/unloaded)
  */
-export = class ScenariosHook extends Hook implements HookInterface, InitializeAbleInterface {
+export = class ScenariosHook extends Hook implements HookInterface {
 
     scenariosHelper: ScenarioHelper;
 

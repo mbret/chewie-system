@@ -108,7 +108,7 @@ export class PluginsLoader {
                     .catch(function(err) {
                         // mount failed, just cancel everything
                         PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== plugin.name);
-                        self.system.runtime.plugins.delete(plugin.name);
+                        self.system.plugins.delete(plugin.name);
                         semaphore.leave();
                         return reject(err);
                     });

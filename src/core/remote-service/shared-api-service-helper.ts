@@ -6,7 +6,7 @@ import {System} from "../../system";
 import {ApiResponseError, ApiResponseNotFoundError} from "./response-error";
 let io = require('socket.io-client');
 
-export class SharedApiServiceHelper extends RemoteServiceHelper implements InitializeAbleInterface {
+export class SharedApiServiceHelper extends RemoteServiceHelper {
 
     io: any;
     loggerSocket: any;

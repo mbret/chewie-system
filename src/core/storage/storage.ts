@@ -1,9 +1,8 @@
 "use strict";
 import Database from "./database/database";
 import {System} from "../../system";
-import {SystemModuleInterface} from "../system-module-interface";
 
-export default class Storage implements SystemModuleInterface, InitializeAbleInterface {
+export default class Storage {
     system: System;
     database: Database;
     logger: any;

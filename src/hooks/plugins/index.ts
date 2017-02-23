@@ -10,7 +10,7 @@ import {debug} from "../../shared/debug";
 import {SystemError} from "../../core/error";
 import {Plugin} from "../shared-server-api/lib/models/plugins";
 
-export = class PluginsHook extends Hook implements HookInterface, InitializeAbleInterface {
+export = class PluginsHook extends Hook implements HookInterface {
 
     scenariosHelper: ScenarioHelper;
     protected customListeners: any;
@@ -56,7 +56,7 @@ export = class PluginsHook extends Hook implements HookInterface, InitializeAble
         // Listen for plugin deletion
         self.customListeners.pluginDeleted = this.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
             // ensure we are on the right device
-            if (plugin.deviceId === self.system.id && self.system.runtime.plugins.get(plugin.name)) {
+            if (plugin.deviceId === self.system.id && self.system.plugins.get(plugin.name)) {
                 self.logger.verbose("Plugin %s deletion detected", plugin.name);
                 self.unLoadPlugins([plugin]);
             }

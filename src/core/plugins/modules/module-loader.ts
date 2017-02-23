@@ -34,7 +34,7 @@ export class ModuleLoader {
         }
 
         // create container
-        let container = new ModuleContainer(this.system, this.system.runtime.plugins.get(plugin.name), moduleInfo, null);
+        let container = new ModuleContainer(this.system, this.system.plugins.get(plugin.name), moduleInfo, null);
 
         // now require the module & fill empty required methods
         let Module = require(modulePath);

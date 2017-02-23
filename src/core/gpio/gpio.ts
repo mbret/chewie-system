@@ -1,12 +1,9 @@
-'use strict';
-
-class Gpio{
+/**
+ *
+ */
+export default class Gpio {
 
     constructor(){
 
     }
-
-
 }
-
-module.exports = Gpio;

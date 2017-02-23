@@ -1,8 +1,8 @@
-var spawn = require('child_process').spawn,
-    EventEmitter = require('events').EventEmitter.prototype,
-    _ = require('lodash');
+let spawn = require('child_process').spawn;
+import { EventEmitter }  from "events";
+let _ = require('lodash');
 
-var defaultArgs = ['-msglevel', 'global=6', '-msglevel', 'cplayer=4', '-idle', '-slave', '-fs', '-noborder'];
+let defaultArgs = ['-msglevel', 'global=6', '-msglevel', 'cplayer=4', '-idle', '-slave', '-fs', '-noborder', "-volume", "100"];
 function Player(options) {
     this.options = options;
     this.spawn();
@@ -10,7 +10,7 @@ function Player(options) {
 
 Player.prototype = _.extend({
     spawn: function() {
-        var args = [];
+        let args = [];
 
         if(typeof this.options.args === 'string') {
             args = this.options.args.split(' ');
@@ -18,7 +18,7 @@ Player.prototype = _.extend({
             args = this.options.args
         }
 
-        var instance = spawn('mplayer', defaultArgs.concat(args));
+        let instance = spawn('mplayer', defaultArgs.concat(args));
 
         this.setStatus();
 
@@ -154,6 +154,6 @@ Player.prototype = _.extend({
     kill: function() {
         this.instance.kill();
     }
-}, EventEmitter);
+}, EventEmitter.prototype);
 
 module.exports = Player;

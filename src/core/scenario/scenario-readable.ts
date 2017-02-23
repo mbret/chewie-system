@@ -53,7 +53,7 @@ export default class ScenarioReadable extends EventEmitter {
         nodes.forEach(function (node) {
             let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
             let rtId = self.getRuntimeModuleKey(scenario.executionId, node.id, moduleId);
-            let module = self.system.runtime.modules.get(rtId);
+            let module = self.system.modules.get(rtId);
             let taskEndCallbackCalled = false;
 
             // ensure to not run the task if scenario is not running
@@ -158,12 +158,12 @@ export default class ScenarioReadable extends EventEmitter {
         // get the module instance
         let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
         let rtId = this.getRuntimeModuleKey(scenario.executionId, node.id, moduleId);
-        let module = this.system.runtime.modules.get(rtId);
+        let module = this.system.modules.get(rtId);
 
         this.logger.debug("Stopping %s", rtId);
         if (module) {
             module.stopInstance();
-            this.system.runtime.modules.delete(rtId);
+            this.system.modules.delete(rtId);
             this.logger.debug("module %s stopped and deleted from runtime", rtId);
         }
 
@@ -194,7 +194,7 @@ export default class ScenarioReadable extends EventEmitter {
             .then(function(container) {
 
                 // add to global storage
-                self.system.runtime.modules.set(self.getRuntimeModuleKey(scenario.executionId, node.id, moduleUniqueId), container);
+                self.system.modules.set(self.getRuntimeModuleKey(scenario.executionId, node.id, moduleUniqueId), container);
 
                 return self.readNodes(scenario, node.nodes, options);
             });

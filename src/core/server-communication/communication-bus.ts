@@ -8,7 +8,7 @@ let self = null;
 /**
  *
  */
-export class CommunicationBus extends EventEmitter implements InitializeAbleInterface {
+export class CommunicationBus extends EventEmitter {
 
     system: System;
     socket: any;

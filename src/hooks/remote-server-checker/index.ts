@@ -2,7 +2,7 @@
 import {HookInterface} from "../../core/hook-interface";
 import {Hook} from "../../core/hooks";
 
-export = class RemoteServerHook extends Hook implements HookInterface, InitializeAbleInterface {
+export = class RemoteServerHook extends Hook implements HookInterface {
     initialize(){
         let self = this;
         this.system.on("ready", function() {

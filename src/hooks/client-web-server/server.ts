@@ -17,7 +17,7 @@ let socket = require('socket.io');
 let server, proxyServer;
 let localConfig = require("./hook-config");
 
-export default class ClientWebServer extends Hook implements HookInterface, InitializeAbleInterface {
+export default class ClientWebServer extends Hook implements HookInterface {
 
     constructor(system: System, config: any) {
         super(system, config);

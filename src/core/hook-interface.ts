@@ -1,6 +1,6 @@
 "use strict";
+
 import {System} from "../system";
-import { EventEmitter }  from "events";
 import {Hook} from "./hooks";
 
 export interface HookConstructor {
@@ -8,13 +8,13 @@ export interface HookConstructor {
 }
 
 export interface HookInterface {
-    // initialize(done: Function);
+    initialize(): Promise<any>;
     getLogger();
 }
 
-export let hookMixin = {
-    emit(e) {
-        console.log("PAPA SHULTZ", e, super.emit);
-        super.emit.apply(this, arguments);
-    }
-};
+// export let hookMixin = {
+//     emit(e) {
+//         console.log("PAPA SHULTZ", e, super.emit);
+//         super.emit.apply(this, arguments);
+//     }
+// };

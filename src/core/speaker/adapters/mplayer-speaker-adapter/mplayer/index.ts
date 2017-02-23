@@ -1,13 +1,13 @@
-var Player = require('./lib/player'),
-    EventEmitter = require('events').EventEmitter.prototype,
-    _ = require('lodash');
+let Player = require('./lib/player');
+import { EventEmitter }  from "events";
+let _ = require('lodash');
 
-var defaults = {
+let defaults = {
     verbose: false,
     debug: false
 };
 
-var MPlayer = function(options) {
+let MPlayer = function(options) {
     options = _.defaults(options || {}, defaults);
 
     this.player = new Player(options);
@@ -46,7 +46,7 @@ var MPlayer = function(options) {
         this.emit('stop')
     }.bind(this));
 
-    var pauseTimeout,
+    let pauseTimeout,
         paused = false;
 
     this.player.on('timechange', function(time) {
@@ -162,6 +162,6 @@ MPlayer.prototype = _.extend({
     adjustAudio: function(seconds) {
         this.player.cmd('audio_delay', [seconds]);
     }
-}, EventEmitter);
+}, EventEmitter.prototype);
 
 module.exports = MPlayer;

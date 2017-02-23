@@ -47,7 +47,7 @@ export class ScenarioHelper {
         let ok = true;
         let pluginsIds = self.getPluginsIds(scenario);
         pluginsIds.forEach(function(id) {
-            if (!self.system.runtime.plugins.get(id)) {
+            if (!self.system.plugins.get(id)) {
                 ok = false;
             }
         });

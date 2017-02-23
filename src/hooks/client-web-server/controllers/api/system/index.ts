@@ -22,13 +22,13 @@ module.exports = function (router) {
         return res.ok();
     });
 
-    router.get('/runtime/profile', function(req, res){
-        let profile = req.app.locals.system.runtime.profileManager.getActiveProfile();
-        if(profile === null){
-            return res.status(404).send();
-        }
-        return res.status(200).send(profile);
-    });
+    // router.get('/runtime/profile', function(req, res){
+    //     let profile = req.app.locals.system.runtime.profileManager.getActiveProfile();
+    //     if(profile === null){
+    //         return res.status(404).send();
+    //     }
+    //     return res.status(200).send(profile);
+    // });
 
     router.post('/runtime/profile', function(req, res){
         var id = req.body.id;

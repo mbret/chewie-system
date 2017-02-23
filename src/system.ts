@@ -14,7 +14,7 @@ import * as ServerCommunication from "./core/server-communication/index";
 import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
 import {Bootstrap} from "./bootstrap";
-import {Runtime} from "./core/runtime";
+// import {Runtime} from "./core/runtime";
 import {Speaker} from "./core/speaker/speaker";
 import configurationLoader from "./configuration/loader";
 import LocalRepository from "./core/repositories/local-repository";
@@ -23,6 +23,8 @@ import {SharedApiServiceHelper} from "./core/remote-service/shared-api-service-h
 import {LoggerBuilder, LoggerInterface} from "./core/logger";
 import {HookInterface} from "./core/hook-interface";
 import {GarbageCollector} from "./core/garbage-collector";
+import {PluginContainer} from "./core/plugins/plugin-container";
+import {ModuleContainer} from "./core/plugins/modules/module-container";
 
 /**
  * System is the main program daemon.
@@ -30,7 +32,7 @@ import {GarbageCollector} from "./core/garbage-collector";
  */
 export class System extends EventEmitter {
 
-    runtime: Runtime;
+    // runtime: Runtime;
     config: any;
     communicationBus: ServerCommunication.CommunicationBus;
     scenarioReader: ScenarioReader;
@@ -43,6 +45,8 @@ export class System extends EventEmitter {
     sharedApiService: SharedApiServiceHelper;
     storage: Storage;
     hooks: Array<HookInterface>;
+    plugins: Map<string, PluginContainer>;
+    modules: Map<string, ModuleContainer>;
     info: any;
     id: string;
     name: string;
@@ -61,6 +65,8 @@ export class System extends EventEmitter {
             version: packageInfo.version,
             nodeVersions: process.versions
         };
+        this.plugins = new Map();
+        this.modules = new Map();
         this.shutdownQueue = queue();
         this.garbageCollector = new GarbageCollector(this);
     }
@@ -102,7 +108,7 @@ export class System extends EventEmitter {
                 self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');
                 self.storage = new Storage(self);
                 self.communicationBus = new ServerCommunication.CommunicationBus(self);
-                self.runtime = new Runtime(self);
+                // self.runtime = new Runtime(self);
                 self.sharedApiService = new SharedApiServiceHelper(self);
                 self.speaker = new Speaker(self);
                 self.localRepository = new LocalRepository(self);
@@ -184,9 +190,6 @@ export class System extends EventEmitter {
             self.logger.info('The system is restarting');
         });
 
-        // listen and forward some core events
-        // this.runtimeHelper.profileManager.on("profile:start", this.emit.bind(this, "profile:start"));
-
         this.runBootstrap(function(err){
             if(err){
                 errorOnStartup(err);
@@ -200,13 +203,8 @@ export class System extends EventEmitter {
             self.logger.info('                                     ');
             self.logger.info('=====================================');
 
-            console.log('');
-
             // Play some system sounds
             self.playSystemSound('start_up.wav');
-            // self.runtimeHelper.profile.on('profile:start:complete', function(){
-            //     self.playSystemSound('profile_loaded.wav');
-            // });
 
             // broadcast
             setTimeout(function(){
@@ -236,7 +234,7 @@ export class System extends EventEmitter {
      * Run the core bootstrap then the user bootstrap if it exist.
      * @param done
      */
-    private runBootstrap(done){
+    private runBootstrap(done) {
         let self = this;
 
         // run core bootstrap
@@ -277,7 +275,7 @@ export class System extends EventEmitter {
      * @param {string} file
      * @param {object} options
      */
-    private playSystemSound(file: string, options: any = undefined){
-        return this.speaker.playFile(path.join(this.config.resourcesDir, 'system', file), options);
+    protected playSystemSound(file: string, options: any = undefined){
+        return this.speaker.playFile(this.config.resourcesDir + "/system/" + file, options);
     }
 }
