@@ -5,6 +5,8 @@ let _ = require("lodash");
 export class ApiResponseError extends Error {
 
     response: any;
+    data: any;
+    status: number;
 
     constructor(response) {
         super();
@@ -17,7 +19,8 @@ export class ApiResponseError extends Error {
                 data: {}
             };
         }
-
+        this.status = response.status;
+        this.data = response.body;
         this.name = "ApiResponseError";
         this.message = "Http 500 Internal Server error: " + response.body.message;
         this.response = response;

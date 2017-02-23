@@ -7,6 +7,7 @@ import {ScenarioHelper} from "../../core/scenario/scenario-helper";
 import {ScenarioModel} from "../shared-server-api/lib/models/scenario";
 import {SystemError} from "../../core/error";
 import {Hook} from "../../core/hooks";
+import {debug} from "../../shared/debug";
 
 /**
  * Scenario are loaded automatically when:
@@ -64,6 +65,7 @@ export = class ScenariosHook extends Hook implements HookInterface {
                         // Scenario is not able to start but is loaded, we need to stop it
                         // we will basically stop all scenarios with that id
                         else if (!self.scenariosHelper.isAbleToStart(scenario)) {
+                            debug("hooks:scenarios")("scenario \"%s\" is not able to start, maybe its plugins are not loaded yet", scenario.name);
                             return self.stopScenarios([scenario]);
                         }
                         // Scenario is ok and running but must be reloaded because it has been updated on server

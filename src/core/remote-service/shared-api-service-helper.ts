@@ -48,6 +48,18 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
         return this.get("/devices/" + this.system.id + "/plugins");
     }
 
+    postHookData(hookName: string, key: string, data: any) {
+        return this.post("/devices/" + this.system.id + "/hooks/" + hookName + "/data", {key: key, data: data});
+    }
+
+    putHookData(hookName: string, key: string, data: any, options: any) {
+        return this.put("/devices/" + this.system.id + "/hooks/" + hookName + "/data/" + key, {data: data, partial: options.partial});
+    }
+
+    getHookData(hookName: string, key: string) {
+        return this.get("/devices/" + this.system.id + "/hooks/" + hookName + "/data/" + key);
+    }
+
     /**
      *
      * @param pluginId

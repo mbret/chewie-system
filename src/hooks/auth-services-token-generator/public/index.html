@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    </head>
+    <body ng-app="app">
+        <div ng-view></div>
+
+        <hr>
+
+        <a href="#!/auth/facebook/new">Register a facebook auth</a><br>
+        <a href="#!/auth/facebook/generate">Generate a facebook token</a><br>
+
+        <hr>
+        <p>
+            Your current facebook state is:
+            <ul>
+                <li>status: {{facebook.status}}</li>
+                <li>id: {{facebook.id}} - {{facebook.name}}</li>
+                <li>access token: {{facebook.accessToken}}, expire in: {{facebook.expiresIn}}</li>
+            </ul>
+        </p>
+
+        <script src="https://connect.facebook.net/en_US/sdk.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular-route.min.js"></script>
+        <script src="configuration.js"></script>
+        <script>
+            angular
+                .module("app", ["ngRoute"])
+                .config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
+                    $locationProvider.hashPrefix('!');
+                    $routeProvider.otherwise({redirectTo: '/'});
+                    $routeProvider
+                        .when('/', {
+                            templateUrl: 'detail.html',
+                            controller: 'IndexCtrl'
+                        })
+                        .when("/auth/facebook/new", {
+                            templateUrl: "auth-facebook-new.html",
+                            controller: "AuthFacebookNew"
+                        })
+                        .when("/auth/facebook/generate", {
+                            templateUrl: "auth-facebook-generate.html",
+                            controller: "AuthFacebookGenerate"
+                        });
+                }])
+                .run(function($window, $rootScope) {
+                    console.log("run");
+                    $rootScope.facebook = {};
+                    $window.fbAsyncInit = function() {
+                        // Executed when the SDK is loaded
+                        FB.init({
+                            appId: $window.CONFIG.facebook.appId,
+                            channelUrl: 'app/channel.html',
+                            status: true,
+                            cookie: true,
+                            xfbml: true,
+                            version: 'v2.4'
+                        });
+                        FB.getLoginStatus(function(response) {
+                            console.info("FB.getLoginStatus", response);
+                            if (response.status === 'connected') {
+                                onFacebookConnected(response);
+                                FB.logout();
+                            } else if (response.status === 'not_authorized') {
+                                // the user is logged in to Facebook,
+                                // but has not authenticated your app
+                                console.error("app not authenticated");
+                            } else {
+                                FB.login(function(response) {
+                                    onFacebookConnected(response);
+                                });
+                            }
+                        });
+                    };
+                    // facebook sdk
+                    (function(d, s, id){
+                        var js, fjs = d.getElementsByTagName(s)[0];
+                        if (d.getElementById(id)) {return;}
+                        js = d.createElement(s); js.id = id;
+                        js.src = "//connect.facebook.net/en_US/sdk.js";
+                        fjs.parentNode.insertBefore(js, fjs);
+                    }(document, 'script', 'facebook-jssdk'));
+
+                    function fillFacebookData(response) {
+                        $rootScope.facebook.status = response.status;
+                        $rootScope.facebook.id = response.authResponse.userID;
+                        $rootScope.facebook.accessToken = response.authResponse.accessToken;
+                        $rootScope.facebook.expiresIn = response.authResponse.expiresIn;
+                    }
+
+                    function onFacebookConnected(response) {
+                        fillFacebookData(response);
+                        FB.api("/me", function(res) {
+                            $rootScope.facebook.name = res.name;
+                            $rootScope.$apply();
+                        });
+                    }
+                })
+                .controller("IndexCtrl", function() {
+                    console.log("coucou");
+                })
+                .controller("AuthFacebookNew", function($scope, $http, $window) {
+                    $scope.data = {
+                        name: null,
+                        accessToken: null
+                    };
+                    $scope.submit = function(form) {
+                        $http
+                            .post("auth/facebook", {
+                                name: $scope.data.name,
+                                accessToken: $scope.data.accessToken,
+                                appSecret: $scope.data.appSecret,
+                            })
+                            .then(function() {
+                                console.log("registered");
+                                alert("Registered");
+                            })
+                            .catch(function(res) {
+                                console.error(res);
+                                if (res.data.code === "alreadyExist") {
+                                    alert("an auth with name " + $scope.data.name + " already exist. Try to update instead.");
+                                }
+                            });
+                    };
+                })
+                .controller("AuthFacebookGenerate", function($scope, $http) {
+                    console.log("AuthFacebookGenerate");
+
+                    $scope.submit = function(form) {
+                        console.log(form);
+                    };
+                });
+        </script>
+    </body>
+</html>

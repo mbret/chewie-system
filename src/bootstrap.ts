@@ -1,7 +1,9 @@
 import {System} from "./system";
 import util = require('util');
-import _ = require("lodash");
+import * as _ from "lodash";
 import {debug} from "./shared/debug";
+import * as Bluebird from "bluebird";
+import {HookHelper} from "./core/hook-helper";
 
 export class Bootstrap {
 
@@ -86,10 +88,14 @@ export class Bootstrap {
 
             // first we try to lookup core module. We always use core hooks as priority
             let hookModule = null;
-            try { hookModule = require(config.modulePath); } catch(e) {
-                console.log(hookModule);
+            debug("hooks")("Trying to load Hook %s as core module at %s", name, config.modulePath);
+            try { hookModule = require(config.modulePath); } catch(err) {
+                if (err.code !== "MODULE_NOT_FOUND") { throw err; };
                 // if core hook does not exist we try to load node_module  hook
-                try { hookModule = require(name); } catch(e) {}
+                debug("hooks")("Trying to load Hook %s as simple module dependency", name);
+                try { hookModule = require(name); } catch(err) {
+                    if (err.code !== "MODULE_NOT_FOUND") { throw err; };
+                }
             }
 
             // Hook module not found
@@ -99,15 +105,17 @@ export class Bootstrap {
 
             // monkey-patch hard way. The easy way is to store original method in var and call it after. But I like playing hard >_<
             hookModule.prototype.emit = function() {
+                let res;
                 if (this instanceof require("events").EventEmitter) {
-                    this.constructor.EventEmitter.prototype.emit.apply(this, arguments);
+                    res = this.constructor.EventEmitter.prototype.emit.apply(this, arguments);
                     arguments[0] = "hooks:" + name + ":" + arguments[0];
                     self.system.emit.apply(self.system, arguments);
                 }
+                return res;
             };
 
             // we pass the user config to the hook so it can override its own config
-            let hook = new hookModule(self.system, self.system.config.hooks[name].config);
+            let hook = new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name));
             self.system.registerTaskOnShutdown((cb) => {
                 hook.onShutdown()
                     .then(() => {cb()})

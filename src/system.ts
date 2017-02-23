@@ -226,7 +226,7 @@ export class System extends EventEmitter {
     private _onUnexpectedError(error){
         // kill speaker to avoid having phantom sounds if system crash
         this.speaker.kill();
-        this.logger.error(error);
+        this.logger.error(util.inspect(error));
         process.exit(1);
     }
 

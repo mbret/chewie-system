@@ -2,6 +2,7 @@
 import {System} from "../../system";
 import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as _ from "lodash";
+import {PluginsLoader} from "../plugins/plugins-loader";
 
 /**
  *
@@ -10,10 +11,12 @@ export class ScenarioHelper {
 
     system: System;
     logger: any;
+    pluginsLoader: PluginsLoader;
 
     constructor(system) {
         this.system = system;
         this.logger = this.system.logger.getLogger('ScenarioReader');
+        this.pluginsLoader = new PluginsLoader(system);
     }
 
     getPluginsIds(scenario: ScenarioModel) {
@@ -47,7 +50,7 @@ export class ScenarioHelper {
         let ok = true;
         let pluginsIds = self.getPluginsIds(scenario);
         pluginsIds.forEach(function(id) {
-            if (!self.system.plugins.get(id)) {
+            if (!self.pluginsLoader.getPluginContainerByName(id)) {
                 ok = false;
             }
         });

@@ -28,7 +28,8 @@ CREATE TABLE `scenario` (
   `nodes` VARCHAR(255) DEFAULT '{}',
   `autoStart` SMALLINT(1) NOT NULL DEFAULT 1,
   `createdAt` DATETIME NOT NULL,
-  `updatedAt` DATETIME NOT NULL, UNIQUE (name)
+  `updatedAt` DATETIME NOT NULL,
+  UNIQUE (name)
 );
 CREATE TABLE `plugins` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,6 +42,15 @@ CREATE TABLE `plugins` (
   `package` VARCHAR(255) NOT NULL,
   `createdAt` DATETIME NOT NULL,
   `updatedAt` DATETIME NOT NULL, UNIQUE (name)
+);
+CREATE TABLE `hookData` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `deviceId` VARCHAR(255) NOT NULL,
+  `hookName` VARCHAR(255),
+  `key` VARCHAR(255),
+  `data` VARCHAR(255) DEFAULT '{}',
+  `createdAt` DATETIME NOT NULL,
+  `updatedAt` DATETIME NOT NULL
 );
 CREATE TABLE `notification` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
