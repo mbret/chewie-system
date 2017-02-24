@@ -10,6 +10,7 @@ class Module {
     }
 
     run(options, done) {
+        console.log("options", options);
         FB.setAccessToken(options.accessToken);
         FB.api('me', function (res) {
             if(!res || res.error) {

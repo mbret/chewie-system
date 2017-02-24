@@ -8,6 +8,7 @@ import {ScenarioHelper} from "./scenario-helper";
 import ScenarioReadable from "./scenario-readable";
 import {PluginsLoader} from "../plugins/plugins-loader";
 const Semaphore = require('semaphore');
+// let queue = require('queue');
 
 /**
  * @todo pour le moment tout est instancié au début de la lecture. Au besoin une demande de trigger/task est envoyé à l'instance.
@@ -21,6 +22,7 @@ export class ScenarioReader {
     protected scenarioHelper: ScenarioHelper;
     protected semaphores: any;
     protected pluginsLoader: PluginsLoader;
+    protected ingredientsInjectionQueue: Array<Function>;
 
     constructor(system) {
         this.system = system;
@@ -29,6 +31,7 @@ export class ScenarioReader {
         this.scenarioHelper = new ScenarioHelper(this.system);
         this.semaphores = {};
         this.pluginsLoader = new PluginsLoader(system);
+        this.ingredientsInjectionQueue = [];
     }
 
     public isRunning(executionId: string) {
@@ -96,7 +99,10 @@ export class ScenarioReader {
                             .then(function() {
                                 self.logger.debug("[scenario:%s] all nodes have been loaded!", scenario.id);
                                 self.logger.verbose("[scenario:%s] Run the root nodes..", scenario.id);
-                                return scenarioReadable.runNodes(scenario.nodes);
+                                return self.getRuntimeIngredients()
+                                    .then(function(ingredients) {
+                                        return scenarioReadable.runNodes(scenario.nodes, ingredients);
+                                    });
                             })
                             .then(function() {
                                 self.logger.debug("[scenario:%s] root nodes are now running!", scenario.id);
@@ -206,6 +212,19 @@ export class ScenarioReader {
 
     public getRunningScenarios(): Array<ScenarioReadable> {
         return this.scenarios;
+    }
+
+    public registerIngredientsInjection(fn: Function) {
+        this.ingredientsInjectionQueue.push(fn);
+    }
+
+    public getRuntimeIngredients() {
+        return Promise.all(this.ingredientsInjectionQueue.map((fn) => fn()))
+            .then(function(results) {
+                let res = {};
+                results.forEach((ingredients) => res = _.merge(ingredients, res));
+                return res;
+            });
     }
 
     protected removeScenario(scenarioReadable: ScenarioReadable) {

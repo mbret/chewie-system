@@ -4,7 +4,7 @@
 // no matter where we actually lift from.
 process.chdir(__dirname);
 
-const chewie = require(__dirname +  '/../..');
+const chewie = require("chewie-system");
 
 // Start the system
 chewie.start({
@@ -16,11 +16,12 @@ chewie.start({
         },
         "profileToLoadOnStartup": "admin",
         "system": {
-            "tmpDir": "./.my-buddy/tmp",
+            "tmpDir": "./.chewie/.tmp",
             "appDataPath": "./.chewie"
         },
         "pluginsLocalRepositoryDir": "./../plugins",
         "hooks": {
+            "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
             "chewie-hook-thirdparty-auth-provider": {
                 // required because of symlink
                 modulePath: __dirname + "/node_modules/chewie-hook-thirdparty-auth-provider"

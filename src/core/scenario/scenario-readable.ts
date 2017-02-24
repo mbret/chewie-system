@@ -46,7 +46,7 @@ export default class ScenarioReadable extends EventEmitter {
      * @param parentIngredients
      * @returns {Promise<void>}
      */
-    public runNodes(nodes: Array<ScenarioModel>, parentIngredients: any = null): Promise<void> {
+    public runNodes(nodes: Array<ScenarioModel>, parentIngredients: any): Promise<void> {
         let self = this;
         let scenario = this;
 
@@ -69,29 +69,34 @@ export default class ScenarioReadable extends EventEmitter {
                 // Tasks are one shot (one time running)
                 // This is the most common case, just run the function and wait for its callback
                 else {
-                    self.logger.debug("Create a new demand for task module from plugin %s", node.pluginId, node.options);
+                    self.logger.debug("Create a new demand for task module from plugin %s with options (%s) and ingredients (%s)", node.pluginId, JSON.stringify(node.options), JSON.stringify(parentIngredients));
+
                     // parse options for eventual ingredients replacements
                     // only string options are interpolated
-                    if (parentIngredients) {
-                        _.forEach(node.options, function(value, key) {
-                            if (_.isString(value)) {
-                                _.forEach(parentIngredients, function(ingredientValue, ingredientKey) {
-                                    node.options[key] = value.replace("{{" + ingredientKey + "}}", ingredientValue);
-                                });
-                            }
-                        });
-                    }
+                    _.forEach(node.options, function(value, key) {
+                        let replacedValue = value;
+                        if (_.isString(value)) {
+                            _.forEach(parentIngredients, function(ingredientValue, ingredientKey) {
+                                replacedValue = replacedValue.replace(new RegExp(_.escapeRegExp("{{" + ingredientKey + "}}"), "g"), ingredientValue);
+                                node.options[key] = replacedValue;
+                            });
+                        }
+                    });
 
+                    // run the task
                     module.instance.run(node.options, taskDoneCallback);
                 }
 
-                function triggerCallback(ingredients) {
+                function triggerCallback(ingredientsFromModule) {
                     // handle case of module developer forgot to clear trigger on stop
                     if (self.state !== ScenarioReadable.STATE_RUNNING) {
                         self.logger.warn("The module '%s' from plugin '%s' just triggered a new demand. However the scenario is not running anymore. It probably means that a module is still running" +
                             " (may be a timeout, interval or async treatment not closed). The trigger has been ignored but you should tell the author of the plugin about this warning", node.moduleId, node.pluginId);
                     } else {
-                        return self.runNodes(node.nodes, ingredients);
+                        return self.system.scenarioReader.getRuntimeIngredients()
+                            .then(function(ingredients) {
+                                return self.runNodes(node.nodes, _.merge(ingredients, ingredientsFromModule));
+                            });
                     }
                 }
 
@@ -137,7 +142,7 @@ export default class ScenarioReadable extends EventEmitter {
         this.state = ScenarioReadable.STATE_STOPPING;
         return this.stopNodes(this, this.model.nodes)
     }
-    
+
     /**
      * Stop each nodes modules to functioning
      * @param scenario

@@ -2,7 +2,6 @@ import {System} from "./system";
 import util = require('util');
 import * as _ from "lodash";
 import {debug} from "./shared/debug";
-import * as Bluebird from "bluebird";
 import {HookHelper} from "./core/hook-helper";
 
 export class Bootstrap {
@@ -109,18 +108,20 @@ export class Bootstrap {
                 }
             }
 
+            // All hook events are dispatched through system
             // monkey-patch hard way. The easy way is to store original method in var and call it after. But I like playing hard >_<
-            hookModule.prototype.emit = function() {
-                let res;
-                if (this instanceof require("events").EventEmitter) {
-                    res = this.constructor.EventEmitter.prototype.emit.apply(this, arguments);
-                    arguments[0] = "hooks:" + name + ":" + arguments[0];
-                    self.system.emit.apply(self.system, arguments);
-                }
-                return res;
-            };
+            // hookModule.prototype.emit = function() {
+            //     let res;
+            //     if (this instanceof require("events").EventEmitter) {
+            //         res = this.constructor.EventEmitter.prototype.emit.apply(this, arguments);
+            //         arguments[0] = "hooks:" + name + ":" + arguments[0];
+            //         self.system.emit.apply(self.system, arguments);
+            //     }
+            //     return res;
+            // };
 
             // we pass the user config to the hook so it can override its own config
+            // let hook = _.merge(hookBoilerplate, new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name)));
             let hook = new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name));
             self.system.registerTaskOnShutdown((cb) => {
                 hook.onShutdown()
