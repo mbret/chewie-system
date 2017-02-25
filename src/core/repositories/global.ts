@@ -13,6 +13,7 @@ import {Plugin} from "../../hooks/shared-server-api/lib/models/plugins";
 import {debug} from "../../shared/debug";
 import {ignored} from "../../shared/ignore";
 let gulp = require("gulp");
+const changed = require('gulp-changed');
 
 class Repository extends EventEmitter {
 
@@ -62,12 +63,14 @@ class Repository extends EventEmitter {
                                 // Copy local plugin dir into plugin tmp dir
                                 // This directory contain the plugin from all source (local, remote, etc)
                                 // They will also be npm installed to get all required dependencies
-                                let glob = ["**/**", "!**/node_modules"];
+                                let glob = ["**/**", "!node_modules/**"];
                                 if (chewieIgnorePattern) {
                                     glob = glob.concat(ignored(chewieIgnorePattern).map((item) => "!" + item));
                                 }
                                 debug("repositories:global")("Plugin %s from %s will be copied to %s with glob [%s]", plugin.name, pluginDir, dest, glob);
-                                gulp.src(glob, {cwd: pluginDir, dot: true})
+                                gulp.src(glob, {cwd: pluginDir, dot: true, read: true})
+                                    // avoid too many disk access
+                                    .pipe(changed(dest))
                                     .pipe(gulp.dest(dest))
                                     .on("error", function(err) {
                                         return reject(err);
@@ -75,24 +78,12 @@ class Repository extends EventEmitter {
                                     .on("finish", function() {
                                         debug("repositories:global")('Plugin [%s] synchronized to [%s]', plugin.name, dest);
                                         debug("repositories:global")('Run npm install for plugin %s', plugin.name);
-                                        // return self.npmInstall(dest)
-                                        //     .then(function() {
-                                        //         self.system.emit("plugin:synchronized", plugin);
-                                        //         return resolve();
-                                        //     });
+                                        return self.npmInstall(dest)
+                                            .then(function() {
+                                                self.system.emit("plugin:synchronized", plugin);
+                                                return resolve();
+                                            });
                                     });
-                                // fs.copy(pluginDir, dest, function(err){
-                                //     if(err) {
-                                //         return reject(err);
-                                //     }
-                                //     self.logger.debug('Plugin [%s] synchronized to [%s]', plugin.name, dest);
-                                //     self.logger.debug('Run npm install for plugin %s', plugin.name);
-                                //     return self.npmInstall(dest)
-                                //         .then(function() {
-                                //             self.system.emit("plugin:synchronized", plugin);
-                                //             return resolve();
-                                //         });
-                                // });
                             });
                         });
                     });
@@ -104,7 +95,7 @@ class Repository extends EventEmitter {
 
     npmInstall(pluginDir) {
         let self = this;
-        const ls = child_process.spawn(this.npmPath, ['install'], { cwd: pluginDir });
+        const ls = child_process.spawn(this.npmPath, ["install", "--only=production"], { cwd: pluginDir });
 
         ls.stdout.on('data', (data) => {
             //self.logger.debug(`stdout: ${data}`);

@@ -13,7 +13,7 @@ export class RepositoriesHelper {
         this.system = system;
     }
 
-    installPluginFromSource(pathToModule, options: any) {
+    installPluginFromDisk(pathToModule, options: any) {
         let self = this;
         let name = null;
         options = _.merge({

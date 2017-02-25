@@ -75,6 +75,12 @@ export class Speaker {
         return this.playFileOrUrl(filename, options);
     }
 
+    /**
+     *
+     * @param url
+     * @param options
+     * @returns {Adapter}
+     */
     playUrl(url, options = {}) {
         return this.playFileOrUrl(url, options);
     }
@@ -83,7 +89,6 @@ export class Speaker {
         let self = this;
         let events = require('events');
         let instance = new MplayerSpeakerAdapter(this.system);
-        // let instance = events();
         this.logger.debug("File %s requested to play", path);
 
         instance.once("stop", function() {
@@ -111,21 +116,6 @@ export class Speaker {
         instance.play(path);
 
         return instance;
-        //var sound = this.speakerAdapter.playFile(filename);
-        //
-        //sound.on('error', function(err){
-        //    self.logger.error('An error happened while playing file %s. Err:', filename, err);
-        //});
-
-        // watch for system stop
-        // stop the current sound (running or not) to avoid having mpg123 playing sound
-        // even if system is not running.
-        //taskQueue.register('shutdown', function(cb){
-        //    sound.close();
-        //    return cb();
-        //});
-
-        //return sound;
     }
 
     // playUrl(url) {
