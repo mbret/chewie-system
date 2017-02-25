@@ -1,4 +1,5 @@
 "use strict";
+
 import {System} from "../../system";
 import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as _ from "lodash";

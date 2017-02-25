@@ -6,8 +6,13 @@ let fs = require('fs-extra');
 let npm = require("npm");
 let child_process = require("child_process");
 let which = require('which');
+import * as _ from "lodash";
 import { EventEmitter }  from "events";
 import {System} from "../../system";
+import {Plugin} from "../../hooks/shared-server-api/lib/models/plugins";
+import {debug} from "../../shared/debug";
+import {ignored} from "../../shared/ignore";
+let gulp = require("gulp");
 
 class Repository extends EventEmitter {
 
@@ -15,7 +20,7 @@ class Repository extends EventEmitter {
     logger: any;
     npmPath: string;
 
-    constructor(system){
+    constructor(system) {
         super();
         this.logger = system.logger.getLogger('Repository');
         this.system = system;
@@ -29,34 +34,65 @@ class Repository extends EventEmitter {
      */
     synchronize(plugin) {
         let self = this;
-        let pluginDir = self.system.localRepository.getPluginDir(plugin.name);
+        let pluginDir = null;
+        // plugin from local source
+        if (plugin.repository === "source") {
+            pluginDir = path.resolve(plugin.source);
+        } else {
+            // plugin from local repository
+            pluginDir = self.system.localRepository.getPluginDir(plugin.name);
+        }
         let dest = path.resolve(self.system.config.synchronizedPluginsPath, plugin.name);
 
+        // first check if plugin exist at its source
         return self.pluginExistByDir(pluginDir)
             .then(function(stat) {
                 if(!stat.exist) {
                     throw new Error('Unable to synchronize plugin ' + plugin.name + ' because the plugin directory ' + pluginDir + ' does not seems to exist anymore');
                 }
                 self.logger.verbose("Plugin dir %s exist and is ready to be synchronized", pluginDir, stat);
+                // then check if a plugin is already synchronized
                 return self.pluginExistByDir(dest)
                     .then(function(stat) {
                         // @todo for now ignore existance, always force synchronize
-                        // Copy local plugin dir into plugin tmp dir
-                        // This directoy contain the plugin from all source (local, remote, etc)
-                        // They will also be npm installed to get all required dependancies
-                        self.logger.verbose("Plugin dir %s will be copied to %s", pluginDir, dest, stat);
+                        // try to read .chewieignore
                         return new Promise(function(resolve, reject) {
-                            fs.copy(pluginDir, dest, function(err){
-                                if(err) {
-                                    return reject(err);
+                            fs.readFile(path.resolve(pluginDir, ".chewieignore"), "utf8", function(err, chewieIgnorePattern) {
+                                if (err && err.code !== "ENOENT") return reject(err);
+                                // Copy local plugin dir into plugin tmp dir
+                                // This directory contain the plugin from all source (local, remote, etc)
+                                // They will also be npm installed to get all required dependencies
+                                let glob = ["**/**", "!**/node_modules"];
+                                if (chewieIgnorePattern) {
+                                    glob = glob.concat(ignored(chewieIgnorePattern).map((item) => "!" + item));
                                 }
-                                self.logger.debug('Plugin [%s] synchronized to [%s]', plugin.name, dest);
-                                self.logger.debug('Run npm install for plugin %s', plugin.name);
-                                return self.npmInstall(dest)
-                                    .then(function() {
-                                        self.system.emit("plugin:synchronized", plugin);
-                                        return resolve();
+                                debug("repositories:global")("Plugin %s from %s will be copied to %s with glob [%s]", plugin.name, pluginDir, dest, glob);
+                                gulp.src(glob, {cwd: pluginDir, dot: true})
+                                    .pipe(gulp.dest(dest))
+                                    .on("error", function(err) {
+                                        return reject(err);
+                                    })
+                                    .on("finish", function() {
+                                        debug("repositories:global")('Plugin [%s] synchronized to [%s]', plugin.name, dest);
+                                        debug("repositories:global")('Run npm install for plugin %s', plugin.name);
+                                        // return self.npmInstall(dest)
+                                        //     .then(function() {
+                                        //         self.system.emit("plugin:synchronized", plugin);
+                                        //         return resolve();
+                                        //     });
                                     });
+                                // fs.copy(pluginDir, dest, function(err){
+                                //     if(err) {
+                                //         return reject(err);
+                                //     }
+                                //     self.logger.debug('Plugin [%s] synchronized to [%s]', plugin.name, dest);
+                                //     self.logger.debug('Run npm install for plugin %s', plugin.name);
+                                //     return self.npmInstall(dest)
+                                //         .then(function() {
+                                //             self.system.emit("plugin:synchronized", plugin);
+                                //             return resolve();
+                                //         });
+                                // });
                             });
                         });
                     });
@@ -92,10 +128,10 @@ class Repository extends EventEmitter {
 
     /**
      * Check if a valid plugin exist in this path
-     * @param name
      */
-    pluginExist(name) {
-        return this.pluginExistByDir(this.getSynchronizedPluginDir(name));
+    pluginExist(plugin: Plugin) {
+        let pluginPath = path.resolve(this.system.config.synchronizedPluginsPath, plugin.name);
+        return this.pluginExistByDir(pluginPath);
     }
 
     protected pluginExistByDir(dir): any {

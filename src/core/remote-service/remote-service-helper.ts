@@ -134,9 +134,26 @@ class RemoteServiceHelper {
         options = self._buildOptions(options);
         return new Promise(function(resolve, reject) {
             let opt = _.merge({}, options, {uri: url});
-            self.logger.verbose("GET (https) %s%s", self.defaultRequestOptions.baseUrl, url);
+            self.logger.verbose("DELETE (https) %s%s", self.defaultRequestOptions.baseUrl, url);
             request
                 .get(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
+                    if(err) {
+                        return reject(err);
+                    }
+
+                    return resolve(httpResponse);
+                })));
+        });
+    }
+
+    delete(url, options = {}) {
+        let self = this;
+        options = self._buildOptions(options);
+        return new Promise(function(resolve, reject) {
+            let opt = _.merge({}, options, {uri: url});
+            self.logger.verbose("GET (https) %s%s", self.defaultRequestOptions.baseUrl, url);
+            request
+                .delete(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
                     if(err) {
                         return reject(err);
                     }

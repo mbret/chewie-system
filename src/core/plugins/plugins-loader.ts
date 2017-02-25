@@ -198,13 +198,12 @@ export class PluginsLoader {
         let self = this;
         // first check if plugin is synchronized
         return this.system.repository
-            .pluginExist(plugin.name)
+            .pluginExist(plugin)
             // Synchronize if needed
             .then(function(pluginStats) {
                 if (self.system.config.forcePluginsSynchronizeAtStartup) {
                     self.logger.verbose("Force plugin %s to synchronize. Synchronizing..", plugin.name);
-                }
-                if (!pluginStats.exist || !pluginStats.isValid) {
+                } else if (!pluginStats.exist || !pluginStats.isValid) {
                     self.logger.verbose("Plugin %s does not seems to be synchronizing yet. Synchronizing..", plugin.name);
                 }
                 if (self.system.config.forcePluginsSynchronizeAtStartup || !pluginStats.exist || !pluginStats.isValid) {
@@ -213,6 +212,8 @@ export class PluginsLoader {
                             debug("plugins")("%s has been synchronized to %s", plugin.name, dir);
                             return dir;
                         });
+                } else {
+                    self.logger.verbose("Plugin %s is already synchronized.", plugin.name);
                 }
             });
     }

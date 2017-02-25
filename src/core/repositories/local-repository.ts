@@ -59,7 +59,7 @@ export default class LocalRepository extends BaseRepository {
      * name: name of package to get info
      * @returns {Promise}
      */
-    getPluginInfo(name) {
+    public getPluginInfo(name) {
         let self = this;
         return new Promise(function(resolve, reject){
             let pluginDir = self.getPluginDir(name);
@@ -77,6 +77,19 @@ export default class LocalRepository extends BaseRepository {
                     });
                 })
                 .catch(reject);
+        });
+    }
+
+    public getPluginInfoByDir(dir) {
+        let self = this;
+        return new Promise(function(resolve, reject){
+            return self.readPlugin(dir, function(err, info) {
+                if (err) {
+                    self.logger.debug("The plugin %s in %s is impossible to read. It either does not exist or is invalid. Err: %s", name, path.resolve(dir), err.message);
+                    return resolve(null);
+                }
+                return resolve(info);
+            });
         });
     }
 

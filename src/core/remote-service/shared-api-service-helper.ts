@@ -4,6 +4,7 @@ let util = require("util");
 import RemoteServiceHelper from "./remote-service-helper";
 import {System} from "../../system";
 import {ApiResponseError, ApiResponseNotFoundError} from "./response-error";
+import {version} from "punycode";
 let io = require('socket.io-client');
 
 export class SharedApiServiceHelper extends RemoteServiceHelper {
@@ -44,6 +45,10 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
         return this.get("/devices/" + this.system.id + "/scenarios");
     }
 
+    deletePlugin(pluginName: string) {
+        return this.delete(util.format("/devices/%s/plugins/%s", this.system.id, pluginName))
+    }
+
     getAllPlugins() {
         return this.get("/devices/" + this.system.id + "/plugins");
     }
@@ -61,18 +66,24 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
     }
 
     /**
-     *
      * @param pluginId
      * @returns {*}
      */
     getPlugin(pluginId) {
         return this.get(util.format("/devices/%s/plugins/%s", this.system.id, pluginId))
             .then(function(response: any) {
-                if(response.statusCode !== 200) {
+                return response.body;
+            })
+            .catch(function(err) {
+                if (err instanceof ApiResponseNotFoundError) {
                     return null;
                 }
-                return response.body;
+                throw err;
             });
+    }
+
+    postPlugin(data: any) {
+        return this.post(util.format("/devices/%s/plugins", this.system.id), data);
     }
 
     getScenario(id) {

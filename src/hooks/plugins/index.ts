@@ -4,11 +4,11 @@ let _ = require('lodash');
 import {HookInterface} from "../../core/hook-interface";
 import {System} from "../../system";
 import {ScenarioHelper} from "../../core/scenario/scenario-helper";
-import {Hook} from "../../core/hooks";
 import {PluginsLoader} from "../../core/plugins/plugins-loader";
 import {debug} from "../../shared/debug";
 import {SystemError} from "../../core/error";
 import {Plugin} from "../shared-server-api/lib/models/plugins";
+import {Hook} from "../../core/hook";
 
 export = class PluginsHook extends Hook implements HookInterface {
 
@@ -45,23 +45,24 @@ export = class PluginsHook extends Hook implements HookInterface {
         });
 
         // Listen for new plugin
-        self.customListeners.pluginCreated = this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
-            if (plugin.deviceId === self.system.id) {
-                self.logger.verbose("New plugin %s created detected", plugin.name);
-                self.logger.verbose('Synchronizing plugin %s', plugin.name);
-                return self.loadPlugin(plugin);
-            }
-        });
+        // self.customListeners.pluginCreated = this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
+        //     if (plugin.deviceId === self.system.id) {
+        //         self.logger.verbose("New plugin %s created detected", plugin.name);
+        //         self.logger.verbose('Synchronizing plugin %s', plugin.name);
+        //         return self.loadPlugin(plugin);
+        //     }
+        // });
 
         // Listen for plugin deletion
-        self.customListeners.pluginDeleted = this.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
-            // ensure we are on the right device
-            throw new Error("todo biatch");
-            if (plugin.deviceId === self.system.id && self.system.plugins.get(plugin.name)) {
-                self.logger.verbose("Plugin %s deletion detected", plugin.name);
-                self.unLoadPlugins([plugin]);
-            }
-        });
+        // self.customListeners.pluginDeleted = this.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
+        //     // ensure we are on the right device
+        //     self.logger.error("TODO BIATCH");
+        //     return;
+        //     if (plugin.deviceId === self.system.id && self.system.plugins.get(plugin.name)) {
+        //         self.logger.verbose("Plugin %s deletion detected", plugin.name);
+        //         self.unLoadPlugins([plugin]);
+        //     }
+        // });
 
         return Promise.resolve();
     }

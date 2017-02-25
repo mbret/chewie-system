@@ -69,9 +69,9 @@ export = function(server, router) {
         let name = req.body.name;
         let repository = req.body.repository;
         let deviceId = req.params.device;
+        let source = req.body.source;
         let pluginPackage = req.body.package || {};
 
-        // process.exit();
         // validation
         let errors = {};
 
@@ -89,7 +89,7 @@ export = function(server, router) {
         }
 
         if(_.size(errors) > 0) {
-            return res.badRequest({errors: errors});
+            return res.badRequest({data: {errors: errors}});
         }
 
         let plugin = {
@@ -97,7 +97,8 @@ export = function(server, router) {
             name: name,
             deviceId: deviceId,
             "package": pluginPackage,
-            repository: repository
+            repository: repository,
+            source: source
         };
 
         return PluginsDao.create(plugin)

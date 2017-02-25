@@ -14,7 +14,6 @@ import * as ServerCommunication from "./core/server-communication/index";
 import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
 import {Bootstrap} from "./bootstrap";
-// import {Runtime} from "./core/runtime";
 import {Speaker} from "./core/speaker/speaker";
 import configurationLoader from "./configuration/loader";
 import LocalRepository from "./core/repositories/local-repository";
@@ -25,6 +24,9 @@ import {HookInterface} from "./core/hook-interface";
 import {GarbageCollector} from "./core/garbage-collector";
 import {PluginContainer} from "./core/plugins/plugin-container";
 import {ModuleContainer} from "./core/plugins/modules/module-container";
+import {PluginsHelper} from "./core/plugins/plugins-helper";
+import {debug} from "./shared/debug";
+import {RepositoriesHelper} from "./core/repositories/repositories-helper";
 
 /**
  * System is the main program daemon.
@@ -50,6 +52,8 @@ export class System extends EventEmitter {
     info: any;
     id: string;
     name: string;
+    public pluginsHelper: PluginsHelper;
+    public repositoriesHelper: RepositoriesHelper;
     protected shutdownQueue: any;
 
     /**
@@ -69,6 +73,8 @@ export class System extends EventEmitter {
         this.modules = new Map();
         this.shutdownQueue = queue();
         this.garbageCollector = new GarbageCollector(this);
+        this.pluginsHelper = new PluginsHelper(this);
+        this.repositoriesHelper = new RepositoriesHelper(this);
     }
 
     /**
@@ -248,6 +254,7 @@ export class System extends EventEmitter {
             // run user bootstrap if exist
             // bootstrap key is a string and we suppose is relative to correct file.
             // as require is always relative to the file containing the call we need to resolve from cwd
+            debug("system")("Try to lookup user bootstrap");
             let userBootstrap: any = null;
             if (_.isString(self.config.bootstrap)) {
                 userBootstrap = require(path.resolve(process.cwd(), self.config.bootstrap));
@@ -269,6 +276,7 @@ export class System extends EventEmitter {
                     }
                 }, 6000);
             } else {
+                debug("system")("No user bootstrap found!");
                 return done();
             }
         });

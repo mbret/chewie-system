@@ -34,11 +34,11 @@ module.exports = function(sequelize){
             },
 
             repository: {
-                type: Sequelize.ENUM('local', 'remote'),
+                type: Sequelize.ENUM('local', 'remote', "source"),
                 allowNull: false
             },
 
-            // used for remote repository
+            // used for remote/source repository
             source: {
                 type: Sequelize.STRING,
                 allowNull: true
@@ -176,4 +176,6 @@ export interface Plugin {
     id: number;
     deviceId: string;
     name: string;
+    repository: string;
+    source: string;
 }
