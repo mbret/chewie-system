@@ -3,6 +3,7 @@ import util = require('util');
 import * as _ from "lodash";
 import {debug} from "./shared/debug";
 import {HookHelper} from "./core/hook-helper";
+import {applyDefaultHookModel} from "./shared/utils";
 
 export class Bootstrap {
 
@@ -122,6 +123,7 @@ export class Bootstrap {
 
             // we pass the user config to the hook so it can override its own config
             // let hook = _.merge(hookBoilerplate, new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name)));
+            applyDefaultHookModel(hookModule);
             let hook = new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name));
             self.system.registerTaskOnShutdown((cb) => {
                 hook.onShutdown()

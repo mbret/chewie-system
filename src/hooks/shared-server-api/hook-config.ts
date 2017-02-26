@@ -21,10 +21,10 @@ module.exports = {
             logging: false,
             // Will activate validation for type ex Enum
             typeValidation: true,
+            // set on runtime
+            storage: undefined
         },
         migrationDir: __dirname + "/db-migrate",
         migrationLogs: false
     },
-    // SQLite only. Located inside app data /storage directory.
-    storageFileName: "shared-database.db",
 };

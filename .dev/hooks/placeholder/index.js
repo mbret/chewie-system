@@ -1,7 +1,9 @@
 class HookPlaceholder {
+
     constructor(system) {
         this.system = system;
     }
+
     initialize() {
         this.system.scenarioReader.registerIngredientsInjection(function() {
             return Promise.resolve({
@@ -15,7 +17,6 @@ class HookPlaceholder {
         });
         return Promise.resolve();
     }
-    onShutdown() { return Promise.resolve(); }
 }
 
 module.exports = HookPlaceholder;

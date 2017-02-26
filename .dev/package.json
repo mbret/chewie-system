@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "start": "node _dev-windows/index.js",
-    "start:debug": "cross-env DEBUG=chewie* node _dev-windows/index.js"
-  },
-  "dependencies": {
-    "cross-env": "^3.1.4"
-  }
-}

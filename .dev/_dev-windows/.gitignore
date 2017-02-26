@@ -1,1 +1,3 @@
 config/local.js
+node_modules
+.chewie

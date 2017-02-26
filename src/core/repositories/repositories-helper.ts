@@ -20,8 +20,8 @@ export class RepositoriesHelper {
             reinstall: true
         });
         return this.system.localRepository
+            // first retrieve info about the plugin
             .getPluginInfoByDir(pathToModule)
-            .catch(Promise.reject)
             .then(function(info: any) {
                 name = info.name;
                 if (options.reinstall) {
@@ -48,7 +48,7 @@ export class RepositoriesHelper {
                 }
             })
             .catch(function(err) {
-                return Promise.reject(new SystemError("Unable to installing plugin " + name + " because of: " + err.message, null, err));
+                return Promise.reject(new SystemError("Unable to install plugin " + name + " because of: " + err.message, null, err));
             });
 
         function post(packageInfo) {
@@ -62,6 +62,7 @@ export class RepositoriesHelper {
                 })
                 .then(function () {
                     debug("repositories:helper")("Plugin %s created on storage", packageInfo.name);
+                    return packageInfo;
                 })
                 .catch(function(err) {
                     // console.log(err.data.data);

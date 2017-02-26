@@ -4,7 +4,7 @@ let app = require('express')();
 let io = require('socket.io');
 let https = require('https');
 let http = require("http");
-let fs = require('fs');
+import * as fs from "fs-extra";
 import * as _ from "lodash";
 let path        = require('path');
 let localConfig = require("../hook-config");
@@ -17,12 +17,11 @@ let requireAll  = require('my-buddy-lib').requireAll;
 import * as Sequelize from "sequelize";
 let async = require("async");
 let validator = require("validator");
-import * as fsExtra from "fs-extra";
 import * as DBMigrate from "db-migrate";
 import * as Bluebird from "bluebird";
 import {debug} from "../../../shared/debug";
-import {Hook} from "../../../core/hooks";
-let ensureFile = Bluebird.promisify(fsExtra.ensureFile);
+import {Hook} from "../../../core/hook";
+let ensureFile = Bluebird.promisify(fs.ensureFile);
 let debugDefault = debug("hooks:shared-server-api");
 
 export default class SharedServerApiHook extends Hook implements HookInterface {
@@ -41,9 +40,6 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
         super(system, userHookConfig);
         let self = this;
         this.logger = system.logger.getLogger('SharedServerApiHook');
-        this.config = _.merge(localConfig, {
-            storageFilePath: path.join(system.config.system.appDataPath, "storage", localConfig.storageFileName)
-        }, userHookConfig);
         this.system = system;
         this.server = null;
         this.services = {};
@@ -53,6 +49,20 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
 
         // export system to request handler
         app.locals.system = this.system;
+
+        // hook config
+        this.config = _.merge(localConfig, userHookConfig);
+        // user did not defined storage
+        if (!_.get(userHookConfig, "sharedDatabase.connexion.storage")) {
+            this.config.sharedDatabase.connexion.storage =  path.join(system.config.system.appDataPath, "storage/shared-database.db");
+        }
+        // runtime config
+        this.config.storageDir = path.dirname(this.config.sharedDatabase.connexion.storage);
+
+        console.log(this.config.storageDir);
+        console.log(path.resolve(process.cwd(), this.config.storageDir));
+        console.log(path.resolve(process.cwd(), this.config.sharedDatabase.connexion.storage));
+        // process.exit();
 
         // Include all services
         _.forEach(Services, function(module, key) {
@@ -69,7 +79,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
         return Promise.resolve()
             // first we ensure storage file exist
             .then(function() {
-                return ensureFile(self.config.storageFilePath);
+                return ensureFile(self.config.sharedDatabase.connexion.storage);
             })
             // then we run migration (from database creation to last update)
             .then(function() {
@@ -145,7 +155,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
             config: {
                 dev: {
                     driver: "sqlite3",
-                    filename: path.resolve(process.cwd(), server.config.storageFilePath),
+                    filename: path.resolve(process.cwd(), server.config.sharedDatabase.connexion.storage),
                 }
             },
             env: "dev"
@@ -171,9 +181,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
     protected configureOrm() {
         let server = this;
 
-        server.orm.sequelize = new Sequelize('database', 'admin', null, _.merge(server.config.sharedDatabase.connexion, {
-            storage: server.config.storageFilePath
-        }));
+        server.orm.sequelize = new Sequelize('database', 'admin', null, this.config.sharedDatabase.connexion);
 
         let modelsPath = "./models";
 

@@ -10,11 +10,12 @@ const chewie = require("chewie-system");
 chewie.start({
     settings: {
         bootstrap: {
-            bootstrap: function(system, done) {
-                return done();
+            bootstrap: function(chewie, done) {
+                chewie.repositoriesHelper.installPluginFromDisk(__dirname + "/../plugins/facebook-logger")
+                    .then(() => done())
+                    .catch(done);
             }
         },
-        "profileToLoadOnStartup": "admin",
         "system": {
             "tmpDir": "./.chewie/.tmp",
             "appDataPath": "./.chewie"
@@ -30,7 +31,6 @@ chewie.start({
                 "config": {
                     "sharedDatabase": {
                         "connexion": {
-                            "storage": "./.my-buddy/storage/db.sqlite",
                             "dropOnStartup": false
                         },
                         "migrationLogs": true

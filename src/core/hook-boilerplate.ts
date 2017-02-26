@@ -1,6 +1,6 @@
 "use strict";
 
-export default {
-    initialize: () => Promise.resolve(),
-    onShutdown: () => Promise.resolve()
+export default class HookBoilerplate {
+    initialize() { return Promise.resolve() }
+    onShutdown() { return Promise.resolve() }
 }

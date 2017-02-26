@@ -85,8 +85,7 @@ export default class LocalRepository extends BaseRepository {
         return new Promise(function(resolve, reject){
             return self.readPlugin(dir, function(err, info) {
                 if (err) {
-                    self.logger.debug("The plugin %s in %s is impossible to read. It either does not exist or is invalid. Err: %s", name, path.resolve(dir), err.message);
-                    return resolve(null);
+                    return reject(err);
                 }
                 return resolve(info);
             });
