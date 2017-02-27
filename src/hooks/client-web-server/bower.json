@@ -1,7 +1,6 @@
 {
   "name": "client-web-server",
   "description": " ",
-  "main": "server.js",
   "author": " ",
   "moduleType": [
     "node"
@@ -24,6 +23,16 @@
     "angular-ui-tree": "^2.22.1",
     "angular-oauth2": "^4.0.0",
     "masonry": "^4.1.1",
-    "ngstorage": "^0.3.11"
+    "ngstorage": "^0.3.11",
+    "angular": "^1.6.2",
+    "sprintf": "^1.0.3",
+    "jquery-slimscroll": "^1.3.8",
+    "lodash": "^4.17.4",
+    "angular-ui-router": "^0.4.2",
+    "angular-logger": "^1.4.0",
+    "angular-messages": "^1.6.2",
+    "socket.io-client": "^1.7.2",
+    "angular-socket-io": "^0.7.0",
+    "angular-bootstrap": "^2.5.0"
   }
 }

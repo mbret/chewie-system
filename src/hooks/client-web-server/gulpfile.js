@@ -13,6 +13,7 @@ const clean = require('gulp-clean');
 const less = require('gulp-less');
 const inject = require('gulp-inject');
 const series = require('stream-series');
+const changed = require('gulp-changed');
 // let buildPath = __dirname + "/.build";
 let copyOfNodeModulesDestPath = "./public/node_modules";
 let distAppPath = path.join(basePath, "/.dist/hooks/client-web-server");
@@ -34,34 +35,18 @@ let config = {
     copyOfNodeModulesDestPath: copyOfNodeModulesDestPath,
     distAppPath: distAppPath,
     env: process.env.NODE_ENV,
-    nodeModulesToCopy: [
-        "socket.io-client",
-        "lodash",
-        "jquery",
-        "angular",
-        "angular-ui-router",
-        "angular-messages",
-        "angular-ui-bootstrap",
-        "angular-socket-io",
-        "jquery-slimscroll",
-        "angular-logger",
-        "sprintf-js",
-    ],
-    vendorsNodeModulesToInject: [
-        require.resolve("sprintf-js/dist/sprintf.min.js"),
-        require.resolve("jquery/dist/jquery.js"),
-        require.resolve("jquery-slimscroll/jquery.slimscroll.min.js"),
-        require.resolve("lodash/lodash.js"),
-        require.resolve("angular/angular.js"),
-        require.resolve("angular-ui-router/release/angular-ui-router.js"),
-        // require momentjs & sprintfjs
-        require.resolve("angular-logger/dist/angular-logger.min.js"),
-        require.resolve("angular-messages/angular-messages.js"),
-        require.resolve("angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"),
-        require.resolve("socket.io-client/dist/socket.io.slim.js"),
-        require.resolve("angular-socket-io/socket.min.js"),
-    ],
     vendorsToInject: [
+        "vendors/sprintf/dist/sprintf.min.js",
+        "vendors/jquery/dist/jquery.js",
+        "vendors/jquery-slimscroll/jquery.slimscroll.min.js",
+        "vendors/lodash/lodash.js",
+        "vendors/angular/angular.js",
+        "vendors/angular-ui-router/release/angular-ui-router.js",
+        "vendors/angular-logger/dist/angular-logger.min.js",
+        "vendors/angular-messages/angular-messages.js",
+        "vendors/angular-bootstrap/ui-bootstrap-tpls.js",
+        "vendors/socket.io-client/dist/socket.io.slim.js",
+        "vendors/angular-socket-io/socket.min.js",
         "vendors/iCheck/icheck.js",
         "vendors/masonry/dist/masonry.pkgd.min.js",
         "vendors/bootstrap-daterangepicker/daterangepicker.js",
@@ -79,14 +64,14 @@ let config = {
     ]
 };
 
-gulp.task("copy-node-modules", function() {
-    // @todo use options.cwd for src (cwd: config.distAppPath)
-    return gulp
-        .src(config.nodeModulesToCopy.map(function(name) {
-            return path.join(config.nodeModulesPath, name + "/**/*");
-        }), { base: config.nodeModulesPath })
-        .pipe(gulp.dest(path.join(config.buildPath, "node_modules")));
-});
+// gulp.task("copy-node-modules", function() {
+//     // @todo use options.cwd for src (cwd: config.distAppPath)
+//     return gulp
+//         .src(config.nodeModulesToCopy.map(function(name) {
+//             return path.join(config.nodeModulesPath, name + "/**/*");
+//         }), { base: config.nodeModulesPath })
+//         .pipe(gulp.dest(path.join(config.buildPath, "node_modules")));
+// });
 gulp.task("copy-public", function() {
     return gulp
         .src([
@@ -96,9 +81,10 @@ gulp.task("copy-public", function() {
                 cwd: config.srcAppPath
             }
         )
+        .pipe(changed(config.buildPath))
         .pipe(gulp.dest(config.buildPath));
 });
-gulp.task("inject-js", gulp.series(gulp.parallel("copy-public", "copy-node-modules"), function() {
+gulp.task("inject-js", gulp.series(gulp.parallel("copy-public"/*, "copy-node-modules"*/), function() {
     let target = gulp.src("./public/index.html");
 
     // It's not necessary to read the files (will speed up things), we're only after their paths:
@@ -117,13 +103,13 @@ gulp.task("inject-js", gulp.series(gulp.parallel("copy-public", "copy-node-modul
         read: false,
         cwd: config.distAppPath + "/.build"
     });
-    let vendorsNodeModulesStream = gulp.src(config.vendorsNodeModulesToInject, {
-        read: false,
-        cwd: config.basePath
-    });
+    // let vendorsNodeModulesStream = gulp.src(config.vendorsNodeModulesToInject, {
+    //     read: false,
+    //     cwd: config.basePath
+    // });
 
     return target
-        .pipe(inject(series(vendorsNodeModulesStream, vendorsStream, appStream), {
+        .pipe(inject(series(/*vendorsNodeModulesStream, */vendorsStream, appStream), {
             ignorePath: "/public",
         }))
         .pipe(gulp.dest(config.buildPath));
@@ -137,7 +123,7 @@ gulp.task("watch-public", function() {
     return gulp.watch([
         "./public/**/**",
         "!./public/css"
-    ], gulp.parallel("inject-js", "copy-node-modules"));
+    ], gulp.parallel("inject-js"/*, "copy-node-modules"*/));
 });
 gulp.task("build-less", function() {
     return gulp.src("./public/css/style.less")
