@@ -7,6 +7,8 @@ import {ScenarioHelper} from "./scenario-helper";
 import ScenarioReadable from "./scenario-readable";
 import {PluginsLoader} from "../plugins/plugins-loader";
 const Semaphore = require('semaphore');
+import {debug as hookDebug} from "../../shared/debug";
+let debug = hookDebug("scenarios:reader");
 // let queue = require('queue');
 
 /**
@@ -44,7 +46,6 @@ export class ScenarioReader {
     public startScenario(scenario: ScenarioModel, options: any = {}) {
         let self = this;
         let semaphore = null;
-        options = _.merge({ loadPlugins: true }, options);
 
         this.logger.debug("Start new execution for scenario %s", scenario.id);
 
@@ -63,18 +64,15 @@ export class ScenarioReader {
                 Promise.resolve(null)
                     // Ensure plugins are loaded if option is set
                     .then(function() {
-                        if (options.loadPlugins) {
-                            self.logger.debug("Ensure plugins are loaded or load it if needed");
-                            return self.loadPlugins(scenario);
-                        }
-                        return Promise.resolve();
+                        self.logger.debug("Ensure plugins are loaded or load it if needed");
+                        return self.loadPlugins(scenario);
                     })
                     .then(function() {
                         return Promise.resolve()
                             // execute each node
                             .then(function() {
                                 self.logger.verbose("[scenario:%s] load all nodes...", scenario.id);
-                                return scenarioReadable.readNodes(scenarioReadable, scenario.nodes, { lvl: -1 });
+                                return scenarioReadable.start();
                             })
                             // Once they are all registered and loaded
                             // we run the first root trigger and tasks
@@ -208,6 +206,7 @@ export class ScenarioReader {
         // get a list of concerned plugins
         let ids = self.scenarioHelper.getPluginsNames(scenario);
         let promises = [];
+        debug("Need to load plugins [%s] in order to start scenario %s", ids, scenario.id);
         // load every plugins related to scenarios
         ids.forEach(function(id) {
             promises.push(

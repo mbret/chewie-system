@@ -97,7 +97,11 @@ export = function(server, router) {
             version: version,
             name: name,
             deviceId: deviceId,
-            "package": pluginPackage,
+            "package": _.merge({
+                chewie: {
+                    modules: []
+                }
+            }, pluginPackage),
             repository: repository,
             source: source
         };

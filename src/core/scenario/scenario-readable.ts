@@ -19,6 +19,7 @@ export default class ScenarioReadable extends EventEmitter {
 
     static STATE_STOPPING = "stopping";
     static STATE_RUNNING = "running";
+    static STATE_STARTING = "starting";
 
     constructor(system, model: ScenarioModel) {
         super();
@@ -27,13 +28,14 @@ export default class ScenarioReadable extends EventEmitter {
         this.executionId = uuid.v4();
         this.model = model;
         this.runningTasks = [];
-        this.state = ScenarioReadable.STATE_RUNNING;
+        this.state = ScenarioReadable.STATE_STARTING;
     }
 
     public toJSON() {
         return {
             executionId: this.executionId,
-            model: this.model
+            model: this.model,
+            state: this.state
         }
     }
 
@@ -125,22 +127,24 @@ export default class ScenarioReadable extends EventEmitter {
         return Promise.resolve();
     }
 
-    public readNodes(scenario: ScenarioReadable, nodes: any[], options: any) {
-        let self = this;
-        let promises = [];
-        nodes.forEach(function(node) {
-            promises.push(self.readNode(scenario, node, { lvl: options.lvl + 1 }));
-        });
-
-        return Promise.all(promises);
-    }
-
     /**
      * @returns {Promise}
      */
     public stop() {
         this.state = ScenarioReadable.STATE_STOPPING;
         return this.stopNodes(this, this.model.nodes)
+    }
+
+    /**
+     * @returns {Promise}
+     */
+    public start() {
+        let self = this;
+        return this.readNodes(this, this.model.nodes, { lvl: -1 })
+            .then(function() {
+                self.state = ScenarioReadable.STATE_RUNNING;
+                return self;
+            });
     }
 
     /**
@@ -182,7 +186,17 @@ export default class ScenarioReadable extends EventEmitter {
 
         return this.stopNodes(scenario, node.nodes, options);
     }
-    
+
+    protected readNodes(scenario: ScenarioReadable, nodes: any[], options: any) {
+        let self = this;
+        let promises = [];
+        nodes.forEach(function(node) {
+            promises.push(self.readNode(scenario, node, { lvl: options.lvl + 1 }));
+        });
+
+        return Promise.all(promises);
+    }
+
     /**
      * Read a node
      * @param scenario

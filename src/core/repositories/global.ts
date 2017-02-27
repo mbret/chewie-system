@@ -101,8 +101,9 @@ class Repository extends EventEmitter {
             //self.logger.debug(`stdout: ${data}`);
         });
 
+        // it print warning like (no descriptions, etc)
         ls.stderr.on('data', (data) => {
-            //self.logger.debug(`stderr: ${data}`);
+            // self.logger.debug(`stderr: ${data}`);
         });
 
         return new Promise(function(resolve, reject) {

@@ -102,6 +102,7 @@ export = class ScenariosHook extends Hook implements HookInterface {
         return self.system.scenarioReader.startScenario(scenario)
             .catch(function(err) {
                 if (err.code === SystemError.ERROR_CODE_PLUGIN_MISSING) {
+                    self.logger.verbose("Scenario %s is not able to start because of some plugins missing", scenario.id);
                     return self.system.sharedApiService.createNotification("The scenario " + scenario.id + " can't be started because some plugins are missing", "warning");
                 }
                 self.logger.error("Unable to read and start scenario %s", scenario.id, err);

@@ -49,7 +49,7 @@ export = class PluginsHook extends Hook implements HookInterface {
         self.customListeners.pluginCreated = this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
             if (plugin.deviceId === self.system.id) {
                 debug("New plugin %s created detected", plugin.name);
-                debug('Synchronizing plugin %s', plugin.name);
+                debug('Loading plugin %s', plugin.name);
                 return self.loadPlugin(plugin, true);
             }
         });
@@ -58,7 +58,7 @@ export = class PluginsHook extends Hook implements HookInterface {
         self.customListeners.pluginDeleted = this.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
             // ensure we are on the right device
             if (plugin.deviceId === self.system.id) {
-                debug("Plugin %s deletion has been deleted on storage", plugin.name);
+                debug("Plugin %s has been deleted on storage", plugin.name);
                 self.unLoadPlugins([plugin]);
             }
         });
@@ -86,7 +86,6 @@ export = class PluginsHook extends Hook implements HookInterface {
      */
     loadPlugin(plugin, reload = false) {
         let self = this;
-        debug('Loading plugin %s', plugin.name);
         return self.pluginsLoader.mount(plugin)
             .catch(function(err) {
                 if (err.code !== SystemError.ERROR_CODE_PLUGIN_ALREADY_MOUNTED) {

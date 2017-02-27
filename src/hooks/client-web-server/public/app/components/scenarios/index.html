@@ -69,7 +69,7 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="scenario in runningScenarios">
-                                <td title="scenario.executionId">{{scenario.executionId|truncate:10}}</td>
+                                <td title="scenario.executionId">{{scenario.executionId|truncate:10}} ({{scenario.state}})</td>
                                 <td>{{scenario.model.name}}</td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-warning text-" ng-click="stopScenario(scenario)"> <i class="fa fa-stop"></i> Stop</button>

@@ -85,8 +85,8 @@ export class PluginsLoader {
                         // require the class export of plugin & create the instance
                         // also in case of missing attribute we merge it with DefaultPluginInstance that contains everything needed
                         let pluginInstance = self.getPluginClass(plugin);
-                        pluginInstance.mount = pluginInstance.mount || ((helper, done) => done() );
-                        pluginInstance.unmount = pluginInstance.unmount || ((helper, done) => done() );
+                        pluginInstance.mount = typeof pluginInstance.mount === "function" ? pluginInstance.mount : ((helper, done) => done());
+                        pluginInstance.unmount = typeof pluginInstance.unmount === "function" ? pluginInstance.unmount : ((done) => done());
 
                         // we attach instance to container to work with it later
                         container.instance = pluginInstance;
@@ -151,7 +151,7 @@ export class PluginsLoader {
                             // remove item from list
                             PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== name);
                             self.system.emit("plugins:updated");
-                            self.logger.debug.verbose("Plugin %s has been unmount and all its scenarios stopped", name);
+                            self.logger.verbose("Plugin %s has been unmount and all its scenarios stopped", name);
                             semaphore.leave();
                             return resolve();
                         });

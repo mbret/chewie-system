@@ -22,7 +22,6 @@ export abstract class Hook extends EventEmitter implements HookInterface {
     }
 
     initialize() {
-        console.log("df");
         return Promise.resolve();
     }
 
