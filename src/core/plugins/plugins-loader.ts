@@ -6,17 +6,18 @@ import {PluginHelper} from "./plugin-helper";
 import {PluginContainer} from "./plugin-container";
 import {System} from "../../system";
 import {SystemError} from "../error";
-import {DefaultPluginInstance} from "./default-plugin-instance";
 const util = require("util");
 const Semaphore = require('semaphore');
 import {debug} from "../../shared/debug";
+import {Plugin} from "../../hooks/shared-server-api/lib/models/plugins";
+import {ScenarioHelper} from "../scenario/scenario-helper";
 let assert = require("chai").assert;
 let decache = require('decache');
+import * as Promise from "bluebird";
 
 export class PluginsLoader {
 
-    static PACKAGE_FILE_NAME = "chewie.package.js";
-    static PACKAGE_FILE_NAME_JSON = "chewie.package.json";
+    static PACKAGE_FILE_NAME_JSON = "package.json";
 
     system: System;
     logger: any;
@@ -83,24 +84,28 @@ export class PluginsLoader {
 
                         // require the class export of plugin & create the instance
                         // also in case of missing attribute we merge it with DefaultPluginInstance that contains everything needed
-                        let PluginClass = self.getPluginClass(plugin);
-                        let instance = _.assign(new DefaultPluginInstance(helper), new PluginClass(helper));
+                        let pluginInstance = self.getPluginClass(plugin);
+                        pluginInstance.mount = pluginInstance.mount || ((helper, done) => done() );
+                        pluginInstance.unmount = pluginInstance.unmount || ((helper, done) => done() );
 
                         // we attach instance to container to work with it later
-                        container.instance = instance;
+                        container.instance = pluginInstance;
 
                         // add to global storage
                         PluginsLoader.plugins.push(container);
 
                         // mount plugin instance
-                        instance.mount(function(err) {
-                            if (err) {
-                                return Promise.reject(err);
-                            }
-                            return Promise.resolve();
+                        return new Promise(function(resolve, reject) {
+                            pluginInstance.mount(helper, function(err) {
+                                if (err) {
+                                    return reject(err);
+                                }
+                                return resolve();
+                            });
                         });
                     })
                     .then(function() {
+                        debug("plugins")("Plugin %s fully mounted and ready", plugin.name);
                         self.system.emit("plugins:updated");
                         semaphore.leave();
                         return resolve(container);
@@ -108,7 +113,6 @@ export class PluginsLoader {
                     .catch(function(err) {
                         // mount failed, just cancel everything
                         PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== plugin.name);
-                        // self.system.runtime.plugins.delete(plugin.name);
                         semaphore.leave();
                         return reject(err);
                     });
@@ -116,31 +120,43 @@ export class PluginsLoader {
         });
     }
 
-    public unMount(name: string) {
+    public unmount(name: string) {
         let self = this;
-
+        let scenarioHelper = new ScenarioHelper(this.system);
         assert.isString(name);
 
         let semaphore = PluginsLoader.getSemaphoreFor(name);
         let pluginContainer = PluginsLoader.plugins.find((container) => container.plugin.name === name);
 
-        debug("plugins")("UnMount demand for plugin %s", name);
+        debug("plugins:loader")("UnMount demand for plugin %s", name);
 
         // the plugin is not mounted
         if (!pluginContainer) {
             return Promise.reject(new SystemError(name + " not found", SystemError.ERROR_CODE_PLUGIN_NOT_FOUNT));
         }
 
-        // Start unMount process
-        return new Promise(function(resolve) {
+        // Start unmount process
+        return new Promise(function(resolve, reject) {
             semaphore.take(function() {
-                pluginContainer.instance.unMount(function() {
-                    // remove item from list
-                    PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== name);
-                    self.system.emit("plugins:updated");
-                    semaphore.leave();
-                    return resolve();
-                });
+                // stop all scenarios tha use the plugin
+                let scenariosToStop = scenarioHelper.getScenariosId(pluginContainer.plugin);
+                debug("plugins:loader")("Stopping all scenarios of %s before unmount (%s)", name, scenariosToStop);
+                Promise
+                    .map(scenariosToStop, function(id: string) {
+                        return self.system.scenarioReader.stopScenario(id, {silent: true});
+                    })
+                    .then(function() {
+                        // unmount plugin instance
+                        pluginContainer.instance.unmount(function() {
+                            // remove item from list
+                            PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== name);
+                            self.system.emit("plugins:updated");
+                            self.logger.debug.verbose("Plugin %s has been unmount and all its scenarios stopped", name);
+                            semaphore.leave();
+                            return resolve();
+                        });
+                    })
+                    .catch(reject);
             });
         });
     }
@@ -158,27 +174,13 @@ export class PluginsLoader {
      * @param moduleDirFullPath
      */
     public loadPackageFile(moduleDirFullPath) {
-        let self = this;
-        let data = null;
-        let packageJsPath = path.join(moduleDirFullPath, PluginsLoader.PACKAGE_FILE_NAME);
         let packageJSONPath = path.join(moduleDirFullPath, PluginsLoader.PACKAGE_FILE_NAME_JSON);
-        debug("plugins")("Load package file for possible path [%s, %s]", packageJsPath, packageJSONPath);
+        debug("plugins")("Load package file at %s", packageJSONPath);
         // invalidate cache. We need this to ensure always having fresh info instead of the same "moduleInfo" var which may be changed further.
         // also the plugin may be changed during runtime this way.
         // first try to load js
-        try {
-            data = require(packageJsPath);
-            decache(require.resolve(packageJsPath));
-            // delete require.cache[require.resolve(packageJsPath)];
-        } catch (err) {
-            // then try the json
-            if (err.code === "MODULE_NOT_FOUND") {
-                data = require(packageJSONPath);
-                decache(require.resolve(packageJSONPath));
-            } else {
-                throw err;
-            }
-        }
+        let data = require(packageJSONPath);
+        decache(require.resolve(packageJSONPath));
 
         return data;
     }
@@ -222,23 +224,16 @@ export class PluginsLoader {
      *
      * @param plugin
      */
-    protected getPluginClass(plugin: any) {
-        plugin.package = this.getPluginInfo(plugin.name);
-
-        if (!plugin.package.pluginInstance) {
-            return DefaultPluginInstance;
+    protected getPluginClass(plugin: Plugin) {
+        if (!plugin.package.main) {
+            return {};
         }
 
         // get module instance path
-        let modulePath = plugin.package.pluginInstance;
-        // if path is relative we need to build absolute path because runtime is not inside the plugin dir
-        // ./module will become D://foo/bar/plugins/module
-        if (!path.isAbsolute(modulePath)) {
-            let pluginAbsolutePath = path.resolve(this.system.config.synchronizedPluginsPath, plugin.name);
-            modulePath = path.resolve(pluginAbsolutePath, modulePath);
-        }
+        let pluginAbsolutePath = path.resolve(this.system.config.synchronizedPluginsPath, plugin.name);
+        let modulePath = path.resolve(pluginAbsolutePath, plugin.package.main);
 
-        this.logger.debug("plugin path %s", modulePath);
+        debug("plugins")("plugin instance path is %s", modulePath);
 
         // now require the module
         return require(modulePath);

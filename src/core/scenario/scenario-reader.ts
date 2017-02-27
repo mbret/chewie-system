@@ -1,6 +1,5 @@
 "use strict";
 import {System} from "../../system";
-import {ModuleContainer} from "../plugins/modules/module-container";
 import {SystemError} from "../error";
 import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as _ from "lodash";
@@ -34,22 +33,6 @@ export class ScenarioReader {
         this.ingredientsInjectionQueue = [];
     }
 
-    public isRunning(executionId: string) {
-        let self = this;
-        let semaphore = this.semaphores[executionId];
-
-        return new Promise(function(resolve) {
-            if (!semaphore) {
-                return resolve(false);
-            } else {
-                semaphore.take(function() {
-                    semaphore.leave();
-                    return resolve(!!self.semaphores[executionId]);
-                });
-            }
-        });
-    }
-
     /**
      * Read a scenario from data.
      * Scenario once read are never removed from runtime, even if it is done.
@@ -61,15 +44,18 @@ export class ScenarioReader {
     public startScenario(scenario: ScenarioModel, options: any = {}) {
         let self = this;
         let semaphore = null;
-        options = _.merge({ loadPlugins: false }, options);
+        options = _.merge({ loadPlugins: true }, options);
 
-        this.logger.debug("Read scenario %s", scenario.id);
+        this.logger.debug("Start new execution for scenario %s", scenario.id);
 
         // create a new runtime scenario
         let scenarioReadable = new ScenarioReadable(self.system, scenario);
         // we use the execution id to create a semaphore lock
         semaphore = Semaphore(1);
         this.semaphores[scenarioReadable.executionId] = semaphore;
+
+        // register scenario in runtime
+        self.system.scenarioReader.scenarios.push(scenarioReadable);
 
         // semaphore lock
         return new Promise(function(resolve, reject) {
@@ -84,10 +70,6 @@ export class ScenarioReader {
                         return Promise.resolve();
                     })
                     .then(function() {
-                        // register scenario in runtime
-                        // it prevent running more than once and also help dealing through the system
-                        self.system.scenarioReader.scenarios.push(scenarioReadable);
-
                         return Promise.resolve()
                             // execute each node
                             .then(function() {
@@ -132,19 +114,15 @@ export class ScenarioReader {
                                 scenarioReadable.on("task:stop", onTaskStop);
 
                                 return Promise.resolve();
-                            })
-                            //as soon an error occurs we remove the scenario. A scenario is either running well or not.
-                            .catch(function(err) {
-                                // self.logger.error("An error occurred while reading scenario %s", scenario.name, err);
-                                self.removeScenario(scenarioReadable);
-                                throw err;
                             });
                     })
                     .then(function() {
                         semaphore.leave();
                         return resolve(scenarioReadable.executionId);
                     })
+                    //as soon an error occurs we remove the scenario. A scenario is either running well or not.
                     .catch(function(err) {
+                        self.removeScenario(scenarioReadable);
                         semaphore.leave();
                         return reject(err);
                     });
@@ -153,64 +131,57 @@ export class ScenarioReader {
     }
 
     /**
-     * Stop all scenario relative to this id.
-     * @param id
+     * @param executionId
+     * @param options
+     * @returns {Promise}
      */
-    public stopScenariosForId(id) {
+    public stopScenario(executionId: string, options: any = {}): Promise<any> {
         let self = this;
-        let concerned = this.scenarios.filter((tmp) => tmp.model.id === id);
-        let promises = [];
-        concerned.forEach(function(readable) {
-            promises.push(self.stopScenario(readable.executionId)
-                // ignore already stopped scenario
-                .catch(function(err) {
-                    if (err.code !== SystemError.ERROR_CODE_SCENARIO_NOT_FOUND) {
-                        throw err;
-                    }
-                }));
-        });
 
-        return Promise.all(promises);
-    }
+        // no scenario
+        if (!self.scenarios.find((elt) => elt.executionId === executionId)) {
+            if (options.silent) {
+                return Promise.resolve();
+            } else {
+                return Promise.reject(new SystemError(executionId + " not running", SystemError.ERROR_CODE_SCENARIO_NOT_FOUND));
+            }
+        }
 
-    public stopScenario(executionId: string) {
-        let self = this;
         let semaphore = this.semaphores[executionId];
 
-        return new Promise(function(resolve, reject) {
-            if (!semaphore) {
-                return reject(new SystemError(executionId + " not running", SystemError.ERROR_CODE_SCENARIO_NOT_FOUND));
-            } else {
-                semaphore.take(function() {
-                    // retrieve scenario
-                    let scenario = self.scenarios.find((elt) => elt.executionId === executionId);
-                    if (!scenario) {
+        return (new Promise(function(resolve, reject) {
+            semaphore.take(function() {
+                let scenario = self.scenarios.find((elt) => elt.executionId === executionId);
+
+                // scenario has been stopped already
+                // this scenario may occurs if start() failed and stopped the scenario automatically
+                if (!scenario) {
+                    return resolve();
+                }
+
+                // scenario may still be initializing so we remove it from the take() to ensure we are synchronized
+                self.removeScenario(scenario);
+                self.logger.verbose("Stopping scenario %s (execution id %s) ...", scenario.model.id, scenario.executionId);
+                return scenario
+                    .stop()
+                    .then(function() {
+                        self.logger.debug("scenario %s (execution id %s) stopped!", scenario.model.id, scenario.executionId);
+                        self.system.emit("running-scenarios:updated");
+                    })
+                    .then(function() {
                         semaphore.leave();
-                        return reject(new SystemError(executionId + " not running", SystemError.ERROR_CODE_SCENARIO_NOT_FOUND));
-                    }
-                    self.logger.verbose("Stopping scenario %s (execution id %s) ...", scenario.model.id, scenario.executionId);
-                    return scenario
-                        .stop()
-                        .then(function() {
-                            self.logger.debug("scenario %s (execution id %s) stopped!", scenario.model.id, scenario.executionId);
-                            self.system.emit("running-scenarios:updated");
-                        })
-                        .then(function() {
-                            self.removeScenario(scenario);
-                            semaphore.leave();
-                            delete self.semaphores[executionId];
-                            return resolve();
-                        })
-                        .catch(function(err) {
-                            semaphore.leave();
-                            return reject(err);
-                        });
-                });
-            }
+                        delete self.semaphores[executionId];
+                        return resolve();
+                    })
+                    .catch(reject);
+            });
+        })).catch(function(err) {
+            semaphore.leave();
+            throw err;
         });
     }
 
-    public getRunningScenarios(): Array<ScenarioReadable> {
+    public getScenarios(): Array<ScenarioReadable> {
         return this.scenarios;
     }
 
@@ -235,7 +206,7 @@ export class ScenarioReader {
     protected loadPlugins(scenario: ScenarioModel) {
         let self = this;
         // get a list of concerned plugins
-        let ids = self.scenarioHelper.getPluginsIds(scenario);
+        let ids = self.scenarioHelper.getPluginsNames(scenario);
         let promises = [];
         // load every plugins related to scenarios
         ids.forEach(function(id) {
@@ -243,6 +214,9 @@ export class ScenarioReader {
                 self.system.sharedApiService
                     .getPlugin(id)
                     .then(function(plugin) {
+                        if (!plugin) {
+                            throw new SystemError("Plugin " + id + " does not exist, the scenario can not be started.", SystemError.ERROR_CODE_PLUGIN_MISSING);
+                        }
                         return self.pluginsLoader.mount(plugin)
                             .catch(function(err) {
                                 if (err.code === SystemError.ERROR_CODE_PLUGIN_ALREADY_MOUNTED) {

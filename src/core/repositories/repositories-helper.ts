@@ -13,7 +13,13 @@ export class RepositoriesHelper {
         this.system = system;
     }
 
-    installPluginFromDisk(pathToModule, options: any) {
+    /**
+     * Option reinstall will delete and save again the plugin. It will trigger physical installation.
+     * @param pathToModule
+     * @param options
+     * @returns {Promise<U>}
+     */
+    installPluginFromDisk(pathToModule, options: any = {}) {
         let self = this;
         let name = null;
         options = _.merge({
@@ -61,7 +67,7 @@ export class RepositoriesHelper {
                     source: pathToModule
                 })
                 .then(function () {
-                    debug("repositories:helper")("Plugin %s created on storage", packageInfo.name);
+                    debug("repositories:helper")("Plugin %s saved on storage", packageInfo.name);
                     return packageInfo;
                 })
                 .catch(function(err) {

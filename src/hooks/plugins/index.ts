@@ -5,10 +5,11 @@ import {HookInterface} from "../../core/hook-interface";
 import {System} from "../../system";
 import {ScenarioHelper} from "../../core/scenario/scenario-helper";
 import {PluginsLoader} from "../../core/plugins/plugins-loader";
-import {debug} from "../../shared/debug";
+import {debug as hookDebug} from "../../shared/debug";
 import {SystemError} from "../../core/error";
 import {Plugin} from "../shared-server-api/lib/models/plugins";
 import {Hook} from "../../core/hook";
+let debug = hookDebug(":hook:plugins");
 
 export = class PluginsHook extends Hook implements HookInterface {
 
@@ -33,36 +34,34 @@ export = class PluginsHook extends Hook implements HookInterface {
                 .getAllPlugins()
                 .then(function(response: any) {
                     let plugins: Array<Plugin> = response.body;
-                    self.logger.verbose("%s plugin(s) found, load all of them and synchronize if needed", plugins.length);
+                    debug("%s plugin(s) found, load all of them and synchronize if needed", plugins.length);
                     plugins.forEach(function(plugin) {
                         return self.loadPlugin(plugin);
                     });
                 })
                 .catch(function(err) {
-                    self.logger.warn("Unable to load plugins automatically", err.message);
+                    self.logger.error("Unable to load plugins automatically", err.message);
                     return self.system.sharedApiService.createNotification("Unable to load plugins automatically", "warning");
                 });
         });
 
         // Listen for new plugin
-        // self.customListeners.pluginCreated = this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
-        //     if (plugin.deviceId === self.system.id) {
-        //         self.logger.verbose("New plugin %s created detected", plugin.name);
-        //         self.logger.verbose('Synchronizing plugin %s', plugin.name);
-        //         return self.loadPlugin(plugin);
-        //     }
-        // });
+        self.customListeners.pluginCreated = this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
+            if (plugin.deviceId === self.system.id) {
+                debug("New plugin %s created detected", plugin.name);
+                debug('Synchronizing plugin %s', plugin.name);
+                return self.loadPlugin(plugin, true);
+            }
+        });
 
         // Listen for plugin deletion
-        // self.customListeners.pluginDeleted = this.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
-        //     // ensure we are on the right device
-        //     self.logger.error("TODO BIATCH");
-        //     return;
-        //     if (plugin.deviceId === self.system.id && self.system.plugins.get(plugin.name)) {
-        //         self.logger.verbose("Plugin %s deletion detected", plugin.name);
-        //         self.unLoadPlugins([plugin]);
-        //     }
-        // });
+        self.customListeners.pluginDeleted = this.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
+            // ensure we are on the right device
+            if (plugin.deviceId === self.system.id) {
+                debug("Plugin %s deletion has been deleted on storage", plugin.name);
+                self.unLoadPlugins([plugin]);
+            }
+        });
 
         return Promise.resolve();
     }
@@ -79,9 +78,15 @@ export = class PluginsHook extends Hook implements HookInterface {
         return this.system.logger.getLogger('PluginsHook');
     }
 
-    loadPlugin(plugin) {
+    /**
+     * @param plugin
+     * @param reload
+     * @returns {Promise}
+     * @todo reload with self.pluginsLoader.reMount
+     */
+    loadPlugin(plugin, reload = false) {
         let self = this;
-        self.logger.verbose('Loading plugin %s', plugin.name);
+        debug('Loading plugin %s', plugin.name);
         return self.pluginsLoader.mount(plugin)
             .catch(function(err) {
                 if (err.code !== SystemError.ERROR_CODE_PLUGIN_ALREADY_MOUNTED) {
@@ -91,7 +96,7 @@ export = class PluginsHook extends Hook implements HookInterface {
                 }
             })
             .then(function() {
-                self.logger.verbose("Plugin %s loaded", plugin.name);
+                debug("Plugin %s loaded", plugin.name);
             });
     }
 
@@ -99,11 +104,11 @@ export = class PluginsHook extends Hook implements HookInterface {
      * - remove the reference of plugin to the system
      * @param plugins
      */
-    unLoadPlugins(plugins) {
+    unLoadPlugins(plugins: Array<Plugin>) {
         let self = this;
-        this.logger.verbose('Unloading plugins [%s]', _.map(plugins, "name"));
+        debug('Unloading plugins [%s]', _.map(plugins, "name"));
         plugins.forEach(function(plugin) {
-            return self.pluginsLoader.unMount(plugin)
+            return self.pluginsLoader.unmount(plugin.name)
                 .catch(function(err) {
                     if (err.code !== SystemError.ERROR_CODE_PLUGIN_NOT_FOUNT) {
                         throw err;

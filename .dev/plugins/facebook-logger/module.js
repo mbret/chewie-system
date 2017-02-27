@@ -15,16 +15,16 @@ class Module {
         FB.api('me', function (res) {
             if(!res || res.error) {
                 console.log(!res ? 'error occurred' : res.error);
-                return done();
+                // return done();
             }
             console.log(res.id);
             console.log(res.name);
-            return done();
+            // return done();
         });
     }
 
     stop() {
-
+        console.log("facebook-logger", "stop");
     }
 }
 

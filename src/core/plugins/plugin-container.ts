@@ -2,11 +2,12 @@
 
 import {System} from "../../system";
 import {PluginInstance} from "./plugin-instance-interface";
+import {Plugin} from "../../hooks/shared-server-api/lib/models/plugins";
 
 export class PluginContainer {
 
     system: System;
-    plugin: any;
+    plugin: Plugin;
     instance: PluginInstance;
     logger: any;
     shared: any;

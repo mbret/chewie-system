@@ -59,11 +59,6 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
         // runtime config
         this.config.storageDir = path.dirname(this.config.sharedDatabase.connexion.storage);
 
-        console.log(this.config.storageDir);
-        console.log(path.resolve(process.cwd(), this.config.storageDir));
-        console.log(path.resolve(process.cwd(), this.config.sharedDatabase.connexion.storage));
-        // process.exit();
-
         // Include all services
         _.forEach(Services, function(module, key) {
             self.services[key.charAt(0).toLowerCase() + key.slice(1)] = new module(self);

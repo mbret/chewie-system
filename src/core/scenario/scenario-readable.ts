@@ -217,6 +217,7 @@ export default class ScenarioReadable extends EventEmitter {
         return "scenario:" + scenarioExecutionId + ":node:" + nodeId + ":module:" + moduleId;
     }
 
+    //
     protected loadModuleInstance(userId: number = null, pluginId: string, moduleId: string) {
         let self = this;
         let plugin = null;

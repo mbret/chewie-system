@@ -4,6 +4,8 @@ import {System} from "../../system";
 import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as _ from "lodash";
 import {PluginsLoader} from "../plugins/plugins-loader";
+import {Plugin} from "../../hooks/shared-server-api/lib/models/plugins";
+import ScenarioReadable from "./scenario-readable";
 
 /**
  *
@@ -20,12 +22,26 @@ export class ScenarioHelper {
         this.pluginsLoader = new PluginsLoader(system);
     }
 
-    getPluginsIds(scenario: ScenarioModel) {
+    getPluginsNames(scenario: ScenarioModel): Array<String> {
         let ids = [];
         scenario.nodes.forEach(function(node) {
             ids.push(node.pluginId);
         });
         return _.uniq(ids);
+    }
+
+    getScenariosId(plugin: Plugin) {
+        let self = this;
+        let scenariosIds = [];
+        let scenarios = this.system.scenarioReader.getScenarios();
+        scenarios.forEach(function(scenario: ScenarioReadable) {
+             let names = self.getPluginsNames(scenario.model);
+             if (names.indexOf(plugin.name) > -1) {
+                 scenariosIds.push(scenario.executionId);
+             }
+        });
+
+        return scenariosIds;
     }
 
     // getScenariosUsingPlugin(plugin: Plugin) {
@@ -42,20 +58,32 @@ export class ScenarioHelper {
     // }
 
     /**
+     * Return all running scenarios relative to a scenario id.
+     * @param scenario
+     */
+    public getRunningScenariosForModelId(scenario: ScenarioModel) {
+        return this.system.scenarioReader.getScenarios().filter((tmp) => tmp.model.id === scenario.id);
+    }
+
+    public getRunningScenarios() {
+        return this.system.scenarioReader.getScenarios().filter((scenario) => scenario.state === ScenarioReadable.STATE_RUNNING);
+    }
+
+    /**
      * Ensure all plugins are loaded.
      * @param scenario
      * @returns {boolean}
      */
-    isAbleToStart(scenario: ScenarioModel) {
-        let self = this;
-        let ok = true;
-        let pluginsIds = self.getPluginsIds(scenario);
-        pluginsIds.forEach(function(id) {
-            if (!self.pluginsLoader.getPluginContainerByName(id)) {
-                ok = false;
-            }
-        });
-
-        return ok;
-    }
+    // isAbleToStart(scenario: ScenarioModel) {
+    //     let self = this;
+    //     let ok = true;
+    //     let pluginsIds = self.getPluginsNames(scenario);
+    //     pluginsIds.forEach(function(id) {
+    //         if (!self.pluginsLoader.getPluginContainerByName(id)) {
+    //             ok = false;
+    //         }
+    //     });
+    //
+    //     return ok;
+    // }
 }

@@ -2,5 +2,24 @@
   "name": "facebook-logger",
   "version": "0.0.1",
   "description": "",
-  "author": "Maxime Bret"
+  "author": "Maxime Bret",
+  "main": "index.js",
+  "chewie": {
+    "modules": [
+      {
+        "id": "log",
+        "module": "./module.js",
+        "name": "Log the profile in console",
+        "type": "task",
+        "optionsConfig": [
+          {
+            "name": "accessToken",
+            "label": "Access Token",
+            "type": "text",
+            "required": true
+          }
+        ]
+      }
+    ]
+  }
 }

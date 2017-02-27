@@ -12,7 +12,7 @@ module.exports = function (router) {
     router.get("/scenarios", function(req, res) {
         let scenarios = [];
         // <Set>
-        req.app.locals.system.scenarioReader.getRunningScenarios().forEach(function(value) {
+        req.app.locals.system.scenarioReader.getScenarios().forEach(function(value) {
             scenarios.push(value);
         });
 
@@ -30,35 +30,30 @@ module.exports = function (router) {
                     return res.badRequest("Invalid scenario id");
                 }
 
-                setImmediate(function() {
-                    // read scenario and explicitly lad plugins if they are not available
-                    return server.system.scenarioReader.startScenario(scenario, { loadPlugins: true });
-                });
-
-                return res.ok(scenario);
+                // read scenario and explicitly lad plugins if they are not available
+                return server.system.scenarioReader.startScenario(scenario)
+                    .then(() => res.ok());
             })
-            .catch(res.serverError);
+            .catch(function(err) {
+                if (err.code === SystemError.ERROR_CODE_PLUGIN_MISSING) {
+                    return res.badRequest("Plugin does not exist");
+                }
+                return res.serverError(err);
+            });
     });
 
-    router.delete("/scenarios/:scenario", function(req, res) {
-        let scenarioId = req.params.scenario;
+    router.delete("/scenarios/:executionId", function(req, res) {
+        let scenarioId = req.params.executionId;
         let server: ClientWebServer = req.app.locals.server;
 
-        return server.system.scenarioReader.isRunning(scenarioId)
-            .then(function(running) {
-                if (!running) {
-                    return res.notFound("Invalid execution id");
-                }
+        if (!server.system.scenarioReader.getScenarios().find((item) => item.executionId === scenarioId)) {
+            return res.notFound("Invalid execution id");
+        }
 
-                server.system.scenarioReader.stopScenario(scenarioId)
-                    .then(function() {
-                        return res.ok();
-                    })
-                    .catch(function(err) {
-                        if (err.code !== SystemError.ERROR_CODE_SCENARIO_NOT_FOUND) {
-                            return res.serverError(err);
-                        }
-                    });
-            });
+        server.system.scenarioReader.stopScenario(scenarioId)
+            .then(function() {
+                return res.ok();
+            })
+            .catch(res.serverError);
     });
 };

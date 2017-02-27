@@ -178,4 +178,11 @@ export interface Plugin {
     name: string;
     repository: string;
     source: string;
+    userOptions: any;
+    package: {
+        main: string;
+        chewie: {
+            modules: Array<any>
+        }
+    };
 }

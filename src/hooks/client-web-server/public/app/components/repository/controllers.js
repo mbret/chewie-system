@@ -38,6 +38,7 @@
             $scope.installed = false;
 
             $scope.save = function() {
+                // we do not need "source" with local repository
                 let data = {
                     name: $scope.plugin.name,
                     version: $scope.plugin.version,

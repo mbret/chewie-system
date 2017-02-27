@@ -6,6 +6,7 @@ import {ModuleHelper} from "./module-helper";
 import {ModuleContainer} from "./module-container";
 import {System} from "../../../system";
 import {PluginsLoader} from "../plugins-loader";
+import {Plugin} from "../../../hooks/shared-server-api/lib/models/plugins";
 
 export class ModuleLoader {
 
@@ -21,9 +22,9 @@ export class ModuleLoader {
         this.pluginsLoader = new PluginsLoader(system);
     }
 
-    loadModule(plugin: any, moduleId) {
+    loadModule(plugin: Plugin, moduleId) {
         // get module info
-        let moduleInfo = _.find(plugin.package.modules, function(module: any) {
+        let moduleInfo = _.find(plugin.package.chewie.modules, function(module: any) {
             return module.id === moduleId;
         });
 

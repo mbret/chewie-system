@@ -1,4 +1,5 @@
 'use strict';
+import {Plugin} from "../models/plugins";
 
 let _ = require('lodash');
 let validator = require('validator');
@@ -190,18 +191,17 @@ export = function(server, router) {
     });
 
     /**
-     * Fetch modules for a user.
+     * Fetch all modules for a device.
      * You can filter modules by their types.
      */
     router.get('/devices/:device/plugins-modules', function(req, res) {
         let modules = [];
-        // @todo doit être dans la db interne
         // Get all plugin name
         PluginsDao.findAll()
             .then(function(plugins) {
-                plugins.forEach(function(plugin) {
+                plugins.forEach(function(plugin: Plugin) {
                     // let info = getPluginInfo(req, plugin.name);
-                    let tmp = plugin.package.modules
+                    let tmp = plugin.package.chewie.modules
                         .filter(function(item){
                             if (!req.query.type) {
                                 return item;

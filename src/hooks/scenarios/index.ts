@@ -5,9 +5,8 @@ import {HookInterface} from "../../core/hook-interface";
 import {System} from "../../system";
 import {ScenarioHelper} from "../../core/scenario/scenario-helper";
 import {ScenarioModel} from "../shared-server-api/lib/models/scenario";
+import {Hook} from "../../core/hook";
 import {SystemError} from "../../core/error";
-import {Hook} from "../../core/hooks";
-import {debug} from "../../shared/debug";
 
 /**
  * Scenario are loaded automatically when:
@@ -33,15 +32,27 @@ export = class ScenariosHook extends Hook implements HookInterface {
         // Listen for scenarios update. Also the event data is a list of updated scenario (not deleted)
         // data contain list of updated id
         this.system.sharedApiService.io.on("scenarios:updated", function(data) {
-            self.logger.verbose("Scenarios updated on server, try to update scenarios state and force reloading of scenarios [%s]", data.updated);
+            self.logger.verbose("Scenarios updated on server, try to update running scenarios related to scenarios [%s]", data.updated);
             return updateScenarioState(data.updated);
         });
 
-        // Listen for new plugin loaded / unloaded
-        // Whenever a new plugin is loaded we try to check if a scenario is able to start now
-        this.system.on("plugins:updated", function() {
-            self.logger.verbose("The runtime plugins have been updated, try to update scenarios states..");
-            return updateScenarioState();
+        // We do not listen for plugins:
+        // - unmount: because it stop automatically scenarios
+        // - mount: scenario start automatically on system ready but that's all
+        // - updated: run a unmount/mount ..
+
+        // On system ready run all scenarios that should.
+        // Some scenarios may not be able to start if their plugins does not exist on server.
+        this.system.on("ready", function() {
+            return self.system.sharedApiService
+                .getAllScenarios()
+                .then(function(response: any) {
+                    let scenarios: Array<ScenarioModel> = response.body;
+                    self.logger.verbose("%s scenario(s) found: ids=[%s], run one runtime execution for each scenario.", scenarios.length, scenarios.map(function(e) { return e.id; }));
+                    scenarios.forEach(function(scenario) {
+                        return self.startScenario(scenario);
+                    });
+                });
         });
 
         /**
@@ -55,31 +66,20 @@ export = class ScenariosHook extends Hook implements HookInterface {
                 .then(function(response: any) {
                     let scenarios: Array<ScenarioModel> = response.body;
                     self.logger.verbose("%s scenario(s) found: ids=[%s], check current state(s) and start/stop scenario(s) if needed", scenarios.length, scenarios.map(function(e) { return e.id; }));
-                    // run or stop server scenarios
+                    // loop over all scenario from server that have been updated
                     scenarios.forEach(function(scenario: ScenarioModel) {
-                        let shouldRestartBecauseOfServerUpdate = scenariosToForceReload.indexOf(scenario.id) > -1;
-                        // If scenario is not already running and is able to run now, then start it.
-                        if (self.scenariosHelper.isAbleToStart(scenario) && scenario.autoStart) {
-                            return self.startScenario(scenario);
-                        }
-                        // Scenario is not able to start but is loaded, we need to stop it
-                        // we will basically stop all scenarios with that id
-                        else if (!self.scenariosHelper.isAbleToStart(scenario)) {
-                            debug("hooks:scenarios")("scenario \"%s\" is not able to start, maybe its plugins are not loaded yet", scenario.name);
-                            return self.stopScenarios([scenario]);
-                        }
-                        // Scenario is ok and running but must be reloaded because it has been updated on server
-                        else if (self.scenariosHelper.isAbleToStart(scenario) && shouldRestartBecauseOfServerUpdate) {
-                            return self.reloadScenario(scenario);
+                        if (scenariosToForceReload.indexOf(scenario.id) > -1) {
+                            // scenario has to be stopped because it is outdated
+                            self.stopScenario(scenario);
                         }
                     });
                     // stop runtime scenario not present on server anymore
                     // get list of running scenarios (avoid having multiple scenario for same id with uniqWith)
-                    // if the running scenario id is not present in list of scenarios, then we stop all runnings scenarios for this id
-                    let uniqueIdRunningScenarios = _.uniqWith(self.system.scenarioReader.getRunningScenarios(), (a, b) => a.model.id === b.model.id);
+                    // if the running scenario id is not present in list of scenarios, then we stop all running scenarios for this id
+                    let uniqueIdRunningScenarios = _.uniqWith(self.system.scenarioReader.getScenarios(), (a, b) => a.model.id === b.model.id);
                     uniqueIdRunningScenarios.forEach(function(readable) {
                         if (!_.find(scenarios, {id: readable.model.id})) {
-                            return self.stopScenarios([readable.model]);
+                            return self.stopScenario(readable.model);
                         }
                     });
                 });
@@ -97,46 +97,32 @@ export = class ScenariosHook extends Hook implements HookInterface {
      * - force synchronizing plugins before
      * - force loading plugins before
      */
-    startScenario(scenario) {
+    startScenario(scenario: ScenarioModel) {
         let self = this;
         return self.system.scenarioReader.startScenario(scenario)
             .catch(function(err) {
+                if (err.code === SystemError.ERROR_CODE_PLUGIN_MISSING) {
+                    return self.system.sharedApiService.createNotification("The scenario " + scenario.id + " can't be started because some plugins are missing", "warning");
+                }
                 self.logger.error("Unable to read and start scenario %s", scenario.id, err);
-                return self.system.sharedApiService.createNotification("Unable to start scenario " + scenario.id + " automatically", "warning");
+                return self.system.sharedApiService.createNotification("Unable to start scenario " + scenario.id + " automatically. You may find more details on system logs.", "warning");
             });
     }
 
     /**
-     * Stop all scenarios relative to this scenario
-     * @returns {Promise<U>}
-     * @param scenarios
+     * Stop all scenarios execution relative to this scenario
+     * @returns {Promise}
+     * @param scenario
      */
-    stopScenarios(scenarios: Array<ScenarioModel>) {
+    stopScenario(scenario: ScenarioModel) {
         let self = this;
-        scenarios.forEach(function(scenario) {
-            self.logger.verbose("Trying to stop scenario %s", scenario.id);
-            return self.system.scenarioReader.stopScenariosForId(scenario.id)
+        self.logger.verbose("Trying to stop scenarios related to %s", scenario.id);
+        let scenariosReadable = self.scenariosHelper.getRunningScenariosForModelId(scenario);
+        scenariosReadable.forEach(function(scenarioReadable) {
+            return self.system.scenarioReader.stopScenario(scenarioReadable.executionId)
                 .then(function() {
-                    self.logger.verbose("Scenarios relative to id %s are stopped and suppressed from system", scenario.id);
-                })
-                .catch(function(err) {
-                    self.logger.error("Unable to stop scenarios for id %s", scenario.id, err);
+                    self.logger.verbose("Running scenario %s from scenario %s has been stopped", scenarioReadable.executionId, scenario.id);
                 });
         });
-    }
-
-    reloadScenario(scenario) {
-        let self = this;
-        self.logger.verbose("Trying to reload scenario %s", scenario.id);
-        return self.system.scenarioReader.stopScenariosForId(scenario.id)
-            .then(function() {
-                return self.system.scenarioReader.startScenario(scenario);
-            })
-            .then(function() {
-                self.logger.verbose("Scenario %s reloaded", scenario.id);
-            })
-            .catch(function(err) {
-                self.logger.error("Unable to reload scenario " + scenario.id, err);
-            });
     }
 }
