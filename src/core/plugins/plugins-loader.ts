@@ -48,10 +48,12 @@ export class PluginsLoader {
     /**
      * Mount a plugin
      * @param plugin
+     * @param options
      * @returns {any}
      */
-    public mount(plugin: Plugin) {
+    public mount(plugin: Plugin, options: any = {}) {
         let self = this;
+        options = _.merge({forceSynchronize: this.system.config.alwaysSynchronizePlugins}, options);
 
         if (!(plugin instanceof Object)) {
             throw new Error("plugin must be an instance of plugin model. " + typeof plugin + " given!");
@@ -75,7 +77,7 @@ export class PluginsLoader {
                 // ok we mount the plugin
                 // first check if plugin is synchronized
                 self
-                    .synchronize(plugin)
+                    .synchronize(plugin, {forceSynchronize: options.forceSynchronize})
                     // Once synchronized we can load the plugin
                     .then(function() {
                         // create container
@@ -195,20 +197,22 @@ export class PluginsLoader {
     /**
      * Synchronize if needed a plugin
      * @param plugin
+     * @param options
      */
-    protected synchronize(plugin: Plugin) {
+    protected synchronize(plugin: Plugin, options: any) {
         let self = this;
+        options = _.merge({forceSynchronize: false}, options);
         // first check if plugin is synchronized
         return this.system.repository
             .pluginExist(plugin)
             // Synchronize if needed
             .then(function(pluginStats) {
-                if (self.system.config.forcePluginsSynchronizeAtStartup) {
+                if (options.forceSynchronize) {
                     self.logger.verbose("Force plugin %s to synchronize. Synchronizing..", plugin.name);
                 } else if (!pluginStats.exist || !pluginStats.isValid) {
                     self.logger.verbose("Plugin %s does not seems to be synchronizing yet. Synchronizing..", plugin.name);
                 }
-                if (self.system.config.forcePluginsSynchronizeAtStartup || !pluginStats.exist || !pluginStats.isValid) {
+                if (options.forceSynchronize || !pluginStats.exist || !pluginStats.isValid) {
                     return self.system.repository.synchronize(plugin)
                         .then(function(dir) {
                             debug("plugins")("%s has been synchronized to %s", plugin.name, dir);
