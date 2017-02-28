@@ -9,13 +9,11 @@ const chewie = require("chewie-system");
 // Start the system
 chewie.start({
     settings: {
-        // bootstrap: {
-        //     bootstrap: function(chewie, done) {
-        //         chewie.repositoriesHelper.installPluginFromDisk(__dirname + "/../plugins/facebook-logger")
-        //             .then(() => done())
-        //             .catch(done);
-        //     }
-        // },
+        bootstrap: function(chewie, done) {
+            chewie.repositoriesHelper.reinstallPluginFromDisk(__dirname + "/../plugins/facebook-logger")
+                .then(() => done())
+                .catch(done);
+        },
         "system": {
             "tmpDir": "./.chewie/.tmp",
             "appDataPath": "./.chewie"
