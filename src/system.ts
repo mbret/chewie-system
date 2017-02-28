@@ -261,6 +261,10 @@ export class System extends EventEmitter {
             } else if (_.isObject(self.config.bootstrap)) {
                 userBootstrap = self.config.bootstrap;
             }
+            // handle bootstrap: function(){} and not bootstrap: {bootstrap: function(){} }
+            if (typeof userBootstrap === "function") {
+                userBootstrap.bootstrap = userBootstrap;
+            }
             if (userBootstrap && userBootstrap.bootstrap) {
                 let initializing = true;
                 self.logger.debug("A user bootstrap has been found, run it");
