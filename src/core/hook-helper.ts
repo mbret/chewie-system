@@ -6,10 +6,12 @@ import {System} from "../system";
 export class HookHelper {
     system: System;
     hookName: string;
+    logger: any;
 
     constructor(system, hookName) {
         this.system = system;
         this.hookName = hookName;
+        this.logger = this.system.logger.getLogger(hookName);
     }
 
     /**
@@ -50,7 +52,7 @@ export class HookHelper {
 
     public getStorage(key: string) {
         return this.system.sharedApiService.getHookData(this.hookName, key)
-            .then(function(response) {
+            .then(function(response: any) {
                 // we only return attribute data from the model
                 return response.data.data;
             })

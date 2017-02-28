@@ -1,9 +1,9 @@
 import {System} from "./system";
 import util = require('util');
 import * as _ from "lodash";
+import * as path from "path";
 import {debug} from "./shared/debug";
 import {HookHelper} from "./core/hook-helper";
-import {applyDefaultHookModel} from "./shared/utils";
 
 export class Bootstrap {
 
@@ -86,12 +86,14 @@ export class Bootstrap {
                 return promises.push(Promise.resolve());
             }
 
-            // first we try to lookup core module. We always use core hooks as priority
             let hookModule = null;
+            // If the module path is specified we use it as priority
             if (_.isString(config.modulePath)) {
-                debug("hooks")("Trying to load Hook %s from path %s", name, config.module);
+                let modulePath = path.normalize(config.modulePath);
+                debug("hooks")("Trying to load Hook %s from path %s", name, modulePath);
                 hookModule = require(modulePath);
             } else {
+                // then we try to lookup core module. We always use core hooks as priority over node_modules
                 debug("hooks")("Trying to load Hook %s as core module at %s", name, modulePath);
                 try { hookModule = require(modulePath); } catch(err) {
                     // @WARING DEV: MODULE_NOT_FOUND may appears on core module if one of its dependency is not installed (and will throw false error)
@@ -109,25 +111,14 @@ export class Bootstrap {
                 }
             }
 
-            // All hook events are dispatched through system
-            // monkey-patch hard way. The easy way is to store original method in var and call it after. But I like playing hard >_<
-            // hookModule.prototype.emit = function() {
-            //     let res;
-            //     if (this instanceof require("events").EventEmitter) {
-            //         res = this.constructor.EventEmitter.prototype.emit.apply(this, arguments);
-            //         arguments[0] = "hooks:" + name + ":" + arguments[0];
-            //         self.system.emit.apply(self.system, arguments);
-            //     }
-            //     return res;
-            // };
-
             // we pass the user config to the hook so it can override its own config
-            // let hook = _.merge(hookBoilerplate, new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name)));
-            applyDefaultHookModel(hookModule);
+            hookModule.prototype.initialize = hookModule.prototype.initialize || (() => Promise.resolve());
+            hookModule.prototype.shutdown = hookModule.prototype.shutdown || (() => Promise.resolve());
+
             let hook = new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name));
             self.system.registerTaskOnShutdown((cb) => {
-                hook.onShutdown()
-                    .then(() => {cb()})
+                hook.shutdown()
+                    .then(() => cb())
                     .catch(cb);
             });
             self.system.hooks[name] = hook;
