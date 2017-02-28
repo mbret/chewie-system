@@ -3,15 +3,6 @@ let fs = require('fs');
 let path = require('path');
 let async = require('async');
 
-export function applyDefaultHookModel(userHook) {
-    if (!userHook.prototype.onShutdown) {
-        userHook.prototype.onShutdown = HookBoilerplate.prototype.onShutdown;
-    }
-    if (!userHook.prototype.initialize) {
-        userHook.prototype.initialize = HookBoilerplate.prototype.initialize;
-    }
-}
-
 /**
  * @link https://github.com/alessioalex/get-folder-size
  * @version 1.0.0

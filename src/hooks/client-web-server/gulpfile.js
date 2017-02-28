@@ -73,6 +73,7 @@ let config = {
 //         .pipe(gulp.dest(path.join(config.buildPath, "node_modules")));
 // });
 gulp.task("symlink-vendors", function() {
+    return Promise.resolve();
     // return gulp
     //     .src(["./public/vendors"], {
     //         cwd: config.srcAppPath

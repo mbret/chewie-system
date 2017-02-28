@@ -13,18 +13,26 @@ export class RepositoriesHelper {
         this.system = system;
     }
 
+    public installPluginFromDisk(pathToModule) {
+        return this._installPluginFromDisk(pathToModule, {});
+    }
+
+    public reinstallPluginFromDisk(pathToModule) {
+        return this._installPluginFromDisk(pathToModule, {reinstall: true});
+    }
+
     /**
      * Option reinstall will delete and save again the plugin. It will trigger physical installation.
      * @param pathToModule
      * @param options
      * @returns {Promise<U>}
      */
-    installPluginFromDisk(pathToModule, options: any = {}) {
+    protected _installPluginFromDisk(pathToModule, options: any = {}) {
         let self = this;
         let name = null;
         options = _.merge({
-            reinstall: true
-        });
+            reinstall: false
+        }, options);
         return this.system.localRepository
             // first retrieve info about the plugin
             .getPluginInfoByDir(pathToModule)
