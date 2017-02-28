@@ -72,11 +72,20 @@ let config = {
 //         }), { base: config.nodeModulesPath })
 //         .pipe(gulp.dest(path.join(config.buildPath, "node_modules")));
 // });
+gulp.task("symlink-vendors", function() {
+    // return gulp
+    //     .src(["./public/vendors"], {
+    //         cwd: config.srcAppPath
+    //     })
+    //     .pipe(gulp.symlink(config.buildPath));
+});
+
 gulp.task("copy-public", function() {
     return gulp
         .src([
-                "./public/**/**",
-                "!./public/{css,css/**}"
+            "./public/**/**",
+            "!./public/{css,css/**}",
+            "!./public/vendors/**",
             ], {
                 cwd: config.srcAppPath
             }
@@ -84,7 +93,7 @@ gulp.task("copy-public", function() {
         .pipe(changed(config.buildPath))
         .pipe(gulp.dest(config.buildPath));
 });
-gulp.task("inject-js", gulp.series(gulp.parallel("copy-public"/*, "copy-node-modules"*/), function() {
+gulp.task("inject-js", gulp.series("symlink-vendors", gulp.parallel("copy-public"/*, "copy-node-modules"*/), function() {
     let target = gulp.src("./public/index.html");
 
     // It's not necessary to read the files (will speed up things), we're only after their paths:

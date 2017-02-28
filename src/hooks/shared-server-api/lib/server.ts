@@ -65,7 +65,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
         });
 
         // log various paths for debug conveniences
-        debugDefault("Storage file is located to %s", self.config.storageFilePath);
+        debugDefault("Storage file is located to %s", this.config.sharedDatabase.connexion.storage);
     }
 
     public initialize() {

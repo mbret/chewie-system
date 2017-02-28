@@ -17,3 +17,6 @@ lib/**/*.js
 # intellij
 *.iml
 .dist
+
+!src/hooks/client-web-server/*.js
+src/hooks/client-web-server/.build

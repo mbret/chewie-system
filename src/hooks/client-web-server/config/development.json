@@ -1,25 +1,3 @@
 {
-    "middleware": {
-        "devtools": {
-            "enabled": false,
-            "priority": 35,
-            "module": {
-                "name": "construx",
-                "arguments": [
-                    "path:./public",
-                    "path:./.build",
-                    {
-                        "css": {
-                            "module": "construx-less",
-                            "files": "/css/**/*.css"
-                        },
-                        "copier": {
-                            "module": "construx-copier",
-                            "files": "**/*"
-                        }
-                    }
-                ]
-            }
-        }
-    }
+    "middleware": {}
 }
