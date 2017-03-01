@@ -9,11 +9,11 @@ const chewie = require("chewie-system");
 // Start the system
 chewie.start({
     settings: {
-        bootstrap: function(chewie, done) {
-            chewie.repositoriesHelper.reinstallPluginFromDisk(__dirname + "/../plugins/chewie-plugin-request")
-                .then(() => done())
-                .catch(done);
-        },
+        // bootstrap: function(chewie, done) {
+        //     chewie.repositoriesHelper.reinstallPluginFromDisk(__dirname + "/../plugins/chewie-plugin-request")
+        //         .then(() => done())
+        //         .catch(done);
+        // },
         "alwaysSynchronizePlugins": true,
         "system": {
             "tmpDir": "./.chewie/.tmp",

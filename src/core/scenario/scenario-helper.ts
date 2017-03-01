@@ -22,12 +22,18 @@ export class ScenarioHelper {
         this.pluginsLoader = new PluginsLoader(system);
     }
 
-    getPluginsNames(scenario: ScenarioModel): Array<String> {
+    public getPluginsNames(scenario: ScenarioModel): Array<String> {
+        return _.uniq(this._getPluginsNames(scenario.nodes));
+    }
+
+    protected _getPluginsNames(nodes: Array<any>): Array<String> {
+        let self = this;
         let ids = [];
-        scenario.nodes.forEach(function(node) {
+        nodes.forEach(function(node) {
             ids.push(node.pluginId);
+            ids = ids.concat(self._getPluginsNames(node.nodes));
         });
-        return _.uniq(ids);
+        return ids;
     }
 
     getScenariosId(plugin: Plugin) {

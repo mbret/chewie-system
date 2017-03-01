@@ -123,7 +123,7 @@ export default class ScenarioReadable extends EventEmitter {
                     try {
                         module.instance.run(node.options, taskDoneCallback);
                     } catch (err) {
-                        self.logger.error("Unexpected exception of module %s from scenario %s when trying to run the task", module.id, self.executionId);
+                        self.logger.error("Unexpected error of module [%s] from plugin [%s] on scenario [%s] when trying to run the task", module.moduleInfo.id, node.pluginId, self.executionId, err);
                     }
                 }
 

@@ -112,7 +112,13 @@ export = function(server, router) {
                 server.io.emit("plugin:created", plugin);
                 return res.created(created);
             })
-            .catch(res.serverError);
+            .catch(function(err) {
+                // there are a lot of chance that this is because of name
+                if (err.name && err.name === "SequelizeUniqueConstraintError") {
+                    return res.badRequest("Plugin already exist");
+                }
+                return res.serverError(err);
+            });
     });
 
     router.put('/users/:user/plugins/:plugin', function(req, res) {
