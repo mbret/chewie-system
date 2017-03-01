@@ -3,7 +3,7 @@ let path = require("path");
 const PROJECT_ROOT = __dirname + "/../..";
 
 // debug creator
-export function debug(namespace: string = null) {
+export function debug(namespace: string = null): any {
     namespace = namespace ? ":" + namespace : "";
     let debugCreator = d("chewie" + namespace);
     return function(...args) {

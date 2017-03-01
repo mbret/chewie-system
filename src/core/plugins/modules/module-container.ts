@@ -3,13 +3,13 @@
 import {System} from "../../../system";
 import {PluginContainer} from "../plugin-container";
 import {ModuleInstanceInterface} from "./module-instance-interface";
-// import * as uuid from "node-uuid";
 
 export class ModuleContainer {
 
     system: System;
     pluginContainer: PluginContainer;
-    module: any;
+    // module: any;
+    moduleInfo: any;
     instance: ModuleInstanceInterface;
     uniqueId: string;
     id: string;
@@ -20,12 +20,11 @@ export class ModuleContainer {
         this.system = system;
         this.logger = this.system.logger.getLogger('ModuleContainer');
         this.uniqueId = ModuleContainer.getModuleUniqueId(pluginContainer.plugin.name, moduleInfo.id);
-        // runtime id
-        // this.id = uuid.v4();
         this.id = this.uniqueId;
         this.instance = instance;
         this.pluginContainer = pluginContainer;
-        this.module = moduleInfo;
+        this.moduleInfo = moduleInfo;
+        // this.module = moduleInfo;
         this.stopped = false;
     }
 

@@ -5,6 +5,7 @@ import {ModuleContainer} from "../plugins/modules/module-container";
 import {System} from "../../system";
 import * as _ from "lodash";
 import {PluginsLoader} from "../plugins/plugins-loader";
+import {debug} from "../../shared/debug";
 
 /**
  * Root scenario. Has an execution id
@@ -98,7 +99,7 @@ export default class ScenarioReadable extends EventEmitter {
 
                 if (node.type === "trigger") {
                     // Create the first demand for trigger at lvl 0 (root)
-                    self.logger.debug("Create a new demand for trigger module from plugin %s", node.pluginId);
+                    debug("scenario:" + self.executionId)("Create a new demand for (trigger) module [%s] from plugin [%s]", module.moduleInfo.id, node.pluginId);
                     module.instance.onNewDemand(node.options, triggerCallback, taskDoneCallback);
                 }
                 // Tasks are one shot (one time running)
@@ -132,6 +133,7 @@ export default class ScenarioReadable extends EventEmitter {
                         self.logger.warn("The module '%s' from plugin '%s' just triggered a new demand. However the scenario is not running anymore. It probably means that a module is still running" +
                             " (may be a timeout, interval or async treatment not closed). The trigger has been ignored but you should tell the author of the plugin about this warning", node.moduleId, node.pluginId);
                     } else {
+                        debug("scenario:" + self.executionId)("(trigger) module [%s] from plugin [%s] called the \"trigger\" callback", module.moduleInfo.id, node.pluginId);
                         return self.system.scenarioReader.getRuntimeIngredients()
                             .then(function(ingredients) {
                                 return self.runNodes(node.nodes, _.merge(ingredients, ingredientsFromModule));
@@ -149,6 +151,7 @@ export default class ScenarioReadable extends EventEmitter {
                         self.logger.warn("The module '%s' from plugin '%s' tried to call the taskDoneCallback too late, the scenario is already stopped.", node.moduleId, node.pluginId);
                     }
                     else {
+                        debug("scenario:" + self.executionId)("(%s) module [%s] from plugin [%s] called the \"done\" callback", module.moduleInfo.type, module.moduleInfo.id, node.pluginId);
                         taskEndCallbackCalled = true;
                         scenario.runningTasks.pop();
                         if (err) {
