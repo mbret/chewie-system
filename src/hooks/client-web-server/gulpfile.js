@@ -86,7 +86,7 @@ gulp.task("copy-public", function() {
         .src([
             "./public/**/**",
             "!./public/{css,css/**}",
-            "!./public/vendors/**",
+            // "!./public/vendors/**",
             ], {
                 cwd: config.srcAppPath
             }

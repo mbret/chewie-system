@@ -9,14 +9,14 @@
         <div class="form-group">
             <div class="radio radio-info radio-inline" ng-repeat="plugin in triggerPlugins">
                 <input type="radio" id="{{formId}}-trigger-plugin-{{plugin.id}}" value="{{plugin.name}}" name="{{formId}}-plugin" ng-model="formData.pluginId" ng-required="true" ng-change="selectPlugin('trigger')">
-                <label for="{{formId}}-trigger-plugin-{{plugin.id}}">{{plugin.name}}</label>
+                <label for="{{formId}}-trigger-plugin-{{plugin.id}}">{{plugin.package.chewie.displayName || plugin.name}}</label>
             </div>
         </div>
         <h4>Tasks</h4>
         <div class="form-group">
             <div class="radio radio-info radio-inline" ng-repeat="plugin in taskPlugins">
                 <input type="radio" id="{{formId}}-task-plugin-{{plugin.id}}" value="{{plugin.name}}" name="{{formId}}-plugin" ng-model="formData.pluginId" ng-required="true"  ng-change="selectPlugin('task')">
-                <label for="{{formId}}-task-plugin-{{plugin.id}}">{{plugin.name}}</label>
+                <label for="{{formId}}-task-plugin-{{plugin.id}}">{{plugin.package.chewie.displayName || plugin.name}}</label>
             </div>
         </div>
         <form-errors field="form[formId + '-plugin']">

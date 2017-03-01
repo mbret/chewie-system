@@ -10,18 +10,19 @@ const chewie = require("chewie-system");
 chewie.start({
     settings: {
         bootstrap: function(chewie, done) {
-            chewie.repositoriesHelper.reinstallPluginFromDisk(__dirname + "/../plugins/facebook-logger")
+            chewie.repositoriesHelper.reinstallPluginFromDisk(__dirname + "/../plugins/chewie-plugin-request")
                 .then(() => done())
                 .catch(done);
         },
+        "alwaysSynchronizePlugins": true,
         "system": {
             "tmpDir": "./.chewie/.tmp",
             "appDataPath": "./.chewie"
         },
         "pluginsLocalRepositoryDir": "./../plugins",
         "hooks": {
-            "client-web-server": false,
-            "scenarios": false,
+            "client-web-server": true,
+            "scenarios": true,
             "plugins": false,
             // "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
             // "chewie-hook-seed": { modulePath: "C:/Users/mbret/Workspace/chewie-hook-seed" },
@@ -39,7 +40,6 @@ chewie.start({
             //         }
             //     }
             // }
-        },
-        "alwaysSynchronizePlugins": false
+        }
     }
 });

@@ -12,7 +12,7 @@ export class PluginHelper {
 
     constructor(system, pluginContainer){
         this.system = system;
-        this.logger = this.system.logger.getLogger('PluginHelper');
+        this.logger = this.system.logger.getLogger('Plugin:' + pluginContainer.plugin.name);
         this.pluginContainer = pluginContainer;
         this.shared = this.pluginContainer.shared;
     }

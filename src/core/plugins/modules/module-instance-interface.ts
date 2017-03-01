@@ -1,4 +1,7 @@
-export interface ModuleInstanceInterface {
+import {PluginInstance} from "../plugin-instance-interface";
+
+export interface ModuleInstanceInterface extends Object {
+    constructor(pluginInstance: PluginInstance, moduleInfo: any);
     // task
     run(options: any, done: Function);
     // trigger

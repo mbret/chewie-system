@@ -87,7 +87,7 @@ export class PluginsLoader {
                         // require the class export of plugin & create the instance
                         // also in case of missing attribute we merge it with DefaultPluginInstance that contains everything needed
                         let pluginInstance = self.getPluginClass(plugin);
-                        pluginInstance.mount = typeof pluginInstance.mount === "function" ? pluginInstance.mount : ((helper, done) => done());
+                        pluginInstance.mount = typeof pluginInstance.mount === "function" ? pluginInstance.mount : ((chewie, helper, done) => done());
                         pluginInstance.unmount = typeof pluginInstance.unmount === "function" ? pluginInstance.unmount : ((done) => done());
 
                         // we attach instance to container to work with it later
@@ -98,16 +98,17 @@ export class PluginsLoader {
 
                         // mount plugin instance
                         return new Promise(function(resolve, reject) {
-                            pluginInstance.mount(helper, function(err) {
+                            pluginInstance.mount(self.system, helper, function(err) {
                                 if (err) {
                                     return reject(err);
                                 }
-                                return resolve();
+                                return resolve(container);
                             });
                         });
                     })
-                    .then(function() {
+                    .then(function(container) {
                         debug("plugins")("Plugin %s fully mounted and ready", plugin.name);
+                        container.state = "mounted";
                         self.system.emit("plugins:updated");
                         semaphore.leave();
                         return resolve(container);
@@ -136,6 +137,9 @@ export class PluginsLoader {
         if (!pluginContainer) {
             return Promise.reject(new SystemError(name + " not found", SystemError.ERROR_CODE_PLUGIN_NOT_FOUNT));
         }
+
+        // not mounted anymore
+        pluginContainer.state = null;
 
         // Start unmount process
         return new Promise(function(resolve, reject) {

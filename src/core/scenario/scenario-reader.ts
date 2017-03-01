@@ -70,18 +70,12 @@ export class ScenarioReader {
                     .then(function() {
                         return Promise.resolve()
                             // execute each node
-                            .then(function() {
-                                self.logger.verbose("[scenario:%s] load all nodes...", scenario.id);
-                                return scenarioReadable.start();
-                            })
                             // Once they are all registered and loaded
                             // we run the first root trigger and tasks
                             .then(function() {
-                                self.logger.debug("[scenario:%s] all nodes have been loaded!", scenario.id);
-                                self.logger.verbose("[scenario:%s] Run the root nodes..", scenario.id);
                                 return self.getRuntimeIngredients()
                                     .then(function(ingredients) {
-                                        return scenarioReadable.runNodes(scenario.nodes, ingredients);
+                                        return scenarioReadable.start(ingredients);
                                     });
                             })
                             .then(function() {

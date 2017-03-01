@@ -31,6 +31,13 @@
             <textarea id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]"></textarea>
         </div>
 
+        <div ng-switch-when="json">
+            {{options[configOption.name]}}
+            <label for="{{fieldId}}">{{configOption.label}}</label>
+            <span class="help-block m-b-none">{{configOption.description}}</span>
+            <textarea id="{{fieldId}}" name="{{fieldId}}" class="form-control" ng-required="{{configOption.required}}" ng-model="options[configOption.name]" input-json></textarea>
+        </div>
+
         <div ng-switch-when="password">
             <label for="{{fieldId}}">{{configOption.label}}</label>
             <span class="help-block m-b-none">{{configOption.description}}</span>

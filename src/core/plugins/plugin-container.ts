@@ -11,6 +11,7 @@ export class PluginContainer {
     instance: PluginInstance;
     logger: any;
     shared: any;
+    state: string;
 
     constructor(system, plugin, instance: PluginInstance){
         this.system = system;
@@ -18,5 +19,10 @@ export class PluginContainer {
         this.instance = instance;
         this.plugin = plugin;
         this.shared = {};
+        this.state = null;
+    }
+
+    public isRunning() {
+        return this.state === "mounted";
     }
 }

@@ -4,6 +4,7 @@ import * as uuid from "node-uuid";
 import {ModuleContainer} from "../plugins/modules/module-container";
 import {System} from "../../system";
 import * as _ from "lodash";
+import {PluginsLoader} from "../plugins/plugins-loader";
 
 /**
  * Root scenario. Has an execution id
@@ -16,6 +17,7 @@ export default class ScenarioReadable extends EventEmitter {
     system: System;
     public state: string;
     protected logger: any;
+    protected pluginsLoader: PluginsLoader;
 
     static STATE_STOPPING = "stopping";
     static STATE_RUNNING = "running";
@@ -29,6 +31,7 @@ export default class ScenarioReadable extends EventEmitter {
         this.model = model;
         this.runningTasks = [];
         this.state = ScenarioReadable.STATE_STARTING;
+        this.pluginsLoader = new PluginsLoader(system);
     }
 
     public toJSON() {
@@ -44,11 +47,41 @@ export default class ScenarioReadable extends EventEmitter {
     }
 
     /**
+     * @returns {Promise}
+     */
+    public stop() {
+        this.state = ScenarioReadable.STATE_STOPPING;
+        return this.stopNodes(this, this.model.nodes)
+    }
+
+    /**
+     * @returns {Promise}
+     */
+    public start(ingredients) {
+        let self = this;
+        self.logger.verbose("[scenario:%s] load all nodes...", self.model.id);
+        return this.readNodes(this, this.model.nodes, { lvl: -1 })
+            .then(function() {
+                self.state = ScenarioReadable.STATE_RUNNING;
+                self.logger.debug("[scenario:%s] all nodes have been loaded!", self.model.id);
+                self.logger.verbose("[scenario:%s] Run the root nodes..", self.model.id);
+
+                // detach first run execution from the startup task
+                // the task will run as long as the plugin is marked as running
+                setImmediate(function() {
+                    self.runNodes(self.model.nodes, ingredients);
+                });
+
+                return self;
+            });
+    }
+
+    /**
      * @param nodes
      * @param parentIngredients
      * @returns {Promise<void>}
      */
-    public runNodes(nodes: Array<ScenarioModel>, parentIngredients: any): Promise<void> {
+    protected runNodes(nodes: Array<ScenarioModel>, parentIngredients: any) {
         let self = this;
         let scenario = this;
 
@@ -86,7 +119,11 @@ export default class ScenarioReadable extends EventEmitter {
                     });
 
                     // run the task
-                    module.instance.run(node.options, taskDoneCallback);
+                    try {
+                        module.instance.run(node.options, taskDoneCallback);
+                    } catch (err) {
+                        self.logger.error("Unexpected exception of module %s from scenario %s when trying to run the task", module.id, self.executionId);
+                    }
                 }
 
                 function triggerCallback(ingredientsFromModule) {
@@ -102,7 +139,7 @@ export default class ScenarioReadable extends EventEmitter {
                     }
                 }
 
-                function taskDoneCallback() {
+                function taskDoneCallback(err, res) {
                     // "module want to call more than once callback" security
                     if (taskEndCallbackCalled) {
                         self.logger.warn("The module '%s' from plugin '%s' try to call a second time the task end callback. Ignore it", node.moduleId, node.pluginId);
@@ -114,6 +151,9 @@ export default class ScenarioReadable extends EventEmitter {
                     else {
                         taskEndCallbackCalled = true;
                         scenario.runningTasks.pop();
+                        if (err) {
+                            // for now we do nothing
+                        }
                         // wait for next tick so that we have time to attach events on promise chain.
                         // mainly used for the first call to runNodes
                         setImmediate(function() {
@@ -123,28 +163,6 @@ export default class ScenarioReadable extends EventEmitter {
                 }
             }
         });
-
-        return Promise.resolve();
-    }
-
-    /**
-     * @returns {Promise}
-     */
-    public stop() {
-        this.state = ScenarioReadable.STATE_STOPPING;
-        return this.stopNodes(this, this.model.nodes)
-    }
-
-    /**
-     * @returns {Promise}
-     */
-    public start() {
-        let self = this;
-        return this.readNodes(this, this.model.nodes, { lvl: -1 })
-            .then(function() {
-                self.state = ScenarioReadable.STATE_RUNNING;
-                return self;
-            });
     }
 
     /**
@@ -202,7 +220,7 @@ export default class ScenarioReadable extends EventEmitter {
      * @param scenario
      * @param node
      * @param options
-     * @returns {Promise<U>}
+     * @returns {Promise}
      */
     protected readNode(scenario: ScenarioReadable, node: ScenarioModel, options: any) {
         let self = this;
@@ -231,21 +249,15 @@ export default class ScenarioReadable extends EventEmitter {
         return "scenario:" + scenarioExecutionId + ":node:" + nodeId + ":module:" + moduleId;
     }
 
-    //
-    protected loadModuleInstance(userId: number = null, pluginId: string, moduleId: string) {
+    protected loadModuleInstance(userId: number = null, pluginId: string, moduleId: string): Promise<ModuleContainer> {
         let self = this;
         let plugin = null;
-        return Promise
-            .resolve()
-            // Get plugin info
-            .then(function() {
-                return self.system.sharedApiService.getPlugin(pluginId);
-            })
-            // Load module instance
-            .then(function(data) {
-                plugin = data;
-                self.logger.debug("Load module instance from plugin %s", plugin.name);
-                return self.system.moduleLoader.loadModule(plugin, moduleId);
-            });
+        // fetch plugin container
+        let container = self.pluginsLoader.getPluginContainerByName(pluginId);
+        if (!container || !container.isRunning()) {
+            return Promise.reject("Plugin " + pluginId + " is not running");
+        }
+        self.logger.debug("Load module instance from plugin %s", container.plugin.name);
+        return self.system.moduleLoader.loadModule(container, moduleId);
     }
 }
