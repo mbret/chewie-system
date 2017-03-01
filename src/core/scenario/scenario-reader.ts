@@ -110,11 +110,15 @@ export class ScenarioReader {
                     })
                     .then(function() {
                         semaphore.leave();
-                        return resolve(scenarioReadable.executionId);
+                        return resolve(scenarioReadable);
                     })
-                    //as soon an error occurs we remove the scenario. A scenario is either running well or not.
+                    // as soon an error occurs we stop the scenario. A scenario is either running well or not.
+                    // By stopping the scenario inside the startup semaphore we are sure no one else will do something between. The stop will start immedialty
+                    // after we release the semaphore
                     .catch(function(err) {
-                        self.removeScenario(scenarioReadable);
+                        self.stopScenario(scenarioReadable.executionId)
+                            .then(() => {})
+                            .catch(() => {});
                         semaphore.leave();
                         return reject(err);
                     });
@@ -139,6 +143,7 @@ export class ScenarioReader {
             }
         }
 
+        // scenario exist so we should have a semaphore
         let semaphore = this.semaphores[executionId];
 
         return (new Promise(function(resolve, reject) {
@@ -152,7 +157,8 @@ export class ScenarioReader {
                 }
 
                 // scenario may still be initializing so we remove it from the take() to ensure we are synchronized
-                self.removeScenario(scenario);
+                let index = self.scenarios.indexOf(scenario);
+                self.scenarios.splice(index, 1);
                 self.logger.verbose("Stopping scenario %s (execution id %s) ...", scenario.model.id, scenario.executionId);
                 return scenario
                     .stop()
@@ -188,11 +194,6 @@ export class ScenarioReader {
                 results.forEach((ingredients) => res = _.merge(ingredients, res));
                 return res;
             });
-    }
-
-    protected removeScenario(scenarioReadable: ScenarioReadable) {
-        let index = this.scenarios.indexOf(scenarioReadable);
-        return this.scenarios.splice(index, 1);
     }
 
     protected loadPlugins(scenario: ScenarioModel) {

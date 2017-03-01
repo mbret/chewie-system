@@ -33,8 +33,10 @@ export = class ScenariosHook extends Hook implements HookInterface {
         // data contain list of updated id
         this.system.sharedApiService.io.on("scenarios:updated", function(data) {
             self.logger.verbose("Scenarios updated on server, try to update running scenarios related to scenarios [%s]", data.updated);
-            return updateScenarioState(data.updated);
+            return updateScenarioState(data);
         });
+
+        this.system.sharedApiService.io.on("scenario:created", function())
 
         // We do not listen for plugins:
         // - unmount: because it stop automatically scenarios
@@ -59,20 +61,33 @@ export = class ScenariosHook extends Hook implements HookInterface {
          * Run scenarios that need to be.
          * Stop scenario that need to be.
          */
-        function updateScenarioState(scenariosToForceReload: Array<number> = []) {
+        function updateScenarioState(scenariosToStopOrStart: any = []) {
+            scenariosToStopOrStart = _.merge({deleted: [], updated: [], created: []}, scenariosToStopOrStart);
+            let scenariosToStop = scenariosToStopOrStart.deleted.concat(scenariosToStopOrStart.updated);
+            let scenariosToStart = scenariosToStopOrStart.created;
+
             // fetch all scenarios
             return self.system.sharedApiService
                 .getAllScenarios()
                 .then(function(response: any) {
                     let scenarios: Array<ScenarioModel> = response.body;
                     self.logger.verbose("%s scenario(s) found: ids=[%s], check current state(s) and start/stop scenario(s) if needed", scenarios.length, scenarios.map(function(e) { return e.id; }));
-                    // loop over all scenario from server that have been updated
+
+                    // loop over all scenario from server
                     scenarios.forEach(function(scenario: ScenarioModel) {
-                        if (scenariosToForceReload.indexOf(scenario.id) > -1) {
+                        // do we have a scenario that have been updated or deleted lastly ?
+                        if (scenariosToStop.indexOf(scenario.id) > -1) {
                             // scenario has to be stopped because it is outdated
-                            self.stopScenario(scenario);
+                            return self.stopScenario(scenario);
+                        }
+
+                        // do we have a new scenario lastly ?
+                        if (scenariosToStart.indexOf(scenario.id) > -1) {
+                            // scenario has to be stopped because it is outdated
+                            return self.startScenario(scenario);
                         }
                     });
+
                     // stop runtime scenario not present on server anymore
                     // get list of running scenarios (avoid having multiple scenario for same id with uniqWith)
                     // if the running scenario id is not present in list of scenarios, then we stop all running scenarios for this id
@@ -117,7 +132,7 @@ export = class ScenariosHook extends Hook implements HookInterface {
      */
     stopScenario(scenario: ScenarioModel) {
         let self = this;
-        self.logger.verbose("Trying to stop scenarios related to %s", scenario.id);
+        self.logger.verbose("Trying to stop all running scenarios relative to scenario [%s:%s]", scenario.id, scenario.name);
         let scenariosReadable = self.scenariosHelper.getRunningScenariosForModelId(scenario);
         scenariosReadable.forEach(function(scenarioReadable) {
             return self.system.scenarioReader.stopScenario(scenarioReadable.executionId)
