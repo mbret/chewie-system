@@ -1,14 +1,27 @@
 import {PluginInstance} from "../plugin-instance-interface";
 
-export interface ModuleInstanceInterface extends Object {
+export interface ModuleInstanceInterface {
+
     constructor(pluginInstance: PluginInstance, moduleInfo: any);
-    // task
-    run(options: any, done: Function);
-    // trigger
-    onNewDemand(options: any, trigger: Function, done: Function);
-    stop();
+
+    stop(done: Function);
 }
 
-// export interface TriggerModuleInstanceInterface extends ModuleInstanceInterface {
-//     onNewDemand();
-// }
+export interface TaskModuleInstanceInterface extends ModuleInstanceInterface {
+
+    /**
+     * @param options
+     * @param done
+     */
+    newDemand(options: any, done: Function);
+}
+
+export interface TriggerModuleInstanceInterface extends ModuleInstanceInterface {
+
+    /**
+     * @param options
+     * @param trigger
+     * @param done
+     */
+    newDemand(options: any, trigger: Function, done: Function);
+}

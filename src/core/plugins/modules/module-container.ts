@@ -32,8 +32,13 @@ export class ModuleContainer {
         return pluginId + ":" + moduleId;
     }
 
-    public stopInstance() {
+    public stopInstance(): Promise<any> {
+        let self = this;
         this.stopped = true;
-        return this.instance.stop();
+        return new Promise(function(resolve) {
+            return self.instance.stop(function(err) {
+                return resolve();
+            });
+        });
     }
 }

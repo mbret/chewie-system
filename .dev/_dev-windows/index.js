@@ -22,8 +22,8 @@ chewie.start({
         "pluginsLocalRepositoryDir": "./../plugins",
         "hooks": {
             "client-web-server": true,
-            "scenarios": true,
-            "plugins": false,
+            // "scenarios": true,
+            // "plugins": false,
             // "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
             // "chewie-hook-seed": { modulePath: "C:/Users/mbret/Workspace/chewie-hook-seed" },
             // "chewie-hook-thirdparty-auth-provider": {

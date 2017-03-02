@@ -36,8 +36,6 @@ export = class ScenariosHook extends Hook implements HookInterface {
             return updateScenarioState(data);
         });
 
-        this.system.sharedApiService.io.on("scenario:created", function())
-
         // We do not listen for plugins:
         // - unmount: because it stop automatically scenarios
         // - mount: scenario start automatically on system ready but that's all

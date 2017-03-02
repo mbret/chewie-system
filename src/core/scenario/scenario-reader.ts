@@ -163,11 +163,9 @@ export class ScenarioReader {
                 return scenario
                     .stop()
                     .then(function() {
-                        self.logger.debug("scenario %s (execution id %s) stopped!", scenario.model.id, scenario.executionId);
-                        self.system.emit("running-scenarios:updated");
-                    })
-                    .then(function() {
                         semaphore.leave();
+                        self.logger.debug("scenario [%s] relative to scenario [%s] stopped and removed from runtime!", scenario.executionId, scenario.model.id);
+                        self.system.emit("running-scenarios:updated");
                         delete self.semaphores[executionId];
                         return resolve();
                     })

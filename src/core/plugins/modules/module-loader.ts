@@ -53,10 +53,16 @@ export class ModuleLoader {
         if (!Module.prototype) {
             return Promise.reject("The module " + moduleId + " does not seems to be callable. Please verify the module declaration");
         }
+
+        // attach default methods
         if (moduleInfo.type === "task") {
-            Module.prototype.run = Module.prototype.run || ((options, done) => done());
+            // task
+            Module.prototype.newDemand = Module.prototype.newDemand || ((options, done) => done());
+        } else {
+            // trigger
+            Module.prototype.newDemand = Module.prototype.newDemand || ((options, trigger, done) => done());
         }
-        Module.prototype.stop = Module.prototype.stop || function() {};
+        Module.prototype.stop = Module.prototype.stop || ((done) => done());
 
         // let helper = new ModuleHelper(this.system, container);
         container.instance = new Module(plugin.instance, moduleInfo);

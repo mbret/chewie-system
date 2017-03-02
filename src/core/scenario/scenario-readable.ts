@@ -6,6 +6,10 @@ import {System} from "../../system";
 import * as _ from "lodash";
 import {PluginsLoader} from "../plugins/plugins-loader";
 import {debug} from "../../shared/debug";
+import {
+    TriggerModuleInstanceInterface,
+    TaskModuleInstanceInterface
+} from "../plugins/modules/module-instance-interface";
 
 /**
  * Root scenario. Has an execution id
@@ -98,13 +102,15 @@ export default class ScenarioReadable extends EventEmitter {
                 scenario.runningTasks.push(1);
 
                 if (node.type === "trigger") {
+                    let instance = <TriggerModuleInstanceInterface>module.instance;
                     // Create the first demand for trigger at lvl 0 (root)
                     debug("scenario:" + self.executionId)("Create a new demand for (trigger) module [%s] from plugin [%s]", module.moduleInfo.id, node.pluginId);
-                    module.instance.onNewDemand(node.options, triggerCallback, taskDoneCallback);
+                    instance.newDemand(node.options, triggerCallback, taskDoneCallback);
                 }
                 // Tasks are one shot (one time running)
                 // This is the most common case, just run the function and wait for its callback
                 else {
+                    let instance = <TaskModuleInstanceInterface>module.instance;
                     self.logger.debug("Create a new demand for task module from plugin %s with options (%s) and ingredients (%s)", node.pluginId, JSON.stringify(node.options), JSON.stringify(parentIngredients));
 
                     // parse options for eventual ingredients replacements
@@ -121,7 +127,7 @@ export default class ScenarioReadable extends EventEmitter {
 
                     // run the task
                     try {
-                        module.instance.run(node.options, taskDoneCallback);
+                        instance.newDemand(node.options, taskDoneCallback);
                     } catch (err) {
                         self.logger.error("Unexpected error of module [%s] from plugin [%s] on scenario [%s] when trying to run the task", module.moduleInfo.id, node.pluginId, self.executionId, err);
                     }
@@ -186,26 +192,28 @@ export default class ScenarioReadable extends EventEmitter {
     
     protected stopNode(scenario: ScenarioReadable, node: any, options: any) {
         // get the module instance
+        let self = this;
         let moduleId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
         let rtId = this.getRuntimeModuleKey(scenario.executionId, node.id, moduleId);
         let module = this.system.modules.get(rtId);
+        this.logger.debug("Stopping module instance [%s]", rtId);
 
-        this.logger.debug("Stopping %s", rtId);
+        // module is running
+        let promise = Promise.resolve();
         if (module) {
-            module.stopInstance();
-            this.system.modules.delete(rtId);
-            this.logger.debug("module %s stopped and deleted from runtime", rtId);
+            promise.then(function() {
+                return module
+                    .stopInstance()
+                    .then(function() {
+                        self.system.modules.delete(rtId);
+                        self.logger.debug("module %s stopped and deleted from runtime", rtId);
+                    });
+            });
         }
 
-        if (node.type === "trigger") {
-
-        }
-
-        if (node.type === "task") {
-            // this.onTaskEnd(scenario.model, node, moduleId);
-        }
-
-        return this.stopNodes(scenario, node.nodes, options);
+        return promise.then(function() {
+            return self.stopNodes(scenario, node.nodes, options);
+        });
     }
 
     protected readNodes(scenario: ScenarioReadable, nodes: any[], options: any) {

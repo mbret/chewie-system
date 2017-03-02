@@ -1,6 +1,6 @@
 module.exports = {
 
-    mount: function(helper, done) {
+    mount: function(chewie, helper, done) {
         setTimeout(function() {
             return done();
         }, 1000);
