@@ -19,10 +19,23 @@ export class PluginContainer {
         this.instance = instance;
         this.plugin = plugin;
         this.shared = {};
+        // mounted / mounting / stopping
         this.state = null;
     }
 
-    public isRunning() {
+    public isMounted() {
         return this.state === "mounted";
+    }
+
+    public isRunning() {
+        return this.isMounted();
+    }
+
+    public isMounting() {
+        return this.state === "mounting";
+    }
+
+    public isStopping() {
+        return this.state === "stopping";
     }
 }

@@ -86,8 +86,9 @@ export class PluginsLoader {
 
                         // require the class export of plugin & create the instance
                         // also in case of missing attribute we merge it with DefaultPluginInstance that contains everything needed
-                        let pluginInstance = self.getPluginClass(plugin);
-                        pluginInstance.mount = typeof pluginInstance.mount === "function" ? pluginInstance.mount : ((chewie, helper, done) => done());
+                        let PluginClass = self.getPluginClass(plugin);
+                        let pluginInstance = new PluginClass(self.system, helper);
+                        pluginInstance.mount = typeof pluginInstance.mount === "function" ? pluginInstance.mount : ((done) => done());
                         pluginInstance.unmount = typeof pluginInstance.unmount === "function" ? pluginInstance.unmount : ((done) => done());
 
                         // we attach instance to container to work with it later
@@ -98,7 +99,7 @@ export class PluginsLoader {
 
                         // mount plugin instance
                         return new Promise(function(resolve, reject) {
-                            pluginInstance.mount(self.system, helper, function(err) {
+                            pluginInstance.mount(function(err) {
                                 if (err) {
                                     return reject(err);
                                 }
