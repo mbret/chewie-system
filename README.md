@@ -1,5 +1,4 @@
 ![Image of Chewbacca](https://image.ibb.co/eKvgov/chewie.jpg)
-(Image not related to the project)
 
 # Chewie system
 [![version](https://img.shields.io/npm/v/chewie-system.svg)](https://www.npmjs.org/package/chewie-system)
