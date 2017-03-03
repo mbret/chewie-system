@@ -50,6 +50,7 @@ export class System extends EventEmitter {
     plugins: Map<string, PluginContainer>;
     modules: Map<string, ModuleContainer>;
     info: any;
+    shuttingDown: boolean;
     id: string;
     name: string;
     public pluginsHelper: PluginsHelper;
@@ -63,6 +64,7 @@ export class System extends EventEmitter {
         super();
         this.id = info.id;
         this.name = info.name;
+        this.shuttingDown = false;
         this.hooks = [];
         this.info = {
             startedAt: new Date(),
@@ -138,6 +140,12 @@ export class System extends EventEmitter {
      */
     public shutdown(processCode = undefined, restart = undefined) {
         let self = this;
+
+        if (self.shuttingDown) {
+            return;
+        }
+
+        self.shuttingDown = true;
         if (!processCode) {
             processCode = 0; // no problem
         }

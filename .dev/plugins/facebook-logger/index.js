@@ -1,12 +1,18 @@
-module.exports = {
 
-    mount: function(chewie, helper, done) {
-        setTimeout(function() {
-            return done();
-        }, 1000);
-    },
-
-    unmount: function(done) {
-        return done();
+class Plugin {
+    constructor() {
+        console.log("facebook-logger", "constructor");
     }
-};
+    mount(done) {
+        console.log("facebook-logger", "mount");
+        done();
+    }
+    unmount(done) {
+        setTimeout(function() {
+            console.log("facebook logger unmount mothe fucker");
+            done();
+        }, 4000);
+    }
+}
+
+module.exports = Plugin;

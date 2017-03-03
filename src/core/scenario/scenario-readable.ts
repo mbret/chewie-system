@@ -265,7 +265,7 @@ export default class ScenarioReadable extends EventEmitter {
         let plugin = null;
         // fetch plugin container
         let container = self.pluginsLoader.getPluginContainerByName(pluginId);
-        if (!container || !container.isRunning()) {
+        if (!container || !container.isMounted()) {
             return Promise.reject("Plugin " + pluginId + " is not running");
         }
         self.logger.debug("Load module instance from plugin %s", container.plugin.name);

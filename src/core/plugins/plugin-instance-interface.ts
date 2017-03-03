@@ -1,4 +1,4 @@
 export interface PluginInstance {
-    mount(helper, cb: Function);
+    mount(cb: Function);
     unmount(cb: Function);
 }

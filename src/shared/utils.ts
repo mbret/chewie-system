@@ -32,7 +32,7 @@ export function getFolderSize(item, ignoreRegEx, callback) {
                 async.forEach(
                     list,
                     function iterate(dirItem, next) {
-                        readSizeRecursive(
+                        getFolderSize(
                             path.join(item, dirItem),
                             ignoreRegExp,
                             function readSize(error, size) {

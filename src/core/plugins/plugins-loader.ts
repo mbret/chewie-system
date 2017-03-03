@@ -2,7 +2,6 @@
 
 import * as _ from "lodash";
 import * as path from "path"
-import {PluginHelper} from "./plugin-helper";
 import {PluginContainer} from "./plugin-container";
 import {System} from "../../system";
 import {SystemError} from "../error";
@@ -53,6 +52,7 @@ export class PluginsLoader {
      */
     public mount(plugin: Plugin, options: any = {}) {
         let self = this;
+        let scenarioHelper = new ScenarioHelper(this.system);
         options = _.merge({forceSynchronize: this.system.config.alwaysSynchronizePlugins}, options);
 
         if (!(plugin instanceof Object)) {
@@ -61,120 +61,120 @@ export class PluginsLoader {
 
         debug("plugins")("Mount demand for plugin %s", plugin.name);
 
-        let semaphore = PluginsLoader.getSemaphoreFor(plugin.name);
-
-        return new Promise(function(resolve, reject) {
-            semaphore.take(function() {
-                // fetch current mounted container
-                let container = PluginsLoader.plugins.find((container) => container.plugin.name === plugin.name);
-
-                // for now an unmounted plugin should not exist in the list so we consider it's still running if it exist
-                if (container) {
-                    semaphore.leave();
-                    return reject(new SystemError("Plugin " + plugin.name + " already loaded. Trying to load a plugin while it has already be loaded", SystemError.ERROR_CODE_PLUGIN_ALREADY_MOUNTED))
-                }
-
-                // ok we mount the plugin
-                // first check if plugin is synchronized
-                self
-                    .synchronize(plugin, {forceSynchronize: options.forceSynchronize})
-                    // Once synchronized we can load the plugin
-                    .then(function() {
-                        // create container
-                        let container = new PluginContainer(self.system, plugin, null);
-                        let helper = new PluginHelper(self.system, container);
-
-                        // require the class export of plugin & create the instance
-                        // also in case of missing attribute we merge it with DefaultPluginInstance that contains everything needed
-                        let PluginClass = self.getPluginClass(plugin);
-                        let pluginInstance = new PluginClass(self.system, helper);
-                        pluginInstance.mount = typeof pluginInstance.mount === "function" ? pluginInstance.mount : ((done) => done());
-                        pluginInstance.unmount = typeof pluginInstance.unmount === "function" ? pluginInstance.unmount : ((done) => done());
-
-                        // we attach instance to container to work with it later
-                        container.instance = pluginInstance;
-
-                        // add to global storage
-                        PluginsLoader.plugins.push(container);
-
-                        // mount plugin instance
-                        return new Promise(function(resolve, reject) {
-                            pluginInstance.mount(function(err) {
-                                if (err) {
-                                    return reject(err);
-                                }
-                                return resolve(container);
-                            });
-                        });
-                    })
-                    .then(function(container) {
+        return Promise.resolve()
+            .then(function() {
+                // create container or retrieve existing
+                let container: PluginContainer = null;
+                let existingContainer = PluginsLoader.plugins.find((container) => container.plugin.name === plugin.name);
+                if (existingContainer) {
+                    return existingContainer;
+                } else {
+                    container = new PluginContainer(self.system, plugin);
+                    // add to global storage
+                    PluginsLoader.plugins.push(container);
+                    container.once("mounted", function() {
                         debug("plugins")("Plugin %s fully mounted and ready", plugin.name);
-                        container.state = "mounted";
                         self.system.emit("plugins:updated");
-                        semaphore.leave();
-                        return resolve(container);
-                    })
-                    .catch(function(err) {
-                        // mount failed, just cancel everything
+                    });
+                    container.once("unmounted", function() {
                         PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== plugin.name);
-                        semaphore.leave();
-                        return reject(err);
+                        debug("plugins")("Plugin %s fully unmounted and free", plugin.name);
+                    });
+                    container.once("unexpectedErrorState", function(err) {
+                        self.logger.error("An unexpected error happened when unmounting plugin %s. System will shutdown.", plugin.name, err);
+                        self.system.shutdown();
+                    });
+
+                    container.beforeMount(function() {
+                        return self
+                            .synchronize(plugin, {forceSynchronize: options.forceSynchronize})
+                            .then(function() {
+                                container.reloadInstance();
+                                return Promise.resolve();
+                            });
+                    });
+
+                    container.beforeUnmount(function() {
+                        // stop all scenarios that use the plugin
+                        let scenariosToStop = scenarioHelper.getScenariosId(container.plugin);
+                        debug("plugins:loader")("Stopping all scenarios of %s before unmount (%s)", plugin.name, scenariosToStop);
+                        return Promise
+                            .map(scenariosToStop, function(id: string) {
+                                return self.system.scenarioReader.stopScenario(id, {silent: true});
+                            });
+                    });
+
+                    return container;
+                }
+            })
+            .then(function(container: PluginContainer) {
+                // mount the container
+                return container.mount()
+                    .catch(function(err) {
+                        // This is a very important part
+                        // always waiting for the current container to mount in any case and catch the unableToRemount allow us to handle case
+                        // loader.mount(pluginA) -> container
+                        //      container.unmount() ...
+                        //      loader.mount(pluginA) ... (the previous container still exist and is unmounting)
+                        //      container.unmount() done! (the container is unmounted and should be removed)
+                        //      loader.mount(pluginA) ... now we have container.mount() catch with error unableToRemount
+                        //          -> loader.mount(pluginA) is called inside same function and returned as result with a new container
+                        //      loader.mount(pluginA) -> container (new container)
+                        // It's always possible to make loader.mount(myPlugin) and have success on promise and have either current valid container or a new one
+                        if (err.code === "unableToRemount") {
+                            return self.mount(plugin, options);
+                        }
+                        throw err;
                     });
             });
-        });
     }
 
-    public unmount(name: string) {
-        let self = this;
-        let scenarioHelper = new ScenarioHelper(this.system);
-        assert.isString(name);
+    // public unmount(name: string) {
+    //     let self = this;
+    //     assert.isString(name);
+    //
+    //     let semaphore = PluginsLoader.getSemaphoreFor(name);
+    //     let pluginContainer = PluginsLoader.plugins.find((container) => container.plugin.name === name);
+    //
+    //     debug("plugins:loader")("UnMount demand for plugin %s", name);
+    //
+    //     // the plugin is not mounted
+    //     if (!pluginContainer) {
+    //         return Promise.reject(new SystemError(name + " not found", SystemError.ERROR_CODE_PLUGIN_NOT_FOUNT));
+    //     }
+    //
+    //     // not mounted anymore
+    //     pluginContainer.state = null;
+    //
+    //     // Start unmount process
+    //     return new Promise(function(resolve, reject) {
+    //         semaphore.take(function() {
+    //             // stop all scenarios that use the plugin
+    //             let scenariosToStop = scenarioHelper.getScenariosId(pluginContainer.plugin);
+    //             debug("plugins:loader")("Stopping all scenarios of %s before unmount (%s)", name, scenariosToStop);
+    //             Promise
+    //                 .map(scenariosToStop, function(id: string) {
+    //                     return self.system.scenarioReader.stopScenario(id, {silent: true});
+    //                 })
+    //                 .then(function() {
+    //                     // unmount plugin instance
+    //                     pluginContainer.instance.unmount(function() {
+    //                         // remove item from list
+    //                         PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== name);
+    //                         self.system.emit("plugins:updated");
+    //                         self.logger.verbose("Plugin %s has been unmount and all its scenarios stopped", name);
+    //                         semaphore.leave();
+    //                         return resolve();
+    //                     });
+    //                 })
+    //                 .catch(reject);
+    //         });
+    //     });
+    // }
 
-        let semaphore = PluginsLoader.getSemaphoreFor(name);
-        let pluginContainer = PluginsLoader.plugins.find((container) => container.plugin.name === name);
-
-        debug("plugins:loader")("UnMount demand for plugin %s", name);
-
-        // the plugin is not mounted
-        if (!pluginContainer) {
-            return Promise.reject(new SystemError(name + " not found", SystemError.ERROR_CODE_PLUGIN_NOT_FOUNT));
-        }
-
-        // not mounted anymore
-        pluginContainer.state = null;
-
-        // Start unmount process
-        return new Promise(function(resolve, reject) {
-            semaphore.take(function() {
-                // stop all scenarios tha use the plugin
-                let scenariosToStop = scenarioHelper.getScenariosId(pluginContainer.plugin);
-                debug("plugins:loader")("Stopping all scenarios of %s before unmount (%s)", name, scenariosToStop);
-                Promise
-                    .map(scenariosToStop, function(id: string) {
-                        return self.system.scenarioReader.stopScenario(id, {silent: true});
-                    })
-                    .then(function() {
-                        // unmount plugin instance
-                        pluginContainer.instance.unmount(function() {
-                            // remove item from list
-                            PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== name);
-                            self.system.emit("plugins:updated");
-                            self.logger.verbose("Plugin %s has been unmount and all its scenarios stopped", name);
-                            semaphore.leave();
-                            return resolve();
-                        });
-                    })
-                    .catch(reject);
-            });
-        });
-    }
-
-    /**
-     *
-     * @param name
-     */
-    public getPluginInfo(name) {
-        return this.loadPackageFile(path.resolve(this.system.config.synchronizedPluginsPath, name));
-    }
+    // public getPluginInfo(name) {
+    //     return this.loadPackageFile(path.resolve(this.system.config.synchronizedPluginsPath, name));
+    // }
 
     /**
      * Try to load js package file and then try json.
@@ -195,7 +195,7 @@ export class PluginsLoader {
     /**
      * Useful to test if a plugin is loaded
      */
-    public getPluginContainerByName(pluginName) {
+    public getPluginContainerByName(pluginName): PluginContainer {
         return PluginsLoader.plugins.find((container) => container.plugin.name === pluginName)
     }
 
@@ -204,8 +204,9 @@ export class PluginsLoader {
      * @param plugin
      * @param options
      */
-    protected synchronize(plugin: Plugin, options: any) {
+    public synchronize(plugin: Plugin, options: any) {
         let self = this;
+        // return Promise.reject("df");
         options = _.merge({forceSynchronize: false}, options);
         // first check if plugin is synchronized
         return this.system.repository
@@ -230,38 +231,19 @@ export class PluginsLoader {
     }
 
     /**
-     *
-     * @param plugin
-     */
-    protected getPluginClass(plugin: Plugin) {
-        if (!plugin.package.main) {
-            return {};
-        }
-
-        // get module instance path
-        let pluginAbsolutePath = path.resolve(this.system.config.synchronizedPluginsPath, plugin.name);
-        let modulePath = path.resolve(pluginAbsolutePath, plugin.package.main);
-
-        debug("plugins")("plugin instance path is %s", modulePath);
-
-        // now require the module
-        return require(modulePath);
-    }
-
-    /**
      * Either get current semaphore or create a new one if semaphore has not be created yet or cleaned.
      * We use semaphore of 1 which could also be a simple queue.
      * @param pluginName
      * @returns {any}
      */
-    protected static getSemaphoreFor(pluginName) {
-        let semaphore = PluginsLoader.semaphores[pluginName];
-        if (!semaphore) {
-            debug("plugins")("Register a new semaphore for plugin %s", pluginName);
-            semaphore = Semaphore(1);
-            PluginsLoader.semaphores[pluginName] = semaphore;
-        }
-        return semaphore;
-    }
+    // protected static getSemaphoreFor(pluginName) {
+    //     let semaphore = PluginsLoader.semaphores[pluginName];
+    //     if (!semaphore) {
+    //         debug("plugins")("Register a new semaphore for plugin %s", pluginName);
+    //         semaphore = Semaphore(1);
+    //         PluginsLoader.semaphores[pluginName] = semaphore;
+    //     }
+    //     return semaphore;
+    // }
 }
 

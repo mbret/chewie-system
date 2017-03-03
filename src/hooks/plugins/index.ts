@@ -9,6 +9,7 @@ import {debug as hookDebug} from "../../shared/debug";
 import {SystemError} from "../../core/error";
 import {Plugin} from "../shared-server-api/lib/models/plugins";
 import {Hook} from "../../core/hook";
+import {PluginContainer} from "../../core/plugins/plugin-container";
 let debug = hookDebug(":hook:plugins");
 
 export = class PluginsHook extends Hook implements HookInterface {
@@ -26,6 +27,69 @@ export = class PluginsHook extends Hook implements HookInterface {
 
     initialize() {
         let self = this;
+
+        //
+        // setTimeout(function() {
+        //     self.system.sharedApiService
+        //         .getAllPlugins()
+        //         .then(function(response: any) {
+        //             let plugin: Plugin = response.body[0];
+        //             self.pluginsLoader.mount(plugin).then(function(container: PluginContainer) {
+        //                 console.log("mounted 1 SUCCESS", container.state);
+        // //                 // setImmediate(function() {
+        // //                 //     container.lock(function(unlock) {
+        //                         container.unmount().then(function() {
+        //                             console.log("unmount 1 SUCCESS", container.state);
+        //                         }).catch(function(err) {
+        //                             console.error("unmount 1 FAIL", err);
+        //                         });
+        //                         self.pluginsLoader.mount(plugin).then(function() {
+        //                             console.log("remount 1 SUCCESS");
+        //                         }).catch(function(err) {
+        //                             console.error("remount 1 FAIL", err);
+        //                         });
+        // //                         // unlock();
+        // //                     // });
+        // //                 // });
+        //             }).catch(function(err) {
+        //                 console.error("mounted 1 FAIL", err);
+        //             });
+        // //             self.pluginsLoader.mount(plugin).then(function(container: PluginContainer) {
+        // //                 console.log("mounted 2 SUCCESS", container.state);
+        // //                 container.mount().then(function() {
+        // //                     console.log("remount 2 SUCCESS", container.state);
+        // //                 }).catch(function(err) {
+        // //                     console.error("remount 2 FAIL", err);
+        // //                 });
+        // //                 // self.pluginsLoader.mount(plugin, {}, "ask for mount 5").then(function(container: PluginContainer) {
+        // //                 //     console.log("mounted 5 SUCCESS", container.state);
+        // //                 // }).catch(function(err) {
+        // //                 //     console.error("mounted 5 FAIL", err);
+        // //                 // });
+        // //                 container.unmount().then(function() {
+        // //                     console.log("unmount 6 SUCCESS");
+        // //             // //         container.mount().then(function() {
+        // //             // //             console.log("remount 2");
+        // //             // //         }).catch(function(err) {
+        // //             // //             console.error("remount 2 FAIL", err);
+        // //             // //         });
+        // //                 }).catch(function(err) {
+        // //                     console.error("unmount 6 FAIL", err);
+        // //                 });
+        // //             }).catch(function(err) {
+        // //                 console.error("mounted 2 FAIL", err);
+        // //             });
+        // //             // setTimeout(function() {
+        // //             //     self.pluginsLoader.mount(plugin, {}, "ask for mount 4").then(function(container: PluginContainer) {
+        // //             //         console.log("mounted 4", container.state);
+        // //             //     }).catch(function(err) {
+        // //             //         console.error("mounted 4 FAIL", err);
+        // //             //     });
+        // //             // }, 2000)
+        //         })
+        // }, 3000);
+        // return Promise.resolve();
+
 
         // make sure shared api server is running
         this.system.once("ready", function() {
@@ -49,7 +113,6 @@ export = class PluginsHook extends Hook implements HookInterface {
         self.customListeners.pluginCreated = this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
             if (plugin.deviceId === self.system.id) {
                 debug("New plugin %s created detected", plugin.name);
-                debug('Loading plugin %s', plugin.name);
                 return self.loadPlugin(plugin, true);
             }
         });
@@ -86,14 +149,12 @@ export = class PluginsHook extends Hook implements HookInterface {
      */
     loadPlugin(plugin, reload = false) {
         let self = this;
+        debug('%s plugin %s', reload ? "Reloading" : "Load", plugin.name);
+        let container = self.pluginsLoader.getPluginContainerByName(plugin.name);
+        if (reload && container) {
+            container.unmount();
+        }
         return self.pluginsLoader.mount(plugin)
-            .catch(function(err) {
-                if (err.code !== SystemError.ERROR_CODE_PLUGIN_ALREADY_MOUNTED) {
-                    throw err;
-                } else {
-                    return Promise.resolve();
-                }
-            })
             .then(function() {
                 debug("Plugin %s loaded", plugin.name);
             });
@@ -107,12 +168,10 @@ export = class PluginsHook extends Hook implements HookInterface {
         let self = this;
         debug('Unloading plugins [%s]', _.map(plugins, "name"));
         plugins.forEach(function(plugin) {
-            return self.pluginsLoader.unmount(plugin.name)
-                .catch(function(err) {
-                    if (err.code !== SystemError.ERROR_CODE_PLUGIN_NOT_FOUNT) {
-                        throw err;
-                    }
-                });
+            let container = self.pluginsLoader.getPluginContainerByName(plugin.name);
+            if (container) {
+                container.unmount();
+            }
         });
     }
 }
