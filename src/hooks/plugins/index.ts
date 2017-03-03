@@ -6,10 +6,8 @@ import {System} from "../../system";
 import {ScenarioHelper} from "../../core/scenario/scenario-helper";
 import {PluginsLoader} from "../../core/plugins/plugins-loader";
 import {debug as hookDebug} from "../../shared/debug";
-import {SystemError} from "../../core/error";
 import {Plugin} from "../shared-server-api/lib/models/plugins";
 import {Hook} from "../../core/hook";
-import {PluginContainer} from "../../core/plugins/plugin-container";
 let debug = hookDebug(":hook:plugins");
 
 export = class PluginsHook extends Hook implements HookInterface {
@@ -27,69 +25,6 @@ export = class PluginsHook extends Hook implements HookInterface {
 
     initialize() {
         let self = this;
-
-        //
-        // setTimeout(function() {
-        //     self.system.sharedApiService
-        //         .getAllPlugins()
-        //         .then(function(response: any) {
-        //             let plugin: Plugin = response.body[0];
-        //             self.pluginsLoader.mount(plugin).then(function(container: PluginContainer) {
-        //                 console.log("mounted 1 SUCCESS", container.state);
-        // //                 // setImmediate(function() {
-        // //                 //     container.lock(function(unlock) {
-        //                         container.unmount().then(function() {
-        //                             console.log("unmount 1 SUCCESS", container.state);
-        //                         }).catch(function(err) {
-        //                             console.error("unmount 1 FAIL", err);
-        //                         });
-        //                         self.pluginsLoader.mount(plugin).then(function() {
-        //                             console.log("remount 1 SUCCESS");
-        //                         }).catch(function(err) {
-        //                             console.error("remount 1 FAIL", err);
-        //                         });
-        // //                         // unlock();
-        // //                     // });
-        // //                 // });
-        //             }).catch(function(err) {
-        //                 console.error("mounted 1 FAIL", err);
-        //             });
-        // //             self.pluginsLoader.mount(plugin).then(function(container: PluginContainer) {
-        // //                 console.log("mounted 2 SUCCESS", container.state);
-        // //                 container.mount().then(function() {
-        // //                     console.log("remount 2 SUCCESS", container.state);
-        // //                 }).catch(function(err) {
-        // //                     console.error("remount 2 FAIL", err);
-        // //                 });
-        // //                 // self.pluginsLoader.mount(plugin, {}, "ask for mount 5").then(function(container: PluginContainer) {
-        // //                 //     console.log("mounted 5 SUCCESS", container.state);
-        // //                 // }).catch(function(err) {
-        // //                 //     console.error("mounted 5 FAIL", err);
-        // //                 // });
-        // //                 container.unmount().then(function() {
-        // //                     console.log("unmount 6 SUCCESS");
-        // //             // //         container.mount().then(function() {
-        // //             // //             console.log("remount 2");
-        // //             // //         }).catch(function(err) {
-        // //             // //             console.error("remount 2 FAIL", err);
-        // //             // //         });
-        // //                 }).catch(function(err) {
-        // //                     console.error("unmount 6 FAIL", err);
-        // //                 });
-        // //             }).catch(function(err) {
-        // //                 console.error("mounted 2 FAIL", err);
-        // //             });
-        // //             // setTimeout(function() {
-        // //             //     self.pluginsLoader.mount(plugin, {}, "ask for mount 4").then(function(container: PluginContainer) {
-        // //             //         console.log("mounted 4", container.state);
-        // //             //     }).catch(function(err) {
-        // //             //         console.error("mounted 4 FAIL", err);
-        // //             //     });
-        // //             // }, 2000)
-        //         })
-        // }, 3000);
-        // return Promise.resolve();
-
 
         // make sure shared api server is running
         this.system.once("ready", function() {
