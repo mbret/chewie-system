@@ -22,7 +22,7 @@ export class PluginsLoader {
     logger: any;
 
     // object with plugin id as key (one plugin access at a time)
-    protected static semaphores: any = {};
+    // protected static semaphores: any = {};
     protected static plugins: Array<PluginContainer> = [];
 
     constructor(system) {
@@ -34,13 +34,13 @@ export class PluginsLoader {
             // task for cleanup semaphore and avoid having semaphores collection growing up as
             // the plugins grow up. Every new plugin mounted create a new entry in semaphore collection and may become
             // very huge after long execution time.
-            _.forEach(_.clone(PluginsLoader.semaphores), function(semaphore, pluginName) {
-                // semaphore is empty we can remove it
-                if (semaphore.queue.length === 0) {
-                    debug("plugins")("Semaphore for plugin %s is not active anymore and has been cleaned", pluginName);
-                    delete PluginsLoader.semaphores[pluginName];
-                }
-            });
+            // _.forEach(_.clone(PluginsLoader.semaphores), function(semaphore, pluginName) {
+            //     // semaphore is empty we can remove it
+            //     if (semaphore.queue.length === 0) {
+            //         debug("plugins")("Semaphore for plugin %s is not active anymore and has been cleaned", pluginName);
+            //         delete PluginsLoader.semaphores[pluginName];
+            //     }
+            // });
         });
     }
 
@@ -53,6 +53,8 @@ export class PluginsLoader {
     public mount(plugin: Plugin, options: any = {}) {
         let self = this;
         let scenarioHelper = new ScenarioHelper(this.system);
+        let container: PluginContainer = null;
+
         options = _.merge({forceSynchronize: this.system.config.alwaysSynchronizePlugins}, options);
 
         if (!(plugin instanceof Object)) {
@@ -64,7 +66,6 @@ export class PluginsLoader {
         return Promise.resolve()
             .then(function() {
                 // create container or retrieve existing
-                let container: PluginContainer = null;
                 let existingContainer = PluginsLoader.plugins.find((container) => container.plugin.name === plugin.name);
                 if (existingContainer) {
                     return existingContainer;
@@ -72,14 +73,17 @@ export class PluginsLoader {
                     container = new PluginContainer(self.system, plugin);
                     // add to global storage
                     PluginsLoader.plugins.push(container);
+
                     container.once("mounted", function() {
                         debug("plugins")("Plugin %s fully mounted and ready", plugin.name);
                         self.system.emit("plugins:updated");
                     });
+
                     container.once("unmounted", function() {
                         PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== plugin.name);
                         debug("plugins")("Plugin %s fully unmounted and free", plugin.name);
                     });
+
                     container.once("unexpectedErrorState", function(err) {
                         self.logger.error("An unexpected error happened when unmounting plugin %s. System will shutdown.", plugin.name, err);
                         self.system.shutdown();
@@ -128,49 +132,6 @@ export class PluginsLoader {
                     });
             });
     }
-
-    // public unmount(name: string) {
-    //     let self = this;
-    //     assert.isString(name);
-    //
-    //     let semaphore = PluginsLoader.getSemaphoreFor(name);
-    //     let pluginContainer = PluginsLoader.plugins.find((container) => container.plugin.name === name);
-    //
-    //     debug("plugins:loader")("UnMount demand for plugin %s", name);
-    //
-    //     // the plugin is not mounted
-    //     if (!pluginContainer) {
-    //         return Promise.reject(new SystemError(name + " not found", SystemError.ERROR_CODE_PLUGIN_NOT_FOUNT));
-    //     }
-    //
-    //     // not mounted anymore
-    //     pluginContainer.state = null;
-    //
-    //     // Start unmount process
-    //     return new Promise(function(resolve, reject) {
-    //         semaphore.take(function() {
-    //             // stop all scenarios that use the plugin
-    //             let scenariosToStop = scenarioHelper.getScenariosId(pluginContainer.plugin);
-    //             debug("plugins:loader")("Stopping all scenarios of %s before unmount (%s)", name, scenariosToStop);
-    //             Promise
-    //                 .map(scenariosToStop, function(id: string) {
-    //                     return self.system.scenarioReader.stopScenario(id, {silent: true});
-    //                 })
-    //                 .then(function() {
-    //                     // unmount plugin instance
-    //                     pluginContainer.instance.unmount(function() {
-    //                         // remove item from list
-    //                         PluginsLoader.plugins = _.filter(PluginsLoader.plugins, (o) => o.plugin.name !== name);
-    //                         self.system.emit("plugins:updated");
-    //                         self.logger.verbose("Plugin %s has been unmount and all its scenarios stopped", name);
-    //                         semaphore.leave();
-    //                         return resolve();
-    //                     });
-    //                 })
-    //                 .catch(reject);
-    //         });
-    //     });
-    // }
 
     // public getPluginInfo(name) {
     //     return this.loadPackageFile(path.resolve(this.system.config.synchronizedPluginsPath, name));
@@ -229,21 +190,5 @@ export class PluginsLoader {
                 }
             });
     }
-
-    /**
-     * Either get current semaphore or create a new one if semaphore has not be created yet or cleaned.
-     * We use semaphore of 1 which could also be a simple queue.
-     * @param pluginName
-     * @returns {any}
-     */
-    // protected static getSemaphoreFor(pluginName) {
-    //     let semaphore = PluginsLoader.semaphores[pluginName];
-    //     if (!semaphore) {
-    //         debug("plugins")("Register a new semaphore for plugin %s", pluginName);
-    //         semaphore = Semaphore(1);
-    //         PluginsLoader.semaphores[pluginName] = semaphore;
-    //     }
-    //     return semaphore;
-    // }
 }
 
