@@ -115,15 +115,18 @@ export class PluginsLoader {
                 // mount the container
                 return container.mount()
                     .catch(function(err) {
-                        // This is a very important part
-                        // always waiting for the current container to mount in any case and catch the unableToRemount allow us to handle case
-                        // loader.mount(pluginA) -> container
-                        //      container.unmount() ...
-                        //      loader.mount(pluginA) ... (the previous container still exist and is unmounting)
-                        //      container.unmount() done! (the container is unmounted and should be removed)
-                        //      loader.mount(pluginA) ... now we have container.mount() catch with error unableToRemount
-                        //          -> loader.mount(pluginA) is called inside same function and returned as result with a new container
-                        //      loader.mount(pluginA) -> container (new container)
+                        // This is a very important part:
+                        // We always wait for the current existing container to mount and catch the unableToRemount when this container is unmounting for example.
+                        // It allow us to handle this case:
+                        //
+                        // loader.mount(pluginA) -> container (We have a new container which is mounting)
+                        //      container.unmount() ... (we ask for this container to unmount)
+                        //      loader.mount(pluginA) ... (we ask for a new plugin (the same) to mount. The previous container still exist and is unmounting)
+                        //      container.unmount() has been done! (the container is unmounted and should be removed from repository)
+                        //      loader.mount(pluginA) ... (now we should get a container.mount() exception with error unableToRemount)
+                        //          -> loader.mount(pluginA) called by this method (This is the specific part. We return the a container as the previous one has been removed)
+                        //      loader.mount(pluginA) -> container (new container received and mounted)
+                        //
                         // It's always possible to make loader.mount(myPlugin) and have success on promise and have either current valid container or a new one
                         if (err.code === "unableToRemount") {
                             return self.mount(plugin, options);
