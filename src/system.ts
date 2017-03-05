@@ -111,7 +111,7 @@ export class System extends EventEmitter {
 
                 // log various paths for debug conveniences
                 self.logger.verbose("App data path is located to %s (resolved)", path.resolve(process.cwd(), self.config.system.appDataPath));
-                self.logger.verbose("App tmp folder is located to %s (resolved)", path.resolve(process.cwd(), self.config.system.tmpDir));
+                self.logger.verbose("App tmp folder is located to %s (resolved)", path.resolve(self.config.system.tmpDir));
 
                 // self.logger.Logger = loggerBuilder;
                 self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');

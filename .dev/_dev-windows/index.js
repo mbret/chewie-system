@@ -9,11 +9,11 @@ const chewie = require("chewie-system");
 // Start the system
 chewie.start({
     settings: {
-        bootstrap: function(chewie, done) {
-            chewie.repositoriesHelper.reinstallPluginFromDisk(__dirname + "/../plugins/facebook-logger")
-                .then(() => done())
-                .catch(done);
-        },
+        // bootstrap: function(chewie, done) {
+        //     chewie.repositoriesHelper.reinstallPluginFromDisk(__dirname + "/../plugins/facebook-logger")
+        //         .then(() => done())
+        //         .catch(done);
+        // },
         "alwaysSynchronizePlugins": true,
         "system": {
             "tmpDir": "./.chewie/.tmp",
@@ -24,7 +24,7 @@ chewie.start({
             // "client-web-server": false,
             // "scenarios": false,
             // "plugins": false,
-            "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
+            // "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
             // "chewie-hook-seed": { modulePath: "C:/Users/mbret/Workspace/chewie-hook-seed" },
             // "chewie-hook-thirdparty-auth-provider": {
             //     // required because of symlink

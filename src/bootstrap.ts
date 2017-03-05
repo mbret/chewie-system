@@ -26,7 +26,7 @@ export class Bootstrap {
             .then(function() {
                 return Promise.all([
                     self.system.speaker.initialize(),
-                    self.system.communicationBus.initialize(),
+                    // self.system.communicationBus.initialize(),
                     self.system.sharedApiService.initialize(),
                     self.system.storage.initialize(),
                     self.loadHooks(),
@@ -128,6 +128,7 @@ export class Bootstrap {
                 hook.initialize()
                     .then(function() {
                         debug("hooks")("Hook %s initialized", name);
+                        // next tick so hooks may use system.on("...:initialized") inside the initialize() method.
                         setImmediate(function() {
                             self.system.emit("hook:" + name + ":initialized");
                         });

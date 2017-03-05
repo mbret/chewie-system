@@ -143,7 +143,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
 
     protected runMigration() {
         let server = this;
-        debugDefault("Run database migration");
+        debugDefault("Run database migration...");
         let dbMigrateInstance = DBMigrate.getInstance(true, {
             cwd: server.config.sharedDatabase.migrationDir,
             config: {
@@ -160,7 +160,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
                 debugDefault("Database migration executed with success");
             })
             .catch(function(err) {
-                server.logger.error("runMigration failed");
+                server.logger.error("Database migration failed: ", err.message);
                 throw err;
             });
     }
@@ -174,7 +174,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
      */
     protected configureOrm() {
         let server = this;
-
+        debugDefault("Configure ORM...");
         server.orm.sequelize = new Sequelize('database', 'admin', null, this.config.sharedDatabase.connexion);
 
         let modelsPath = "./models";
