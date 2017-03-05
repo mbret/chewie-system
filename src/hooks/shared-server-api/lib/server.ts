@@ -93,7 +93,6 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
                 return self.startServer().then(function(){
                     self.services.eventsWatcher.watch();
                     debugDefault('Initialized');
-                    // self.emit("initialized");
                     return Promise.resolve();
                 });
             });

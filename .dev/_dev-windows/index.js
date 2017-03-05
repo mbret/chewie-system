@@ -24,7 +24,7 @@ chewie.start({
             // "client-web-server": false,
             // "scenarios": false,
             // "plugins": false,
-            // "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
+            "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
             // "chewie-hook-seed": { modulePath: "C:/Users/mbret/Workspace/chewie-hook-seed" },
             // "chewie-hook-thirdparty-auth-provider": {
             //     // required because of symlink

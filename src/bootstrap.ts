@@ -4,6 +4,7 @@ import * as _ from "lodash";
 import * as path from "path";
 import {debug} from "./shared/debug";
 import {HookHelper} from "./core/hook-helper";
+import {SystemError} from "./core/error";
 
 export class Bootstrap {
 
@@ -89,7 +90,7 @@ export class Bootstrap {
             let hookModule = null;
             // If the module path is specified we use it as priority
             if (_.isString(config.modulePath)) {
-                let modulePath = path.normalize(config.modulePath);
+                let modulePath = path.resolve(config.modulePath);
                 debug("hooks")("Trying to load Hook %s from path %s", name, modulePath);
                 hookModule = require(modulePath);
             } else {
@@ -97,15 +98,16 @@ export class Bootstrap {
                 debug("hooks")("Trying to load Hook %s as core module at %s", name, modulePath);
                 try { hookModule = require(modulePath); } catch(err) {
                     // @WARING DEV: MODULE_NOT_FOUND may appears on core module if one of its dependency is not installed (and will throw false error)
-                    if (err.code !== "MODULE_NOT_FOUND") { throw err; };
+                    if (err.code !== "MODULE_NOT_FOUND") { throw err; }
+                    let userModulePath = path.resolve(self.system.config.appPath, "node_modules", name);
                     // if core hook does not exist we try to load node_module  hook
-                    debug("hooks")("The hook %s does not seems to be a core module so we try to load as node dependency", name);
-                    try { hookModule = require(name); } catch(err) {
+                    debug("hooks")("The hook %s does not seems to be a core module so we try to load as node dependency with require(\"%s\")", name, userModulePath);
+                    try { hookModule = require(userModulePath); } catch(err) {
                         if (err.code !== "MODULE_NOT_FOUND") {
                             throw err;
                         } else {
                             // Hook module not found
-                            throw new Error("The hook " + name + " does not seems to exist. Please check that you have installed the module as a dependency. Error: " + err);
+                            throw new SystemError("The hook " + name + " does not seems to exist. Please check that you have installed the module as a dependency. Error: " + err.message, undefined, err);
                         }
                     }
                 }

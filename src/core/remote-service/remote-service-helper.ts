@@ -34,10 +34,6 @@ class RemoteServiceHelper {
     }
 
     _buildOptions(userOptions) {
-        // case of we have just an uri
-        // if(_.isString(userOptions)) {
-        //     userOptions = { uri: userOptions };
-        // }
         return _.merge({}, this.defaultRequestOptions, userOptions);
     }
 
