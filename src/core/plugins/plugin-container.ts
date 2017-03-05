@@ -93,7 +93,7 @@ export class PluginContainer extends EventEmitter {
                                 return (new Promise(
                                     // mount plugin instance
                                     function(ok, nope) {
-                                        this.instance = this.getPluginInstance();
+                                        self.instance = self.getPluginInstance();
                                         self.instance.mount(function(err) {
                                             if (err) {
                                                 return nope(err);

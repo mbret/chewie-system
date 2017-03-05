@@ -35,16 +35,13 @@ export class Bootstrap {
             // For now we need the shared api server to be connected
             .then(function() {
                 self.system.logger.verbose("We now wait for api to be ready...");
-                let warningApi = true;
-                setTimeout(function() {
-                    if (warningApi) {
-                        self.system.logger.warn("The api seems to be unreachable or taking unusually long time to respond. Please " +
-                            "verify that the remote api is running correctly before starting the system");
-                    }
+                let warningApi = setTimeout(function() {
+                    self.system.logger.warn("The api seems to be unreachable or taking unusually long time to respond. Please " +
+                        "verify that the remote api is running correctly before starting the system");
                 }, 10000);
                 return self.system.sharedApiService.apiReady()
                     .then(function() {
-                        warningApi = false;
+                        clearTimeout(warningApi);
                         return Promise.resolve();
                     });
             })
