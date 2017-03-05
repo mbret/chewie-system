@@ -26,7 +26,7 @@ export class Bootstrap {
             .then(function() {
                 return Promise.all([
                     self.system.speaker.initialize(),
-                    // self.system.communicationBus.initialize(),
+                    self.system.communicationBus.initialize(),
                     self.system.sharedApiService.initialize(),
                     self.system.storage.initialize(),
                     self.loadHooks(),
@@ -34,19 +34,20 @@ export class Bootstrap {
             })
             // For now we need the shared api server to be connected
             .then(function() {
-                return self.system.sharedApiService.get("/ping")
+                self.system.logger.verbose("We now wait for api to be ready...");
+                let warningApi = true;
+                setTimeout(function() {
+                    if (warningApi) {
+                        self.system.logger.warn("The api seems to be unreachable or taking unusually long time to respond. Please " +
+                            "verify that the remote api is running correctly before starting the system");
+                    }
+                }, 10000);
+                return self.system.sharedApiService.apiReady()
                     .then(function() {
+                        warningApi = false;
                         return Promise.resolve();
-                    })
-                    .catch(function() {
-                        self.system.logger.warn("Please check that the remote server is running before starting the system");
-                        throw new Error("Waiting for remote api server starting");
                     });
             })
-            // @todo register system on shared api
-            // .then(function() {
-            //
-            // })
             .then(function() {
                 initializing = false;
                 return done();
