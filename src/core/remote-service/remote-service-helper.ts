@@ -5,21 +5,22 @@ import {ApiResponseError, ApiResponseNotFoundError, ApiResponseBadRequestError} 
 
 let request = require("request");
 let _ = require("lodash");
+import { EventEmitter }  from "events";
 
 /**
  *
  * @param system
  * @constructor
  */
-class RemoteServiceHelper {
+class RemoteServiceHelper extends EventEmitter {
 
     defaultRequestOptions: any;
     logger: any;
     system: System;
 
     constructor(system: System) {
-        Object.assign(this, {system});
-
+        // Object.assign(this, {system});
+        super();
         let self = this;
         this.system = system;
         this.logger = system.logger.getLogger('RemoteServiceHelper');

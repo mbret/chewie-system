@@ -8,29 +8,13 @@ export class HookHelper extends EventEmitter {
     system: System;
     hookName: string;
     logger: any;
-    ready: boolean;
 
     constructor(system, hookName) {
         super();
         let self = this;
         this.system = system;
         this.hookName = hookName;
-        this.ready = false;
         this.logger = this.system.logger.getLogger(hookName);
-        this.system.once("hook:shared-server-api:initialized", function() {
-            self.ready = true;
-            self.emit("ready");
-        });
-    }
-    
-    protected _apiReady(): Promise<any> {
-        let self = this;
-        if (this.ready) {
-            return Promise.resolve();
-        }
-        return new Promise(function(resolve) {
-            self.once("ready", resolve);
-        });
     }
 
     /**
@@ -51,6 +35,7 @@ export class HookHelper extends EventEmitter {
     }
 
     /**
+     * It use sharedApiService.apiReady() as security in case of user hook would call this method before system ready.
      * Create or set a storage for a key.
      * @param key
      * @param data
@@ -59,7 +44,7 @@ export class HookHelper extends EventEmitter {
      */
     public setStorage(key: string, data: any, options: any = {partial: false}) {
         let self = this;
-        return this._apiReady()
+        return this.system.sharedApiService.apiReady()
             .then(function() {
                 return self.system.sharedApiService
                     .postHookData(self.hookName, key, data)
@@ -72,9 +57,14 @@ export class HookHelper extends EventEmitter {
             });
     }
 
+    /**
+     * It use sharedApiService.apiReady() as security in case of user hook would call this method before system ready.
+     * @param key
+     * @returns {Promise<U>}
+     */
     public getStorage(key: string) {
         let self = this;
-        return this._apiReady()
+        return this.system.sharedApiService.apiReady()
             .then(function() {
                 return self.system.sharedApiService.getHookData(self.hookName, key)
                     .then(function(response: any) {

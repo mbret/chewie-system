@@ -30,6 +30,7 @@ chewie.start({
             //     // required because of symlink
             //     modulePath: __dirname + "/node_modules/chewie-hook-thirdparty-auth-provider"
             // },
+            // "shared-server-api": false,
             // "shared-server-api": {
             //     "config": {
             //         "sharedDatabase": {

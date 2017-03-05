@@ -42,23 +42,23 @@ export = class PluginsHook extends Hook implements HookInterface {
                     self.logger.error("Unable to load plugins automatically", err.message);
                     return self.system.sharedApiService.createNotification("Unable to load plugins automatically", "warning");
                 });
-        });
 
-        // Listen for new plugin
-        self.customListeners.pluginCreated = this.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
-            if (plugin.deviceId === self.system.id) {
-                debug("New plugin %s created detected", plugin.name);
-                return self.loadPlugin(plugin, true);
-            }
-        });
+            // Listen for new plugin
+            self.customListeners.pluginCreated = self.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
+                if (plugin.deviceId === self.system.id) {
+                    debug("New plugin %s created detected", plugin.name);
+                    return self.loadPlugin(plugin, true);
+                }
+            });
 
-        // Listen for plugin deletion
-        self.customListeners.pluginDeleted = this.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
-            // ensure we are on the right device
-            if (plugin.deviceId === self.system.id) {
-                debug("Plugin %s has been deleted on storage", plugin.name);
-                self.unLoadPlugins([plugin]);
-            }
+            // Listen for plugin deletion
+            self.customListeners.pluginDeleted = self.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
+                // ensure we are on the right device
+                if (plugin.deviceId === self.system.id) {
+                    debug("Plugin %s has been deleted on storage", plugin.name);
+                    self.unLoadPlugins([plugin]);
+                }
+            });
         });
 
         return Promise.resolve();

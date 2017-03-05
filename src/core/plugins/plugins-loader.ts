@@ -90,12 +90,7 @@ export class PluginsLoader {
                     });
 
                     container.beforeMount(function() {
-                        return self
-                            .synchronize(plugin, {forceSynchronize: options.forceSynchronize})
-                            .then(function() {
-                                container.reloadInstance();
-                                return Promise.resolve();
-                            });
+                        return self.synchronize(plugin, {forceSynchronize: options.forceSynchronize});
                     });
 
                     container.beforeUnmount(function() {
@@ -172,6 +167,7 @@ export class PluginsLoader {
         let self = this;
         // return Promise.reject("df");
         options = _.merge({forceSynchronize: false}, options);
+        debug("plugins")("Check and synchronize %s if needed", plugin.name);
         // first check if plugin is synchronized
         return this.system.repository
             .pluginExist(plugin)

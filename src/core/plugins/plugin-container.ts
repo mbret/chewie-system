@@ -37,7 +37,6 @@ export class PluginContainer extends EventEmitter {
         this.state = null; // null/mounting/mounted/unmounting/unmounted
         this.semaphore = Semaphore(1);
         this.helper = new PluginHelper(this.system, this);
-        this.instance = this.getPluginInstance();
         this.instanceLocked = false;
         this._beforeMount = [];
         this._beforeUnmount = [];
@@ -94,6 +93,7 @@ export class PluginContainer extends EventEmitter {
                                 return (new Promise(
                                     // mount plugin instance
                                     function(ok, nope) {
+                                        this.instance = this.getPluginInstance();
                                         self.instance.mount(function(err) {
                                             if (err) {
                                                 return nope(err);
@@ -154,6 +154,9 @@ export class PluginContainer extends EventEmitter {
                                 return (new Promise(
                                     // mount plugin instance
                                     function(ok, nope) {
+                                        if (!self.instance) {
+                                            return ok();
+                                        }
                                         self.instance.unmount(function(err) {
                                             if (err) {
                                                 return nope(err);
