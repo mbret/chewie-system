@@ -14,13 +14,10 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "build": "gulp build && npm run hook-client-web-server:build && tsc",
+    "build": "gulp build && tsc",
     "watch": "concurrently --raw \"gulp watch\" \"tsc -w\"",
-    "dev": "concurrently --raw \"npm run build\" \"npm run hook-client-web-server:dev\" \"npm run watch\"",
-    "test": "cross-env DEBUG=chewie* mocha",
-    "hook-client-web-server:test": "cd src/hooks/client-web-server && grunt test",
-    "hook-client-web-server:build": "cd src/hooks/client-web-server && gulp build",
-    "hook-client-web-server:dev": "cd src/hooks/client-web-server && concurrently --raw \"gulp build --from-source\" \"gulp watch --from-source\""
+    "dev": "concurrently --raw \"npm run build\" \"npm run watch\"",
+    "test": "cross-env DEBUG=chewie* mocha"
   },
   "dependencies": {
     "@types/async": "^2.0.38",
