@@ -188,7 +188,7 @@ gulp.task("client-web-server:build-less", function() {
         .pipe(gulp.dest(path.join(config.buildPath, "/css")));
 });
 
-gulp.task("client-web-server:build", gulp.series("client-web-server:symlinks", gulp.parallel("client-web-server:copy-vendors-npm", "client-web-server:build-less", "client-web-server:inject-js")));
+gulp.task("client-web-server:build", gulp.series("client-web-server:symlinks", gulp.parallel("client-web-server:copy-vendors-npm", "client-web-server:build-less"), "client-web-server:inject-js"));
 gulp.task("client-web-server:watch", gulp.parallel("client-web-server:watch-less", "client-web-server:watch-public"));
 
 // -------------------------------------------
