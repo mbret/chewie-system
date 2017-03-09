@@ -10,7 +10,7 @@ const inject = require('gulp-inject');
 const series = require('stream-series');
 let argv = require('yargs').argv;
 const _ = require("lodash");
-
+const merge = require("merge-stream");
 let basePath = __dirname;
 let copyOfNodeModulesDestPath = "./public/node_modules";
 let distAppPath = path.join(basePath, "/.dist/hooks/client-web-server");
@@ -95,27 +95,33 @@ function extractBaseNodeModulePath(moduleName) {
     return rex.exec(require.resolve(moduleName))[0];
 }
 
+function getPipe(moduleName, glob) {
+    let modulePath = extractBaseNodeModulePath(moduleName);
+    let moduleBase = modulePath.slice(0, -(moduleName.length+1));
+    return gulp.src(modulePath + glob, {base: moduleBase});
+}
+
 gulp.task("client-web-server:copy-vendors-npm", function() {
-    return gulp.src([
-        extractBaseNodeModulePath("jquery") + "/dist/jquery.js",
-        extractBaseNodeModulePath("sprintf-js") + "/dist/sprintf.min.js",
-        extractBaseNodeModulePath("jquery-slimscroll") + "/jquery.slimscroll.min.js",
-        extractBaseNodeModulePath("angular") + "/angular.js",
-        extractBaseNodeModulePath("angular-ui-router") + "/release/angular-ui-router.js",
-        extractBaseNodeModulePath("angular-ui-bootstrap") + "/dist/**/*",
-        extractBaseNodeModulePath("socket.io-client") + "/dist/socket.io.slim.js",
-        extractBaseNodeModulePath("angular-socket-io") + "/socket.min.js",
-        extractBaseNodeModulePath("angular-daterangepicker") + "/js/angular-daterangepicker.min.js",
-        extractBaseNodeModulePath("angular-translate") + "/dist/angular-translate.js",
-        extractBaseNodeModulePath("ngstorage") + "/ngStorage.js",
-        extractBaseNodeModulePath("angular-masonry") + "/angular-masonry.js",
-        extractBaseNodeModulePath("angular-ui-tree") + "/dist/**/*",
-        extractBaseNodeModulePath("angular-oauth2") + "/dist/*.min.js",
-        extractBaseNodeModulePath("angular-toastr") + "/dist/**/*",
-        extractBaseNodeModulePath("awesome-bootstrap-checkbox") + "/awesome-bootstrap-checkbox.css",
-        extractBaseNodeModulePath("angular-cookies") + "/*.min.js",
-    ], {base: "node_modules"})
-        .pipe(gulp.dest(config.buildPath + "/vendors"))
+    return merge(
+        getPipe("jquery", "/dist/jquery.js"),
+        getPipe("sprintf-js", "/dist/sprintf.min.js"),
+        getPipe("jquery-slimscroll", "/jquery.slimscroll.min.js"),
+        getPipe("angular", "/angular.js"),
+        getPipe("angular-ui-router", "/release/angular-ui-router.js"),
+        getPipe("angular-ui-bootstrap", "/dist/**/*"),
+        getPipe("socket.io-client", "/dist/socket.io.slim.js"),
+        getPipe("angular-socket-io", "/socket.min.js"),
+        getPipe("angular-daterangepicker", "/js/angular-daterangepicker.min.js"),
+        getPipe("angular-translate", "/dist/angular-translate.js"),
+        getPipe("ngstorage", "/ngStorage.js"),
+        getPipe("angular-masonry", "/angular-masonry.js"),
+        getPipe("angular-ui-tree", "/dist/**/*"),
+        getPipe("angular-oauth2", "/dist/*.min.js"),
+        getPipe("angular-toastr", "/dist/**/*"),
+        getPipe("awesome-bootstrap-checkbox", "/awesome-bootstrap-checkbox.css"),
+        getPipe("angular-cookies", "/*.min.js")
+    )
+        .pipe(gulp.dest(config.buildPath + "/vendors"));
 });
 
 gulp.task("client-web-server:symlinks", gulp.parallel("client-web-server:copy-vendors-npm", "client-web-server:copy-vendors-local", function() {
@@ -188,7 +194,7 @@ gulp.task("client-web-server:build-less", function() {
         .pipe(gulp.dest(path.join(config.buildPath, "/css")));
 });
 
-gulp.task("client-web-server:build", gulp.series("client-web-server:symlinks", gulp.parallel("client-web-server:copy-vendors-npm", "client-web-server:build-less"), "client-web-server:inject-js"));
+gulp.task("client-web-server:build", gulp.series("client-web-server:symlinks", gulp.parallel("client-web-server:build-less", "client-web-server:inject-js")));
 gulp.task("client-web-server:watch", gulp.parallel("client-web-server:watch-less", "client-web-server:watch-public"));
 
 // -------------------------------------------
