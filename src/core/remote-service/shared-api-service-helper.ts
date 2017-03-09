@@ -5,6 +5,7 @@ import RemoteServiceHelper from "./remote-service-helper";
 import {System} from "../../system";
 import {ApiResponseError, ApiResponseNotFoundError} from "./response-error";
 let io = require('socket.io-client');
+import * as _ from "lodash";
 
 export class SharedApiServiceHelper extends RemoteServiceHelper {
 
@@ -17,21 +18,6 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
         this.loggerSocket = system.logger.getLogger('SharedApiServiceHelper:socket');
         this.io = io.connect(this.system.config.sharedApiUrl, {reconnect: true, rejectUnauthorized: false});
         this._apiReady = false;
-
-        // let self = this;
-        // self.io
-        //     .on('connect', function() {
-        //         self.loggerSocket.verbose("Connected to shared api server and listening");
-        //     })
-        //     .on('connect_error', function() {
-        //         self.loggerSocket.verbose("Unable to connect to shared api server socket, trying again..");
-        //     })
-        //     .on('connect_failed', function(err) {
-        //         self.loggerSocket.verbose("Connection failed", err);
-        //     })
-        //     .on("error", function(err) {
-        //         self.loggerSocket.verbose("Generic error", err);
-        //     });
     }
 
     initialize() {
@@ -71,7 +57,10 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
         return self.get("/ping")
             .catch(function(err) {
                 if (err.code === "ECONNREFUSED") {
-                    return self._tryToPing();
+                    return new Promise(function(resolve, reject) {
+                        // wait 1 second for next call
+                        setTimeout(() => self._tryToPing().then(resolve).catch(reject), 1000)
+                    });
                 } else {
                     throw err;
                 }
