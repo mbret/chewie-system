@@ -1,7 +1,7 @@
 "use strict";
 
 import {System} from "../system";
-import {Hook} from "./hooks";
+import {Hook} from "./hook";
 
 export interface HookConstructor {
     new(system: System): Hook;

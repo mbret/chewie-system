@@ -1,4 +1,3 @@
-import HookBoilerplate from "../core/hook-boilerplate";
 let fs = require('fs');
 let path = require('path');
 let async = require('async');
@@ -11,8 +10,8 @@ let async = require('async');
  * @param callback
  */
 export function getFolderSize(item, ignoreRegEx, callback) {
-    var cb;
-    var ignoreRegExp;
+    let cb;
+    let ignoreRegExp;
 
     if (!callback) {
         cb = ignoreRegEx;
@@ -23,7 +22,7 @@ export function getFolderSize(item, ignoreRegEx, callback) {
     }
 
     fs.lstat(item, function lstat(e, stats) {
-        var total = !e ? (stats.size || 0) : 0;
+        let total = !e ? (stats.size || 0) : 0;
 
         if (!e && stats.isDirectory()) {
             fs.readdir(item, function readdir(err, list) {

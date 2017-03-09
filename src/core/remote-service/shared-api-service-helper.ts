@@ -150,4 +150,161 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
                 throw err;
             });
     }
+
+    // findUserByUsername(username) {
+    //     return this.get(util.format("/users/%s", username))
+    //         .then(function(response) {
+    //             if(response.statusCode !== 200) {
+    //                 return null;
+    //             }
+    //             return response.body;
+    //         });
+    // }
+
+    // findAllTasksByUser(userId) {
+    //     return this.get(util.format("/users/%s/tasks", userId))
+    //         .then(function(response) {
+    //             if(response.statusCode !== 200) {
+    //                 return null;
+    //             }
+    //             return response.body;
+    //         });
+    // }
+
+    // findOrCreatePlugin(userId, pluginIdOrName, data) {
+    //     var self = this;
+    //     return this.findPlugin(userId, pluginIdOrName)
+    //         .then(function(plugin) {
+    //             if(!plugin) {
+    //                 return self.createPlugin(userId, data);
+    //             }
+    //             return plugin;
+    //         });
+    // }
+
+    // createOrUpdatePlugin(userId, pluginId, data) {
+    //     var self = this;
+    //     return this.findPlugin(userId, pluginId)
+    //         .then(function(plugin) {
+    //             if(!plugin) {
+    //                 return self.createPlugin(userId, data);
+    //             }
+    //             return self.updatePlugin(userId, pluginId, data);
+    //         });
+    // }
+
+    // updatePlugin(userId, pluginIdOrName, data) {
+    //     var self = this;
+    //     return self.put(util.format("/users/%s/plugins/%s", userId, pluginIdOrName), data)
+    //         .then(function(response) {
+    //             // We only should get 200 / 400
+    //             if(response.statusCode !== 200) {
+    //                 return Promise.reject(ApiResponseError.BuildErrorFromResponse(response));
+    //             }
+    //             return response.body;
+    //         });
+    // }
+
+    // createPlugin(userId, data) {
+    //     data.userId = userId;
+    //     return this.post(util.format("/users/%s/plugins", userId), data)
+    //         .then(function(response) {
+    //             // We only should get 201 / 400
+    //             if(response.statusCode !== 201) {
+    //                 return Promise.reject(ApiResponseError.BuildErrorFromResponse(response));
+    //             }
+    //             return response.body;
+    //         });
+    // }
+
+    // createUser(data) {
+    //     return this.post("/users", data)
+    //         .then(function(response) {
+    //             // We only should get 201 / 400
+    //             if(response.statusCode !== 201) {
+    //                 return Promise.reject(ApiResponseError.BuildErrorFromResponse(response));
+    //             }
+    //             return response.body;
+    //         });
+    // }
+
+    // findOrCreateUser(data) {
+    //     var self = this;
+    //     return this.findUserByUsername(data.username)
+    //         .then(function(user) {
+    //             if (!user) {
+    //                 return self.createUser(data);
+    //             }
+    //             return user;
+    //         });
+    // }
+
+    // findModuleByName(userId, pluginId, moduleName) {
+    //     return this.get(util.format("/users/%s/plugins/%s/modules/%s", userId, pluginId, moduleName))
+    //         .then(function(response) {
+    //             if(response.statusCode !== 200) {
+    //                 return null;
+    //             }
+    //             return response.body;
+    //         });
+    // }
+
+    /**
+     * @param userId
+     * @param pluginId
+     * @param moduleName
+     * @param data
+     * @returns {*}
+     */
+    // createTask: function(userId, pluginId, moduleName, data) {
+    //     data = data || {};
+    //     return this.post(util.format("/users/%s/plugins/%s/modules/%s/tasks", userId, pluginId, moduleName), data)
+    //         .then(function(response) {
+    //             // We only should get 201 / 400
+    //             if(response.statusCode !== 201) {
+    //                 return Promise.reject(ApiResponseError.BuildErrorFromResponse(response));
+    //             }
+    //             return response.body;
+    //         });
+    // },
+
+    /**
+     *
+     * @param userId
+     * @param pluginId
+     * @param moduleName
+     * @param data
+     */
+    // findOrCreateTask: function(userId, pluginId, moduleName, data) {
+    //     var self = this;
+    //     if ((data.name + "") === "") {
+    //         return Promise.reject(new Error("Invalid parameters, name required."));
+    //     }
+    //     return this.get(util.format("/users/%s/plugins/%s/modules/%s/tasks/%s", userId, pluginId, moduleName, data.name))
+    //         .then(function(response) {
+    //             if (response.statusCode === 404) {
+    //                 return self.createTask(userId, pluginId, moduleName, data);
+    //             }
+    //             return response.body;
+    //         });
+    // },
+
+    /**
+     *
+     * @param userId
+     * @param pluginId
+     * @param moduleId
+     * @param data
+     * @returns {*}
+     */
+    // updateOrCreateTask: function(userId, pluginId, moduleId, data) {
+    //     var self = this;
+    //     return this.put(util.format("/users/%s/plugins/%s/modules/%s/tasks/%s", userId, pluginId, moduleId, data))
+    //         .then(function(response) {
+    //             if (response.statusCode === 404) {
+    //                 return self.createTask(userId, pluginId, moduleId, data);
+    //             }
+    //             return response.body;
+    //         })
+    // }
 }

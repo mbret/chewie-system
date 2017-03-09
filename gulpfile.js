@@ -45,27 +45,26 @@ let config = {
         "vendors/sprintf-js/dist/sprintf.min.js",
         "vendors/jquery/dist/jquery.js",
         "vendors/jquery-slimscroll/jquery.slimscroll.min.js",
-        // "vendors/angular/angular.js",
-        // "vendors/angular-ui-router/release/angular-ui-router.js",
-        // "vendors/angular-logger/dist/angular-logger.min.js",
-        // "vendors/angular-messages/angular-messages.js",
-        // "vendors/angular-bootstrap/ui-bootstrap-tpls.js",
-        // "vendors/socket.io-client/dist/socket.io.slim.js",
-        // "vendors/angular-socket-io/socket.min.js",
-        // "vendors/iCheck/icheck.js",
-        // "vendors/masonry/dist/masonry.pkgd.min.js",
-        // "vendors/bootstrap-daterangepicker/daterangepicker.js",
-        // "vendors/angular-daterangepicker/js/angular-daterangepicker.min.js",
-        // "vendors/angular-socket-io/*.min.js",
-        // "vendors/angular-toastr/dist/*.min.js",
-        // "vendors/angular-translate/*.min.js",
-        // "vendors/angular-oauth2/dist/*.min.js",
-        // "vendors/angular-cookies/*.min.js",
+        "vendors/angular/angular.js",
+        "vendors/angular-ui-router/release/angular-ui-router.js",
+        "vendors/angular-messages/angular-messages.js",
+        "vendors/angular-ui-bootstrap/dist/ui-bootstrap.js",
+        "vendors/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js",
+        "vendors/socket.io-client/dist/socket.io.slim.js",
+        "vendors/angular-socket-io/socket.min.js",
+        "vendors/iCheck/icheck.js",
+        "vendors/masonry/dist/masonry.pkgd.min.js",
+        "vendors/bootstrap-daterangepicker/daterangepicker.js",
+        "vendors/angular-daterangepicker/js/angular-daterangepicker.min.js",
+        "vendors/angular-toastr/dist/*.min.js",
+        "vendors/angular-translate/dist/angular-translate.js",
+        "vendors/angular-oauth2/dist/*.min.js",
+        "vendors/angular-cookies/*.min.js",
         // "vendors/query-string/*.js",
-        // "vendors/angular-logger/dist/*.min.js",
-        // "vendors/angular-ui-tree/dist/angular-ui-tree.js",
-        // "vendors/angular-masonry/angular-masonry.js",
-        // "vendors/ngstorage/ngStorage.js"
+        "vendors/angular-logger/dist/*.min.js",
+        "vendors/angular-ui-tree/dist/angular-ui-tree.js",
+        "vendors/angular-masonry/angular-masonry.js",
+        "vendors/ngstorage/ngStorage.js"
     ]
 };
 
@@ -76,16 +75,42 @@ let config = {
 //
 // -------------------------------------------
 
+//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/angular-cookies.js
+gulp.task("client-web-server:copy-vendors-local", function() {
+    return gulp.src([
+        config.srcAppPath + "/public/vendors/angular-logger/dist/**/*",
+        config.srcAppPath + "/public/vendors/angular-messages/angular-messages.js",
+        config.srcAppPath + "/public/vendors/iCheck/**/*",
+        config.srcAppPath + "/public/vendors/masonry/dist/**/*",
+        config.srcAppPath + "/public/vendors/bootstrap-daterangepicker/**/*",
+    ], {base: config.srcAppPath + "/public/vendors"})
+        .pipe(gulp.dest(config.buildPath + "/vendors"))
+});
+
 gulp.task("client-web-server:copy-vendors-npm", function() {
     return gulp.src([
         "node_modules/jquery/dist/jquery.js",
         "node_modules/sprintf-js/dist/sprintf.min.js",
         "node_modules/jquery-slimscroll/jquery.slimscroll.min.js",
+        "node_modules/angular/angular.js",
+        "node_modules/angular-ui-router/release/angular-ui-router.js",
+        "node_modules/angular-ui-bootstrap/dist/**/*",
+        "node_modules/socket.io-client/dist/socket.io.slim.js",
+        "node_modules/angular-socket-io/socket.min.js",
+        "node_modules/angular-daterangepicker/js/angular-daterangepicker.min.js",
+        "node_modules/angular-translate/dist/angular-translate.js",
+        "node_modules/ngstorage/ngStorage.js",
+        "node_modules/angular-masonry/angular-masonry.js",
+        "node_modules/angular-ui-tree/dist/**/*",
+        "node_modules/angular-oauth2/dist/*.min.js",
+        "node_modules/angular-toastr/dist/**/*",
+        "node_modules/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css",
+        "node_modules/angular-cookies/*.min.js",
     ], {base: "node_modules"})
         .pipe(gulp.dest(config.buildPath + "/vendors"))
 });
 
-gulp.task("client-web-server:symlinks", gulp.parallel("client-web-server:copy-vendors-npm", function() {
+gulp.task("client-web-server:symlinks", gulp.parallel("client-web-server:copy-vendors-npm", "client-web-server:copy-vendors-local", function() {
     return gulp.src([
         "public/resources",
     ], {

@@ -1,4 +1,7 @@
 {
+  "include": [
+      "src/**/*"
+  ],
   "exclude": [
     "typings/index.d.ts",
     "node_modules"

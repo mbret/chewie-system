@@ -53,7 +53,8 @@ export function customResponses(req, res, next){
 
         // Handle Error object
         if(err instanceof Error) {
-            errResponse = _.merge(errResponse, {message: err.message, data: {stack: err.stack, code: err.code}});
+            let error: any = err; // workaround for 'code' property
+            errResponse = _.merge(errResponse, {message: error.message, data: {stack: error.stack, code: error.code}});
         }
 
         if(_.isString(err)) {

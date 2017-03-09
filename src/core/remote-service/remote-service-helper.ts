@@ -161,7 +161,7 @@ class RemoteServiceHelper extends EventEmitter {
     }
 }
 
-_.mixin(RemoteServiceHelper.prototype, require('./services/services').prototype);
-_.mixin(RemoteServiceHelper.prototype, require('./services/tasks').prototype);
+// _.mixin(RemoteServiceHelper.prototype, require('./services/services').prototype);
+// _.mixin(RemoteServiceHelper.prototype, require('./services/tasks').prototype);
 
 export default RemoteServiceHelper;

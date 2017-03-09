@@ -3,10 +3,11 @@
 var _ = require('lodash');
 // var google = require('googleapis');
 var util= require('util');
-import * as validator from "validator";
+import * as nodeValidator from "validator";
 
 module.exports = function(server, router){
 
+    let validator: any = nodeValidator; // workaround typescript because of redefinition
     var self = server;
     var UserDao = server.orm.models.User;
 
