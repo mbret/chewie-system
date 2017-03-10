@@ -1,0 +1,53 @@
+{
+  "name": "chewie-plugin-seed",
+  "version": "1.0.0",
+  "description": "A starter base for your plugin",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .dev/index.js",
+    "start:debug": "cross-env DEBUG=chewie* node .dev/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbret/chewie-plugin-seed.git"
+  },
+  "keywords": [
+    "chewie",
+    "plugin"
+  ],
+  "author": "John Doe",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^2.6.1",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "cross-env": "^3.1.4",
+    "chewie-system": "https://github.com/mbret/chewie-system"
+  },
+  "chewie": {
+    "modules": [
+      {
+        "id": "printDate",
+        "module": "./src/task-print-date.js",
+        "name": "Print the date to the console",
+        "type": "task"
+      },
+      {
+        "id": "timeout",
+        "module": "./src/trigger-timeout.js",
+        "name": "Wait for",
+        "type": "trigger",
+        "optionsConfig": [
+          {
+            "name": "timeout",
+            "label": "Timeout",
+            "type": "text",
+            "required": true
+          }
+        ]
+      }
+    ]
+  }
+}

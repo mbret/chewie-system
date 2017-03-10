@@ -242,7 +242,9 @@ export default class ScenarioReadable extends EventEmitter {
             .then(function(container) {
 
                 // add to global storage
-                self.system.modules.set(self.getRuntimeModuleKey(scenario.executionId, node.id, moduleUniqueId), container);
+                let uniqueId = self.getRuntimeModuleKey(scenario.executionId, node.id, moduleUniqueId);
+                self.logger.debug("New module container registered with key [%s]", uniqueId);
+                self.system.modules.set(uniqueId, container);
 
                 return self.readNodes(scenario, node.nodes, options);
             });
@@ -268,7 +270,7 @@ export default class ScenarioReadable extends EventEmitter {
         if (!container || !container.isMounted()) {
             return Promise.reject("Plugin " + pluginId + " is not running");
         }
-        self.logger.debug("Load module instance from plugin %s", container.plugin.name);
+        self.logger.debug("Load new module [%s] instance from plugin [%s]", moduleId, pluginId);
         return self.system.moduleLoader.loadModule(container, moduleId);
     }
 }

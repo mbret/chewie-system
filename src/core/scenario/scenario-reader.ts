@@ -8,6 +8,7 @@ import ScenarioReadable from "./scenario-readable";
 import {PluginsLoader} from "../plugins/plugins-loader";
 const Semaphore = require('semaphore');
 import {debug as hookDebug} from "../../shared/debug";
+import {PluginContainer} from "../plugins/plugin-container";
 let debug = hookDebug("scenarios:reader");
 // let queue = require('queue');
 
@@ -63,11 +64,13 @@ export class ScenarioReader {
             semaphore.take(function() {
                 Promise.resolve(null)
                     // Ensure plugins are loaded if option is set
+                    // After that part if the plugins are not mounted it means they have been stopped after scenario start
+                    // so we should not continue starting scenario
                     .then(function() {
                         self.logger.debug("Ensure plugins are loaded or load it if needed");
                         return self.loadPlugins(scenario);
                     })
-                    .then(function() {
+                    .then(function(plugins: Array<PluginContainer>) {
                         return Promise.resolve()
                             // execute each node
                             // Once they are all registered and loaded
@@ -209,13 +212,7 @@ export class ScenarioReader {
                         if (!plugin) {
                             throw new SystemError("Plugin " + id + " does not exist, the scenario can not be started.", SystemError.ERROR_CODE_PLUGIN_MISSING);
                         }
-                        return self.pluginsLoader.mount(plugin)
-                            .catch(function(err) {
-                                if (err.code === SystemError.ERROR_CODE_PLUGIN_ALREADY_MOUNTED) {
-                                    return Promise.resolve();
-                                }
-                                throw err;
-                            });
+                        return self.pluginsLoader.mount(plugin);
                     })
             )
         });

@@ -126,7 +126,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
                     // handle specific listen errors with friendly messages
                     switch (error.code) {
                         case 'EADDRINUSE':
-                            self.logger.error("It seems that something is already running on port %s. The web server will not be able to start. Maybe a chewie app is already started ?", port);
+                            self.logger.error("It seems that something is already running on port %s. The api server will not be able to start. Maybe a chewie app is already started ?", port);
                             break;
                         default:
                             break;
