@@ -24,7 +24,7 @@
         // scenario node
         $scope.formData = {
             name: item.name,
-            pluginId: item.pluginId, // not null because we are not root (ex console-logger)
+            pluginSelected: null,
             type: item.type, // trigger / task
             moduleId: item.moduleId, // not null because we are not root (ex log)
             id: item.id,
@@ -34,11 +34,16 @@
             autoStart: null
         };
 
+        if (item.pluginId) {
+            $scope.formData.pluginSelected = item.type + "-" + item.pluginId;
+        }
+
         $scope.cancel = function() {
             $uibModalInstance.dismiss('cancel');
         };
 
         $scope.selectPlugin = function(type) {
+            // unselect the module
             $scope.formData.moduleId = null;
             $scope.formData.type = type;
             if (type === "trigger") {
@@ -63,8 +68,10 @@
             if (form.$valid) {
                 // use default values if needed
                 let data = _.extend({}, $scope.formData, {
+                    pluginId: $scope.formData.pluginSelected.substr(($scope.formData.type + "-").length),
                     name: $scope.formData.name || ($scope.formData.type === "task" ? $scope.taskSelected.name : $scope.triggerSelected.name)
                 });
+                delete data.pluginSelected;
                 $uibModalInstance.close(data);
             }
         };
@@ -103,11 +110,11 @@
         function getModules(type) {
             if (type === "trigger") {
                 return _.filter($scope.triggers, function(trigger) {
-                    return trigger.plugin.name === $scope.formData.pluginId;
+                    return trigger.plugin.name === $scope.formData.pluginSelected.substr("trigger-".length);
                 });
             } else {
                 return _.filter($scope.tasks, function(module) {
-                    return module.plugin.name === $scope.formData.pluginId;
+                    return module.plugin.name === $scope.formData.pluginSelected.substr("task-".length);
                 });
             }
         }
