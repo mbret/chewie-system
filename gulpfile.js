@@ -9,7 +9,8 @@ let path = require("path");
 const inject = require('gulp-inject');
 const series = require('stream-series');
 let argv = require('yargs').argv;
-
+const _ = require("lodash");
+const merge = require("merge-stream");
 let basePath = __dirname;
 let copyOfNodeModulesDestPath = "./public/node_modules";
 let distAppPath = path.join(basePath, "/.dist/hooks/client-web-server");
@@ -87,27 +88,40 @@ gulp.task("client-web-server:copy-vendors-local", function() {
         .pipe(gulp.dest(config.buildPath + "/vendors"))
 });
 
+// find the root path of node_module module
+// C:\Users\mbret\Workspace\chewie-system\node_modules\gulp-cli\bin\gulp.js => C:\Users\mbret\Workspace\chewie-system\node_modules\gulp-cli
+function extractBaseNodeModulePath(moduleName) {
+    let rex = new RegExp("(.+)" + _.escapeRegExp(path.sep + "node_modules" + path.sep + moduleName), "g");
+    return rex.exec(require.resolve(moduleName))[0];
+}
+
+function getPipe(moduleName, glob) {
+    let modulePath = extractBaseNodeModulePath(moduleName);
+    let moduleBase = modulePath.slice(0, -(moduleName.length+1));
+    return gulp.src(modulePath + glob, {base: moduleBase});
+}
+
 gulp.task("client-web-server:copy-vendors-npm", function() {
-    return gulp.src([
-        "node_modules/jquery/dist/jquery.js",
-        "node_modules/sprintf-js/dist/sprintf.min.js",
-        "node_modules/jquery-slimscroll/jquery.slimscroll.min.js",
-        "node_modules/angular/angular.js",
-        "node_modules/angular-ui-router/release/angular-ui-router.js",
-        "node_modules/angular-ui-bootstrap/dist/**/*",
-        "node_modules/socket.io-client/dist/socket.io.slim.js",
-        "node_modules/angular-socket-io/socket.min.js",
-        "node_modules/angular-daterangepicker/js/angular-daterangepicker.min.js",
-        "node_modules/angular-translate/dist/angular-translate.js",
-        "node_modules/ngstorage/ngStorage.js",
-        "node_modules/angular-masonry/angular-masonry.js",
-        "node_modules/angular-ui-tree/dist/**/*",
-        "node_modules/angular-oauth2/dist/*.min.js",
-        "node_modules/angular-toastr/dist/**/*",
-        "node_modules/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css",
-        "node_modules/angular-cookies/*.min.js",
-    ], {base: "node_modules"})
-        .pipe(gulp.dest(config.buildPath + "/vendors"))
+    return merge(
+        getPipe("jquery", "/dist/jquery.js"),
+        getPipe("sprintf-js", "/dist/sprintf.min.js"),
+        getPipe("jquery-slimscroll", "/jquery.slimscroll.min.js"),
+        getPipe("angular", "/angular.js"),
+        getPipe("angular-ui-router", "/release/angular-ui-router.js"),
+        getPipe("angular-ui-bootstrap", "/dist/**/*"),
+        getPipe("socket.io-client", "/dist/socket.io.slim.js"),
+        getPipe("angular-socket-io", "/socket.min.js"),
+        getPipe("angular-daterangepicker", "/js/angular-daterangepicker.min.js"),
+        getPipe("angular-translate", "/dist/angular-translate.js"),
+        getPipe("ngstorage", "/ngStorage.js"),
+        getPipe("angular-masonry", "/angular-masonry.js"),
+        getPipe("angular-ui-tree", "/dist/**/*"),
+        getPipe("angular-oauth2", "/dist/*.min.js"),
+        getPipe("angular-toastr", "/dist/**/*"),
+        getPipe("awesome-bootstrap-checkbox", "/awesome-bootstrap-checkbox.css"),
+        getPipe("angular-cookies", "/*.min.js")
+    )
+        .pipe(gulp.dest(config.buildPath + "/vendors"));
 });
 
 gulp.task("client-web-server:symlinks", gulp.parallel("client-web-server:copy-vendors-npm", "client-web-server:copy-vendors-local", function() {
@@ -180,7 +194,7 @@ gulp.task("client-web-server:build-less", function() {
         .pipe(gulp.dest(path.join(config.buildPath, "/css")));
 });
 
-gulp.task("client-web-server:build", gulp.series("client-web-server:symlinks", gulp.parallel("client-web-server:copy-vendors-npm", "client-web-server:build-less", "client-web-server:inject-js")));
+gulp.task("client-web-server:build", gulp.series("client-web-server:symlinks", gulp.parallel("client-web-server:build-less", "client-web-server:inject-js")));
 gulp.task("client-web-server:watch", gulp.parallel("client-web-server:watch-less", "client-web-server:watch-public"));
 
 // -------------------------------------------

@@ -22,6 +22,7 @@ chewie.start({
         "pluginsLocalRepositoryDir": "./../plugins",
         "hooks": {
             // "client-web-server": false,
+            // "shared-server-api": false,
             // "scenarios": false,
             // "plugins": false,
             // "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
@@ -30,7 +31,6 @@ chewie.start({
             //     // required because of symlink
             //     modulePath: __dirname + "/node_modules/chewie-hook-thirdparty-auth-provider"
             // },
-            // "shared-server-api": false,
             // "shared-server-api": {
             //     "config": {
             //         "sharedDatabase": {

@@ -20,12 +20,14 @@ class Repository extends EventEmitter {
     system: System;
     logger: any;
     npmPath: string;
+    yarnPath: string;
 
     constructor(system) {
         super();
         this.logger = system.logger.getLogger('Repository');
         this.system = system;
         this.npmPath = which.sync('npm');
+        this.yarnPath = which.sync('yarn');
     }
 
     /**
@@ -55,7 +57,7 @@ class Repository extends EventEmitter {
                 // then check if a plugin is already synchronized
                 return self.pluginExistByDir(dest)
                     .then(function(stat) {
-                        // @todo for now ignore existance, always force synchronize
+                        // @todo for now ignore existence, always force synchronize
                         // try to read .chewieignore
                         return new Promise(function(resolve, reject) {
                             fs.readFile(path.resolve(pluginDir, ".chewieignore"), "utf8", function(err, chewieIgnorePattern) {
@@ -63,7 +65,7 @@ class Repository extends EventEmitter {
                                 // Copy local plugin dir into plugin tmp dir
                                 // This directory contain the plugin from all source (local, remote, etc)
                                 // They will also be npm installed to get all required dependencies
-                                let glob = ["**/**", "!node_modules/**"];
+                                let glob = ["**/**", "!node_modules/**", "!.git/**"];
                                 if (chewieIgnorePattern) {
                                     glob = glob.concat(ignored(chewieIgnorePattern).map((item) => "!" + item));
                                 }
@@ -95,7 +97,8 @@ class Repository extends EventEmitter {
 
     npmInstall(pluginDir) {
         let self = this;
-        const ls = child_process.spawn(this.npmPath, ["install", "--only=production"], { cwd: pluginDir });
+        // yarn is way more fast than npm
+        const ls = child_process.spawn(this.yarnPath, ["install", "--only=production"], { cwd: pluginDir });
 
         ls.stdout.on('data', (data) => {
             //self.logger.debug(`stdout: ${data}`);

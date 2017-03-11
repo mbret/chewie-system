@@ -68,18 +68,22 @@ export default class ClientWebServer extends Hook implements HookInterface {
         // wait for proxy server before listening web client server
         proxyServer.listen(proxyServerPort)
             .on("error", function(err) {
-                if (err.code === "EADDRINUSE") {
-                    self.logger.error("It seems that something is already running on port %s. The proxy will not be able to start. Maybe a chewie app is already started ?", proxyServerPort);
-                } else {
-                    self.logger.error("Error while starting proxy server", err);
-                }
+                self.logger.error("Error while starting proxy server", err);
             })
-            // little hack, proxy-http does not expose server via api (officially)
-            ._server.on("listening", function() {
-                self.logger.debug('Proxy server listening');
-                // then start client web server
-                server.listen(self.system.config.webServerPort);
-            });
+            ._server
+                .on("error", function(err) {
+                    if (err.code === "EADDRINUSE") {
+                        self.logger.error("It seems that something is already running on port %s. The proxy will not be able to start. Maybe a chewie app is already started ?", proxyServerPort);
+                    } else {
+                        self.logger.error("Error while starting proxy server", err);
+                    }
+                })
+                // little hack, proxy-http does not expose server via api (officially)
+                .on("listening", function() {
+                    self.logger.debug('Proxy server listening');
+                    // then start client web server
+                    server.listen(self.system.config.webServerPort);
+                });
 
         server
             .on('listening', function () {
