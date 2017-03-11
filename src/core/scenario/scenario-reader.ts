@@ -84,7 +84,7 @@ export class ScenarioReader {
 
                                 // function on event task:stop
                                 // We check if the scenario should stop
-                                let onTaskStop = () => {
+                                let onTaskStop = function() {
                                     if (!scenarioReadable.hasRunningTasks()) {
                                         // no more running task, we should stop the scenario
                                         self.logger.verbose("[scenario:%s] event task:stop intercepted, there are no more task running, automatically stopping the scenario.", scenario.id);
@@ -101,7 +101,7 @@ export class ScenarioReader {
                                     } else {
                                         self.logger.verbose("[scenario:%s] event task:stop intercepted, there are still some tasks running", scenario.id);
                                     }
-                                };
+                                }
                                 // listen for the last task being ran and stop the scenario if needed
                                 scenarioReadable.on("task:stop", onTaskStop);
 

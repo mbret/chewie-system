@@ -154,7 +154,7 @@ export default class ScenarioReadable extends EventEmitter {
                     }
                     // "module forgot to shutdown" security
                     else if (self.state !== ScenarioReadable.STATE_RUNNING) {
-                        self.logger.warn("The module '%s' from plugin '%s' tried to call the taskDoneCallback too late, the scenario is already stopped.", node.moduleId, node.pluginId);
+                        self.logger.warn("The module [%s] from plugin '%s' tried to call the taskDoneCallback too late, the scenario is already stopped.", node.moduleId, node.pluginId);
                     }
                     else {
                         debug("scenario:" + self.executionId)("(%s) module [%s] from plugin [%s] called the \"done\" callback", module.moduleInfo.type, module.moduleInfo.id, node.pluginId);

@@ -11,3 +11,7 @@
 For more information go to [chewie](https://github.com/mbret/chewie) home page.
 
 run pm2 for dev on linux: pm2 start "/usr/local/bin/npm" --name "chewie-system" -- run start-dev
+
+
+## How to run the system
+You can run the system and test your development by using the dev app located in .dev/
