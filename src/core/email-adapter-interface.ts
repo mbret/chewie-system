@@ -1,0 +1,6 @@
+/**
+ * Interface EmailAdapterInterface
+ */
+interface EmailAdapterInterface {
+
+}

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 // Ensure we're in the project directory, so cwd-relative paths work as expected
 // no matter where we actually lift from.
@@ -21,11 +21,12 @@ chewie.start({
         },
         "pluginsLocalRepositoryDir": "./../plugins",
         "hooks": {
-            // "client-web-server": false,
+            "client-web-server": false,
             // "shared-server-api": false,
-            // "scenarios": false,
-            // "plugins": false,
+            "scenarios": false,
+            "plugins": false,
             // "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
+            "chewie-hook-gmail": { modulePath: __dirname + "/../hooks/chewie-hook-gmail" },
             // "chewie-hook-seed": { modulePath: "C:/Users/mbret/Workspace/chewie-hook-seed" },
             // "chewie-hook-thirdparty-auth-provider": {
             //     // required because of symlink
