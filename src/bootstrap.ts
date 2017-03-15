@@ -5,6 +5,7 @@ import * as path from "path";
 import {debug} from "./shared/debug";
 import {HookHelper} from "./core/hook-helper";
 import {SystemError} from "./core/error";
+import {HookContainer} from "./core/hook-container";
 
 export class Bootstrap {
 
@@ -97,10 +98,10 @@ export class Bootstrap {
                 try { hookModule = require(modulePath); } catch(err) {
                     // @WARING DEV: MODULE_NOT_FOUND may appears on core module if one of its dependency is not installed (and will throw false error)
                     if (err.code !== "MODULE_NOT_FOUND") { throw err; }
-                    let userModulePath = path.resolve(self.system.config.appPath, "node_modules", name);
+                    modulePath = path.resolve(self.system.config.appPath, "node_modules", name);
                     // if core hook does not exist we try to load node_module  hook
-                    debug("hooks")("The hook %s does not seems to be a core module so we try to load as node dependency with require(\"%s\")", name, userModulePath);
-                    try { hookModule = require(userModulePath); } catch(err) {
+                    debug("hooks")("The hook %s does not seems to be a core module so we try to load as node dependency with require(\"%s\")", name, modulePath);
+                    try { hookModule = require(modulePath); } catch(err) {
                         if (err.code !== "MODULE_NOT_FOUND") {
                             throw err;
                         } else {
@@ -111,17 +112,19 @@ export class Bootstrap {
                 }
             }
 
+            let userOptions = {};
+
             // we pass the user config to the hook so it can override its own config
             hookModule.prototype.initialize = hookModule.prototype.initialize || (() => Promise.resolve());
             hookModule.prototype.shutdown = hookModule.prototype.shutdown || (() => Promise.resolve());
 
-            let hook = new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name));
+            let hook = new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name), userOptions);
             self.system.registerTaskOnShutdown((cb) => {
                 hook.shutdown()
                     .then(() => cb())
                     .catch(cb);
             });
-            self.system.hooks[name] = hook;
+            self.system.hooks[name] = new HookContainer(hook, require(modulePath + "/package.json"));
             promises.push(
                 hook.initialize()
                     .then(function() {

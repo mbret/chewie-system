@@ -188,6 +188,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
         server.orm.models.Scenario = require(modelsPath + '/scenario')(server.orm.sequelize, server);
         server.orm.models.Notification = require(modelsPath + '/notification')(server.orm.sequelize, server);
         server.orm.models.HookData = require(modelsPath + '/hook-data').define(server.orm.sequelize, server);
+        server.orm.models.HookOption = require(modelsPath + '/hook-option').define(server.orm.sequelize, server);
 
         // server.orm.models.User.hasMany(server.orm.models.Plugins);
         server.orm.models.User.hasMany(server.orm.models.Task);

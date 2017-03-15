@@ -21,7 +21,7 @@ chewie.start({
         },
         "pluginsLocalRepositoryDir": "./../plugins",
         "hooks": {
-            "client-web-server": false,
+            // "client-web-server": false,
             // "shared-server-api": false,
             "scenarios": false,
             "plugins": false,

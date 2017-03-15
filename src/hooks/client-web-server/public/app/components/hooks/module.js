@@ -12,19 +12,19 @@
                 url: '/hooks',
                 abstract: true,
                 controller: 'ModulesController',
-                templateUrl: '/app/components/modules/index.html'
+                templateUrl: '/app/components/hooks/index.html'
             })
 
             .state('dashboard.hooks.list', {
                 url: '/list',
-                controller: 'ModulesController',
-                templateUrl: '/app/components/modules/list.html'
+                controller: 'HooksListController',
+                templateUrl: '/app/components/hooks/list.html'
             })
 
             .state('dashboard.hooks.config', {
                 url: '/:id/configuration',
-                templateUrl: '/app/components/modules/config.html',
-                controller: 'ModulesConfigController'
+                templateUrl: '/app/components/hooks/config.html',
+                controller: 'HooksConfigController'
             })
     });
 })();
