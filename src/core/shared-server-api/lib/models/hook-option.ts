@@ -34,8 +34,9 @@ export function define(sequelize) {
     );
 }
 
-export class HookOptionStorageModel {
+export class HookConfigStorageModel {
     id: number;
     deviceId: string;
+    hookName: string;
     data: any;
 }

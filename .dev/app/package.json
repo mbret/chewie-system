@@ -4,6 +4,7 @@
     "start:debug": "cross-env DEBUG=chewie* node index.js"
   },
   "dependencies": {
+    "chewie-hook-gmail-adapter": "git+https://github.com/mbret/chewie-hook-gmail-adapter.git",
     "cross-env": "^3.1.4"
   }
 }

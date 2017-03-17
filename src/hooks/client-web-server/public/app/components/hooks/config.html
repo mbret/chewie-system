@@ -9,7 +9,7 @@
                     <div class="ibox-tools"></div>
                 </div>
                 <div class="ibox-content">
-                    <form method="get" class="" ng-submit="submit()">
+                    <form method="get" class="" name="form" ng-submit="submit(form)">
                         {{formData.options}}
                         <module-form-options config-options="hook.packageInfo.chewie.configOptions" ng-model="formData.options"></module-form-options>
 

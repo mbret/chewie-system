@@ -9,11 +9,25 @@ const chewie = require("chewie-system");
 // Start the system
 chewie.start({
     settings: {
-        // bootstrap: function(chewie, done) {
-        //     chewie.repositoriesHelper.reinstallPluginFromDisk(__dirname + "/../plugins/facebook-logger")
-        //         .then(() => done())
-        //         .catch(done);
-        // },
+        bootstrap: function(chewie, done) {
+            // chewie.repositoriesHelper.reinstallPluginFromDisk(__dirname + "/../plugins/facebook-logger")
+            //     .then(() => done())
+            //     .catch(done);
+
+            chewie.on("ready", function() {
+                chewie.email.send({
+                    from: '"Fred Foo 👻" <foo@blurdybloop.com>', // sender address
+                    to: 'xmax54@gmail.com', // list of receivers
+                    subject: 'Hello ✔', // Subject line
+                    text: 'Hello world ?', // plain text body
+                    html: '<b>Hello world ?</b>' // html body
+                }, function(err, res) {
+                    console.log("err", err, "res", res);
+                });
+            });
+
+            done();
+        },
         "alwaysSynchronizePlugins": true,
         "system": {
             "tmpDir": "./.chewie/.tmp",
@@ -26,7 +40,7 @@ chewie.start({
             "scenarios": false,
             "plugins": false,
             // "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
-            "chewie-hook-gmail": { modulePath: __dirname + "/../hooks/chewie-hook-gmail" },
+            // "chewie-hook-gmail-adapter": { modulePath: __dirname + "/../hooks/chewie-hook-gmail-adapter" },
             // "chewie-hook-seed": { modulePath: "C:/Users/mbret/Workspace/chewie-hook-seed" },
             // "chewie-hook-thirdparty-auth-provider": {
             //     // required because of symlink

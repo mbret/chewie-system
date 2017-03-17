@@ -9,7 +9,7 @@ import path = require('path');
 let queue = require('queue');
 let packageInfo = require(__dirname + '/../package.json');
 import ip  = require('ip');
-import { EventEmitter }  from "events";
+import {EventEmitter}  from "events";
 import * as ServerCommunication from "./core/server-communication/index";
 import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
@@ -27,6 +27,8 @@ import {ModuleContainer} from "./core/plugins/modules/module-container";
 import {PluginsHelper} from "./core/plugins/plugins-helper";
 import {debug} from "./shared/debug";
 import {RepositoriesHelper} from "./core/repositories/repositories-helper";
+import SharedServerApiHook from "./core/shared-server-api/lib/server";
+import {EmailAdapter} from "./core/email-adapter";
 
 /**
  * System is the main program daemon.
@@ -34,8 +36,10 @@ import {RepositoriesHelper} from "./core/repositories/repositories-helper";
  */
 export class System extends EventEmitter {
 
-    // runtime: Runtime;
+    // static config (available at system creation)
     config: any;
+    // dynamic config (available after api ready)
+    userOptions: any;
     communicationBus: ServerCommunication.CommunicationBus;
     scenarioReader: ScenarioReader;
     moduleLoader: ModuleLoader;
@@ -53,6 +57,8 @@ export class System extends EventEmitter {
     shuttingDown: boolean;
     id: string;
     name: string;
+    email: EmailAdapterInterface;
+    sharedApiServer: SharedServerApiHook;
     public pluginsHelper: PluginsHelper;
     public repositoriesHelper: RepositoriesHelper;
     protected shutdownQueue: any;
@@ -77,6 +83,7 @@ export class System extends EventEmitter {
         this.garbageCollector = new GarbageCollector(this);
         this.pluginsHelper = new PluginsHelper(this);
         this.repositoriesHelper = new RepositoriesHelper(this);
+        this.email = new EmailAdapter(this);
     }
 
     /**
@@ -124,6 +131,7 @@ export class System extends EventEmitter {
                 self.repository = new repositories.Repository(self);
                 self.scenarioReader = new ScenarioReader(self);
                 self.moduleLoader = new ModuleLoader(self);
+                self.sharedApiServer = new SharedServerApiHook(self);
 
                 self.init(function(err){
                     return cb(err);
@@ -170,6 +178,10 @@ export class System extends EventEmitter {
 
     public registerTaskOnShutdown(fn: Function) {
         this.shutdownQueue.push(fn);
+    }
+
+    public registerEmailAdapter(instance) {
+        this.email = instance;
     }
 
     private init(cb) {

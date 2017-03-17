@@ -4,11 +4,10 @@
     angular
         .module('components.hooks')
 
-        .controller('HooksConfigController', function($scope, $http, $uibModal, apiService, APP_CONFIG, $log, sharedApiService, $stateParams, notificationService){
+        .controller('HooksConfigController', function($scope, $http, $uibModal, apiService, APP_CONFIG, $log, sharedApiService, $stateParams, notificationService, _){
 
             let id = $stateParams.id;
             $scope.hook = null;
-            $scope.options = [];
             $scope.name = id;
             $scope.formData = {
                 options: {}
@@ -20,7 +19,7 @@
                     // retrieve config of hook
                     return sharedApiService.get("/devices/" + APP_CONFIG.systemId + "/hooks-config/" + id)
                         .then(function(data) {
-                            console.log(data);
+                            $scope.formData.options = data.data;
                         })
                         .catch(function(err) {
                             if (err.status === 404) {
@@ -34,39 +33,18 @@
                     console.error(err);
                 });
 
+            $scope.submit = function(form) {
+                if (form.$valid) {
+                    let data = {
+                        options: $scope.formData.options
+                    };
 
-            // tasksService.getModule(id).then(function(data){
-            //     $scope.module = data;
-            //
-            //     // extract options
-            //     _.forEach($scope.module.config.options, function(entry){
-            //         var option = entry;
-            //
-            //         // get possible value of this option
-            //         if($scope.module.userOptions[option.name]){
-            //             option.value = $scope.module.userOptions[option.name];
-            //         }
-            //
-            //         $scope.options.push(option);
-            //     });
-            // });
-
-            $scope.submit = function() {
-                var options = {};
-
-                _.forEach($scope.options, function(option){
-                    options[option.name] = option.value;
-                });
-
-                var data = {
-                    options: options
-                };
-
-                tasksService
-                    .updateModuleOptions(id, data)
-                    .then(function(){
-                        notificationService.success('Saved');
-                    });
+                    sharedApiService.put("/devices/" + APP_CONFIG.systemId + "/hooks-config/" + id, data)
+                        .then(function(){
+                            notificationService.success('Saved');
+                        })
+                        .catch(console.error);
+                }
             };
         });
 })();

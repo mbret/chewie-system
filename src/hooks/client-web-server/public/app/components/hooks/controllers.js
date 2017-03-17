@@ -6,9 +6,5 @@
 
         .controller('ModulesController', function($scope, $http, $uibModal, APP_CONFIG, $log, tasksService, notificationService){
 
-            $scope.modules = [];
-
-
-
         })
 })();
