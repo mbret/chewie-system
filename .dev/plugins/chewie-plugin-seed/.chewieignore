@@ -1,6 +1,0 @@
-# When a plugin is installed on system it is synchronized (copied) to a tmp directory. In development you are using this actual module and you may have a lot
-# of development files, resources that take a lot of space. .chewieignore allow you to ignore path while the plugin is synchronized.
-# Some path like ./node_modules for example are already internally ignored so you do not have to worry about
-.dev/**
-.git/**
-.idea/**

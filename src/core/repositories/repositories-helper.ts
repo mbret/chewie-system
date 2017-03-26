@@ -25,7 +25,7 @@ export class RepositoriesHelper {
      * Option reinstall will delete and save again the plugin. It will trigger physical installation.
      * @param pathToModule
      * @param options
-     * @returns {Promise<U>}
+     * @returns {Promise}
      */
     protected _installPluginFromDisk(pathToModule, options: any = {}) {
         let self = this;
