@@ -65,7 +65,7 @@ export default class ScenarioReadable extends EventEmitter {
     public start(ingredients) {
         let self = this;
         self.logger.verbose("[scenario:%s] load all nodes...", self.model.id);
-        return this.readNodes(this, this.model.nodes, { lvl: -1 })
+        return this.startNodes(this, this.model.nodes, { lvl: -1 })
             .then(function() {
                 self.state = ScenarioReadable.STATE_RUNNING;
                 self.logger.debug("[scenario:%s] all nodes have been loaded!", self.model.id);
@@ -95,42 +95,39 @@ export default class ScenarioReadable extends EventEmitter {
             let rtId = self.getRuntimeModuleKey(scenario.executionId, node.id, moduleId);
             let module = self.system.modules.get(rtId);
             let taskEndCallbackCalled = false;
+            let newDemandFn = null;
 
             // ensure to not run the task if scenario is not running
             if (self.state === ScenarioReadable.STATE_RUNNING) {
                 // we register the "thing" that a task is still running
                 scenario.runningTasks.push(1);
 
-                if (node.type === "trigger") {
-                    let instance = <TriggerModuleInstanceInterface>module.instance;
-                    // Create the first demand for trigger at lvl 0 (root)
-                    debug("scenario:" + self.executionId)("Create a new demand for (trigger) module [%s] from plugin [%s]", module.moduleInfo.id, node.pluginId);
-                    instance.newDemand(node.options, triggerCallback, taskDoneCallback);
-                }
-                // Tasks are one shot (one time running)
-                // This is the most common case, just run the function and wait for its callback
-                else {
-                    let instance = <TaskModuleInstanceInterface>module.instance;
-                    self.logger.debug("Create a new demand for task module from plugin %s with options (%s) and ingredients (%s)", node.pluginId, JSON.stringify(node.options), JSON.stringify(parentIngredients));
-
-                    // parse options for eventual ingredients replacements
-                    // only string options are interpolated
-                    _.forEach(node.options, function(value, key) {
-                        let replacedValue = value;
-                        if (_.isString(value)) {
-                            _.forEach(parentIngredients, function(ingredientValue, ingredientKey) {
-                                replacedValue = replacedValue.replace(new RegExp(_.escapeRegExp("{{" + ingredientKey + "}}"), "g"), ingredientValue);
-                                node.options[key] = replacedValue;
-                            });
-                        }
-                    });
-
-                    // run the task
-                    try {
-                        instance.newDemand(node.options, taskDoneCallback);
-                    } catch (err) {
-                        self.logger.error("Unexpected error of module [%s] from plugin [%s] on scenario [%s] when trying to run the task", module.moduleInfo.id, node.pluginId, self.executionId, err);
+                // parse options for eventual ingredients replacements
+                // only string options are interpolated
+                _.forEach(node.options, function(value, key) {
+                    let replacedValue = value;
+                    if (_.isString(value)) {
+                        _.forEach(parentIngredients, function(ingredientValue, ingredientKey) {
+                            replacedValue = replacedValue.replace(new RegExp(_.escapeRegExp("{{" + ingredientKey + "}}"), "g"), ingredientValue);
+                            node.options[key] = replacedValue;
+                        });
                     }
+                });
+
+                debug("scenario:" + self.executionId)("Create a new demand for (%s) module [%s] from plugin [%s]", node.type, module.moduleInfo.id, node.pluginId);
+
+                if (node.type === "trigger") {
+                    // Create the first demand for trigger at lvl 0 (root)
+                    newDemandFn = (<TriggerModuleInstanceInterface>module.instance).newDemand.bind(module.instance, node.options, triggerCallback, taskDoneCallback);
+                } else {
+                    newDemandFn = (<TaskModuleInstanceInterface>module.instance).newDemand.bind(module.instance, node.options, taskDoneCallback);
+                }
+
+                // run demand
+                try {
+                    newDemandFn();
+                } catch (err) {
+                    self.logger.error("Unexpected error of module [%s] from plugin [%s] on scenario [%s] when trying to run the task", module.moduleInfo.id, node.pluginId, self.executionId, err);
                 }
 
                 function triggerCallback(ingredientsFromModule) {
@@ -140,14 +137,11 @@ export default class ScenarioReadable extends EventEmitter {
                             " (may be a timeout, interval or async treatment not closed). The trigger has been ignored but you should tell the author of the plugin about this warning", node.moduleId, node.pluginId);
                     } else {
                         debug("scenario:" + self.executionId)("(trigger) module [%s] from plugin [%s] called the \"trigger\" callback", module.moduleInfo.id, node.pluginId);
-                        return self.system.scenarioReader.getRuntimeIngredients()
-                            .then(function(ingredients) {
-                                return self.runNodes(node.nodes, _.merge(ingredients, ingredientsFromModule));
-                            });
+                        runSubNodes(ingredientsFromModule);
                     }
                 }
 
-                function taskDoneCallback(err, res) {
+                function taskDoneCallback(err, ingredientsFromModule) {
                     // "module want to call more than once callback" security
                     if (taskEndCallbackCalled) {
                         self.logger.warn("The module '%s' from plugin '%s' try to call a second time the task end callback. Ignore it", node.moduleId, node.pluginId);
@@ -163,12 +157,23 @@ export default class ScenarioReadable extends EventEmitter {
                         if (err) {
                             // for now we do nothing
                         }
+                        // in case of task we run sub nodes on end
+                        if (node.type === "task") {
+                            runSubNodes(ingredientsFromModule);
+                        }
                         // wait for next tick so that we have time to attach events on promise chain.
                         // mainly used for the first call to runNodes
                         setImmediate(function() {
                             scenario.emit("task:stop");
                         });
                     }
+                }
+
+                function runSubNodes(ingredientsFromModule) {
+                    self.system.scenarioReader.getRuntimeIngredients()
+                        .then(function(ingredients) {
+                            return self.runNodes(node.nodes, _.merge(ingredients, ingredientsFromModule));
+                        });
                 }
             }
         });
@@ -216,11 +221,11 @@ export default class ScenarioReadable extends EventEmitter {
         });
     }
 
-    protected readNodes(scenario: ScenarioReadable, nodes: any[], options: any) {
+    protected startNodes(scenario: ScenarioReadable, nodes: any[], options: any) {
         let self = this;
         let promises = [];
         nodes.forEach(function(node) {
-            promises.push(self.readNode(scenario, node, { lvl: options.lvl + 1 }));
+            promises.push(self.startNode(scenario, node, { lvl: options.lvl + 1 }));
         });
 
         return Promise.all(promises);
@@ -233,12 +238,12 @@ export default class ScenarioReadable extends EventEmitter {
      * @param options
      * @returns {Promise}
      */
-    protected readNode(scenario: ScenarioReadable, node: ScenarioModel, options: any) {
+    protected startNode(scenario: ScenarioReadable, node: ScenarioModel, options: any) {
         let self = this;
         let moduleUniqueId = ModuleContainer.getModuleUniqueId(node.pluginId, node.moduleId);
 
-        return Promise
-            .resolve(self.loadModuleInstance(null, node.pluginId, node.moduleId))
+        return Promise.resolve()
+            .then(() => self.loadModuleInstance(null, node.pluginId, node.moduleId))
             .then(function(container) {
 
                 // add to global storage
@@ -246,7 +251,7 @@ export default class ScenarioReadable extends EventEmitter {
                 self.logger.debug("New module container registered with key [%s]", uniqueId);
                 self.system.modules.set(uniqueId, container);
 
-                return self.readNodes(scenario, node.nodes, options);
+                return self.startNodes(scenario, node.nodes, options);
             });
     }
 

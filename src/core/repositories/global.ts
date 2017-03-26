@@ -97,21 +97,25 @@ class Repository extends EventEmitter {
 
     npmInstall(pluginDir) {
         let self = this;
+        let stderr = "";
         // yarn is way more fast than npm
-        const ls = child_process.spawn(this.yarnPath, ["install", "--only=production"], { cwd: pluginDir });
+        const ls = child_process.spawn(this.yarnPath, ["install", "--production"], { cwd: pluginDir });
 
         ls.stdout.on('data', (data) => {
-            //self.logger.debug(`stdout: ${data}`);
+            // self.logger.debug(`stdout: ${data}`);
         });
 
         // it print warning like (no descriptions, etc)
         ls.stderr.on('data', (data) => {
-            // self.logger.debug(`stderr: ${data}`);
+            stderr += data;
         });
 
         return new Promise(function(resolve, reject) {
             ls.on('close', (code) => {
-                self.logger.debug(`${pluginDir} npm install child process exited with code ${code}`);
+                self.logger.debug(`${pluginDir} yarn install child process exited with code ${code}`);
+                if (code !== 0) {
+                    return reject(new Error("Yarn command failed. stderr:" + stderr));
+                }
                 return resolve();
             });
         });

@@ -119,6 +119,7 @@ export class ScenarioReader {
                     // By stopping the scenario inside the startup semaphore we are sure no one else will do something between. The stop will start immedialty
                     // after we release the semaphore
                     .catch(function(err) {
+                        self.logger.error("An unexpected error occurred while starting scenario [%s]. Stopping scenario...", scenarioReadable.executionId, err);
                         self.stopScenario(scenarioReadable.executionId)
                             .then(() => {})
                             .catch(() => {});
