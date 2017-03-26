@@ -24,7 +24,7 @@ export class ScenarioReader {
     protected scenarioHelper: ScenarioHelper;
     protected semaphores: any;
     protected pluginsLoader: PluginsLoader;
-    protected ingredientsInjectionQueue: Array<Function>;
+    public ingredientsInjectionQueue: Array<Function>;
 
     constructor(system) {
         this.system = system;
@@ -182,10 +182,6 @@ export class ScenarioReader {
 
     public getScenarios(): Array<ScenarioReadable> {
         return this.scenarios;
-    }
-
-    public registerIngredientsInjection(fn: Function) {
-        this.ingredientsInjectionQueue.push(fn);
     }
 
     public getRuntimeIngredients() {

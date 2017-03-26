@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <h1 class="page-header">{{ module.name }}</h1>
+    <h1 class="page-header">{{ name }}</h1>
 
     <div class="row">
         <div class="col-lg-12">
@@ -9,8 +9,9 @@
                     <div class="ibox-tools"></div>
                 </div>
                 <div class="ibox-content">
-                    <form method="get" class="" ng-submit="submit()">
-                        <plugin-options options="module.config.options"></plugin-options>
+                    <form method="get" class="" name="form" ng-submit="submit(form)">
+                        {{formData.options}}
+                        <module-form-options config-options="hook.packageInfo.chewie.configOptions" ng-model="formData.options"></module-form-options>
 
                         <input class="btn btn-primary" type="submit" value="Valider"/>
                     </form>

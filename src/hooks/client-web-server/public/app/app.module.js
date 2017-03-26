@@ -17,7 +17,7 @@ let module = angular.module('app.buddy', [
     'components.core',
     'components.auth',
     'components.tasks',
-    'components.modules',
+    'components.hooks',
     'components.screens',
     'components.taskTriggers',
     'components.repository',

@@ -5,12 +5,12 @@ class HookPlaceholder {
     }
 
     initialize() {
-        this.system.scenarioReader.registerIngredientsInjection(function() {
+        this.system.scenarioReader.ingredientsInjectionQueue.push(function() {
             return Promise.resolve({
                 "hook:placeholder:test": "coucou"
             });
         });
-        this.system.scenarioReader.registerIngredientsInjection(function() {
+        this.system.scenarioReader.ingredientsInjectionQueue.push(function() {
             return Promise.resolve({
                 "hook:placeholder:test2": "zbla"
             });

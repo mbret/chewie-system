@@ -52,6 +52,14 @@ CREATE TABLE `hookData` (
   `createdAt` DATETIME NOT NULL,
   `updatedAt` DATETIME NOT NULL
 );
+CREATE TABLE `hookOption` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `deviceId` VARCHAR(255) NOT NULL,
+  `hookName` VARCHAR(255),
+  `data` VARCHAR(255) DEFAULT '{}',
+  `createdAt` DATETIME NOT NULL,
+  `updatedAt` DATETIME NOT NULL
+);
 CREATE TABLE `notification` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
   `userId` INTEGER DEFAULT NULL,

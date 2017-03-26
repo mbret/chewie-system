@@ -19,10 +19,13 @@ let localConfig = require("./hook-config");
 
 export default class ClientWebServer extends Hook implements HookInterface {
 
+    public app: any;
+
     constructor(system: System, config: any) {
         super(system, config);
         this.config = _.merge(localConfig, config);
         this.logger = system.logger.getLogger('ClientWebServer');
+        this.app = app;
     }
 
     initialize() {
@@ -85,6 +88,7 @@ export default class ClientWebServer extends Hook implements HookInterface {
                     server.listen(self.system.config.webServerPort);
                 });
 
+        // Web server handling
         server
             .on('listening', function () {
                 app.locals.url = self.system.config.webServerUrl;
@@ -99,6 +103,7 @@ export default class ClientWebServer extends Hook implements HookInterface {
                 }
             });
 
+        // Socket server handling
         app.locals.io = socket(server, {});
         app.locals.io
             .on('connection', function (socket) {

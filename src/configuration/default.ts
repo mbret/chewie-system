@@ -79,9 +79,39 @@ module.exports = {
         speakerAdapter: null
     },
 
+    sharedServerApi: {
+        port: 3002,
+        // ssl configuration. By default it's not activated
+        // in case of activation a default certificate and key is provided if needed
+        // but should never be used in production.
+        ssl: {
+            activate: true,
+            key: __dirname + "/../../resources/.ssh/server.key",
+            cert: __dirname + "/../../resources/.ssh/server.crt"
+        },
+        sharedDatabase: {
+            connexion: {
+                host: 'localhost',
+                dialect: 'sqlite',
+                pool: {
+                    max: 5,
+                    min: 0,
+                    idle: 10000
+                },
+                dropOnStartup: false,
+                logging: false,
+                // Will activate validation for type ex Enum
+                typeValidation: true,
+                // set on runtime
+                storage: undefined
+            },
+            migrationDir: __dirname + "/../core/shared-server-api/db-migrate",
+            migrationLogs: false
+        },
+    },
+
     hooks: {
         "client-web-server": true,
-        "shared-server-api": true,
         "scenarios": true,
         "plugins": true
     }

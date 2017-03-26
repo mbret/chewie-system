@@ -7,9 +7,7 @@ let http = require("http");
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 let path        = require('path');
-let localConfig = require("../hook-config");
 import * as Services from "./services";
-import {HookInterface} from "../../../core/hook-interface";
 import {System} from "../../../system";
 let router = require('express').Router();
 let bodyParser  = require("body-parser");
@@ -20,11 +18,11 @@ let validator = require("validator");
 import * as DBMigrate from "db-migrate";
 import * as Bluebird from "bluebird";
 import {debug} from "../../../shared/debug";
-import {Hook} from "../../../core/hook";
 let ensureFile = Bluebird.promisify(fs.ensureFile);
 let debugDefault = debug("hooks:shared-server-api");
+import { EventEmitter }  from "events";
 
-export default class SharedServerApiHook extends Hook implements HookInterface {
+export default class SharedServerApiHook extends EventEmitter {
 
     io: any;
     logger: any;
@@ -36,8 +34,8 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
     orm: any;
     app: any;
 
-    constructor(system, userHookConfig) {
-        super(system, userHookConfig);
+    constructor(system) {
+        super();
         let self = this;
         this.logger = system.logger.getLogger('SharedServerApiHook');
         this.system = system;
@@ -51,9 +49,9 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
         app.locals.system = this.system;
 
         // hook config
-        this.config = _.merge(localConfig, userHookConfig);
+        this.config = this.system.config.sharedServerApi;
         // user did not defined storage
-        if (!_.get(userHookConfig, "sharedDatabase.connexion.storage")) {
+        if (!_.get(this.config, "sharedDatabase.connexion.storage")) {
             this.config.sharedDatabase.connexion.storage =  path.join(system.config.system.appDataPath, "storage/shared-database.db");
         }
         // runtime config
@@ -188,6 +186,7 @@ export default class SharedServerApiHook extends Hook implements HookInterface {
         server.orm.models.Scenario = require(modelsPath + '/scenario')(server.orm.sequelize, server);
         server.orm.models.Notification = require(modelsPath + '/notification')(server.orm.sequelize, server);
         server.orm.models.HookData = require(modelsPath + '/hook-data').define(server.orm.sequelize, server);
+        server.orm.models.HookOption = require(modelsPath + '/hook-option').define(server.orm.sequelize, server);
 
         // server.orm.models.User.hasMany(server.orm.models.Plugins);
         server.orm.models.User.hasMany(server.orm.models.Task);

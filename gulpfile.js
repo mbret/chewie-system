@@ -15,7 +15,6 @@ let basePath = __dirname;
 let copyOfNodeModulesDestPath = "./public/node_modules";
 let distAppPath = path.join(basePath, "/.dist/hooks/client-web-server");
 let srcAppPath = path.join(basePath, "src/hooks/client-web-server");
-
 let buildPath = path.join(distAppPath, ".build");
 copyOfNodeModulesDestPath = path.join(distAppPath, copyOfNodeModulesDestPath);
 

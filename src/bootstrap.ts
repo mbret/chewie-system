@@ -5,6 +5,8 @@ import * as path from "path";
 import {debug} from "./shared/debug";
 import {HookHelper} from "./core/hook-helper";
 import {SystemError} from "./core/error";
+import {HookContainer} from "./core/hook-container";
+import {HookConfigStorageModel} from "./core/shared-server-api/lib/models/hook-option";
 
 export class Bootstrap {
 
@@ -24,26 +26,30 @@ export class Bootstrap {
         Promise.resolve()
             // Initialize core services
             .then(function() {
-                return Promise.all([
-                    self.system.speaker.initialize(),
-                    self.system.communicationBus.initialize(),
-                    self.system.sharedApiService.initialize(),
-                    self.system.storage.initialize(),
-                    self.loadHooks(),
-                ]);
-            })
-            // For now we need the shared api server to be connected
-            .then(function() {
-                self.system.logger.verbose("We now wait for api to be ready...");
-                let warningApi = setTimeout(function() {
-                    self.system.logger.warn("The api seems to be unreachable or taking unusually long time to respond. Please " +
-                        "verify that the remote api is running correctly before starting the system");
-                }, 10000);
-                return self.system.sharedApiService.apiReady()
+                return Promise.resolve()
+                    .then(() => self.system.sharedApiServer.initialize())
+                    .then(() => self.system.sharedApiService.initialize())
+                    // For now we need the shared api server to be connected
                     .then(function() {
-                        clearTimeout(warningApi);
-                        return Promise.resolve();
-                    });
+                        self.system.logger.verbose("We now wait for api to be ready...");
+                        let warningApi = setTimeout(function() {
+                            self.system.logger.warn("The api seems to be unreachable or taking unusually long time to respond. Please " +
+                                "verify that the remote api is running correctly before starting the system");
+                        }, 10000);
+                        return self.system.sharedApiService.apiReady()
+                            .then(function() {
+                                clearTimeout(warningApi);
+                                return Promise.resolve();
+                            });
+                    })
+                    .then(() => self.loadUserOptions())
+                    // After this point user options are available through entire app.
+                    .then(() => Promise.all([
+                        self.system.speaker.initialize(),
+                        self.system.communicationBus.initialize(),
+                        self.system.storage.initialize(),
+                        self.loadHooks(),
+                    ]));
             })
             .then(function() {
                 initializing = false;
@@ -60,6 +66,13 @@ export class Bootstrap {
                 self.system.logger.warn("The initialization process is still not done and seems to take an unusual long time. For some cases you may increase the time in config file.");
             }
         }, 10000);
+    }
+
+    protected loadUserOptions() {
+        this.system.userOptions = {
+            foo: "bar"
+        };
+        return Promise.resolve();
     }
 
     /**
@@ -97,10 +110,10 @@ export class Bootstrap {
                 try { hookModule = require(modulePath); } catch(err) {
                     // @WARING DEV: MODULE_NOT_FOUND may appears on core module if one of its dependency is not installed (and will throw false error)
                     if (err.code !== "MODULE_NOT_FOUND") { throw err; }
-                    let userModulePath = path.resolve(self.system.config.appPath, "node_modules", name);
+                    modulePath = path.resolve(self.system.config.appPath, "node_modules", name);
                     // if core hook does not exist we try to load node_module  hook
-                    debug("hooks")("The hook %s does not seems to be a core module so we try to load as node dependency with require(\"%s\")", name, userModulePath);
-                    try { hookModule = require(userModulePath); } catch(err) {
+                    debug("hooks")("The hook %s does not seems to be a core module so we try to load as node dependency with require(\"%s\")", name, modulePath);
+                    try { hookModule = require(modulePath); } catch(err) {
                         if (err.code !== "MODULE_NOT_FOUND") {
                             throw err;
                         } else {
@@ -115,25 +128,47 @@ export class Bootstrap {
             hookModule.prototype.initialize = hookModule.prototype.initialize || (() => Promise.resolve());
             hookModule.prototype.shutdown = hookModule.prototype.shutdown || (() => Promise.resolve());
 
-            let hook = new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name));
-            self.system.registerTaskOnShutdown((cb) => {
-                hook.shutdown()
-                    .then(() => cb())
-                    .catch(cb);
-            });
-            self.system.hooks[name] = hook;
             promises.push(
-                hook.initialize()
-                    .then(function() {
+                self.system.sharedApiService
+                    .apiReady()
+                    .then(() => self.system.sharedApiService.getHookConfigData(name))
+                    .then(function(userOptions) {
+                        if (!userOptions) {
+                            userOptions = {};
+                        }
+                        let hook = new hookModule(self.system, self.system.config.hooks[name].config, new HookHelper(self.system, name), userOptions);
+                        self.system.registerTaskOnShutdown((cb) => {
+                            hook.shutdown()
+                                .then(() => cb())
+                                .catch(cb);
+                        });
+                        self.system.hooks[name] = new HookContainer(hook, require(modulePath + "/package.json"));
+                        return hook.initialize().then(() => hook);
+                    })
+                    .then(function(hook) {
                         debug("hooks")("Hook %s initialized", name);
                         // next tick so hooks may use system.on("...:initialized") inside the initialize() method.
                         setImmediate(function() {
-                            self.system.emit("hook:" + name + ":initialized");
+                            self.system.emit("hook:" + name + ":initialized", hook);
                         });
                     })
             );
+
         });
 
-        return Promise.all(promises);
+        return Promise.all(promises)
+            // listeners for config change
+            .then(function() {
+                let onHooksConfigUpdate = function(config: HookConfigStorageModel) {
+                    self.system.emit("hook:" + config.hookName + ":options:updated", config.data);
+                };
+                self.system.sharedApiService.io.on("hooks-config:created", onHooksConfigUpdate);
+                self.system.sharedApiService.io.on("hooks-config:updated", onHooksConfigUpdate);
+                self.system.registerTaskOnShutdown((cb) => {
+                    self.system.sharedApiService.io.removeListener("hooks-config:created", onHooksConfigUpdate);
+                    self.system.sharedApiService.io.removeListener("hooks-config:updated", onHooksConfigUpdate);
+                    return cb();
+                });
+            });
     }
 }
