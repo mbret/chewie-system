@@ -6,7 +6,6 @@ import * as path from "path"
 import {ModuleContainer} from "./module-container";
 import {System} from "../../../system";
 import {PluginsLoader} from "../plugins-loader";
-import {Plugin} from "../../../hooks/shared-server-api/lib/models/plugins";
 import {PluginContainer} from "../plugin-container";
 import {ModuleInstanceInterface} from "./module-instance-interface";
 

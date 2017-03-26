@@ -2,7 +2,6 @@
 
 import {System} from "../../system";
 import {PluginInstance} from "./plugin-instance-interface";
-import {Plugin} from "../../hooks/shared-server-api/lib/models/plugins";
 import {PluginHelper} from "./plugin-helper";
 import {EventEmitter}  from "events";
 import {SystemError} from "../error";
@@ -12,11 +11,12 @@ import * as path from "path"
 import {PluginInstanceDefault} from "./plugin-instance-default";
 const decache = require('decache');
 import * as Promise from "bluebird";
+import {PluginModel} from "../shared-server-api/lib/models/plugins";
 
 export class PluginContainer extends EventEmitter {
 
     system: System;
-    plugin: Plugin;
+    plugin: PluginModel;
     instance: PluginInstance;
     logger: any;
     shared: any;
@@ -28,7 +28,7 @@ export class PluginContainer extends EventEmitter {
     protected _beforeMount: Array<Function>;
     protected _beforeUnmount: Array<Function>;
 
-    constructor(system, plugin: Plugin) {
+    constructor(system, plugin: PluginModel) {
         super();
         this.system = system;
         this.logger = this.system.logger.getLogger('PluginContainer');

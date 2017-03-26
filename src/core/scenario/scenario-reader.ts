@@ -1,7 +1,6 @@
 "use strict";
 import {System} from "../../system";
 import {SystemError} from "../error";
-import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as _ from "lodash";
 import {ScenarioHelper} from "./scenario-helper";
 import ScenarioReadable from "./scenario-readable";
@@ -9,6 +8,7 @@ import {PluginsLoader} from "../plugins/plugins-loader";
 const Semaphore = require('semaphore');
 import {debug as hookDebug} from "../../shared/debug";
 import {PluginContainer} from "../plugins/plugin-container";
+import {ScenarioModel} from "../shared-server-api/lib/models/scenario";
 let debug = hookDebug("scenarios:reader");
 // let queue = require('queue');
 

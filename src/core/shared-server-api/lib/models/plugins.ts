@@ -172,7 +172,7 @@ module.exports = function(sequelize){
     return Model;
 };
 
-export interface Plugin {
+export interface PluginModel {
     id: number;
     deviceId: string;
     name: string;

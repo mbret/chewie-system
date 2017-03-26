@@ -1,5 +1,4 @@
 import { EventEmitter }  from "events";
-import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as uuid from "node-uuid";
 import {ModuleContainer} from "../plugins/modules/module-container";
 import {System} from "../../system";
@@ -10,6 +9,7 @@ import {
     TriggerModuleInstanceInterface,
     TaskModuleInstanceInterface
 } from "../plugins/modules/module-instance-interface";
+import {ScenarioModel} from "../shared-server-api/lib/models/scenario";
 
 /**
  * Root scenario. Has an execution id

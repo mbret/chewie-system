@@ -8,11 +8,11 @@ import {SystemError} from "../error";
 const util = require("util");
 const Semaphore = require('semaphore');
 import {debug} from "../../shared/debug";
-import {Plugin} from "../../hooks/shared-server-api/lib/models/plugins";
 import {ScenarioHelper} from "../scenario/scenario-helper";
 let assert = require("chai").assert;
 let decache = require('decache');
 import * as Promise from "bluebird";
+import {PluginModel} from "../shared-server-api/lib/models/plugins";
 
 export class PluginsLoader {
 
@@ -50,7 +50,7 @@ export class PluginsLoader {
      * @param options
      * @returns {any}
      */
-    public mount(plugin: Plugin, options: any = {}) {
+    public mount(plugin: PluginModel, options: any = {}) {
         let self = this;
         let scenarioHelper = new ScenarioHelper(this.system);
         let container: PluginContainer = null;
@@ -163,7 +163,7 @@ export class PluginsLoader {
      * @param plugin
      * @param options
      */
-    public synchronize(plugin: Plugin, options: any) {
+    public synchronize(plugin: PluginModel, options: any) {
         let self = this;
         // return Promise.reject("df");
         options = _.merge({forceSynchronize: false}, options);

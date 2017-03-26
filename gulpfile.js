@@ -68,7 +68,6 @@ let config = {
     ]
 };
 
-
 // -------------------------------------------
 //
 //     Tasks relative to client-web-server

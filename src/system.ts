@@ -28,7 +28,7 @@ import {PluginsHelper} from "./core/plugins/plugins-helper";
 import {debug} from "./shared/debug";
 import {RepositoriesHelper} from "./core/repositories/repositories-helper";
 import SharedServerApiHook from "./core/shared-server-api/lib/server";
-import {EmailAdapter} from "./core/email-adapter";
+import EmailAdapterContainer from "./core/email/email-adapter-container";
 
 /**
  * System is the main program daemon.
@@ -57,7 +57,7 @@ export class System extends EventEmitter {
     shuttingDown: boolean;
     id: string;
     name: string;
-    email: EmailAdapterInterface;
+    email: EmailAdapterContainer;
     sharedApiServer: SharedServerApiHook;
     public pluginsHelper: PluginsHelper;
     public repositoriesHelper: RepositoriesHelper;
@@ -83,7 +83,7 @@ export class System extends EventEmitter {
         this.garbageCollector = new GarbageCollector(this);
         this.pluginsHelper = new PluginsHelper(this);
         this.repositoriesHelper = new RepositoriesHelper(this);
-        this.email = new EmailAdapter(this);
+        this.email = new EmailAdapterContainer(this);
     }
 
     /**
@@ -178,10 +178,6 @@ export class System extends EventEmitter {
 
     public registerTaskOnShutdown(fn: Function) {
         this.shutdownQueue.push(fn);
-    }
-
-    public registerEmailAdapter(instance) {
-        this.email = instance;
     }
 
     private init(cb) {

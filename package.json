@@ -15,7 +15,7 @@
   "scripts": {
     "postinstall": "npm run build",
     "build": "gulp build && tsc",
-    "watch": "concurrently --raw \"gulp watch\" \"tsc -w\"",
+    "watch": "npm run build && concurrently --raw \"gulp watch\" \"tsc -w\"",
     "dev": "concurrently --raw \"npm run build\" \"npm run watch\"",
     "test": "cross-env DEBUG=chewie* mocha"
   },

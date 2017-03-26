@@ -1,11 +1,11 @@
 "use strict";
 
 import {System} from "../../system";
-import {ScenarioModel} from "../../hooks/shared-server-api/lib/models/scenario";
 import * as _ from "lodash";
 import {PluginsLoader} from "../plugins/plugins-loader";
-import {Plugin} from "../../hooks/shared-server-api/lib/models/plugins";
 import ScenarioReadable from "./scenario-readable";
+import {ScenarioModel} from "../shared-server-api/lib/models/scenario";
+import {PluginModel} from "../shared-server-api/lib/models/plugins";
 
 /**
  *
@@ -36,7 +36,7 @@ export class ScenarioHelper {
         return ids;
     }
 
-    getScenariosId(plugin: Plugin) {
+    getScenariosId(plugin: PluginModel) {
         let self = this;
         let scenariosIds = [];
         let scenarios = this.system.scenarioReader.getScenarios();

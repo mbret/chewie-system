@@ -1,8 +1,8 @@
-import {debug} from "./../shared/debug";
-import {System} from "../system";
+import {System} from "../../system";
 
 /**
  * class EmailAdapter
+ * Dummy adapter, does not send email.
  */
 export class EmailAdapter implements EmailAdapterInterface {
     chewie: System;

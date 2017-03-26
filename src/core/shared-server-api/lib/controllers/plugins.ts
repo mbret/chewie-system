@@ -1,6 +1,5 @@
 'use strict';
-import {Plugin} from "../models/plugins";
-
+import {PluginModel} from "../models/plugins";
 let _ = require('lodash');
 let validator = require('validator');
 let util = require('util');
@@ -209,7 +208,7 @@ export = function(server, router) {
         // Get all plugin name
         PluginsDao.findAll()
             .then(function(plugins) {
-                plugins.forEach(function(plugin: Plugin) {
+                plugins.forEach(function(plugin: PluginModel) {
                     // let info = getPluginInfo(req, plugin.name);
                     let tmp = plugin.package.chewie.modules
                         .filter(function(item){

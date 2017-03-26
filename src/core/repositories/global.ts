@@ -9,9 +9,9 @@ let which = require('which');
 import * as _ from "lodash";
 import { EventEmitter }  from "events";
 import {System} from "../../system";
-import {Plugin} from "../../hooks/shared-server-api/lib/models/plugins";
 import {debug} from "../../shared/debug";
 import {ignored} from "../../shared/ignore";
+import {PluginModel} from "../shared-server-api/lib/models/plugins";
 let gulp = require("gulp");
 const changed = require('gulp-changed');
 
@@ -124,7 +124,7 @@ class Repository extends EventEmitter {
     /**
      * Check if a valid plugin exist in this path
      */
-    pluginExist(plugin: Plugin) {
+    pluginExist(plugin: PluginModel) {
         let pluginPath = path.resolve(this.system.config.synchronizedPluginsPath, plugin.name);
         return this.pluginExistByDir(pluginPath);
     }

@@ -6,8 +6,8 @@ import {System} from "../../system";
 import {ScenarioHelper} from "../../core/scenario/scenario-helper";
 import {PluginsLoader} from "../../core/plugins/plugins-loader";
 import {debug as hookDebug} from "../../shared/debug";
-import {Plugin} from "../shared-server-api/lib/models/plugins";
 import {Hook} from "../../core/hook";
+import {PluginModel} from "../../core/shared-server-api/lib/models/plugins";
 let debug = hookDebug(":hook:plugins");
 
 export = class PluginsHook extends Hook implements HookInterface {
@@ -44,7 +44,7 @@ export = class PluginsHook extends Hook implements HookInterface {
                 });
 
             // Listen for new plugin
-            self.customListeners.pluginCreated = self.system.sharedApiService.io.on("plugin:created", function(plugin: Plugin) {
+            self.customListeners.pluginCreated = self.system.sharedApiService.io.on("plugin:created", function(plugin: PluginModel) {
                 if (plugin.deviceId === self.system.id) {
                     debug("New plugin %s created detected", plugin.name);
                     return self.loadPlugin(plugin, true);
@@ -52,7 +52,7 @@ export = class PluginsHook extends Hook implements HookInterface {
             });
 
             // Listen for plugin deletion
-            self.customListeners.pluginDeleted = self.system.sharedApiService.io.on("plugin:deleted", function(plugin: Plugin) {
+            self.customListeners.pluginDeleted = self.system.sharedApiService.io.on("plugin:deleted", function(plugin: PluginModel) {
                 // ensure we are on the right device
                 if (plugin.deviceId === self.system.id) {
                     debug("Plugin %s has been deleted on storage", plugin.name);
@@ -99,7 +99,7 @@ export = class PluginsHook extends Hook implements HookInterface {
      * - remove the reference of plugin to the system
      * @param plugins
      */
-    unLoadPlugins(plugins: Array<Plugin>) {
+    unLoadPlugins(plugins: Array<PluginModel>) {
         let self = this;
         debug('Unloading plugins [%s]', _.map(plugins, "name"));
         plugins.forEach(function(plugin) {

@@ -4,9 +4,9 @@ import * as _ from "lodash";
 import {HookInterface} from "../../core/hook-interface";
 import {System} from "../../system";
 import {ScenarioHelper} from "../../core/scenario/scenario-helper";
-import {ScenarioModel} from "../shared-server-api/lib/models/scenario";
 import {Hook} from "../../core/hook";
 import {SystemError} from "../../core/error";
+import {ScenarioModel} from "../../core/shared-server-api/lib/models/scenario";
 
 /**
  * Scenario are loaded automatically when:
