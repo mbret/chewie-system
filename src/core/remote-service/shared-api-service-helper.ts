@@ -153,6 +153,19 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
             });
     }
 
+    getSystemConfig() {
+        return this.get("/system-config/" + this.system.id)
+            .then(function(response: any) {
+                return response.body.data;
+            })
+            .catch(function(err) {
+                if (err instanceof ApiResponseNotFoundError) {
+                    return Promise.resolve({});
+                }
+                throw err;
+            });
+    }
+
     // findUserByUsername(username) {
     //     return this.get(util.format("/users/%s", username))
     //         .then(function(response) {

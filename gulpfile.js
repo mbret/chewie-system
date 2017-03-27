@@ -30,16 +30,15 @@ let config = {
     env: process.env.NODE_ENV,
     srcJsFilesGlob: [
         // copy all json files to dist (hooks installation, etc)
-        "./src/**/*",
-        "!./src/**/*.ts",
-        "!./src/**/README.md",
-        "!./src/**/.gitkeep",
-        "!./src/**/.gitignore",
-        "!./src/**/package.json",
-        "./src/hooks/**/package.json",
-        "!./src/**/*.ts",
+        "src/**/*",
+        "!src/**/*.ts",
+        "!src/**/README.md",
+        "!src/**/.gitkeep",
+        "!src/**/.gitignore",
+        "!src/**/package.json",
+        "src/hooks/**/package.json",
         // ignore public from client-web-server hook to avoid large data
-        "!./src/hooks/client-web-server/public/**/*"
+        "!src/hooks/client-web-server/public/**/*"
     ],
     vendorsToInject: [
         "vendors/sprintf-js/dist/sprintf.min.js",

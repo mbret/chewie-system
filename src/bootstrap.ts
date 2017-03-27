@@ -27,6 +27,7 @@ export class Bootstrap {
             // Initialize core services
             .then(function() {
                 return Promise.resolve()
+                    // @todo ignore sharedApiServer when using proxy
                     .then(() => self.system.sharedApiServer.initialize())
                     .then(() => self.system.sharedApiService.initialize())
                     // For now we need the shared api server to be connected
@@ -42,7 +43,7 @@ export class Bootstrap {
                                 return Promise.resolve();
                             });
                     })
-                    .then(() => self.loadUserOptions())
+                    .then(() => self.loadUserSystemConfig())
                     // After this point user options are available through entire app.
                     .then(() => Promise.all([
                         self.system.speaker.initialize(),
@@ -68,11 +69,17 @@ export class Bootstrap {
         }, 10000);
     }
 
-    protected loadUserOptions() {
-        this.system.userOptions = {
-            foo: "bar"
-        };
-        return Promise.resolve();
+    /**
+     * Load the user system config.
+     * That config is dynamic and loaded during startup (different from static)
+     */
+    protected loadUserSystemConfig() {
+        let self = this;
+        return this.system.sharedApiService.getSystemConfig()
+            .then(function(config) {
+                console.log(config);
+                self.system.config.userConfig = config;
+            });
     }
 
     /**

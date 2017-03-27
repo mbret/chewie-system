@@ -60,6 +60,13 @@ CREATE TABLE `hookOption` (
   `createdAt` DATETIME NOT NULL,
   `updatedAt` DATETIME NOT NULL
 );
+CREATE TABLE `systemConfig` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `deviceId` VARCHAR(255) NOT NULL,
+  `data` VARCHAR(255) DEFAULT '{}',
+  `createdAt` DATETIME NOT NULL,
+  `updatedAt` DATETIME NOT NULL
+);
 CREATE TABLE `notification` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
   `userId` INTEGER DEFAULT NULL,
