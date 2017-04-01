@@ -1,8 +1,8 @@
 'use strict';
 
-var dbm;
-var type;
-var seed;
+let dbm;
+let type;
+let seed;
 
 /**
   * We receive the dbmigrate dependency from dbmigrate initially.
@@ -15,10 +15,13 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db) {
-    let sql = require("fs").readFileSync(__dirname + "/create-database.sql");
-    sql = String(sql);
+    let create = String(require("fs").readFileSync(__dirname + "/create-database.sql"));
+    let defaultData = String(require("fs").readFileSync(__dirname + "/default-data.sql"));
     return db
-        .runSql(String(sql));
+        .runSql(create)
+        .then(function() {
+            return db.runSql(defaultData);
+        });
 };
 
 exports.down = function(db) {

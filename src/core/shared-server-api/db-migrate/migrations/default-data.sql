@@ -1,0 +1,1 @@
+INSERT INTO info (key, value) VALUES ('version', '0.0.1');
