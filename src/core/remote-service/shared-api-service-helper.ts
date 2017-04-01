@@ -24,16 +24,16 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
         let self = this;
 
         self._tryToPing()
-            .then(function() {
+            .then(function(response: any) {
                 self._apiReady = true;
-                self.emit("apiReady");
+                self.emit("apiReady", {version: response.headers["chewie-version"]});
             })
             .catch(function(err) {
                 self.logger.warn("Error while listening for apiReading event. The api will not be set as ready!", err);
             });
 
         // on api ready run socket
-        self.on("apiReady", function() {
+        self.on("apiReady", function(serverInfo) {
             self.io
                 .on('connect', function() {
                     self.loggerSocket.verbose("Connected to shared api server and listening");

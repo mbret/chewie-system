@@ -1,3 +1,7 @@
+CREATE TABLE `info` (
+  `key` VARCHAR(255),
+  `value` VARCHAR(255),
+)
 CREATE TABLE `user` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
   `username` VARCHAR(255) NOT NULL UNIQUE,

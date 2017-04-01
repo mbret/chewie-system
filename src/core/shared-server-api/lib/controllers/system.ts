@@ -11,7 +11,7 @@ module.exports = function(server, router){
     let self = server;
 
     router.get('/ping', function (req, res) {
-        res.send('pong you moron!');
+        res.ok();
     });
 
     /**

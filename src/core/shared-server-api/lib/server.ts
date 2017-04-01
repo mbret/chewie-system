@@ -220,6 +220,7 @@ export default class SharedServerApiHook extends EventEmitter {
     }
 
     protected configureMiddleware(app) {
+        let self = this;
         let server = this;
         app.use(bodyParser.json()); // to support JSON-encoded bodies
         app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
@@ -243,6 +244,7 @@ export default class SharedServerApiHook extends EventEmitter {
         });
 
         app.use(function(req, res, next){
+            res.set("chewie-version", self.system.info.version);
 
             /**
              * 400
