@@ -91,16 +91,17 @@
     "request": "^2.79.0",
     "require-all": "^2.0.0",
     "semaphore": "^1.0.5",
-    "sequelize": "^3.27.0",
+    "sequelize": "^3.30.4",
     "socket.io": "^1.7.1",
     "socket.io-client": "^1.7.3",
     "sprintf-js": "^1.0.3",
     "sqlite3": "^3.1.8",
     "stream-series": "^0.1.1",
+    "typescript": "^2.2.2",
     "uuid": "^3.0.1",
     "validator": "^7.0.0",
     "walk": "^2.3.9",
-    "which": "^1.2.12",
+    "which": "^1.2.14",
     "winston": "^2.3.0",
     "yargs": "^7.0.1"
   },
@@ -113,7 +114,6 @@
     "eslint-plugin-standard": "^2.1.1",
     "mocha": "^3.1.2",
     "supertest": "^3.0.0",
-    "typescript": "^2.1.4",
     "vinyl-fs": "^2.4.4"
   }
 }

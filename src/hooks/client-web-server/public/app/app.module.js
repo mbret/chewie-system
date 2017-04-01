@@ -28,6 +28,7 @@ let module = angular.module('app.buddy', [
     'components.scenarios',
     'components.plugins',
     'components.profileSelection',
+    'components.settings',
 
     'app.buddy.google',
 
