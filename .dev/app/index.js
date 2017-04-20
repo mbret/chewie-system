@@ -33,12 +33,12 @@ chewie.start({
             "tmpDir": "./.chewie/.tmp",
             "appDataPath": "./.chewie"
         },
-        "pluginsLocalRepositoryDir": "./../plugins",
+        // "pluginsLocalRepositoryDir": "./../plugins",
         "hooks": {
             // "client-web-server": false,
             // "shared-server-api": false,
-            "scenarios": false,
-            "plugins": false,
+            // "scenarios": false,
+            // "plugins": false,
             // "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
             // "chewie-hook-gmail-adapter": { modulePath: __dirname + "/../hooks/chewie-hook-gmail-adapter" },
             // "chewie-hook-seed": { modulePath: "C:/Users/mbret/Workspace/chewie-hook-seed" },

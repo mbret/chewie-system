@@ -7,6 +7,7 @@ import {HookHelper} from "./core/hook-helper";
 import {SystemError} from "./core/error";
 import {HookContainer} from "./core/hook-container";
 import {HookConfigStorageModel} from "./core/shared-server-api/lib/models/hook-option";
+import {verifyHookModule} from "./shared/hooks";
 
 export class Bootstrap {
 
@@ -105,6 +106,7 @@ export class Bootstrap {
             }
 
             let hookModule = null;
+            let hookType = "user";
             // If the module path is specified we use it as priority
             if (_.isString(config.modulePath)) {
                 let modulePath = path.resolve(config.modulePath);
@@ -113,7 +115,10 @@ export class Bootstrap {
             } else {
                 // then we try to lookup core module. We always use core hooks as priority over node_modules
                 debug("system:bootstrap:hooks")("Trying to load Hook %s as core module at %s", name, modulePath);
-                try { hookModule = require(modulePath); } catch(err) {
+                try {
+                    hookModule = require(modulePath);
+                    hookType = "core";
+                } catch(err) {
                     // @WARING DEV: MODULE_NOT_FOUND may appears on core module if one of its dependency is not installed (and will throw false error)
                     if (err.code !== "MODULE_NOT_FOUND") { throw err; }
                     modulePath = path.resolve(self.system.config.appPath, "node_modules", name);
@@ -148,7 +153,15 @@ export class Bootstrap {
                                 .then(() => cb())
                                 .catch(cb);
                         });
-                        self.system.hooks[name] = new HookContainer(hook, require(modulePath + "/package.json"));
+                        // export hook info
+                        let packageInfo = { name, version: self.system.info.version };
+                        if (hookType === "user") {
+                            packageInfo = require(modulePath + "/package.json");
+                        }
+                        self.system.hooks[name] = new HookContainer(hook, {
+                            ...packageInfo,
+                            type: hookType
+                        });
                         return hook.initialize().then(() => hook);
                     })
                     .then(function(hook) {
