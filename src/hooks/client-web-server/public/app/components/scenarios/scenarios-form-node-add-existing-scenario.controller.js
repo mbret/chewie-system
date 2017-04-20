@@ -9,7 +9,7 @@
         .module("components.scenarios")
         .controller("components.scenarios.FormNodeAddExistingScenario", controller);
 
-    function controller($scope, $uibModalInstance, _, item, $uibModal, sharedApiService, authenticationService, util, apiService, APP_CONFIG) {
+    function controller($scope, $uibModalInstance, _, item, $uibModal, sharedApiService, authenticationService, apiService, APP_CONFIG) {
         // $scope.triggers = [];
         // $scope.tasks = [];
         // $scope.triggerPlugins = [];

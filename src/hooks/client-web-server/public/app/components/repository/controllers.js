@@ -3,7 +3,7 @@
 
     angular
         .module('components.repository')
-        .controller('RepositoryListController', function($scope, $rootScope, sharedApiService, util, auth, _, $uibModal, apiService, $log, APP_CONFIG){
+        .controller('RepositoryListController', function($scope, $rootScope, sharedApiService, auth, _, $uibModal, apiService, $log, APP_CONFIG){
             let vm = this;
             vm.plugins = [];
             vm.installed = [];
@@ -16,7 +16,7 @@
                 });
 
             // fetch saved plugins
-            sharedApiService.get(util.format("/api/devices/%s/plugins", APP_CONFIG.systemId))
+            sharedApiService.get(`/api/devices/${APP_CONFIG.systemId}/plugins`)
                 .then(function(response) {
                     vm.installed = _.keyBy(response, "name");
                 });
@@ -31,7 +31,7 @@
                 });
             }
         })
-        .controller('LocalRepositoryDetailController', function($scope, $rootScope, sharedApiService, util, $stateParams, auth, apiService, $state, APP_CONFIG){
+        .controller('LocalRepositoryDetailController', function($scope, $rootScope, sharedApiService, $stateParams, auth, apiService, $state, APP_CONFIG){
             $scope.plugin = null;
             let name = $stateParams.name;
             $scope.ready = false;
@@ -45,7 +45,7 @@
                     repository: "local",
                     package: $scope.plugin
                 };
-                sharedApiService.post(util.format("/devices/%s/plugins", APP_CONFIG.systemId), data)
+                sharedApiService.post(`/devices/${APP_CONFIG.systemId}/plugins`, data)
                     .then(function() {
                         $state.go("dashboard.repository.list");
                     });
@@ -56,7 +56,7 @@
                     $scope.plugin = response.data;
                 });
 
-            sharedApiService.get(util.format("/api/devices/%s/plugins/%s", APP_CONFIG.systemId, name))
+            sharedApiService.get(`/api/devices/${APP_CONFIG.systemId}/plugins/${name}`)
                 .then(function() {
                     $scope.installed = true;
                     $scope.ready = true;
@@ -67,13 +67,13 @@
                     }
                 });
         })
-        .controller('InstalledRepositoryDetailController', function($scope, $rootScope, sharedApiService, util, $stateParams, auth, apiService, $state, APP_CONFIG){
+        .controller('InstalledRepositoryDetailController', function($scope, $rootScope, sharedApiService, $stateParams, auth, apiService, $state, APP_CONFIG){
             $scope.plugin = null;
             let name = $stateParams.name;
             $scope.ready = false;
 
             $scope.unSave = function() {
-                sharedApiService.delete(util.format("/api/devices/%s/plugins/%s", APP_CONFIG.systemId, name))
+                sharedApiService.delete(`/api/devices/${APP_CONFIG.systemId}/plugins/${name}`)
                     .then(function() {
                         $state.go("dashboard.repository.list");
                     });
@@ -85,7 +85,7 @@
             //         $scope.plugin = data;
             //     });
 
-            sharedApiService.get(util.format("/api/devices/%s/plugins/%s", APP_CONFIG.systemId, name))
+            sharedApiService.get(`/api/devices/${APP_CONFIG.systemId}/plugins/${name}`)
                 .then(function(response) {
                     $scope.plugin = response;
                     $scope.ready = true;

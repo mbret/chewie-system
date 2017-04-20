@@ -2,10 +2,10 @@
 
 import {System} from "../../system";
 import {ApiResponseError, ApiResponseNotFoundError, ApiResponseBadRequestError} from "./response-error";
-
 let request = require("request");
 let _ = require("lodash");
 import { EventEmitter }  from "events";
+import {debug} from "../../shared/debug";
 
 /**
  *
@@ -30,7 +30,7 @@ class RemoteServiceHelper extends EventEmitter {
         };
 
         let address = system.config.sharedApiUrl;
-        this.logger.debug("Api server configured on address %s", address);
+        debug("remote-service")("Api server configured on address %s", address);
         this.defaultRequestOptions.baseUrl = address;
     }
 
@@ -131,7 +131,7 @@ class RemoteServiceHelper extends EventEmitter {
         options = self._buildOptions(options);
         return new Promise(function(resolve, reject) {
             let opt = _.merge({}, options, {uri: url});
-            self.logger.verbose("GET (https) %s%s", self.defaultRequestOptions.baseUrl, url);
+            debug("remote-service")("GET (https) %s%s", self.defaultRequestOptions.baseUrl, url);
             request
                 .get(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
                     if(err) {

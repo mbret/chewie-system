@@ -17,7 +17,6 @@ import {Bootstrap} from "./bootstrap";
 import {Speaker} from "./core/speaker/speaker";
 import configurationLoader from "./configuration/loader";
 import LocalRepository from "./core/repositories/local-repository";
-import Storage from "./core/storage/storage";
 import {SharedApiServiceHelper} from "./core/remote-service/shared-api-service-helper";
 import {LoggerBuilder, LoggerInterface} from "./core/logger";
 import {HookInterface} from "./core/hook-interface";
@@ -49,7 +48,6 @@ export class System extends EventEmitter {
     garbageCollector: GarbageCollector;
     repository: any;
     sharedApiService: SharedApiServiceHelper;
-    storage: Storage;
     hooks: Array<HookInterface>;
     plugins: Map<string, PluginContainer>;
     modules: Map<string, ModuleContainer>;
@@ -117,14 +115,11 @@ export class System extends EventEmitter {
                 ]);
 
                 // log various paths for debug conveniences
-                self.logger.verbose("App data path is located to %s (resolved)", path.resolve(process.cwd(), self.config.system.appDataPath));
-                self.logger.verbose("App tmp folder is located to %s (resolved)", path.resolve(self.config.system.tmpDir));
+                debug("system")("App data path is located to %s (resolved)", path.resolve(process.cwd(), self.config.system.appDataPath));
+                debug("system")("App tmp folder is located to %s (resolved)", path.resolve(self.config.system.tmpDir));
 
-                // self.logger.Logger = loggerBuilder;
                 self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');
-                self.storage = new Storage(self);
                 self.communicationBus = new ServerCommunication.CommunicationBus(self);
-                // self.runtime = new Runtime(self);
                 self.sharedApiService = new SharedApiServiceHelper(self);
                 self.speaker = new Speaker(self);
                 self.localRepository = new LocalRepository(self);
@@ -261,7 +256,7 @@ export class System extends EventEmitter {
         let self = this;
 
         // run core bootstrap
-        self.logger.debug("Run system bootstrap...");
+        debug("system")("Run system bootstrap...");
         let bootstrap = new Bootstrap(this);
         bootstrap.bootstrap(function(err) {
             if (err) {

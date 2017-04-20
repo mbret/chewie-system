@@ -8,7 +8,7 @@
         .module("components.scenarios")
         .controller("CreateScenariosController", controller);
 
-    function controller($scope, $uibModal, sharedApiService, auth, util, _, notificationService, apiService, APP_CONFIG) {
+    function controller($scope, $uibModal, sharedApiService, auth, _, notificationService, apiService, APP_CONFIG) {
         $scope.formId = "form-scenario-create";
         // $scope.elements = [];
         // root node
@@ -53,7 +53,7 @@
             }
 
             if (form.$valid) {
-                sharedApiService.post(util.format("/devices/%s/scenarios", APP_CONFIG.systemId), $scope.formData)
+                sharedApiService.post(`/devices/${APP_CONFIG.systemId}/scenarios`, $scope.formData)
                     .then(function() {
                         notificationService.success("Created");
                     })

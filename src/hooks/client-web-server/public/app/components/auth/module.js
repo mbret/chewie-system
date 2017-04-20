@@ -41,7 +41,7 @@
                 })
         })
 
-        .run(function($rootScope, $state, authenticationService, $location, util, sharedApiService){
+        .run(function($rootScope, $state, authenticationService, $location, sharedApiService){
 
             var redirectToAfterLogin = null;
 

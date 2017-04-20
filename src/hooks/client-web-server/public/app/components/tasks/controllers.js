@@ -8,19 +8,19 @@
 
         })
 
-        .controller('TasksListController', function($rootScope, $scope, $http, APP_CONFIG, TASK_TYPE, notificationService, sharedApiService, tasksService, _, SweetAlert, auth, util, sharedApiSocket){
+        .controller('TasksListController', function($rootScope, $scope, $http, APP_CONFIG, TASK_TYPE, notificationService, sharedApiService, tasksService, _, SweetAlert, auth, sharedApiSocket){
 
             // http://stackoverflow.com/questions/8211744/convert-time-interval-given-in-seconds-into-more-human-readable-form
             $scope.tasks = [];
 
-            sharedApiService.get(util.format("/runtime/executing-tasks"))
+            sharedApiService.get("/runtime/executing-tasks")
                 .then(function(data) {
                     $scope.executingTasks = data.filter(function(elt) {
                         return elt.type === 1; // DIRECT
                     });
                 });
 
-            sharedApiService.get(util.format('/users/%s/tasks', auth.getUser().id)).then(function(data){
+            sharedApiService.get(`/users/${auth.getUser().id}/tasks`).then(function(data){
                     $scope.tasks = data;
 
                     $scope.tasks.forEach(function(task){
@@ -94,10 +94,10 @@
                     // stop for runtime
                     // then save to database new state so at next profile load the task will keep the same state
                     // It is better to not parallelize call as we can deal with error easier
-                    sharedApiService.put(util.format('/runtime/profile/tasks/%s', task.id), {active: false})
+                    sharedApiService.put('/runtime/profile/tasks/' + task.id, {active: false})
                         .then(function(){
                             task.active = false;
-                            return sharedApiService.put(util.format('/users/%s/tasks/%s', auth.getUser().id, task.id), {active: false});
+                            return sharedApiService.put(`/users/${auth.getUser().id}/tasks/${task.id}`, {active: false});
                         })
                         .then(function(){
                             task.locked = false;
@@ -114,7 +114,7 @@
                     sharedApiService.put('/runtime/profile/tasks/' + task.id, {active: true})
                         .then(function(){
                             task.active = true;
-                            return sharedApiService.put(util.format('/users/%s/tasks/%s', auth.getUser().id, task.id), {active: true});
+                            return sharedApiService.put(`/users/${auth.getUser().id}/tasks/${task.id}`, {active: true});
                         })
                         .then(function(){
                             task.locked = false;
@@ -133,11 +133,11 @@
             // };
 
             $scope.stopTask = function(executinTask) {
-                sharedApiService.delete(util.format("/runtime/executing-tasks/%s", executinTask.id));
+                sharedApiService.delete("/runtime/executing-tasks/" + executinTask.id);
             };
 
             $scope.executeTask = function(task) {
-                sharedApiService.post(util.format("/runtime/tasks/%s", task.id));
+                sharedApiService.post("/runtime/tasks/" + task.id);
             };
 
             $scope.$on("$destroy", function() {
@@ -153,10 +153,10 @@
             }
         })
 
-        .controller('components.tasks.CreateController', function($scope, $http, $uibModal, APP_CONFIG, $log, tasksService, notificationService, sharedApiService, auth, util){
+        .controller('components.tasks.CreateController', function($scope, $http, $uibModal, APP_CONFIG, $log, tasksService, notificationService, sharedApiService, auth){
             $scope.modules = [];
 
-            sharedApiService.get(util.format('/users/%s/modules', auth.getUser().id), {type: 'task'}).then(function(response){
+            sharedApiService.get(`/users/${auth.getUser().id}/modules`, {type: 'task'}).then(function(response){
                 $scope.modules = response;
             });
         });

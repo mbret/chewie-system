@@ -19,6 +19,7 @@ let buildPath = path.join(distAppPath, ".build");
 copyOfNodeModulesDestPath = path.join(distAppPath, copyOfNodeModulesDestPath);
 
 let config = {
+    distPath: ".dist",
     fromSource: argv.fromSource,
     publicPath: __dirname + "/public",
     buildPath: buildPath,
@@ -29,19 +30,12 @@ let config = {
     distAppPath: distAppPath,
     env: process.env.NODE_ENV,
     srcJsFilesGlob: [
-        // copy all json files to dist (hooks installation, etc)
-        "src/**/*",
+        "src/**/*.*",
         "!src/**/*.ts",
-        "!src/**/README.md",
-        "!src/**/.gitkeep",
-        "!src/**/.gitignore",
-        "!src/**/package.json",
-        "src/hooks/**/package.json",
         // ignore public from client-web-server hook to avoid large data
         "!src/hooks/client-web-server/public/**/*"
     ],
     vendorsToInject: [
-        "vendors/sprintf-js/dist/sprintf.min.js",
         "vendors/jquery/dist/jquery.js",
         "vendors/jquery-slimscroll/jquery.slimscroll.min.js",
         "vendors/angular/angular.js",
@@ -101,7 +95,6 @@ function getPipe(moduleName, glob) {
 gulp.task("client-web-server:copy-vendors-npm", function() {
     return merge(
         getPipe("jquery", "/dist/jquery.js"),
-        getPipe("sprintf-js", "/dist/sprintf.min.js"),
         getPipe("jquery-slimscroll", "/jquery.slimscroll.min.js"),
         getPipe("angular", "/angular.js"),
         getPipe("angular-ui-router", "/release/angular-ui-router.js"),
@@ -203,9 +196,28 @@ gulp.task("client-web-server:watch", gulp.parallel("client-web-server:watch-less
 gulp.task("copy", function() {
     return gulp
         .src(config.srcJsFilesGlob, {base: "./src"})
-        .pipe(changed("./.dist"))
-        .pipe(gulp.dest("./.dist"));
+        .pipe(changed(config.distPath))
+        .pipe(gulp.dest(config.distPath));
 });
+
+gulp.task("clean", function() {
+    return gulp.src([config.distPath], {read: false}).pipe(clean());
+});
+
+gulp.task('build', gulp.parallel("copy", "client-web-server:build"));
+
+gulp.task("watch", gulp.parallel("client-web-server:watch", function() {
+    let tasks = ["copy"];
+    let watcher = gulp
+        .watch(config.srcJsFilesGlob, gulp.series.call(null, tasks));
+    watcher.on("all", (event, filepath) => gutil.log(gutil.colors.yellow('Event "%s" on file "%s", running tasks [%s]'), event, filepath, tasks));
+}));
+
+// -------------------------------------------
+//
+//     Various dev tasks
+//
+// -------------------------------------------
 
 // must be run as admin
 gulp.task("generate-plugins-symlink", function() {
@@ -218,17 +230,3 @@ gulp.task("generate-dev-app-symlink", function() {
     return vfs.src("../chewie-app", {followSymlinks: false})
         .pipe(vfs.symlink(".dev"));
 });
-
-gulp.task("clean", function() {
-    return gulp.src(config.buildPath, {read: false}).pipe(clean());
-});
-
-// create a default task and just log a message
-gulp.task('build', gulp.parallel("copy", "client-web-server:build"));
-
-gulp.task("watch", gulp.parallel("client-web-server:watch", function() {
-    let tasks = ["copy"];
-    let watcher = gulp
-        .watch(config.srcJsFilesGlob, gulp.series.call(null, tasks));
-    watcher.on("all", (event, filepath) => gutil.log(gutil.colors.yellow('Event "%s" on file "%s", running tasks [%s]'), event, filepath, tasks));
-}));

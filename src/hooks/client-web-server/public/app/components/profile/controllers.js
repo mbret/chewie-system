@@ -4,7 +4,7 @@
     angular
         .module('components.profile')
 
-        .controller('ProfileController', function($rootScope, $scope, APP_CONFIG, userService, notificationService, sharedApiService, util, auth, $log){
+        .controller('ProfileController', function($rootScope, $scope, APP_CONFIG, userService, notificationService, sharedApiService, auth, $log){
 
             $log.info("ProfileController");
             let onAuthUserUpdatedDeregister;
@@ -19,7 +19,7 @@
             });
 
             // Retrieve user detail
-            sharedApiService.get(util.format('/users/%s', auth.getUser().getId()))
+            sharedApiService.get(`/users/${auth.getUser().getId()}`)
                 .then(function(user){
                     mapDataWithForm(user);
                 });
@@ -45,7 +45,7 @@
 
                     // We only put userOptions
                     sharedApiService
-                        .put(util.format('/users/%s', auth.getUser().getId()), {
+                        .put(`/users/${auth.getUser().getId()}`, {
                             config: config
                         })
                         .then(function(updatedData){

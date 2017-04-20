@@ -8,12 +8,12 @@
 
         })
 
-        .controller('ComponentsPluginsListController', function($scope, $http, toastr, APP_CONFIG, sharedApiService, auth, sharedApiSocket, notificationService, util){
+        .controller('ComponentsPluginsListController', function($scope, $http, toastr, APP_CONFIG, sharedApiService, auth, sharedApiSocket, notificationService){
 
             $scope.plugins = [];
 
             // Get saved plugins for this user
-            sharedApiService.get(util.format('/users/%s/plugins', auth.getUser().getId()))
+            sharedApiService.get(`/users/${auth.getUser().getId()}/plugins`)
                 .then(function(data){
                     $scope.plugins = data;
 
@@ -29,13 +29,13 @@
                 });
         })
 
-        .controller('DetailController', function($scope, $http, toastr, APP_CONFIG, sharedApiService, auth, sharedApiSocket, notificationService, util, $stateParams, _){
+        .controller('DetailController', function($scope, $http, toastr, APP_CONFIG, sharedApiService, auth, sharedApiSocket, notificationService, $stateParams, _){
 
             $scope.plugin = {};
             $scope.formData = {};
 
             // Retrieve plugin details
-            sharedApiService.get(util.format('/plugins/%s', auth.getUser().getId(), $stateParams.plugin))
+            sharedApiService.get(`/plugins/${auth.getUser().getId()}`, $stateParams.plugin)
                 .then(function(data){
                     $scope.plugin = data;
                     $scope.formData.options = data.userOptions;
@@ -49,16 +49,15 @@
                 }
                 else{
                     // We only put userOptions
-                    sharedApiService.put(util.format('/users/%s/plugins/%s', auth.getUser().getId(), $stateParams.plugin), {
-                        userOptions: $scope.formData.options
-                    })
+                    sharedApiService
+                        .put(`/users/%s/plugins/${auth.getUser().getId()}`, $stateParams.plugin), {
+                            userOptions: $scope.formData.options
+                        }
                         .then(function(updatedData){
                             $scope.plugin = updatedData;
                             $scope.formData.options = updatedData.userOptions;
                         })
-                        .catch(function(err){
-
-                        });
+                        .catch(function(err){});
                 }
             };
 

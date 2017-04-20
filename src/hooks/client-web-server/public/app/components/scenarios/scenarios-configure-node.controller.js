@@ -9,7 +9,7 @@
         .module("components.scenarios")
         .controller("CreateScenariosNewItemController", controller);
 
-    function controller($scope, $uibModalInstance, _, item, $uibModal, sharedApiService, authenticationService, util, apiService, APP_CONFIG) {
+    function controller($scope, $uibModalInstance, _, item, $uibModal, sharedApiService, authenticationService, apiService, APP_CONFIG) {
         $scope.triggers = [];
         $scope.tasks = [];
         $scope.triggerPlugins = [];
@@ -77,7 +77,7 @@
         };
 
         // fetch triggers
-        sharedApiService.get(util.format('/api/devices/%s/plugins-modules', APP_CONFIG.systemId), { type: "trigger" })
+        sharedApiService.get(`/api/devices/${APP_CONFIG.systemId}/plugins-modules`, { type: "trigger" })
             .then(function(data) {
                 $scope.triggers = data;
                 // build array of unique plugins key
@@ -90,7 +90,7 @@
             });
 
         // fetch tasks
-        sharedApiService.get(util.format('/api/devices/%s/plugins-modules', APP_CONFIG.systemId), { type: "task" })
+        sharedApiService.get(`/api/devices/${APP_CONFIG.systemId}/plugins-modules`, { type: "task" })
             .then(function(data) {
                 $scope.tasks = data;
                 // build array of unique key

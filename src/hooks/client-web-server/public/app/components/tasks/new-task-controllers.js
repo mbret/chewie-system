@@ -8,7 +8,7 @@
      */
     angular
         .module('components.tasks')
-        .controller('components.tasks.CreateFormController', function($scope, $stateParams, auth, $timeout, tasksService, $state, notificationService, _, sharedApiService, util){
+        .controller('components.tasks.CreateFormController', function($scope, $stateParams, auth, $timeout, tasksService, $state, notificationService, _, sharedApiService){
             $scope.module = null;
 
             // we will store all of our form data in this object
@@ -54,13 +54,13 @@
             };
 
             // Get task module details
-            sharedApiService.get(util.format('/users/%s/plugins/%s/modules/%s', auth.getUser().id, $stateParams.plugin, $stateParams.module))
+            sharedApiService.get(`/users/${auth.getUser().id}/plugins/${$stateParams.plugin}/modules/${$stateParams.module}`)
                 .then(function(module){
                     $scope.module = module;
                 });
 
             // Retrieve all the triggers
-            sharedApiService.get(util.format('/users/%s/modules', auth.getUser().id), {type: 'trigger'})
+            sharedApiService.get(`/users/${auth.getUser().id}/modules`, {type: 'trigger'})
                 .then(function(data){
                     $scope.triggers = data;
                 });
@@ -139,7 +139,7 @@
                         triggers: triggers
                     };
 
-                    sharedApiService.post(util.format('/users/%s/plugins/%s/modules/%s/tasks', auth.getUser().id, $stateParams.plugin, $stateParams.module), task)
+                    sharedApiService.post(`/users/${auth.getUser().id}/plugins/${$stateParams.plugin}/modules/${$stateParams.module}/tasks`, task)
                         .then(function(){
                             notificationService.success('Task created');
                             //$state.go('dashboard.tasks');

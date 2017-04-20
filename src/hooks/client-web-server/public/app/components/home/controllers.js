@@ -4,7 +4,7 @@
     angular
         .module('components.home')
 
-        .controller('components.home.HomeController', function($scope, $http, toastr, APP_CONFIG, sharedApiService, auth, sharedApiSocket, notificationService, $interval, util, googleApi){
+        .controller('components.home.HomeController', function($scope, $http, toastr, APP_CONFIG, sharedApiService, auth, sharedApiSocket, notificationService, $interval, googleApi){
 
             $scope.externalServicesStatus = [
                 {
