@@ -8,7 +8,6 @@ const less = require('gulp-less');
 let path = require("path");
 const inject = require('gulp-inject');
 const series = require('stream-series');
-let argv = require('yargs').argv;
 const _ = require("lodash");
 const merge = require("merge-stream");
 let basePath = __dirname;
@@ -20,7 +19,6 @@ copyOfNodeModulesDestPath = path.join(distAppPath, copyOfNodeModulesDestPath);
 
 let config = {
     distPath: ".dist",
-    fromSource: argv.fromSource,
     publicPath: __dirname + "/public",
     buildPath: buildPath,
     basePath: basePath,
@@ -201,7 +199,7 @@ gulp.task("copy", function() {
 });
 
 gulp.task("clean", function() {
-    return gulp.src([config.distPath], {read: false}).pipe(clean());
+    return gulp.src(config.distPath + "/*", {read: false}).pipe(clean());
 });
 
 gulp.task('build', gulp.parallel("copy", "client-web-server:build"));

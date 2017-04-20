@@ -1,5 +1,5 @@
 import { EventEmitter }  from "events";
-import * as uuid from "node-uuid";
+let uuid = require("uuid");
 import {ModuleContainer} from "../plugins/modules/module-container";
 import {System} from "../../system";
 import * as _ from "lodash";

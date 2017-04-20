@@ -5,8 +5,7 @@ let path = require('path');
 let fs = require('fs-extra');
 let npm = require("npm");
 let child_process = require("child_process");
-let which = require('which');
-import * as _ from "lodash";
+let shell = require('shelljs');
 import { EventEmitter }  from "events";
 import {System} from "../../system";
 import {debug} from "../../shared/debug";
@@ -26,8 +25,8 @@ class Repository extends EventEmitter {
         super();
         this.logger = system.logger.getLogger('Repository');
         this.system = system;
-        this.npmPath = which.sync('npm');
-        this.yarnPath = which.sync('yarn');
+        this.npmPath = shell.which('npm').stdout;
+        this.yarnPath = shell.which('yarn').stdout;
     }
 
     /**
