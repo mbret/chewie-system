@@ -10,7 +10,10 @@ module.exports = function (router) {
             let container: HookContainer = req.app.locals.system.hooks[key];
             return {
                 name: key,
-                packageInfo: container.packageInfo
+                packageInfo: {
+                    version: container.version,
+                    type: container.type
+                }
             }
         }));
     });
@@ -25,7 +28,10 @@ module.exports = function (router) {
         let container: HookContainer = req.app.locals.system.hooks[found];
         return res.ok({
             name: found,
-            packageInfo: container.packageInfo
+            packageInfo: {
+                version: container.version,
+                type: container.type
+            }
         });
     });
 };

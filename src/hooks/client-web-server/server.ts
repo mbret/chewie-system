@@ -15,7 +15,7 @@ let fs = require('fs');
 let httpProxy = require('http-proxy');
 let socket = require('socket.io');
 let server, proxyServer;
-let localConfig = require("./hook-config");
+let localConfig = require("./config/hook-config");
 
 export default class ClientWebServer extends Hook implements HookInterface {
 
@@ -24,7 +24,7 @@ export default class ClientWebServer extends Hook implements HookInterface {
     constructor(system: System, config: any) {
         super(system, config);
         this.config = _.merge(localConfig, config);
-        this.logger = system.logger.getLogger('ClientWebServer');
+        this.logger = system.logger.getLogger("chewie:hook:client-web-server");
         this.app = app;
     }
 
@@ -56,6 +56,12 @@ export default class ClientWebServer extends Hook implements HookInterface {
         // Prepare app
         app.use(kraken(options));
         app.use(customResponses);
+
+        // http logger for api only
+        app.use("/api", function (req, res, next) {
+            self.logger.verbose(`[${req.hostname } (${req.protocol})] "${req.method} ${req.url} ${req.headers['user-agent'] || '(no user-agent)'}"`);
+            return next();
+        });
 
         // Web client server
         server = https.createServer(sslConf, app);
