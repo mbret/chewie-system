@@ -3,7 +3,7 @@
   "author": "Maxime Bret",
   "name": "chewie-system",
   "description": "Chewie core system",
-  "version": "0.1.11",
+  "version": "0.1.110",
   "repository": {
     "type": "git",
     "url": "https://github.com/mbret/chewie-system.git"
@@ -21,6 +21,13 @@
     "test": "cross-env DEBUG=chewie* mocha"
   },
   "dependencies": {
+    "@types/async": "^2.0.38",
+    "@types/fs-extra": "^2.1.0",
+    "@types/ip": "0.0.29",
+    "@types/lodash": "^4.14.54",
+    "@types/node": "^7.0.4",
+    "@types/node-uuid": "0.0.28",
+    "@types/sequelize": "^4.0.50",
     "angular": "^1.6.3",
     "angular-cookies": "^1.6.3",
     "angular-daterangepicker": "^0.2.3-alpha1",
@@ -66,6 +73,7 @@
     "moment": "^2.17.0",
     "moniker": "^0.1.2",
     "my-buddy-lib": "https://github.com/my-buddy/lib",
+    "ngstorage": "^0.3.11",
     "node-emoji": "^1.4.3",
     "node-schedule": "^1.2.0",
     "npm": "^4.4.4",
@@ -90,13 +98,6 @@
     "winston": "^2.3.0"
   },
   "devDependencies": {
-    "@types/async": "^2.0.38",
-    "@types/fs-extra": "^2.1.0",
-    "@types/ip": "0.0.29",
-    "@types/lodash": "^4.14.54",
-    "@types/node": "^7.0.4",
-    "@types/node-uuid": "0.0.28",
-    "@types/sequelize": "^4.0.50",
     "gulp-watch": "^4.3.11",
     "chai-http": "^3.0.0",
     "cross-env": "^3.1.4",
