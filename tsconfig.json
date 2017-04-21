@@ -11,7 +11,7 @@
     "removeComments": true,
     "strictNullChecks": false,
     "moduleResolution": "Node",
-    "target": "es6",
+    "target": "es2017",
     "alwaysStrict": true,
     "outDir": "./.dist",
     "sourceMap": true,

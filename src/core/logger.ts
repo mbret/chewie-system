@@ -6,8 +6,6 @@ const chalk = require('chalk');
 const _ = require('lodash');
 const emoji = require('node-emoji');
 const path = require("path");
-const PROJECT_ROOT = path.join(__dirname, '../..');
-import stringPad from "../shared/string-pad";
 
 export interface LoggerInterface {
     info(content: string);
@@ -72,9 +70,7 @@ export class LoggerBuilder {
 
     // https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json
     private stylize(prepend, msg, level) {
-        // prepend = '[' + prepend + ']';
-        // prepend = pad(level + " " + prepend, 20) + ' ';
-        prepend = stringPad("❤ " + prepend, 25) + ' ';
+        prepend = ("❤ " + prepend).padEnd(25) + ' ';
         let rx = /{:stack(.*)\/:stack}/g;
         let stack = rx.exec(msg);
         if (stack) {

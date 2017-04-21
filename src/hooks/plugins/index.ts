@@ -32,7 +32,7 @@ export = class PluginsHook extends Hook implements HookInterface {
             self.system.sharedApiService
                 .getAllPlugins()
                 .then(function(response: any) {
-                    let plugins: Array<Plugin> = response.body;
+                    let plugins: Array<PluginModel> = response.body;
                     debug("%s plugin(s) found, load all of them and synchronize if needed", plugins.length);
                     plugins.forEach(function(plugin) {
                         return self.loadPlugin(plugin);
@@ -82,7 +82,7 @@ export = class PluginsHook extends Hook implements HookInterface {
      * @returns {Promise}
      * @todo reload with self.pluginsLoader.reMount
      */
-    loadPlugin(plugin, reload = false) {
+    loadPlugin(plugin: PluginModel, reload = false) {
         let self = this;
         debug('%s plugin %s', reload ? "Reloading" : "Load", plugin.name);
         let container = self.pluginsLoader.getPluginContainerByName(plugin.name);
