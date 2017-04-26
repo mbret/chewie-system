@@ -1,0 +1,39 @@
+{
+  "appPath": "$chewie{appPath}",
+  "systemIP": "$chewie{systemIP}",
+  "dataPath": "$chewie{dataPath}",
+  "env": "$chewie{env}",
+  "webServerUrl": "$chewie{webServerUrl}",
+  "log": {
+    "level": "silly"
+  },
+  "storageDatabaseConnexion": {
+    "host": "localhost",
+    "dialect": "sqlite",
+    "storage": "$chewie{localAppDataDir}/.my-buddy/storage/database.sqlite",
+    "dropOnStartup": false,
+    "logging": false,
+    "typeValidation": true
+  },
+  "sharedApiUrl": "https://localhost:3002",
+  "webServerPort": 3000,
+  "webServerSSL": {
+    "activate": true,
+    "key": "$chewie{basePath}/../resources/.ssh/server.key",
+    "cert": "$chewie{basePath}/../resources/.ssh/server.crt"
+  },
+  "resourcesDir": "$chewie{basePath}/../resources",
+  "auth": {
+    "jwtSecret": "zbla"
+  },
+  "pluginsLocalRepositoryDir": "$chewie{localAppDataDir}/.my-buddy/data/plugins-repository",
+  "alwaysSynchronizePlugins": false,
+  "system": {
+    "tmpDir": "$chewie{osTmpDir}/chewie",
+    "pluginsTmpDir": "$chewie{osTmpDir}/chewie/plugins-tmp-data",
+    "appDataPath": "$chewie{localAppDataDir}/chewie",
+    "pluginsDataDir": "$chewie{localAppDataDir}/chewie/data/plugins-data",
+    "synchronizedPluginsDir": "plugins-synchronized",
+    "speakerAdapter": null
+  }
+}

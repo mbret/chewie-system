@@ -134,7 +134,7 @@ export default class SharedServerApiHook extends EventEmitter {
                 })
                 .on('listening', function(){
                     self.localAddress = 'https://localhost:' + self.server.address().port;
-                    debugDefault('The API is available at %s or %s for remote access', self.localAddress, self.system.config.sharedApiUrl);
+                    debugDefault(`The API is available at ${self.localAddress} or ${self.system.config.sharedApiUrl} for remote access`);
                     return resolve();
                 });
         });

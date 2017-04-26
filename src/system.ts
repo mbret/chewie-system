@@ -15,7 +15,7 @@ import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
 import {Bootstrap} from "./bootstrap";
 import {Speaker} from "./core/speaker/speaker";
-import configurationLoader from "./configuration/loader";
+import { loadConfig } from "./shared/config";
 import LocalRepository from "./core/repositories/local-repository";
 import {SharedApiServiceHelper} from "./core/remote-service/shared-api-service-helper";
 import {LoggerBuilder, LoggerInterface} from "./core/logger";
@@ -92,10 +92,10 @@ export class System extends EventEmitter {
      */
     public start(options: any = {}, cb = function(err){}){
         let self = this;
-
         // load config
-        configurationLoader(options.settings)
+        loadConfig(options.settings)
             .then(function(config) {
+                // process.exit();
                 self.config = config;
 
                 // Build system logger
