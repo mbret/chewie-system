@@ -66,11 +66,11 @@ module.exports = {
 
     pluginsLocalRepositoryDir: path.join(localAppDataDir, '.my-buddy/data/plugins-repository'),
     alwaysSynchronizePlugins: false,
+    systemTmpDir: path.join(os.tmpdir(), 'chewie'),
+    systemAppDataPath: path.join(localAppDataDir, "chewie"),
 
     system: {
-        tmpDir: path.join(os.tmpdir(), 'chewie'),
         pluginsTmpDir: path.join(os.tmpdir(), 'chewie/plugins-tmp-data'),
-        appDataPath: path.join(localAppDataDir, "chewie"),
         pluginsDataDir: path.join(localAppDataDir, 'chewie/data/plugins-data'),
         synchronizedPluginsDir: "plugins-synchronized", // under data dir
 

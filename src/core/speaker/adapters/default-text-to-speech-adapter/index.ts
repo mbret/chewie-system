@@ -20,7 +20,7 @@ class TextToSpeechDefaultAdapter {
      * @returns Promise
      */
     extract(text) {
-        return VoxygenAdapter.extract(text, {locale: 'fr', tmpDir: this.system.config.system.tmpDir});
+        return VoxygenAdapter.extract(text, {locale: 'fr', tmpDir: this.system.config.systemTmpDir});
     }
 }
 

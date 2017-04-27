@@ -52,7 +52,7 @@ export default class SharedServerApiHook extends EventEmitter {
         this.config = this.system.config.sharedServerApi;
         // user did not defined storage
         if (!_.get(this.config, "sharedDatabase.connexion.storage")) {
-            this.config.sharedDatabase.connexion.storage =  path.join(system.config.system.appDataPath, "storage/shared-database.db");
+            this.config.sharedDatabase.connexion.storage =  path.join(system.config.systemAppDataPath, "storage/shared-database.db");
         }
         // runtime config
         this.config.storageDir = path.dirname(this.config.sharedDatabase.connexion.storage);

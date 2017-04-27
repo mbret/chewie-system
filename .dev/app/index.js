@@ -29,15 +29,13 @@ chewie.start({
             done();
         },
         "alwaysSynchronizePlugins": true,
-        "system": {
-            "tmpDir": "./.chewie/.tmp",
-            "appDataPath": "./.chewie"
-        },
+        "systemTmpDir": "./.chewie/.tmp",
+        "systemAppDataPath": "./.chewie",
         "pluginsLocalRepositoryDir": "./../plugins",
         "hooks": {
             // "client-web-server": false,
             // "shared-server-api": false,
-            "scenarios": false,
+            // "scenarios": false,
             "plugins": false,
             // "placeholder": { modulePath: __dirname + "/../hooks/placeholder" },
             // "chewie-hook-gmail-adapter": { modulePath: __dirname + "/../hooks/chewie-hook-gmail-adapter" },
