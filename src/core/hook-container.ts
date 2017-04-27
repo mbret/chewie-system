@@ -5,10 +5,14 @@ import {Hook} from "./hook";
  */
 export class HookContainer {
     hook: Hook;
-    packageInfo: any;
+    type: string;
+    name: string;
+    version: string;
 
-    constructor(hook, packageInfo) {
+    constructor(hook, { type, version, name }) {
         this.hook = hook;
-        this.packageInfo = packageInfo;
+        this.type = type;
+        this.version = version;
+        this.name = name;
     }
 }

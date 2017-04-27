@@ -1,0 +1,26 @@
+{
+  "sharedServerApi": {
+    "port": 3002,
+    "ssl": {
+      "activate": true,
+      "key": "$chewie{basePath}/../resources/.ssh/server.key",
+      "cert": "$chewie{basePath}/../resources/.ssh/server.crt"
+    },
+    "sharedDatabase": {
+      "connexion": {
+        "host": "localhost",
+        "dialect": "sqlite",
+        "pool": {
+          "max": 5,
+          "min": 0,
+          "idle": 10000
+        },
+        "dropOnStartup": false,
+        "logging": false,
+        "typeValidation": true
+      },
+      "migrationDir": "$chewie{basePath}/core/shared-server-api/db-migrate",
+      "migrationLogs": false
+    }
+  }
+}

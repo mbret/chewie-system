@@ -3,7 +3,7 @@
 
     angular
         .module('components.scenarios')
-        .controller('IndexScenariosController', function($scope, $state, sharedApiService, auth, util, _, apiService, sharedApiSocket, $log, APP_CONFIG, alerts, $timeout, apiSocket){
+        .controller('IndexScenariosController', function($scope, $state, sharedApiService, auth, _, apiService, sharedApiSocket, $log, APP_CONFIG, alerts, $timeout, apiSocket){
 
             $scope.scenarios = [];
             $scope.runningScenarios = [];
@@ -40,7 +40,7 @@
 
             function onScenariosUpdated() {
                 // retrieve the scenarios
-                sharedApiService.get(util.format('/devices/%s/scenarios', APP_CONFIG.systemId))
+                sharedApiService.get(`/devices/${APP_CONFIG.systemId}/scenarios`)
                     .then(function(scenarios){
                         // then the runtime
                         apiService.get("/api/runtime/scenarios")

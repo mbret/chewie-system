@@ -60,7 +60,7 @@ angular.module('components.core')
                 $scope.actions = [];
 
                 // Retrieve all the output adapters
-                sharedApiService.get(util.format('/users/%s/modules', auth.getUser().id), {type: 'output-adapter'})
+                sharedApiService.get(`/users/${auth.getUser().id}/modules`, {type: 'output-adapter'})
                     .then(function(data){
                         $scope.triggers = data;
                     });

@@ -3,7 +3,7 @@
 
     angular
         .module("components.scenarios")
-        .controller("EditScenariosController", function ($scope, $timeout, $uibModal, sharedApiService, $stateParams, util, _, notificationService, apiService, APP_CONFIG) {
+        .controller("EditScenariosController", function ($scope, $timeout, $uibModal, sharedApiService, $stateParams, _, notificationService, apiService, APP_CONFIG) {
             $scope.scenario = null;
             $scope.formId = "edit-scenarios";
 

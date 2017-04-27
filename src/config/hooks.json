@@ -1,0 +1,7 @@
+{
+  "hooks": {
+    "client-web-server": true,
+    "scenarios": true,
+    "plugins": true
+  }
+}

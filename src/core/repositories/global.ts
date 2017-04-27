@@ -5,8 +5,7 @@ let path = require('path');
 let fs = require('fs-extra');
 let npm = require("npm");
 let child_process = require("child_process");
-let which = require('which');
-import * as _ from "lodash";
+let shell = require('shelljs');
 import { EventEmitter }  from "events";
 import {System} from "../../system";
 import {debug} from "../../shared/debug";
@@ -26,8 +25,10 @@ class Repository extends EventEmitter {
         super();
         this.logger = system.logger.getLogger('Repository');
         this.system = system;
-        this.npmPath = which.sync('npm');
-        this.yarnPath = which.sync('yarn');
+        let npmPath = shell.which('npm');
+        let yarnPath = shell.which('yarn');
+        this.npmPath = npmPath ? npmPath.stdout : null;
+        this.yarnPath = yarnPath ? yarnPath.stdout : null;
     }
 
     /**
@@ -99,7 +100,7 @@ class Repository extends EventEmitter {
         let self = this;
         let stderr = "";
         // yarn is way more fast than npm
-        const ls = child_process.spawn(this.yarnPath, ["install", "--production"], { cwd: pluginDir });
+        const ls = child_process.spawn(this.yarnPath || this.npmPath, ["install", "--production"], { cwd: pluginDir });
 
         ls.stdout.on('data', (data) => {
             // self.logger.debug(`stdout: ${data}`);

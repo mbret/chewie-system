@@ -9,7 +9,6 @@ const util = require("util");
 const Semaphore = require('semaphore');
 import {debug} from "../../shared/debug";
 import {ScenarioHelper} from "../scenario/scenario-helper";
-let assert = require("chai").assert;
 let decache = require('decache');
 import * as Promise from "bluebird";
 import {PluginModel} from "../shared-server-api/lib/models/plugins";

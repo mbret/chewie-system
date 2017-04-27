@@ -4,7 +4,7 @@
     angular
         .module('components.hooks')
 
-        .controller('HooksListController', function($scope, sharedApiService, apiService, APP_CONFIG, util){
+        .controller('HooksListController', function($scope, sharedApiService, apiService, APP_CONFIG){
 
             $scope.hooks = [];
 

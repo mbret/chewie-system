@@ -10,7 +10,7 @@ angular.module('components.auth')
             UserModel = model;
         };
 
-        this.$get = function($http, $window, sharedApiService, $rootScope, util){
+        this.$get = function($http, $window, sharedApiService, $rootScope){
 
             function AuthenticationService(){
                 this.user = null;
@@ -19,7 +19,7 @@ angular.module('components.auth')
 
             AuthenticationService.prototype.updateUser = function(id){
                 var self = this;
-                return sharedApiService.get(util.format('/users/%s', id)).then(function(user){
+                return sharedApiService.get(`/users/${id}`).then(function(user){
                     self.user.update(user);
                     $rootScope.$emit('auth:user:updated');
                 });

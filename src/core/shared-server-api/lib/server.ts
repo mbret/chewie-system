@@ -18,8 +18,9 @@ let validator = require("validator");
 import * as DBMigrate from "db-migrate";
 import * as Bluebird from "bluebird";
 import {debug} from "../../../shared/debug";
+const logNamespace = "shared-server-api";
 let ensureFile = Bluebird.promisify(fs.ensureFile);
-let debugDefault = debug("hooks:shared-server-api");
+let debugDefault = debug(logNamespace);
 import { EventEmitter }  from "events";
 
 export default class SharedServerApiHook extends EventEmitter {
@@ -37,7 +38,7 @@ export default class SharedServerApiHook extends EventEmitter {
     constructor(system) {
         super();
         let self = this;
-        this.logger = system.logger.getLogger('SharedServerApiHook');
+        this.logger = system.logger.getLogger(logNamespace);
         this.system = system;
         this.server = null;
         this.services = {};
@@ -133,7 +134,7 @@ export default class SharedServerApiHook extends EventEmitter {
                 })
                 .on('listening', function(){
                     self.localAddress = 'https://localhost:' + self.server.address().port;
-                    debugDefault('The API is available at %s or %s for remote access', self.localAddress, self.system.config.sharedApiUrl);
+                    debugDefault(`The API is available at ${self.localAddress} or ${self.system.config.sharedApiUrl} for remote access`);
                     return resolve();
                 });
         });
@@ -236,10 +237,8 @@ export default class SharedServerApiHook extends EventEmitter {
         });
 
         // logging http
-        // simple log of http request
-        // Only in console, nginx take control on production environment
         app.use(function (req, res, next) {
-            debugDefault(req.hostname + " -> " + req.method + " (" + req.protocol + ") " + req.url);
+            self.logger.verbose(`[${req.hostname } (${req.protocol})] "${req.method} ${req.url} ${req.headers['user-agent'] || '(no user-agent)'}"`);
             return next();
         });
 

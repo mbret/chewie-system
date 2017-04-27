@@ -7,6 +7,7 @@ import {HookHelper} from "./core/hook-helper";
 import {SystemError} from "./core/error";
 import {HookContainer} from "./core/hook-container";
 import {HookConfigStorageModel} from "./core/shared-server-api/lib/models/hook-option";
+import {verifyHookModule} from "./shared/hooks";
 
 export class Bootstrap {
 
@@ -32,7 +33,7 @@ export class Bootstrap {
                     .then(() => self.system.sharedApiService.initialize())
                     // For now we need the shared api server to be connected
                     .then(function() {
-                        self.system.logger.verbose("We now wait for api to be ready...");
+                        debug("system:bootstrap")("We now wait for api to be ready...");
                         let warningApi = setTimeout(function() {
                             self.system.logger.warn("The api seems to be unreachable or taking unusually long time to respond. Please " +
                                 "verify that the remote api is running correctly before starting the system");
@@ -48,7 +49,6 @@ export class Bootstrap {
                     .then(() => Promise.all([
                         self.system.speaker.initialize(),
                         self.system.communicationBus.initialize(),
-                        self.system.storage.initialize(),
                         self.loadHooks(),
                     ]));
             })
@@ -77,7 +77,7 @@ export class Bootstrap {
         let self = this;
         return this.system.sharedApiService.getSystemConfig()
             .then(function(config) {
-                console.log(config);
+                debug("system:bootstrap")("User config retrieved");
                 self.system.config.userConfig = config;
             });
     }
@@ -89,7 +89,7 @@ export class Bootstrap {
         let self = this;
         let promises = [];
         _.forEach(self.system.config.hooks, function(config, name) {
-            debug("hooks")("Check hook config for %s", name);
+            debug("system:bootstrap:hooks")("Check hook config for %s", name);
 
             // normalize config
             if (typeof config === "boolean") {
@@ -101,25 +101,29 @@ export class Bootstrap {
 
             // hook is deactivated
             if (config.activated === false) {
-                debug("hooks")("Hook %s is deactivated", name);
+                debug("system:bootstrap:hooks")("Hook %s is deactivated", name);
                 return promises.push(Promise.resolve());
             }
 
             let hookModule = null;
+            let hookType = "user";
             // If the module path is specified we use it as priority
             if (_.isString(config.modulePath)) {
                 let modulePath = path.resolve(config.modulePath);
-                debug("hooks")("Trying to load Hook %s from path %s", name, modulePath);
+                debug("system:bootstrap:hooks")("Trying to load Hook %s from path %s", name, modulePath);
                 hookModule = require(modulePath);
             } else {
                 // then we try to lookup core module. We always use core hooks as priority over node_modules
-                debug("hooks")("Trying to load Hook %s as core module at %s", name, modulePath);
-                try { hookModule = require(modulePath); } catch(err) {
+                debug("system:bootstrap:hooks")("Trying to load Hook %s as core module at %s", name, modulePath);
+                try {
+                    hookModule = require(modulePath);
+                    hookType = "core";
+                } catch(err) {
                     // @WARING DEV: MODULE_NOT_FOUND may appears on core module if one of its dependency is not installed (and will throw false error)
                     if (err.code !== "MODULE_NOT_FOUND") { throw err; }
                     modulePath = path.resolve(self.system.config.appPath, "node_modules", name);
                     // if core hook does not exist we try to load node_module  hook
-                    debug("hooks")("The hook %s does not seems to be a core module so we try to load as node dependency with require(\"%s\")", name, modulePath);
+                    debug("system:bootstrap:hooks")("The hook %s does not seems to be a core module so we try to load as node dependency with require(\"%s\")", name, modulePath);
                     try { hookModule = require(modulePath); } catch(err) {
                         if (err.code !== "MODULE_NOT_FOUND") {
                             throw err;
@@ -149,11 +153,19 @@ export class Bootstrap {
                                 .then(() => cb())
                                 .catch(cb);
                         });
-                        self.system.hooks[name] = new HookContainer(hook, require(modulePath + "/package.json"));
+                        // export hook info
+                        let packageInfo = { name, version: self.system.info.version };
+                        if (hookType === "user") {
+                            packageInfo = require(modulePath + "/package.json");
+                        }
+                        self.system.hooks[name] = new HookContainer(hook, {
+                            ...packageInfo,
+                            type: hookType
+                        });
                         return hook.initialize().then(() => hook);
                     })
                     .then(function(hook) {
-                        debug("hooks")("Hook %s initialized", name);
+                        debug("system:bootstrap:hooks")("Hook %s initialized", name);
                         // next tick so hooks may use system.on("...:initialized") inside the initialize() method.
                         setImmediate(function() {
                             self.system.emit("hook:" + name + ":initialized", hook);

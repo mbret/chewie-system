@@ -105,7 +105,7 @@
          * Modal
          * Choose a task.
          */
-        .controller("scenarios.create.ChooseTaskController", function($scope, sharedApiService, util, _, authenticationService, $uibModalInstance, tasks) {
+        .controller("scenarios.create.ChooseTaskController", function($scope, sharedApiService, _, authenticationService, $uibModalInstance, tasks) {
             $scope.modules = tasks;
 
             $scope.select = function(module) {

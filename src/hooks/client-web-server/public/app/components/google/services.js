@@ -79,7 +79,7 @@
                 
                 gapi: gapi,
 
-                test: function(auth, util, sharedApiService){
+                test: function(auth, sharedApiService){
 
                     // client secret
                     var clientId = '143547074111-r7r5r57apv1vsi9qnvaqmsjkaug4rb2u.apps.googleusercontent.com';
@@ -111,7 +111,7 @@
                     function handleAuthResult(authResult) {
                         console.log('handleAuthResult', authResult);
                         if (authResult && !authResult.error) {
-                            sharedApiService.put(util.format('/users/%s', auth.getUser().getId()), {config: {
+                            sharedApiService.put(`/users/${auth.getUser().getId()}`, {config: {
                                 externalServices: {
                                     google: {
                                         accessToken: authResult.access_token,

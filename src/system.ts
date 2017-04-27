@@ -15,9 +15,8 @@ import {ScenarioReader} from "./core/scenario/scenario-reader";
 import {ModuleLoader} from "./core/plugins/modules/module-loader";
 import {Bootstrap} from "./bootstrap";
 import {Speaker} from "./core/speaker/speaker";
-import configurationLoader from "./configuration/loader";
+import { loadConfig } from "./shared/config";
 import LocalRepository from "./core/repositories/local-repository";
-import Storage from "./core/storage/storage";
 import {SharedApiServiceHelper} from "./core/remote-service/shared-api-service-helper";
 import {LoggerBuilder, LoggerInterface} from "./core/logger";
 import {HookInterface} from "./core/hook-interface";
@@ -49,7 +48,6 @@ export class System extends EventEmitter {
     garbageCollector: GarbageCollector;
     repository: any;
     sharedApiService: SharedApiServiceHelper;
-    storage: Storage;
     hooks: Array<HookInterface>;
     plugins: Map<string, PluginContainer>;
     modules: Map<string, ModuleContainer>;
@@ -94,10 +92,10 @@ export class System extends EventEmitter {
      */
     public start(options: any = {}, cb = function(err){}){
         let self = this;
-
         // load config
-        configurationLoader(options.settings)
+        loadConfig(options.settings)
             .then(function(config) {
+                // process.exit();
                 self.config = config;
 
                 // Build system logger
@@ -117,14 +115,11 @@ export class System extends EventEmitter {
                 ]);
 
                 // log various paths for debug conveniences
-                self.logger.verbose("App data path is located to %s (resolved)", path.resolve(process.cwd(), self.config.systemAppDataPath));
-                self.logger.verbose("App tmp folder is located to %s (resolved)", path.resolve(self.config.systemTmpDir));
+                debug("system")("App data path is located to %s (resolved)", path.resolve(process.cwd(), self.config.systemAppDataPath));
+                debug("system")("App tmp folder is located to %s (resolved)", path.resolve(self.config.systemTmpDir));
 
-                // self.logger.Logger = loggerBuilder;
                 self.logger.info(self.logger.emoji.get("coffee") + ' Starting...');
-                self.storage = new Storage(self);
                 self.communicationBus = new ServerCommunication.CommunicationBus(self);
-                // self.runtime = new Runtime(self);
                 self.sharedApiService = new SharedApiServiceHelper(self);
                 self.speaker = new Speaker(self);
                 self.localRepository = new LocalRepository(self);
@@ -261,7 +256,7 @@ export class System extends EventEmitter {
         let self = this;
 
         // run core bootstrap
-        self.logger.debug("Run system bootstrap...");
+        debug("system")("Run system bootstrap...");
         let bootstrap = new Bootstrap(this);
         bootstrap.bootstrap(function(err) {
             if (err) {

@@ -5,7 +5,7 @@
         .module('components.scenarios')
         .directive('formNodesSelector', directive);
 
-    function directive($uibModal, _, sharedApiService, util, APP_CONFIG){
+    function directive($uibModal, _, sharedApiService, APP_CONFIG){
         return {
             restrict: 'E',
             require: "^form",

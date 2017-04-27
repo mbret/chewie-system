@@ -51,7 +51,7 @@ module
             ioSocket: io.connect(APP_CONFIG.sharedApiProxyUrl)
         });
     })
-    .run(function(sharedApiSocket, APP_CONFIG, $rootScope, $state, notificationService, sharedApiService, authenticationService, util, googleApi, $log, $http){
+    .run(function(sharedApiSocket, APP_CONFIG, $rootScope, $state, notificationService, sharedApiService, authenticationService, googleApi, $log, $http){
 
         // Listen for events
         sharedApiSocket.on('events', function (data) {
