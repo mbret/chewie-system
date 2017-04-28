@@ -1,7 +1,7 @@
 (function(){
     'use strict';
 
-    var module = angular.module(angular.module('app.buddy').componentsNamespace + ".profileSelection");
+    var module = angular.module(angular.module('chewie').componentsNamespace + ".profileSelection");
 
     module
         .controller(module.name + '.IndexController', function($rootScope, $scope, sharedApiService, userService, $window, $state, $timeout){

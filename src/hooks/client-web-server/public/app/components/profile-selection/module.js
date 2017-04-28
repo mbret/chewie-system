@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    let parent = angular.module('app.buddy');
+    let parent = angular.module('chewie');
     let module = angular.module(parent.componentsNamespace + '.profileSelection', []);
 
     module.rootDir = parent.componentsRoot + '/profile-selection';

@@ -1,7 +1,7 @@
 (function(window, angular){
     'use strict';
 
-    let module = angular.module('app.buddy');
+    let module = angular.module('chewie');
 
     function configTranslate($translateProvider) {
         $translateProvider.preferredLanguage('fr');

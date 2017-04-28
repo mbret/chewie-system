@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var parent = angular.module('app.buddy');
+    var parent = angular.module('chewie');
 
     var statics = {
         root: parent.componentsRoot + '/home',

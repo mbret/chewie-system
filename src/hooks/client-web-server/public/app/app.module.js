@@ -1,6 +1,6 @@
 'use strict';
 
-let module = angular.module('app.buddy', [
+let module = angular.module('chewie', [
     'ui.bootstrap',
     'ui.bootstrap.tabs',
     'ui.bootstrap.tpls',
@@ -15,7 +15,7 @@ let module = angular.module('app.buddy', [
     'wu.masonry',
     'app.shared',
     "chewie.components",
-    'app.buddy.google',
+    'chewie.google',
     'ngMessages',
     "components.debug"
 ]);
