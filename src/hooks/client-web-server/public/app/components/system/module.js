@@ -8,7 +8,7 @@
             $stateProvider
 
                 // route for the home page
-                .state('dashboard.system', {
+                .state('chewie.dashboard.system', {
                     url: '/system',
                     templateUrl :'/app/components/system/index.html',
                     controller  : 'SystemController',

@@ -8,7 +8,7 @@
             $stateProvider
 
                 // route for the home page
-                .state('dashboard.playground', {
+                .state('chewie.dashboard.playground', {
                     url: '/playground',
                     templateUrl :'/app/components/playground/index.html',
                     controller  : 'ComponentsPlaygroundIndexController',

@@ -8,23 +8,23 @@
         .config(function($stateProvider) {
 
             $stateProvider
-                .state('dashboard.scenarios', {
+                .state('chewie.dashboard.scenarios', {
                     url: '/scenarios',
                     abstract: true,
                     template : '<ui-view></ui-view>',
                     controller  : 'TasksController'
                 })
-                .state('dashboard.scenarios.index', {
+                .state('chewie.dashboard.scenarios.index', {
                     url: '',
                     templateUrl : '/app/components/scenarios/index.html',
                     controller  : 'IndexScenariosController'
                 })
-                .state('dashboard.scenarios.create', {
+                .state('chewie.dashboard.scenarios.create', {
                     url: '/create',
                     templateUrl : '/app/components/scenarios/scenarios-create.html',
                     controller  : 'CreateScenariosController'
                 })
-                .state('dashboard.scenarios.edit', {
+                .state('chewie.dashboard.scenarios.edit', {
                     url: '/edit/:scenario',
                     templateUrl : '/app/components/scenarios/edit.html',
                     controller  : 'EditScenariosController'

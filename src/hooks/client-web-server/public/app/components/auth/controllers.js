@@ -21,7 +21,7 @@
                 authenticationService.login(selectedProfile.username, $scope.formData.password)
                     .then(function(){
                         notificationService.success('Logged in!');
-                        $state.go('dashboard.home');
+                        $state.go('chewie.dashboard.home');
                     })
                     .catch(function(err){
                         if(err.status === 400){
@@ -35,7 +35,7 @@
             authenticationService.logout()
                 .then(function(){
                     notificationService.success('Logged out!');
-                    $state.go('dashboard.home');
+                    $state.go('chewie.dashboard.home');
                 })
                 .catch(function() {
                     notificationService.error("Something went wrong!");

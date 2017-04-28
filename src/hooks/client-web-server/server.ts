@@ -1,6 +1,5 @@
 'use strict';
 import {System} from "../../system";
-import * as _ from "lodash";
 import {HookInterface} from "../../core/hook-interface";
 import {customResponses} from "./lib/custom-responses";
 import {Hook} from "../../core/hook";
@@ -15,7 +14,6 @@ let fs = require('fs');
 let httpProxy = require('http-proxy');
 let socket = require('socket.io');
 let server, proxyServer;
-let localConfig = require("./config/hook-config");
 
 export default class ClientWebServer extends Hook implements HookInterface {
 
@@ -23,17 +21,16 @@ export default class ClientWebServer extends Hook implements HookInterface {
 
     constructor(system: System, config: any) {
         super(system, config);
-        this.config = _.merge(localConfig, config);
+        this.config = config;
         this.logger = system.logger.getLogger("chewie:hook:client-web-server");
         this.app = app;
     }
 
     initialize() {
         let self = this;
-        let useSSL = self.system.config.webServerSSL.activate;
         let sslConf = {
-            key: fs.readFileSync(self.system.config.webServerSSL.key, 'utf8'),
-            cert: fs.readFileSync(self.system.config.webServerSSL.cert, 'utf8')
+            key: fs.readFileSync(self.config.ssl.key, 'utf8'),
+            cert: fs.readFileSync(self.config.ssl.cert, 'utf8')
         };
         let proxyServerPort = this.config.proxyServerPort;
         app.locals.system = this.system;
@@ -91,19 +88,19 @@ export default class ClientWebServer extends Hook implements HookInterface {
                 .on("listening", function() {
                     self.logger.debug('Proxy server listening');
                     // then start client web server
-                    server.listen(self.system.config.webServerPort);
+                    server.listen(self.config.port);
                 });
 
         // Web server handling
         server
             .on('listening', function () {
-                app.locals.url = self.system.config.webServerUrl;
-                app.locals.realUrl = self.system.config.webServerRemoteUrl;
+                app.locals.url = `https://localhost:${self.config.port}`;
+                app.locals.realUrl = `https://${self.system.config.systemIP}:${self.config.port}`;
                 self.logger.debug('Server listening on %s (%s from outside)', app.locals.url, app.locals.realUrl);
             })
             .on("error", function(err) {
                 if (err.code === "EADDRINUSE") {
-                    self.logger.error("It seems that something is already running on port %s. The web client will not be able to start. Maybe a chewie app is already started ?", self.system.config.webServerPort);
+                    self.logger.error("It seems that something is already running on port %s. The web client will not be able to start. Maybe a chewie app is already started ?", self.config.port);
                 } else {
                     self.logger.error("Error on client web server", err);
                 }

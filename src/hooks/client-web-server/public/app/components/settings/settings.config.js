@@ -3,7 +3,7 @@
 
     function settings($stateProvider) {
         $stateProvider
-            .state('dashboard.settings', {
+            .state('chewie.dashboard.settings', {
                 url: '/settings',
                 templateUrl :'/app/components/settings/settings.index.html',
                 controller  : 'ComponentsSettingsController',

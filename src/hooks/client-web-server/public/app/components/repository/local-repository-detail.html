@@ -3,10 +3,10 @@
         <h2>Repository</h2>
         <ol class="breadcrumb">
             <li>
-                <a ui-sref="dashboard.home">Home</a>
+                <a ui-sref="chewie.dashboard.home">Home</a>
             </li>
             <li class="active">
-                <a ui-sref="dashboard.repository.list">browse</a>
+                <a ui-sref="chewie.dashboard.repository.list">browse</a>
             </li>
             <li class="active">
                 <strong>Detail</strong>
@@ -25,7 +25,7 @@
                 <div ng-lockable="!ready">
                     <div class="ibox-content no-padding border-left-right"></div>
                     <div class="ibox-content profile-content">
-                        <uib-alert type="info" ng-show="installed">You already have installed this plugin. To uninstall the plugin, go to its <a ui-sref="dashboard.repository.installedDetail({name: plugin.name})">detail page</a>.</uib-alert>
+                        <uib-alert type="info" ng-show="installed">You already have installed this plugin. To uninstall the plugin, go to its <a ui-sref="chewie.dashboard.repository.installedDetail({name: plugin.name})">detail page</a>.</uib-alert>
                         <h4>Plugin ID: {{plugin.name}}</h4>
                         <p>From <strong>{{plugin.author}}</strong></p>
                         <p><small>version {{plugin.version}}</small></p>

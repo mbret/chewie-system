@@ -14,26 +14,9 @@ let module = angular.module('app.buddy', [
     'toastr',
     'wu.masonry',
     'app.shared',
-    'components.core',
-    'components.auth',
-    'components.tasks',
-    'components.hooks',
-    'components.screens',
-    'components.taskTriggers',
-    'components.repository',
-    'components.home',
-    'components.system',
-    'components.profile',
-    'components.playground',
-    'components.scenarios',
-    'components.plugins',
-    'components.profileSelection',
-    'components.settings',
-
+    "chewie.components",
     'app.buddy.google',
-
     'ngMessages',
-
     "components.debug"
 ]);
 

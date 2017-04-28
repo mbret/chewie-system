@@ -142,7 +142,7 @@
                     sharedApiService.post(`/users/${auth.getUser().id}/plugins/${$stateParams.plugin}/modules/${$stateParams.module}/tasks`, task)
                         .then(function(){
                             notificationService.success('Task created');
-                            //$state.go('dashboard.tasks');
+                            //$state.go('chewie.dashboard.tasks');
                         })
                         .catch(function(res){
                             if(res.status === 400){

@@ -9,21 +9,21 @@
 
             $stateProvider
 
-                .state('dashboard.plugins', {
+                .state('chewie.dashboard.plugins', {
                     url: '/plugins',
                     template: '<ui-view/>',
                     controller  : 'ComponentsPluginsIndexController',
-                    redirectTo: 'dashboard.plugins.list'
+                    redirectTo: 'chewie.dashboard.plugins.list'
                 })
 
                 // route for the home page
-                .state('dashboard.plugins.list', {
+                .state('chewie.dashboard.plugins.list', {
                     url: '/list',
                     templateUrl :'/app/components/plugins/index.html',
                     controller  : 'ComponentsPluginsListController',
                 })
 
-                .state('dashboard.plugins.detail', {
+                .state('chewie.dashboard.plugins.detail', {
                     url: '/detail/:plugin',
                     templateUrl :'/app/components/plugins/detail.html',
                     controller  : 'DetailController',

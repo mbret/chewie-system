@@ -26,20 +26,20 @@
         $stateProvider
 
             // route for the about page
-            .state('dashboard.screens', {
+            .state('chewie.dashboard.screens', {
                 url: '/screens',
                 abstract: true,
                 controller: 'ScreensController',
                 templateUrl: '/app/components/screens/index.html'
             })
 
-            .state('dashboard.screens.list', {
+            .state('chewie.dashboard.screens.list', {
                 url: '/list',
                 controller: 'ScreensListController',
                 templateUrl: '/app/components/screens/list.html'
             })
 
-            .state('dashboard.screens.new', {
+            .state('chewie.dashboard.screens.new', {
                 url: '/new',
                 controller: 'ScreensCreateController',
                 templateUrl: '/app/components/screens/new.html'
