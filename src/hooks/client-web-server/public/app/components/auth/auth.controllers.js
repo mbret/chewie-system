@@ -13,9 +13,9 @@
             $scope.user = selectedProfile;
 
             // @todo dev bypass
-            $timeout(function(){
-                $scope.login();
-            }, 1);
+            // $timeout(function(){
+            //     $scope.login();
+            // }, 1);
 
             $scope.login = function() {
                 authenticationService.login(selectedProfile.username, $scope.formData.password)

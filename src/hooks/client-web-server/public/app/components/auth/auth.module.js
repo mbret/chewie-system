@@ -20,7 +20,6 @@
                                 if ($rootScope.selectedProfile) {
                                     return resolve($rootScope.selectedProfile)
                                 }
-                                console.info("selectedProfile");
                                 // No profile found, redirect to profile page
                                 let err = new Error("No profile selected");
                                 err.redirectTo = "profileSelection";
@@ -43,7 +42,7 @@
 
         .run(function($rootScope, $state, authenticationService, $location, sharedApiService){
 
-            var redirectToAfterLogin = null;
+            let redirectToAfterLogin = null;
 
             // Listen for error in transition
             // This error could be due to an authentication problem

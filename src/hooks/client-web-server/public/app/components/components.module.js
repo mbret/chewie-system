@@ -3,6 +3,7 @@
 
     angular.module("chewie.components", [
         "chewie.components.dashboard",
+        "chewie.components.profileSelection",
         'components.core',
         'components.auth',
         'components.tasks',
@@ -16,7 +17,6 @@
         'components.playground',
         'components.scenarios',
         'components.plugins',
-        'components.profileSelection',
         'components.settings',
     ]);
 })();
