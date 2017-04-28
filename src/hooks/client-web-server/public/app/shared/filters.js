@@ -191,12 +191,6 @@
 
         })
 
-        .filter("profileImageUrl", function(userService) {
-            return function(input) {
-                return userService.getProfileImageUrl(input)
-            }
-        })
-
         .filter("userName", function() {
             return function(input, withUsername) {
                 if(!input.firstName && !input.lastName) {
