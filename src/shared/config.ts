@@ -20,7 +20,7 @@ export function loadConfig(config: any) {
             let completeConfig = _.merge({}, defaultConfig, config);
 
             let webServerUrl = ((completeConfig.webServerSSL.activate ? "https" : "http") + "://localhost:" + completeConfig.webServerPort);
-            let dataPath = path.join(completeConfig.system.systemAppDataPath, "data");
+            let dataPath = path.join(completeConfig.systemAppDataPath, "data");
             let localAppDataDir = os.platform() === 'win32' ? process.env.LOCALAPPDATA : os.homedir();
             let replaceTo = {
                 "env": process.env.NODE_ENV || "development",
