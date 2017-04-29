@@ -10,6 +10,7 @@ const inject = require('gulp-inject');
 const series = require('stream-series');
 const _ = require("lodash");
 const merge = require("merge-stream");
+let ngAnnotate = require('gulp-ng-annotate');
 let basePath = __dirname;
 let copyOfNodeModulesDestPath = "./public/node_modules";
 let distAppPath = path.join(basePath, "/.dist/hooks/client-web-server");
@@ -55,7 +56,8 @@ let config = {
         "vendors/angular-logger/dist/*.min.js",
         "vendors/angular-ui-tree/dist/angular-ui-tree.js",
         "vendors/angular-masonry/angular-masonry.js",
-        "vendors/ngstorage/ngStorage.js"
+        "vendors/ngstorage/ngStorage.js",
+        "vendors/angular-jwt/dist/angular-jwt.min.js"
     ]
 };
 
@@ -107,7 +109,8 @@ gulp.task("client-web-server:copy-vendors-npm", function() {
         getPipe("angular-oauth2", "/dist/*.min.js"),
         getPipe("angular-toastr", "/dist/**/*"),
         getPipe("awesome-bootstrap-checkbox", "/awesome-bootstrap-checkbox.css"),
-        getPipe("angular-cookies", "/*.min.js")
+        getPipe("angular-cookies", "/*.min.js"),
+        getPipe("angular-jwt", "/dist/angular-jwt.min.js")
     )
         .pipe(gulp.dest(config.buildPath + "/vendors"));
 });
@@ -128,6 +131,7 @@ gulp.task("client-web-server:copy-public", function() {
                 "!public/{css,css/**}",
                 "!public/resources/**",
                 "!public/vendors/**",
+                "!public/**/**.js",
             ], {
                 cwd: config.srcAppPath
             }
@@ -136,7 +140,21 @@ gulp.task("client-web-server:copy-public", function() {
         .pipe(gulp.dest(config.buildPath));
 });
 
-gulp.task("client-web-server:inject-js", gulp.series(gulp.parallel("client-web-server:copy-public"), function() {
+gulp.task("client-web-server:process-js", function() {
+    return gulp
+        .src([
+                "public/**/**.js",
+                "!public/resources/**",
+                "!public/vendors/**",
+            ], {
+                cwd: config.srcAppPath
+            }
+        )
+        .pipe(ngAnnotate())
+        .pipe(gulp.dest(config.buildPath));
+});
+
+gulp.task("client-web-server:inject-js", gulp.series(gulp.parallel("client-web-server:process-js", "client-web-server:copy-public"), function() {
     let target = gulp.src(config.srcAppPath + "/public/index.html");
 
     // It's not necessary to read the files (will speed up things), we're only after their paths:

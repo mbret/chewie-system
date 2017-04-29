@@ -8,7 +8,7 @@ import Base from "./base";
 
 module.exports = function(sequelize, system){
 
-    var User = sequelize.define('user', {
+    let User = sequelize.define('user', {
         username: {
             type: Sequelize.STRING,
             unique: true,
@@ -69,6 +69,16 @@ module.exports = function(sequelize, system){
             get: function(){
                 return _.isPlainObject(this.getDataValue('config')) ? this.getDataValue('config') : JSON.parse(this.getDataValue('config'));
             }
+        },
+
+        createdAt: {
+            type: Sequelize.INTEGER,
+            defaultValue: Math.floor(Date.now() / 1000)
+        },
+
+        updatedAt: {
+            type: Sequelize.INTEGER,
+            allowNull: true
         }
     },
     {
@@ -82,23 +92,6 @@ module.exports = function(sequelize, system){
             username: this.get('username'),
             config: this.get('config')
         }
-    };
-
-    /**
-     * Init admin user is it does not exist yet.
-     * @returns {Promise.<Instance>}
-     */
-    User.initAdmin = function(){
-        return User.findOrCreate({
-            where: {
-                username: 'admin'
-            },
-            defaults: {
-                username: 'admin',
-                firstName: 'Admin',
-                role: 'admin'
-            }
-        });
     };
 
     User.findByIdOrUsername = function(idOrUsername) {
@@ -117,3 +110,4 @@ module.exports = function(sequelize, system){
 
     return User;
 };
+// 2017-04-29 14:09:05.926 +00:00

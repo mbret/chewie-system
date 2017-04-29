@@ -1,0 +1,18 @@
+<div class="flex-container flex--direction-column flex--align-v-center full-height--vh">
+    <h1 class="logo-name">Chewie</h1>
+    <div class="flex-container flex--flow-row">
+        <div class="text-center animated fadeIn" ng-repeat="profile in users">
+            <div class="m-lg cursor-pointer" ng-click="selectProfile(profile)">
+                <div class="m-b-md">
+                    <img alt="image" class="img-circle circle-border profile-image-lg" ng-src="{{profile.profileImage | profileImageUrl}}">
+                </div>
+                <h3>{{profile | userName:true }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row animated fadeIn">
+        <div class="col-md-6">
+            <a class="btn btn-sm btn-white btn-block" href="register.html">Create an new profile (coming soon!)</a>
+        </div>
+    </div>
+</div>

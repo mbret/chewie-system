@@ -193,6 +193,9 @@
 
         .filter("userName", function() {
             return function(input, withUsername) {
+                if (!input) {
+                    return input;
+                }
                 if(!input.firstName && !input.lastName) {
                     return input.username;
                 }

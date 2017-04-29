@@ -1,99 +1,106 @@
-'use strict';
+(function() {
+    'use strict';
 
-angular
-    .module("app.shared")
-    .provider('authenticationService', function(){
+    function AuthenticationService($http, $window, sharedApiService, $rootScope, UserModel){
+        this.UserModel = UserModel;
+        this.$http = $http;
+        this.$window = $window;
+        this.sharedApiService = sharedApiService;
+        this.$rootScope = $rootScope;
+        this.user = null;
+        _init();
+    }
 
-        var UserModel = null;
+    AuthenticationService.prototype.updateUser = function(id){
+        return this.sharedApiService.get(`/users/${id}`).then((user) => {
+            this.user.update(user);
+            this.$rootScope.$emit('auth:user:updated');
+        });
+    };
 
-        this.setUserModel = function(model){
-            UserModel = model;
-        };
+    /**
+     *
+     * @param login
+     * @param password
+     * @returns {Object}
+     */
+    AuthenticationService.prototype.login = function(login, password) {
+        return this.sharedApiService
+            .post('/auth/signin', {
+                login: login,
+                password: password
+            })
+            .then((data) => {
+                let user = data.data;
+                this.setUser(user);
 
-        this.$get = function($http, $window, sharedApiService, $rootScope){
+                console.log('authenticationService.login:success', this.getUser());
+                this.$rootScope.$emit('auth:login:success');
+                return data;
+            });
+    };
 
-            function AuthenticationService(){
-                this.user = null;
-                _init();
-            }
+    AuthenticationService.prototype.logout = function(){
+        return this.sharedApiService.get('/auth/logout').then(function(){
+            _erasePersistence();
+            _eraseUser();
+            return Promise.resolve();
+        });
+    };
 
-            AuthenticationService.prototype.updateUser = function(id){
-                var self = this;
-                return sharedApiService.get(`/users/${id}`).then(function(user){
-                    self.user.update(user);
-                    $rootScope.$emit('auth:user:updated');
-                });
+    AuthenticationService.prototype.getUser = function(){
+        return this.user;
+    };
+
+    AuthenticationService.prototype.setUser = function(data){
+        this.user = new this.UserModel(data);
+        _persistData(data);
+        return this;
+    };
+
+    AuthenticationService.prototype.isAuth = function(){
+        return !(this.user === null)
+    };
+
+    AuthenticationService.prototype.resolveAuth = function(){
+        if(this.isAuth()){
+            return Promise.resolve(this);
+        }
+        return Promise.reject({code: 'UNAUTHENTICATED'});
+    };
+
+    AuthenticationService.prototype.clearCredentials = function() {
+
+    };
+
+    function _persistData(data){
+        window.sessionStorage["user"] = data.id;
+    }
+
+    function _erasePersistence(){
+        delete window.sessionStorage["user"];
+    }
+
+    function _eraseUser() {
+        this.user = null;
+    }
+
+    function _init(){
+        if (window.sessionStorage["userInfo"]) {
+            this.setUser(JSON.parse(window.sessionStorage["user"]));
+            console.log('authenticationService userInfo found', this.getUser());
+        }
+    }
+
+    angular
+        .module("app.shared")
+        .provider('authenticationService', function(){
+            let UserModel = null;
+            this.setUserModel = function(model){
+                UserModel = model;
             };
-
-            AuthenticationService.prototype.login = function(login, password){
-                var self = this;
-                return sharedApiService
-                    .post('/auth/signin', {
-                        login: login,
-                        password: password
-                    })
-                    .then(function(data){
-                        var user = data.data;
-                        self.setUser(user);
-
-                        console.log('authenticationService.login:success', self.getUser());
-                        $rootScope.$emit('auth:login:success');
-                        return data;
-                    });
+            this.$get = function($http, $window, sharedApiService, $rootScope){
+                return new AuthenticationService($http, $window, sharedApiService, $rootScope, UserModel);
             };
-
-            AuthenticationService.prototype.logout = function(){
-                return sharedApiService.get('/auth/logout').then(function(){
-                    _erasePersistence();
-                    _eraseUser();
-                    return Promise.resolve();
-                });
-            };
-
-            AuthenticationService.prototype.getUser = function(){
-                return this.user;
-            };
-
-            AuthenticationService.prototype.setUser = function(data){
-                this.user = new UserModel(data);
-                _persistData(data);
-                return this;
-            };
-
-            AuthenticationService.prototype.isAuth = function(){
-                return !(this.user === null)
-            };
-
-            AuthenticationService.prototype.resolveAuth = function(){
-                if(this.isAuth()){
-                    return Promise.resolve(this);
-                }
-                return Promise.reject({code: 'UNAUTHENTICATED'});
-            };
-
-            AuthenticationService.prototype.clearCredentials = function() {
-
-            };
-
-            function _persistData(data){
-                $window.sessionStorage["user"] = data.id;
-            }
-
-            function _erasePersistence(){
-                delete $window.sessionStorage["user"];
-            }
-
-            function _eraseUser() {
-                this.user = null;
-            }
-
-            function _init(){
-                if ($window.sessionStorage["userInfo"]) {
-                    this.setUser(JSON.parse($window.sessionStorage["user"]));
-                    console.log('authenticationService userInfo found', this.getUser());
-                }
-            }
-
-            return new AuthenticationService();
-        };
-    });
+        });
+})();

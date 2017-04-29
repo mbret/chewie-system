@@ -7,11 +7,8 @@
             $stateProvider
                 .state("profileSelection", {
                     url: "/profile-selection",
-                    templateUrl : '/app/components/profile-selection/index.html',
+                    templateUrl : '/app/components/profile-selection/profile-selection-index.html',
                     controller  : 'ComponentsProfileSelectionIndexController',
                 })
-        })
-        .run(function(sharedApiSocket, notificationService){
-
         });
 })();

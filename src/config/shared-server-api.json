@@ -3,8 +3,8 @@
     "port": 3002,
     "ssl": {
       "activate": true,
-      "key": "$chewie{basePath}/../resources/.ssh/server.key",
-      "cert": "$chewie{basePath}/../resources/.ssh/server.crt"
+      "key": "$chewie{resourceDir}/.ssh/server.key",
+      "cert": "$chewie{resourceDir}/.ssh/server.crt"
     },
     "sharedDatabase": {
       "connexion": {
@@ -19,7 +19,7 @@
         "logging": false,
         "typeValidation": true
       },
-      "migrationDir": "$chewie{basePath}/core/shared-server-api/db-migrate",
+      "migrationDir": "$chewie{resourceDir}/db-migrate",
       "migrationLogs": false
     }
   }

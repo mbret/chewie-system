@@ -6,8 +6,8 @@
         "proxyServerPort": 3001,
         "ssl": {
           "activate": true,
-          "key": "$chewie{basePath}/../resources/.ssh/server.key",
-          "cert": "$chewie{basePath}/../resources/.ssh/server.crt"
+          "key": "$chewie{resourceDir}/.ssh/server.key",
+          "cert": "$chewie{resourceDir}/.ssh/server.crt"
         }
       }
     },

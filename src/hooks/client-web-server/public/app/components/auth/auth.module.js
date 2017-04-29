@@ -13,23 +13,10 @@
                     controller: 'SigninController',
                     templateUrl: '/app/components/auth/signin.html',
                     resolve: {
-                        // selected profile (an username)
-                        selectedProfile: function($rootScope) {
-                            return new Promise(function(resolve, reject) {
-                                // profile found on runtime
-                                if ($rootScope.selectedProfile) {
-                                    return resolve($rootScope.selectedProfile)
-                                }
-                                // No profile found, redirect to profile page
-                                let err = new Error("No profile selected");
-                                err.redirectTo = "profileSelection";
-                                return reject(err);
-                            });
-                        },
-                        clearCredentials: function(authenticationService) {
-                            // Clear actual credentials
-                            authenticationService.clearCredentials();
-                        }
+                        // clearCredentials: function(authenticationService) {
+                        //     // Clear actual credentials
+                        //     authenticationService.clearCredentials();
+                        // }
                     }
                 })
 

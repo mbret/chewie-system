@@ -9,9 +9,9 @@ CREATE TABLE `user` (
   `lastName` VARCHAR(255),
   `role` TEXT NOT NULL DEFAULT 'user',
   `profileImage` VARCHAR(255) DEFAULT NULL,
-  `config` JSON DEFAULT '{"externalServices":{"google":{"auth":{"clientId":null,"clientSecret":null},"accessToken":null,"refreshToken":null}},"foo":"bar","screens":[{"id":"4a5100f7-ab69-4dd9-b465-416d3ee04aae","name":"Default","description":"This is your first screen"}]}',
-  `createdAt` DATETIME NOT NULL,
-  `updatedAt` DATETIME NOT NULL, UNIQUE (username)
+  `config` JSON DEFAULT '{}',
+  `createdAt` INTEGER NOT NULL,
+  `updatedAt` INTEGER
 );
 CREATE TABLE `task` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,

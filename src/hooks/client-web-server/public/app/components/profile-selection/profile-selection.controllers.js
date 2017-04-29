@@ -1,27 +1,25 @@
 (function(){
     'use strict';
 
-    function controller($rootScope, $scope, sharedApiService, userService, $window, $state, $timeout){
+    function controller($rootScope, $scope, sharedApiService, userService, $window, $state, localStorage){
         $rootScope.bodyClasses = 'gray-bg';
+        localStorage.removeItem("selectedProfile");
 
+        // fetch and fill user profiles
         sharedApiService.get("/users").then(function(data) {
             $scope.users = data;
-
-            // @todo dev bypass (admin with id 1)
-            // $timeout(function(){
-            //     $scope.selectProfile(data[0]);
-            // }, 1);
         });
 
         $scope.selectProfile = function(profile) {
             // It's important to not keep profile in storage as a page reload
             // should redirect to profile selection page
             // The only way to make it persistant is to set it in configuration
-            $rootScope.selectedProfile = profile;
+            localStorage.setObject("selectedProfile", profile);
             $state.go("signin");
         };
     }
 
-    angular.module("chewie.components.profileSelection")
+    angular
+        .module("chewie.components.profileSelection")
         .controller("ComponentsProfileSelectionIndexController", controller);
 })();

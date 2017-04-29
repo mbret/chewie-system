@@ -4,7 +4,7 @@
     var parent = angular.module('chewie');
 
     var statics = {
-        root: parent.componentsRoot + '/home',
+        root: '/app/components/home',
         namespace: 'components',
         moduleName: 'components.home'
     };

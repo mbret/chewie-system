@@ -169,7 +169,6 @@ export default class SharedServerApiHook extends EventEmitter {
      * - create orm
      * - create and attach models
      * - create tables
-     * - init admin user
      */
     protected configureOrm() {
         let server = this;
@@ -189,20 +188,7 @@ export default class SharedServerApiHook extends EventEmitter {
         server.orm.models.HookData = require(modelsPath + '/hook-data').define(server.orm.sequelize, server);
         server.orm.models.HookOption = require(modelsPath + '/hook-option').define(server.orm.sequelize, server);
         server.orm.models.SystemConfig = require(modelsPath + '/system-config').define(server.orm.sequelize, server);
-
-        // server.orm.models.User.hasMany(server.orm.models.Plugins);
         server.orm.models.User.hasMany(server.orm.models.Task);
-        // server.orm.models.User.hasMany(server.orm.models.Scenario);
-
-        // User 0 -> n Notification
-        // server.orm.models.User.hasMany(server.orm.models.Notification);
-        // server.orm.models.Plugins.hasMany(server.orm.models.Task);
-
-        // server.orm.models.Plugins.belongsTo(server.orm.models.User);
-        // server.orm.models.Task.belongsTo(server.orm.models.User);
-        // server.orm.models.Task.belongsTo(server.orm.models.Plugins);
-        // server.orm.models.Scenario.belongsTo(server.orm.models.User);
-        // server.orm.models.Notification.belongsTo(server.orm.models.User);
 
         server.orm.models.Plugins.hook('afterUpdate', function(plugin, options){
             server.emit('orm:plugins:updated', plugin);
@@ -212,12 +198,9 @@ export default class SharedServerApiHook extends EventEmitter {
             server.emit('orm:user:updated', user);
         });
 
-        // By default there is always one user. The administrator
-        return server.orm.models.User
-            .initAdmin()
-            .then(function() {
-                debugDefault("ORM initialized");
-            });
+        debugDefault("ORM initialized");
+
+        return Promise.resolve();
     }
 
     protected configureMiddleware(app) {

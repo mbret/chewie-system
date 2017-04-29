@@ -28,9 +28,12 @@
         });
     }
 
-    function configMisc($qProvider) {
+    function configMisc($qProvider, localStorageProvider) {
         // @todo patch solution for bug with angular 1.6 and ui router
         $qProvider.errorOnUnhandledRejections(false);
+        localStorageProvider.setConfig({
+           prefix: "chewie"
+        });
     }
 
     function configState($stateProvider, $urlRouterProvider) {
@@ -49,7 +52,7 @@
             });
     }
 
-    function configAuth(OAuthProvider, authenticationServiceProvider, _) {
+    function configAuth(OAuthProvider, authenticationServiceProvider, _, jwtOptionsProvider, $httpProvider) {
         OAuthProvider.configure({
             baseUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
             clientId: 'CLIENT_ID',
@@ -83,12 +86,28 @@
         };
 
         authenticationServiceProvider.setUserModel(User);
+
+        // Please note we're annotating the function so that the $injector works when the file is minified
+        jwtOptionsProvider.config({
+            whiteListedDomains: ["localhost"],
+            authPrefix: 'Bearer ',
+            // @ngInject
+            tokenGetter: function(options, localStorage) {
+                // Skip authentication for any requests ending in .html
+                if (options && options.url.substr(options.url.length - 5) === '.html') {
+                    return null;
+                }
+                console.info("retrieve token");
+                return localStorage.getItem('token');
+            }
+        });
+
+        $httpProvider.interceptors.push('jwtInterceptor');
     }
 
     module
-        .constant('annyang', annyang)
+        .constant('annyang', window.annyang)
         .constant('_', _)
-        .constant('componentsRoot', '/app/components')
         .constant('APP_CONFIG', _.merge(window.SERVER_CONFIG, {
             copyrightDates: '2015-2016',
             systemName: 'My Buddy',

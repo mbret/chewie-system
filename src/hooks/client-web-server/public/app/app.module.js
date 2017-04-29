@@ -1,40 +1,22 @@
-'use strict';
+(function() {
+    'use strict';
 
-let module = angular.module('chewie', [
-    'ui.bootstrap',
-    'ui.bootstrap.tabs',
-    'ui.bootstrap.tpls',
-    'ui.router',
-    'angular-oauth2',
-    'pascalprecht.translate',       // Angular Translate
-    'daterangepicker',
-    'btford.socket-io',
-    "angular-logger",
-    "ngStorage",
-    'toastr',
-    'wu.masonry',
-    'app.shared',
-    "chewie.components",
-    'chewie.google',
-    'ngMessages',
-    "components.debug"
-]);
+    /**
+     * @param sharedApiSocket
+     * @param APP_CONFIG
+     * @param $rootScope
+     * @param $state
+     * @param notificationService
+     * @param sharedApiService
+     * @param authenticationService
+     * @param googleApi
+     * @param $log
+     * @param $http
+     * @param authManager
+     */
+    function run(sharedApiSocket, APP_CONFIG, $rootScope, $state, notificationService, sharedApiService, authenticationService, googleApi, $log, $http, authManager){
 
-module.componentsRoot = '/app/components';
-module.componentsNamespace = 'components';
-
-module
-    .factory("apiSocket", function (socketFactory, APP_CONFIG) {
-        return socketFactory({
-            ioSocket: io.connect(APP_CONFIG.apiUrl)
-        });
-    })
-    .factory('sharedApiSocket', function (socketFactory, APP_CONFIG) {
-        return socketFactory({
-            ioSocket: io.connect(APP_CONFIG.sharedApiProxyUrl)
-        });
-    })
-    .run(function(sharedApiSocket, APP_CONFIG, $rootScope, $state, notificationService, sharedApiService, authenticationService, googleApi, $log, $http){
+        authManager.checkAuthOnRefresh();
 
         // Listen for events
         sharedApiSocket.on('events', function (data) {
@@ -94,18 +76,42 @@ module
         // Listen for socket io events
         //
         sharedApiSocket.on('connect_error', function(err){
-                $rootScope.apiSocketConnected = false;
-            });
+            $rootScope.apiSocketConnected = false;
+        });
         sharedApiSocket.on('reconnect_error', function(err){
-                $rootScope.apiSocketConnected = false;
-            });
+            $rootScope.apiSocketConnected = false;
+        });
         sharedApiSocket.on('reconnect_failed', function(err){
-                $rootScope.apiSocketConnected = false;
-            });
+            $rootScope.apiSocketConnected = false;
+        });
         sharedApiSocket.on('connect', function(err){
-                $rootScope.apiSocketConnected = true;
-            });
+            $rootScope.apiSocketConnected = true;
+        });
         sharedApiSocket.on('reconnect', function(err){
-                $rootScope.apiSocketConnected = true;
-            });
-    });
+            $rootScope.apiSocketConnected = true;
+        });
+    }
+
+    angular
+        .module('chewie', [
+            "angular-jwt",
+            'ui.bootstrap',
+            'ui.bootstrap.tabs',
+            'ui.bootstrap.tpls',
+            'ui.router',
+            'angular-oauth2',
+            'pascalprecht.translate',
+            'daterangepicker',
+            'btford.socket-io',
+            "angular-logger",
+            "ngStorage",
+            'toastr',
+            'wu.masonry',
+            'app.shared',
+            "chewie.components",
+            'chewie.google',
+            'ngMessages',
+            "components.debug"
+        ])
+        .run(run);
+})();

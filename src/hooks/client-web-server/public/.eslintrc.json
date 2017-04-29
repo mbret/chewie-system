@@ -7,10 +7,12 @@
     }
   },
   "extends": [
-    "angular",
     "eslint:recommended"
   ],
   "env": {
     "browser": true
+  },
+  "globals": {
+    "angular": true
   }
 }

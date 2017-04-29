@@ -14,6 +14,7 @@ import * as fs from "fs";
 export function loadConfig(config: any) {
     let systemIP = ip.address();
     let appPath = process.cwd();
+    let basePath =  __dirname + "/../..";
 
     return loadConfigFiles(__dirname + "/../config")
         .then(function(defaultConfig) {
@@ -25,7 +26,8 @@ export function loadConfig(config: any) {
                 "env": process.env.NODE_ENV || "development",
                 "localAppDataDir": localAppDataDir,
                 "osTmpDir": os.tmpdir(),
-                "basePath": __dirname + "/..",
+                basePath,
+                "resourceDir": basePath + "/resources",
                 appPath,
                 systemIP,
                 dataPath,
