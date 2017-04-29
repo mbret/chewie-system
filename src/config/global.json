@@ -3,7 +3,6 @@
   "systemIP": "$chewie{systemIP}",
   "dataPath": "$chewie{dataPath}",
   "env": "$chewie{env}",
-  "webServerUrl": "$chewie{webServerUrl}",
   "log": {
     "level": "silly"
   },
@@ -16,12 +15,6 @@
     "typeValidation": true
   },
   "sharedApiUrl": "https://localhost:3002",
-  "webServerPort": 3000,
-  "webServerSSL": {
-    "activate": true,
-    "key": "$chewie{basePath}/../resources/.ssh/server.key",
-    "cert": "$chewie{basePath}/../resources/.ssh/server.crt"
-  },
   "resourcesDir": "$chewie{basePath}/../resources",
   "auth": {
     "jwtSecret": "zbla"

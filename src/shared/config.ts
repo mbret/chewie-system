@@ -19,7 +19,6 @@ export function loadConfig(config: any) {
         .then(function(defaultConfig) {
             let completeConfig = _.merge({}, defaultConfig, config);
 
-            let webServerUrl = ((completeConfig.webServerSSL.activate ? "https" : "http") + "://localhost:" + completeConfig.webServerPort);
             let dataPath = path.join(completeConfig.systemAppDataPath, "data");
             let localAppDataDir = os.platform() === 'win32' ? process.env.LOCALAPPDATA : os.homedir();
             let replaceTo = {
@@ -30,13 +29,12 @@ export function loadConfig(config: any) {
                 appPath,
                 systemIP,
                 dataPath,
-                webServerUrl
+                // webServerUrl
             };
 
             // Set some config only possible during runtime
             completeConfig = _.merge({}, completeConfig, {
                 // sharedApiUrl: completeConfig.sharedApiUrl || ((completeConfig.sharedApiSSL.activate ? "https" : "http") + "://" + (systemIP + ':' + completeConfig.sharedApiPort)),
-                webServerRemoteUrl: webServerUrl.replace("localhost", systemIP),
                 synchronizedPluginsPath: path.join(dataPath, completeConfig.system.synchronizedPluginsDir)
             });
 

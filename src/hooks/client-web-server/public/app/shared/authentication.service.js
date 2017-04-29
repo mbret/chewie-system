@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('components.auth')
-
+angular
+    .module("app.shared")
     .provider('authenticationService', function(){
 
         var UserModel = null;

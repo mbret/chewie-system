@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var parent = angular.module('app.buddy');
+    var parent = angular.module('chewie');
 
     var statics = {
         root: parent.componentsRoot + '/home',
@@ -20,7 +20,7 @@
 
             $stateProvider
                 // route for the home page
-                .state('dashboard.home', {
+                .state('chewie.dashboard.home', {
                     url: '/home',
                     templateUrl : module.statics.root + '/index.html',
                     controller  : module.statics.moduleName + '.HomeController'

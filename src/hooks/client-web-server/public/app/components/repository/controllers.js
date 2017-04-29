@@ -47,7 +47,7 @@
                 };
                 sharedApiService.post(`/devices/${APP_CONFIG.systemId}/plugins`, data)
                     .then(function() {
-                        $state.go("dashboard.repository.list");
+                        $state.go("chewie.dashboard.repository.list");
                     });
             };
 
@@ -75,7 +75,7 @@
             $scope.unSave = function() {
                 sharedApiService.delete(`/api/devices/${APP_CONFIG.systemId}/plugins/${name}`)
                     .then(function() {
-                        $state.go("dashboard.repository.list");
+                        $state.go("chewie.dashboard.repository.list");
                     });
             };
 
@@ -92,7 +92,7 @@
                 })
                 .catch(function(err) {
                     if (err.status === 404) {
-                        $state.go("dashboard.repository.list");
+                        $state.go("chewie.dashboard.repository.list");
                     }
                 });
         })

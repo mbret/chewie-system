@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('app.buddy.google', [])
+    angular.module('chewie.google', [])
 
         .constant('gapi', gapi)
         

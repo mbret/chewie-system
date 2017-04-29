@@ -165,7 +165,8 @@ gulp.task("client-web-server:inject-js", gulp.series(gulp.parallel("client-web-s
 
 gulp.task("client-web-server:watch-less", function() {
     return gulp.watch([
-        config.srcAppPath + "public/css/**/*.less"
+        config.srcAppPath + "public/css/**/*.less",
+        config.srcAppPath + "public/app/**/*.less"
     ], gulp.series("client-web-server:build-less"));
 });
 

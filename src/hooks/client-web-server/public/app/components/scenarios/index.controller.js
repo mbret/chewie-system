@@ -21,7 +21,7 @@
             };
 
             $scope.edit = function(scenario) {
-                $state.go("dashboard.scenarios.edit", { scenario: scenario.id });
+                $state.go("chewie.dashboard.scenarios.edit", { scenario: scenario.id });
             };
 
             $scope.stopScenario = function(readableScenario) {

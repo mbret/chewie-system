@@ -22,7 +22,7 @@ body.full-height-layout #page-wrapper {
 }
 
 body.boxed-layout {
-  background: @boxed-backgound;
+  background: @boxed-background;
 }
 
 body.boxed-layout #wrapper {
@@ -64,7 +64,7 @@ a:hover, a:focus {
   font-weight: 600;
 }
 
-.font-noraml {
+.font-normal {
   font-weight: 400;
 }
 
@@ -120,6 +120,11 @@ video {
 
 .note-editor.fullscreen { z-index: 2050; }
 .note-editor.note-frame.fullscreen { z-index: 2020; }
+
+.note-editor.note-frame .note-editing-area .note-editable {
+  color: @text-color;
+  padding: 15px;
+}
 
 .note-editor.note-frame {
   border: none;
@@ -655,13 +660,13 @@ table.table-mail tr td {
   background-color: #ffffff;
 }
 
-.navy-bg, .bg-success {
-  background-color: @navy;
+.blue-bg, .bg-success {
+  background-color: @blue;
   color: #ffffff;
 }
 
-.blue-bg, .bg-primary {
-  background-color: @blue;
+.navy-bg, .bg-primary {
+  background-color: @navy;
   color: #ffffff;
 }
 
@@ -1011,6 +1016,10 @@ a.close-canvas-menu:hover {
 
 .m-xxs {
   margin: 2px 4px;
+}
+
+.m {
+  margin: 15px;
 }
 
 .m-xs {
@@ -1376,6 +1385,8 @@ body.modal-open {
 // Fix modal in Safari browser
 body.modal-open .wrapper-content.animated {
   -webkit-animation: none;
+  -ms-animation-nam: none;
+  animation: none;
 }
 
 // Fix for modal backdrop with animate.css

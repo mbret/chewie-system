@@ -1,6 +1,16 @@
 {
   "hooks": {
-    "client-web-server": true,
+    "client-web-server": {
+      "config": {
+        "port": 3000,
+        "proxyServerPort": 3001,
+        "ssl": {
+          "activate": true,
+          "key": "$chewie{basePath}/../resources/.ssh/server.key",
+          "cert": "$chewie{basePath}/../resources/.ssh/server.crt"
+        }
+      }
+    },
     "scenarios": true,
     "plugins": true
   }

@@ -3,7 +3,7 @@
         <h2>Modules</h2>
         <ol class="breadcrumb">
             <li>
-                <a ui-sref="dashboard.home">Home</a>
+                <a ui-sref="chewie.dashboard.home">Home</a>
             </li>
             <li class="active">
                 <strong>New task</strong>
@@ -43,7 +43,7 @@
                                 <strong>Original module name: </strong>{{ module.name }}<br>
                                 <strong>Has output support: </strong>{{ module.outputSupport }}
                             </p>
-                            <p><a class="btn btn-primary" ui-sref="dashboard.tasks.createForm({plugin: module.plugin.name, module: module.name})">Create a new task</a></p>
+                            <p><a class="btn btn-primary" ui-sref="chewie.dashboard.tasks.createForm({plugin: module.plugin.name, module: module.name})">Create a new task</a></p>
                         </div>
                     </uib-tab>
                 </uib-tabset>

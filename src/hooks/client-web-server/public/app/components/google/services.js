@@ -3,7 +3,7 @@
 
     // http://www.sitepoint.com/mastering-your-inbox-with-gmail-javascript-api/
     // https://developers.google.com/+/web/api/javascript#gapiclientsetapikeyapikey
-    angular.module('app.buddy.google')
+    angular.module('chewie.google')
 
         .service('googleApi', function(screensService, $rootScope, gapi, $window){
 
