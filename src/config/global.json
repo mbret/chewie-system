@@ -16,9 +16,6 @@
   },
   "sharedApiUrl": "https://localhost:3002",
   "resourcesDir": "$chewie{basePath}/../resources",
-  "auth": {
-    "jwtSecret": "zbla"
-  },
   "pluginsLocalRepositoryDir": "$chewie{localAppDataDir}/.my-buddy/data/plugins-repository",
   "alwaysSynchronizePlugins": false,
   "systemTmpDir": "$chewie{osTmpDir}/chewie",

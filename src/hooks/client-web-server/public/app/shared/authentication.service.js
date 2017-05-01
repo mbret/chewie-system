@@ -1,13 +1,14 @@
 (function() {
     'use strict';
 
-    function AuthenticationService($http, $window, sharedApiService, $rootScope, UserModel){
+    function AuthenticationService($http, $window, sharedApiService, $rootScope, UserModel, localStorage){
         this.UserModel = UserModel;
         this.$http = $http;
         this.$window = $window;
         this.sharedApiService = sharedApiService;
         this.$rootScope = $rootScope;
         this.user = null;
+        this.localStorage = localStorage;
         _init();
     }
 
@@ -26,16 +27,15 @@
      */
     AuthenticationService.prototype.login = function(login, password) {
         return this.sharedApiService
-            .post('/auth/signin', {
+            .post("/auth/signin", {
                 login: login,
                 password: password
             })
             .then((data) => {
                 let user = data.data;
                 this.setUser(user);
-
-                console.log('authenticationService.login:success', this.getUser());
                 this.$rootScope.$emit('auth:login:success');
+                // this.localStorage.setItem("token", data);
                 return data;
             });
     };

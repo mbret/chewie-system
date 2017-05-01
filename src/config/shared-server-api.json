@@ -1,5 +1,9 @@
 {
   "sharedServerApi": {
+    "auth": {
+      "jwtSecret": "zbla",
+      "expiresIn": "1h"
+    },
     "port": 3002,
     "ssl": {
       "activate": true,

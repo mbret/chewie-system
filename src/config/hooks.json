@@ -12,6 +12,6 @@
       }
     },
     "scenarios": true,
-    "plugins": true
+    "plugins": false
   }
 }

@@ -9,7 +9,7 @@ import * as _ from "lodash";
 let path        = require('path');
 import * as Services from "./services";
 import {System} from "../../../system";
-let router = require('express').Router();
+const express = require("express");
 let bodyParser  = require("body-parser");
 let requireAll  = require('my-buddy-lib').requireAll;
 import * as Sequelize from "sequelize";
@@ -22,6 +22,10 @@ const logNamespace = "shared-server-api";
 let ensureFile = Bluebird.promisify(fs.ensureFile);
 let debugDefault = debug(logNamespace);
 import { EventEmitter }  from "events";
+const jwt = require('express-jwt');
+import customResponses from "./middlewares/custom-responses";
+import httpLogger from "./middlewares/http-logger";
+import cors from "./middlewares/cors";
 
 export default class SharedServerApiHook extends EventEmitter {
 
@@ -48,6 +52,7 @@ export default class SharedServerApiHook extends EventEmitter {
 
         // export system to request handler
         app.locals.system = this.system;
+        app.locals.server = this;
 
         // hook config
         this.config = this.system.config.sharedServerApi;
@@ -95,6 +100,26 @@ export default class SharedServerApiHook extends EventEmitter {
                     return Promise.resolve();
                 });
             });
+    }
+
+    public serverError(res, err: any) {
+        let errResponse: any = {};
+        errResponse.status = "error";
+        errResponse.code = "serverError";
+        errResponse.message = "An internal error occured";
+        errResponse.data = {};
+
+        // Handle Error object
+        if(err instanceof Error) {
+            let error: any = err; // workaround for 'code' property
+            errResponse = _.merge(errResponse, {message: error.message, data: {stack: error.stack, code: error.code}});
+        }
+
+        if(_.isString(err)) {
+            errResponse.message = err;
+        }
+
+        return res.status(500).json(errResponse)
     }
 
     protected startServer() {
@@ -206,84 +231,16 @@ export default class SharedServerApiHook extends EventEmitter {
     protected configureMiddleware(app) {
         let self = this;
         let server = this;
+
         app.use(bodyParser.json()); // to support JSON-encoded bodies
         app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
             extended: true
         }));
+        app.use(cors);
+        app.use(httpLogger);
+        app.use(customResponses);
 
-        app.use(function allowCrossDomain(req, res, next) {
-            res.header("Access-Control-Allow-Origin", "*");
-            res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            res.header("Access-Control-Allow-Credentials", "true");
-            next();
-        });
-
-        // logging http
-        app.use(function (req, res, next) {
-            self.logger.verbose(`[${req.hostname } (${req.protocol})] "${req.method} ${req.url} ${req.headers['user-agent'] || '(no user-agent)'}"`);
-            return next();
-        });
-
-        app.use(function(req, res, next){
-            res.set("chewie-version", self.system.info.version);
-
-            /**
-             * 400
-             * @param err
-             * @param options
-             */
-            res.badRequest = function(err, options = {}) {
-                let message = "Bad request";
-                let error = {};
-                if(_.isString(err)) {
-                    message = err;
-                    err = {};
-                }
-                let errResponse = {
-                    status: "error",
-                    code: err.code || "badRequest",
-                    message: err.message || message,
-                    data: err.data || {}
-                };
-
-                return res.status(400).send(errResponse);
-            };
-
-            res.created = function(data){
-                return res.status(201).send(data);
-            };
-
-            res.ok = function(data){
-                return res.status(200).send(data);
-            };
-
-            res.notFound = function(data){
-                let errResponse: any = {};
-                errResponse.status = "error";
-                errResponse.code = "notFound";
-                errResponse.message = data;
-                errResponse.data = {};
-                return res.status(404).send(errResponse);
-            };
-
-            res.updated = function(data){
-                return res.status(200).send(data);
-            };
-
-            /**
-             * http://jsonapi.org/format/#errors-processing
-             * https://labs.omniti.com/labs/jsend
-             * @param err
-             * @returns {*}
-             */
-            res.serverError = function(err) {
-                server.logger.error("Send 500 response", err);
-                return serverError(res, err);
-            };
-
-            return next();
-        });
+        let router = express.Router();
 
         // Require all controllers
         requireAll({
@@ -294,42 +251,35 @@ export default class SharedServerApiHook extends EventEmitter {
             }
         });
 
-        app.use('/', router); // @deprecated
-        app.use('/api', router);
+        // app.use(jwt({
+        //     secret: this.system.config.sharedServerApi.auth.jwtSecret
+        // }).unless({
+        //     path: ["/ping"]
+        // }));
+        app.use(router);
+
+        // Handle 404
+        app.use(function(req, res, next) {
+            res.notFound();
+        });
 
         // Error handler
         app.use(function(err, req, res, next) {
+            if (err.name === 'UnauthorizedError') {
+                return res.unauthorized();
+            }
             server.logger.error("An error has been thrown inside middleware and has been catch by 500 error handle: " + err.stack);
-            return serverError(res, err);
+            return self.serverError(res, err);
         });
 
         // extend validator module with some custom test
         validator.isModuleId = function(value) {
             return this.matches(value, /\w+:\w+/);
         };
+
         validator.isUsername = function(value) {
             return this.isAlpha(value);
         };
-
-        function serverError(res, err: any){
-            let errResponse: any = {};
-            errResponse.status = "error";
-            errResponse.code = "serverError";
-            errResponse.message = "An internal error occured";
-            errResponse.data = {};
-
-            // Handle Error object
-            if(err instanceof Error) {
-                let error: any = err; // workaround for 'code' property
-                errResponse = _.merge(errResponse, {message: error.message, data: {stack: error.stack, code: error.code}});
-            }
-
-            if(_.isString(err)) {
-                errResponse.message = err;
-            }
-
-            return res.status(500).send(errResponse)
-        }
 
         return Promise.resolve();
     }

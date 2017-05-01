@@ -25,8 +25,8 @@
         $scope.login = function() {
             authenticationService.login($scope.user.username, $scope.formData.password)
                 .then(function(){
-                    notificationService.success('Logged in!');
-                    $state.go('chewie.dashboard.home');
+                    // notificationService.success('Logged in!');
+                    // $state.go('chewie.dashboard.home');
                 })
                 .catch(function(err){
                     if(err.status === 400){

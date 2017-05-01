@@ -7,6 +7,8 @@ import {ScenarioHelper} from "../../core/scenario/scenario-helper";
 import {Hook} from "../../core/hook";
 import {SystemError} from "../../core/error";
 import {ScenarioModel} from "../../core/shared-server-api/lib/models/scenario";
+import {debug as hookDebug} from "../../shared/debug";
+let debug = hookDebug(":hook:scenarios");
 
 /**
  * Scenario are loaded automatically when:
@@ -52,6 +54,9 @@ export = class ScenariosHook extends Hook implements HookInterface {
                     scenarios.forEach(function(scenario) {
                         return self.startScenario(scenario);
                     });
+                })
+                .catch((err) => {
+                    this.logger.error(`Unable to retrieve scenarios because of api error: ${err.message}`);
                 });
         });
 

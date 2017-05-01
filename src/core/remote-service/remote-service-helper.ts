@@ -1,7 +1,10 @@
 "use strict";
 
 import {System} from "../../system";
-import {ApiResponseError, ApiResponseNotFoundError, ApiResponseBadRequestError} from "./response-error";
+import {
+    ApiResponseError, ApiResponseNotFoundError, ApiResponseBadRequestError,
+    ApiResponseUnauthorizedError
+} from "./response-error";
 let request = require("request");
 let _ = require("lodash");
 import { EventEmitter }  from "events";
@@ -51,13 +54,6 @@ class RemoteServiceHelper extends EventEmitter {
         } catch(err) {}
         response.data = response.body
 
-        if (response.statusCode === 500) {
-
-            // Build an error object that will wrap response
-            // So we have a valid Error object and still able to handle response
-            return cb(new ApiResponseError(response));
-        }
-
         if (response.statusCode === 400) {
             return cb(new ApiResponseBadRequestError(response));
         }
@@ -67,6 +63,17 @@ class RemoteServiceHelper extends EventEmitter {
             // Build an error object that will wrap response
             // So we have a valid Error object and still able to handle response
             return cb(new ApiResponseNotFoundError(response));
+        }
+
+        if (response.statusCode === 401) {
+            return cb(new ApiResponseUnauthorizedError(response));
+        }
+
+        if (response.statusCode === 500) {
+
+            // Build an error object that will wrap response
+            // So we have a valid Error object and still able to handle response
+            return cb(new ApiResponseError(response));
         }
 
         return cb(null, response);

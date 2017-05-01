@@ -53,6 +53,7 @@
     "ejs": "^2.5.3",
     "express": "^4.15.0",
     "express-ejs-layouts": "^2.2.0",
+    "express-jwt": "^5.3.0",
     "fs-extra": "^2.0.0",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-changed": "^2.0.0",

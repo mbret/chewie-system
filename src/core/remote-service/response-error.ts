@@ -14,11 +14,13 @@ export class ApiResponseError extends Error {
         // Handle some error that are not well formed
         // ex: request not even sent "cannot POST ..." or bad response from api
         if(_.isString(response.body)) {
-            response.body = {
-                message: response.body,
-                data: {}
-            };
+            response.body = {};
         }
+        // default response body if needed
+        response.body = Object.assign({
+            message: response.body,
+            data: {}
+        }, response.body);
         this.status = response.status;
         this.data = response.body;
         this.name = "ApiResponseError";
@@ -48,13 +50,11 @@ export class ApiResponseNotFoundError extends ApiResponseError {
     }
 }
 
-export function BuildErrorFromResponse(response) {
-    switch(response.statusCode) {
-        case 400:
-            return new ApiResponseBadRequestError(response);
-        case 404:
-            return new ApiResponseNotFoundError(response);
-        default:
-            return new ApiResponseError(response);
+export class ApiResponseUnauthorizedError extends ApiResponseError {
+    constructor(response) {
+        super(response);
+
+        this.name = "ApiResponseUnauthorizedError";
+        this.message = "Http 401 Unauthorized: " + response.body.message;
     }
 }

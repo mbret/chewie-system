@@ -4,12 +4,15 @@ let _ = require('lodash');
 let jwt = require('jsonwebtoken');
 import * as nodeValidator from "validator";
 
-module.exports = function(server, router){
+module.exports = function(server, router) {
 
     let validator: any = nodeValidator; // workaround typescript because of redefinition
     let userService = server.services.usersService;
     let UserDao = server.orm.models.User;
 
+    /**
+     * Return user + jwt token
+     */
     router.post('/auth/signin', function(req, res){
 
         let username = req.body.login;
@@ -27,7 +30,8 @@ module.exports = function(server, router){
                 if(!user){
                     return res.badRequest("bad credentials");
                 }
-                var token = jwt.sign({ id: user.id }, server.system.config.auth.jwtSecret);
+                let payload = { id: user.id, role: user.role };
+                let token = jwt.sign(payload, server.system.config.sharedServerApi.auth.jwtSecret, { expiresIn: server.system.config.sharedServerApi.auth.expiresIn });
                 return res.json({
                     data: userService.formatUser(user.toJSON()),
                     token: token

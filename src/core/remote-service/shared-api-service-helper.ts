@@ -5,7 +5,6 @@ import RemoteServiceHelper from "./remote-service-helper";
 import {System} from "../../system";
 import {ApiResponseError, ApiResponseNotFoundError} from "./response-error";
 let io = require('socket.io-client');
-import * as _ from "lodash";
 
 export class SharedApiServiceHelper extends RemoteServiceHelper {
 
@@ -67,6 +66,9 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
             });
     }
 
+    /**
+     * Validate the promise as soon as the api is responding.
+     */
     public apiReady(): Promise<any> {
         let self = this;
         if (this._apiReady) {
