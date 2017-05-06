@@ -27,24 +27,27 @@ export class Bootstrap {
         Promise.resolve()
             // Initialize core services
             .then(function() {
-                return Promise.resolve()
-                    // @todo ignore sharedApiServer when using proxy
-                    .then(() => self.system.sharedApiServer.initialize())
-                    .then(() => self.system.sharedApiService.initialize())
-                    // For now we need the shared api server to be connected
-                    .then(function() {
-                        debug("system:bootstrap")("We now wait for api to be ready...");
+                return Promise
+                    .resolve()
+                    .then(() => self.system.persistenceService.initialize())
+                    .then(() => {
+                        // On complete mode we need to start the shared server api
+                        // if (self.system.config.role !== "client") {
+                            return self.system.apiServer.initialize()
+                        // }
+                    })
+                    .then(() => {
+                        let token = null;//"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEiLCJyb2xlIjpudWxsLCJ0eXBlIjoiYXBwIiwiaWF0IjoxNDk0MDc3Mzc1LCJleHAiOjE0OTQwODA5NzV9.0QKBxQEajf7HvJ9N7ogpV6g0B4jMzEzOLb8rYN9S-oE";
                         let warningApi = setTimeout(function() {
                             self.system.logger.warn("The api seems to be unreachable or taking unusually long time to respond. Please " +
                                 "verify that the remote api is running correctly before starting the system");
                         }, 10000);
-                        return self.system.sharedApiService.apiReady()
-                            .then(function() {
+                        return self.system.sharedApiService.initialize(token)
+                            .then(() => {
                                 clearTimeout(warningApi);
-                                return Promise.resolve();
                             });
                     })
-                    .then(() => self.loadUserSystemConfig())
+                    // .then(() => self.loadUserSystemConfig())
                     // After this point user options are available through entire app.
                     .then(() => Promise.all([
                         self.system.speaker.initialize(),

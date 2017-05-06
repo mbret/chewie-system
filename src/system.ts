@@ -28,6 +28,7 @@ import {debug} from "./shared/debug";
 import {RepositoriesHelper} from "./core/repositories/repositories-helper";
 import SharedServerApiHook from "./core/shared-server-api/lib/server";
 import EmailAdapterContainer from "./core/email/email-adapter-container";
+import PersistenceService from "./core/persistence/persistence-service";
 
 /**
  * System is the main program daemon.
@@ -56,7 +57,8 @@ export class System extends EventEmitter {
     id: string;
     name: string;
     email: EmailAdapterContainer;
-    sharedApiServer: SharedServerApiHook;
+    apiServer: SharedServerApiHook;
+    persistenceService: PersistenceService;
     public pluginsHelper: PluginsHelper;
     public repositoriesHelper: RepositoriesHelper;
     protected shutdownQueue: any;
@@ -90,10 +92,10 @@ export class System extends EventEmitter {
      * @param cb
      * @constructor
      */
-    public start(options: any = {}, cb = function(err){}){
+    public start(options: any = {}, cb: Function = null){
         let self = this;
         // load config
-        loadConfig(options.settings)
+        loadConfig()
             .then(function(config) {
                 // process.exit();
                 self.config = config;
@@ -126,28 +128,34 @@ export class System extends EventEmitter {
                 self.repository = new repositories.Repository(self);
                 self.scenarioReader = new ScenarioReader(self);
                 self.moduleLoader = new ModuleLoader(self);
-                self.sharedApiServer = new SharedServerApiHook(self);
+                self.apiServer = new SharedServerApiHook(self);
+                self.persistenceService = new PersistenceService(self);
 
-                self.init(function(err){
-                    return cb(err);
-                });
+                return self.init();
             })
             .catch(function(err) {
-                console.error("Unable to load configuration", err);
-                return cb(err);
+                console.error("A critical error occurred during daemon startup. Process will be terminated.", util.inspect(err, true));
+                if (cb) {
+                    return cb(err);
+                } else {
+                    self.shutdown(1, undefined, true);
+                }
             });
     }
 
     /**
      * @param processCode null|0 by default
      * @param restart
+     * @param {boolean} safeMode - Safe mode allow the method to be used at any moment and will not require any system dependencies
      */
-    public shutdown(processCode = undefined, restart = undefined) {
+    public shutdown(processCode = undefined, restart = undefined, safeMode = false) {
         let self = this;
 
         if (self.shuttingDown) {
             return;
         }
+
+        (safeMode && !restart) ? console.log("The process is shutting down..") : self.logger.info('The system is shutting down');
 
         self.shuttingDown = true;
         if (!processCode) {
@@ -157,14 +165,17 @@ export class System extends EventEmitter {
         this.emit(restart ? 'restarting' : 'shutdown');
 
         // Process each task on shutdown
-        this.logger.verbose('Process all registered shutdown task before shutdown');
+        (!safeMode) ? this.logger.verbose('Process all registered shutdown task before shutdown') : null;
         this.shutdownQueue.start(function(err) {
             // ignore error
-            if (err) {
+            if (err && !safeMode) {
                 self.logger.error("Some errors on shutdown task queue processing", err);
             }
             process.exit(restart ? 42 : processCode);
         });
+
+        // infinite promise (useful when you want to stop async process before shutdown)
+        return new Promise(() => {});
     }
 
     public restart(){
@@ -175,7 +186,7 @@ export class System extends EventEmitter {
         this.shutdownQueue.push(fn);
     }
 
-    private init(cb) {
+    private init() {
         let self = this;
 
         // We should not do anything here
@@ -200,45 +211,37 @@ export class System extends EventEmitter {
             self.shutdown();
         });
 
-        this.on('shutdown', function(){
-            self.logger.info('The system is shutting down');
-        });
-
         this.on('restarting', function(){
             self.logger.info('The system is restarting');
         });
 
-        this.runBootstrap(function(err){
-            if(err){
-                errorOnStartup(err);
-                return;
-            }
+        return new Promise((resolve, reject) => {
+            this.runBootstrap(function(err){
+                if(err){
+                    return reject(err);
+                }
 
-            // Splash final information
-            self.logger.info('=====================================');
-            self.logger.info('                                     ');
-            self.logger.info('The system is now started and ready! ');
-            self.logger.info('                                     ');
-            self.logger.info('=====================================');
+                // Splash final information
+                self.logger.info('=====================================');
+                self.logger.info('                                     ');
+                self.logger.info('The system is now started and ready! ');
+                self.logger.info('                                     ');
+                self.logger.info('=====================================');
 
-            // Play some system sounds
-            self.playSystemSound('start_up.wav');
+                // Play some system sounds
+                self.playSystemSound('start_up.wav');
 
-            // broadcast
-            setTimeout(function(){
-                self.sharedApiService.createNotification("System " + self.name + " started at " + self.info.startedAt + " and is now ready")
-                    .catch(errorOnStartup)
-            }, 2000);
+                // broadcast
+                setTimeout(function(){
+                    self.sharedApiService.createNotification("System " + self.name + " started at " + self.info.startedAt + " and is now ready")
+                        .catch(() => {});
+                }, 2000);
 
-            self.emit("ready");
+                self.emit("ready");
 
-            return cb();
+                return resolve();
+            });
         });
-
-        function errorOnStartup(err) {
-            self.logger.error("A critical error occurred during daemon startup. Process will be terminated.", util.inspect(err, true));
-            self.shutdown(1, null);
-        }
     }
 
     private _onUnexpectedError(error){
@@ -279,7 +282,7 @@ export class System extends EventEmitter {
             }
             if (userBootstrap && userBootstrap.bootstrap) {
                 let initializing = true;
-                self.logger.debug("A user bootstrap has been found, run it");
+                debug('system')("A user bootstrap has been found, run it!");
                 userBootstrap.bootstrap(self, function(err) {
                     initializing = false;
                     return done(err);

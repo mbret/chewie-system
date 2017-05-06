@@ -5,6 +5,8 @@ import RemoteServiceHelper from "./remote-service-helper";
 import {System} from "../../system";
 import {ApiResponseError, ApiResponseNotFoundError} from "./response-error";
 let io = require('socket.io-client');
+import {debug} from "../../shared/debug";
+import _ = require("lodash");
 
 export class SharedApiServiceHelper extends RemoteServiceHelper {
 
@@ -19,7 +21,45 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
         this._apiReady = false;
     }
 
-    initialize() {
+    protected buildOptions(userOptions): any {
+        // fetch auth token
+        let authToken: any = this.system.persistenceService.entries.findOne({ name: 'auth.token' });
+        if (authToken.value) {
+            debug("system:shared-api-service")(`Auth token ${authToken.value.substring(0, 10)}... found injected into request`);
+            userOptions = _.merge({}, userOptions, {
+                headers: { 'Authorization': `Bearer ${authToken.value}` }
+            });
+        }
+        return super.buildOptions(userOptions);
+    }
+
+    protected replaceToken(newToken) {
+        let existingToken: any = this.system.persistenceService.entries.findOne({ name: 'auth.token' });
+        existingToken.value = newToken;
+        // got new token so we reset refresh
+        let existingRefreshToken: any = this.system.persistenceService.entries.findOne({ name: 'auth.refreshToken' });
+        existingRefreshToken.value = null;
+        this.system.persistenceService.entries.update(existingToken);
+        this.system.persistenceService.entries.update(existingRefreshToken);
+        this.system.persistenceService.db.saveDatabase();
+    }
+
+    protected _tryToPing() {
+        let self = this;
+        return self.get("/ping")
+            .catch(function(err) {
+                if (err.code === "ECONNREFUSED") {
+                    return new Promise(function(resolve, reject) {
+                        // wait 1 second for next call
+                        setTimeout(() => self._tryToPing().then(resolve).catch(reject), 1000)
+                    });
+                } else {
+                    throw err;
+                }
+            });
+    }
+
+    public initialize(authToken = null): Promise<any> {
         let self = this;
 
         self._tryToPing()
@@ -48,21 +88,25 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
                 });
         });
 
-        return Promise.resolve();
-    }
+        // For now we need the shared api server to be connected
+        debug("system:shared-api-service")("We now wait for api to be ready...");
 
-    protected _tryToPing() {
-        let self = this;
-        return self.get("/ping")
-            .catch(function(err) {
-                if (err.code === "ECONNREFUSED") {
-                    return new Promise(function(resolve, reject) {
-                        // wait 1 second for next call
-                        setTimeout(() => self._tryToPing().then(resolve).catch(reject), 1000)
-                    });
-                } else {
-                    throw err;
+        return self.system.sharedApiService.apiReady()
+            .then(function() {
+                debug("system:shared-api-service")("Api is online.");
+                // We are gonna check auth with current token.
+                // We use stored token, so if a token is provided as argument we store it before
+                if (authToken) {
+                    self.replaceToken(authToken);
                 }
+                return self.system.sharedApiService.getAuthStatus()
+                    .then(function(info) {
+                        // if (info.status !== "authorized") {
+                        //     self.system.logger.error(`The system is not authenticated with the api. Please verify the validity of auth token!`);
+                        //     // return self.system.shutdown();
+                        //     throw new Error('Api not authenticated');
+                        // }
+                    });
             });
     }
 
@@ -80,31 +124,31 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
         }
     }
 
-    createNotification(content, type = "info") {
+    public createNotification(content, type = "info") {
         return this.post("/notifications", {content: content, type: type, from: this.system.id});
     }
 
-    getAllScenarios() {
+    public getAllScenarios() {
         return this.get("/devices/" + this.system.id + "/scenarios");
     }
 
-    deletePlugin(pluginName: string) {
+    public deletePlugin(pluginName: string) {
         return this.delete(util.format("/devices/%s/plugins/%s", this.system.id, pluginName))
     }
 
-    getAllPlugins() {
+    public getAllPlugins() {
         return this.get("/devices/" + this.system.id + "/plugins");
     }
 
-    postHookData(hookName: string, key: string, data: any) {
+    public postHookData(hookName: string, key: string, data: any) {
         return this.post("/devices/" + this.system.id + "/hooks/" + hookName + "/data", {key: key, data: data});
     }
 
-    putHookData(hookName: string, key: string, data: any, options: any) {
+    public putHookData(hookName: string, key: string, data: any, options: any) {
         return this.put("/devices/" + this.system.id + "/hooks/" + hookName + "/data/" + key, {data: data, partial: options.partial});
     }
 
-    getHookData(hookName: string, key: string) {
+    public getHookData(hookName: string, key: string) {
         return this.get("/devices/" + this.system.id + "/hooks/" + hookName + "/data/" + key);
     }
 
@@ -112,7 +156,7 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
      * @param pluginId
      * @returns {*}
      */
-    getPlugin(pluginId) {
+    public getPlugin(pluginId) {
         return this.get(util.format("/devices/%s/plugins/%s", this.system.id, pluginId))
             .then(function(response: any) {
                 return response.body;
@@ -125,11 +169,11 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
             });
     }
 
-    postPlugin(data: any) {
+    public postPlugin(data: any) {
         return this.post(util.format("/devices/%s/plugins", this.system.id), data);
     }
 
-    getScenario(id) {
+    public getScenario(id) {
         return this.get(util.format("/devices/%s/scenarios/%s", this.system.id, id))
             .then(function(response: any) {
                 return response.body;
@@ -142,7 +186,7 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
             });
     }
 
-    getHookConfigData(name) {
+    public getHookConfigData(name) {
         return this.get("/devices/" + this.system.id + "/hooks-config/" + name)
             .then(function(response: any) {
                 return response.body.data;
@@ -155,7 +199,7 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
             });
     }
 
-    getSystemConfig() {
+    public getSystemConfig() {
         return this.get("/system-config/" + this.system.id)
             .then(function(response: any) {
                 return response.body.data;
@@ -168,101 +212,7 @@ export class SharedApiServiceHelper extends RemoteServiceHelper {
             });
     }
 
-    // findUserByUsername(username) {
-    //     return this.get(util.format("/users/%s", username))
-    //         .then(function(response) {
-    //             if(response.statusCode !== 200) {
-    //                 return null;
-    //             }
-    //             return response.body;
-    //         });
-    // }
-
-    // findAllTasksByUser(userId) {
-    //     return this.get(util.format("/users/%s/tasks", userId))
-    //         .then(function(response) {
-    //             if(response.statusCode !== 200) {
-    //                 return null;
-    //             }
-    //             return response.body;
-    //         });
-    // }
-
-    // findOrCreatePlugin(userId, pluginIdOrName, data) {
-    //     var self = this;
-    //     return this.findPlugin(userId, pluginIdOrName)
-    //         .then(function(plugin) {
-    //             if(!plugin) {
-    //                 return self.createPlugin(userId, data);
-    //             }
-    //             return plugin;
-    //         });
-    // }
-
-    // createOrUpdatePlugin(userId, pluginId, data) {
-    //     var self = this;
-    //     return this.findPlugin(userId, pluginId)
-    //         .then(function(plugin) {
-    //             if(!plugin) {
-    //                 return self.createPlugin(userId, data);
-    //             }
-    //             return self.updatePlugin(userId, pluginId, data);
-    //         });
-    // }
-
-    // updatePlugin(userId, pluginIdOrName, data) {
-    //     var self = this;
-    //     return self.put(util.format("/users/%s/plugins/%s", userId, pluginIdOrName), data)
-    //         .then(function(response) {
-    //             // We only should get 200 / 400
-    //             if(response.statusCode !== 200) {
-    //                 return Promise.reject(ApiResponseError.BuildErrorFromResponse(response));
-    //             }
-    //             return response.body;
-    //         });
-    // }
-
-    // createPlugin(userId, data) {
-    //     data.userId = userId;
-    //     return this.post(util.format("/users/%s/plugins", userId), data)
-    //         .then(function(response) {
-    //             // We only should get 201 / 400
-    //             if(response.statusCode !== 201) {
-    //                 return Promise.reject(ApiResponseError.BuildErrorFromResponse(response));
-    //             }
-    //             return response.body;
-    //         });
-    // }
-
-    // createUser(data) {
-    //     return this.post("/users", data)
-    //         .then(function(response) {
-    //             // We only should get 201 / 400
-    //             if(response.statusCode !== 201) {
-    //                 return Promise.reject(ApiResponseError.BuildErrorFromResponse(response));
-    //             }
-    //             return response.body;
-    //         });
-    // }
-
-    // findOrCreateUser(data) {
-    //     var self = this;
-    //     return this.findUserByUsername(data.username)
-    //         .then(function(user) {
-    //             if (!user) {
-    //                 return self.createUser(data);
-    //             }
-    //             return user;
-    //         });
-    // }
-
-    // findModuleByName(userId, pluginId, moduleName) {
-    //     return this.get(util.format("/users/%s/plugins/%s/modules/%s", userId, pluginId, moduleName))
-    //         .then(function(response) {
-    //             if(response.statusCode !== 200) {
-    //                 return null;
-    //             }
-    //             return response.body;
-    //         });
-    // }
+    public getAuthStatus() {
+        return this.get("/auth/status").then((response: any) => response.body);
+    }
 }

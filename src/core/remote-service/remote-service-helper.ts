@@ -11,7 +11,6 @@ import { EventEmitter }  from "events";
 import {debug} from "../../shared/debug";
 
 /**
- *
  * @param system
  * @constructor
  */
@@ -37,8 +36,8 @@ class RemoteServiceHelper extends EventEmitter {
         this.defaultRequestOptions.baseUrl = address;
     }
 
-    _buildOptions(userOptions) {
-        return _.merge({}, this.defaultRequestOptions, userOptions);
+    protected buildOptions(userOptions) {
+        return Promise.resolve(_.merge({}, this.defaultRequestOptions, userOptions));
     }
 
     _handleResponse(cb, error, response, body) {
@@ -87,44 +86,48 @@ class RemoteServiceHelper extends EventEmitter {
      */
     post(url, data = {}, options: any = {}) {
         let self = this;
-        options = self._buildOptions(options);
-        return new Promise(function(resolve, reject) {
-            let opt = _.merge({}, options, {uri: url, body: data, json: true});
-            request
-                .defaults({headers: { 'content-type': 'application/json'}})
-                .post(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
-                    if(err) {
-                        if (options.failSilently) {
-                            return resolve(httpResponse);
-                        } else {
-                            return reject(err);
-                        }
-                    }
+        return self.buildOptions(options)
+            .then(function(opt) {
+                return new Promise(function(resolve, reject) {
+                    opt = _.merge({}, opt, {uri: url, body: data, json: true});
+                    request
+                        .defaults({headers: { 'content-type': 'application/json'}})
+                        .post(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
+                            if(err) {
+                                if (opt.failSilently) {
+                                    return resolve(httpResponse);
+                                } else {
+                                    return reject(err);
+                                }
+                            }
 
-                    return resolve(httpResponse);
-                })));
-        });
+                            return resolve(httpResponse);
+                        })));
+                });
+            });
     }
 
     put(url, data, options: any = {}) {
         let self = this;
-        options = self._buildOptions(options);
-        return new Promise(function(resolve, reject) {
-            let opt = _.merge({}, options, {uri: url, body: data, json: true});
-            request
-                .defaults({headers: { 'content-type': 'application/json'}})
-                .put(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
-                    if(err) {
-                        if (options.failSilently) {
-                            return resolve(httpResponse);
-                        } else {
-                            return reject(err);
-                        }
-                    }
+        return self.buildOptions(options)
+            .then(function(opt) {
+                return new Promise(function (resolve, reject) {
+                    opt = _.merge({}, opt, {uri: url, body: data, json: true});
+                    request
+                        .defaults({headers: {'content-type': 'application/json'}})
+                        .put(opt, self._handleResponse.bind(self, (function (err, httpResponse) {
+                            if (err) {
+                                if (options.failSilently) {
+                                    return resolve(httpResponse);
+                                } else {
+                                    return reject(err);
+                                }
+                            }
 
-                    return resolve(httpResponse);
-                })));
-        });
+                            return resolve(httpResponse);
+                        })));
+                });
+            });
     }
 
     /**
@@ -135,40 +138,41 @@ class RemoteServiceHelper extends EventEmitter {
      */
     get(url, options = {}) {
         let self = this;
-        options = self._buildOptions(options);
-        return new Promise(function(resolve, reject) {
-            let opt = _.merge({}, options, {uri: url});
-            debug("remote-service")("GET (https) %s%s", self.defaultRequestOptions.baseUrl, url);
-            request
-                .get(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
-                    if(err) {
-                        return reject(err);
-                    }
+        return self.buildOptions(options)
+            .then(function(opt) {
+                return new Promise(function (resolve, reject) {
+                    opt = _.merge({}, opt, {uri: url});
+                    debug("remote-service")("GET (https) %s%s", self.defaultRequestOptions.baseUrl, url);
+                    request
+                        .get(opt, self._handleResponse.bind(self, (function (err, httpResponse) {
+                            if (err) {
+                                return reject(err);
+                            }
 
-                    return resolve(httpResponse);
-                })));
-        });
+                            return resolve(httpResponse);
+                        })));
+                });
+            });
     }
 
     delete(url, options = {}) {
         let self = this;
-        options = self._buildOptions(options);
-        return new Promise(function(resolve, reject) {
-            let opt = _.merge({}, options, {uri: url});
-            self.logger.verbose("DELETE (https) %s%s", self.defaultRequestOptions.baseUrl, url);
-            request
-                .delete(opt, self._handleResponse.bind(self, (function(err, httpResponse) {
-                    if(err) {
-                        return reject(err);
-                    }
+        return self.buildOptions(options)
+            .then(function(opt) {
+                return new Promise(function (resolve, reject) {
+                    opt = _.merge({}, opt, {uri: url});
+                    self.logger.verbose("DELETE (https) %s%s", self.defaultRequestOptions.baseUrl, url);
+                    request
+                        .delete(opt, self._handleResponse.bind(self, (function (err, httpResponse) {
+                            if (err) {
+                                return reject(err);
+                            }
 
-                    return resolve(httpResponse);
-                })));
-        });
+                            return resolve(httpResponse);
+                        })));
+                });
+            });
     }
 }
-
-// _.mixin(RemoteServiceHelper.prototype, require('./services/services').prototype);
-// _.mixin(RemoteServiceHelper.prototype, require('./services/tasks').prototype);
 
 export default RemoteServiceHelper;

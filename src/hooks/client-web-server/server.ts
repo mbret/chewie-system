@@ -14,6 +14,7 @@ let fs = require('fs');
 let httpProxy = require('http-proxy');
 let socket = require('socket.io');
 let server, proxyServer;
+const url = require('url');
 
 export default class ClientWebServer extends Hook implements HookInterface {
 
@@ -84,9 +85,12 @@ export default class ClientWebServer extends Hook implements HookInterface {
                         self.logger.error("Error while starting proxy server", err);
                     }
                 })
+                .on("request", function(req) {
+                    self.logger.verbose(`Proxy -> [${req.headers.host} (${req.connection.encrypted ? "https" : "http"})] "${req.method} ${req.url} ${req.headers['user-agent'] || '(no user-agent)'}"`);
+                })
                 // little hack, proxy-http does not expose server via api (officially)
                 .on("listening", function() {
-                    self.logger.debug('Proxy server listening');
+                    self.logger.debug(`Proxy server listening on port ${proxyServerPort}`);
                     // then start client web server
                     server.listen(self.config.port);
                 });

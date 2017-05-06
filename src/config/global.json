@@ -1,7 +1,6 @@
 {
   "appPath": "$chewie{appPath}",
   "systemIP": "$chewie{systemIP}",
-  "dataPath": "$chewie{dataPath}",
   "env": "$chewie{env}",
   "log": {
     "level": "silly"

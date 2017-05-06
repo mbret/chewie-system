@@ -7,7 +7,7 @@ module.exports = function (router) {
      * You can use "extraInfo" param to gather info from the installed plugin (ex description, author, modules, etc)
      */
     // router.get('/:plugin', function(req, res){
-    //     let PluginsDao = req.app.locals.system.sharedApiServer.orm.models.Plugins;
+    //     let PluginsDao = req.app.locals.system.apiServer.orm.models.Plugins;
     //     // let userId = req.params.user;
     //     let name = req.params.plugin;
     //

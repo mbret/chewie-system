@@ -5,23 +5,22 @@ import ip  = require('ip');
 import path = require("path");
 import * as os from "os";
 import * as fs from "fs";
+import jsonfile = require('jsonfile');
 
 /**
  * Return the default config with some value calculated during runtime.
- * @param config
  * @returns {object}
  */
-export function loadConfig(config: any) {
+export function loadConfig() {
     let systemIP = ip.address();
     let appPath = process.cwd();
     let basePath =  __dirname + "/../..";
 
     return loadConfigFiles(__dirname + "/../config")
-        .then(function(defaultConfig) {
-            let completeConfig = _.merge({}, defaultConfig, config);
-
-            let dataPath = path.join(completeConfig.systemAppDataPath, "data");
+        .then((defaultConfig) => loadUserConfig(appPath, defaultConfig))
+        .then(function(completeConfig: any) {
             let localAppDataDir = os.platform() === 'win32' ? process.env.LOCALAPPDATA : os.homedir();
+            let dataPath = path.join(completeConfig.systemAppDataPath, "data");
             let replaceTo = {
                 "env": process.env.NODE_ENV || "development",
                 "localAppDataDir": localAppDataDir,
@@ -43,7 +42,7 @@ export function loadConfig(config: any) {
             let replacedConfig = formatDynConfig(replaceTo, completeConfig);
 
             return Promise.resolve(_.merge(completeConfig, replacedConfig));
-        })
+        });
 }
 
 /**
@@ -126,4 +125,18 @@ function loadConfigFiles(dir) {
                 .catch(reject);
         } );
     });
+}
+
+function loadUserConfig(appPath: string, defaultConfig: any) {
+    let userConf;
+    try {
+        userConf = jsonfile.readFileSync(`${path.join(appPath, '.user.conf')}`);
+    } catch (err) {
+        if (err.code === "ENOENT") {
+            return Promise.resolve(defaultConfig);
+        }
+        return Promise.reject(new Error("Unable to read .user.conf. Please check that the file is in valid json format. Err:\n" + err.message));
+    }
+
+    return Promise.resolve(_.merge({}, defaultConfig, userConf));
 }

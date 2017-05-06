@@ -6,12 +6,11 @@ const path = require('path');
 
 module.exports = function(server, router){
 
-    let UserDao = server.orm.models.User;
     let LogsDao = server.orm.models.Logs;
     let self = server;
 
     router.get('/ping', function (req, res) {
-        res.ok();
+        return res.ok();
     });
 
     /**

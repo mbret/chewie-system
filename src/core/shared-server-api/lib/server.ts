@@ -94,6 +94,11 @@ export default class SharedServerApiHook extends EventEmitter {
             })
             // start the server
             .then(function() {
+                // check secret password
+                let password = self.system.config.sharedServerApi.auth.secretPassword;
+                if (typeof password !== "string" || password.length < 1) {
+                    throw new Error(`Please set the secret password with 'sharedServerApi.auth.secretPassword'`)
+                }
                 return self.startServer().then(function(){
                     self.services.eventsWatcher.watch();
                     debugDefault('Initialized');
@@ -159,7 +164,7 @@ export default class SharedServerApiHook extends EventEmitter {
                 })
                 .on('listening', function(){
                     self.localAddress = 'https://localhost:' + self.server.address().port;
-                    debugDefault(`The API is available at ${self.localAddress} or ${self.system.config.sharedApiUrl} for remote access`);
+                    self.logger.info(`The API is available at ${self.localAddress} or ${self.system.config.sharedApiUrl} for remote access`);
                     return resolve();
                 });
         });
@@ -254,7 +259,7 @@ export default class SharedServerApiHook extends EventEmitter {
         // app.use(jwt({
         //     secret: this.system.config.sharedServerApi.auth.jwtSecret
         // }).unless({
-        //     path: ["/ping"]
+        //     path: ["/ping", "/notifications", "/auth/signin", "/auth/status"]
         // }));
         app.use(router);
 

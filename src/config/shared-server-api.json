@@ -1,7 +1,8 @@
 {
   "sharedServerApi": {
     "auth": {
-      "jwtSecret": "zbla",
+      "jwtSecret": null,
+      "secretPassword": null,
       "expiresIn": "1h"
     },
     "port": 3002,
