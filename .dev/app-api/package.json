@@ -1,9 +1,11 @@
 {
   "scripts": {
+    "postinstall": "chewie generate-app-id",
     "start": "node index.js",
     "start:debug": "cross-env DEBUG=chewie* node index.js"
   },
   "dependencies": {
+    "chewie-cli": "git+https://github.com/mbret/chewie-cli.git",
     "chewie-hook-gmail-adapter": "git+https://github.com/mbret/chewie-hook-gmail-adapter.git",
     "cross-env": "^3.1.4"
   }

@@ -130,12 +130,12 @@ function loadConfigFiles(dir) {
 function loadUserConfig(appPath: string, defaultConfig: any) {
     let userConf;
     try {
-        userConf = jsonfile.readFileSync(`${path.join(appPath, '.user.conf')}`);
+        userConf = jsonfile.readFileSync(`${path.join(appPath, '.user.conf.json')}`);
     } catch (err) {
         if (err.code === "ENOENT") {
             return Promise.resolve(defaultConfig);
         }
-        return Promise.reject(new Error("Unable to read .user.conf. Please check that the file is in valid json format. Err:\n" + err.message));
+        return Promise.reject(new Error("Unable to read .user.conf.json. Please check that the file is in valid json format. Err:\n" + err.message));
     }
 
     return Promise.resolve(_.merge({}, defaultConfig, userConf));

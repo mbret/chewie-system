@@ -13,8 +13,7 @@
     "node": ">=v8.0.0-nightly20170426d7ba2a6035"
   },
   "scripts": {
-    "postinstall": "npm run clean && npm run build",
-    "build": "gulp build && tsc",
+    "build": "npm run clean && gulp build && tsc",
     "watch": "npm run build && concurrently --raw \"gulp watch\" \"tsc -w\"",
     "dev": "concurrently --raw \"npm run build\" \"npm run watch\"",
     "clean": "gulp clean",

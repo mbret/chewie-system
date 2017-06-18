@@ -1,7 +1,7 @@
 "use strict";
 
 import {System} from "./system";
-import {generate} from "./shared/generate-app-id";
+import {appId} from "./shared/app-id";
 
 // Read the ctrl+c of windows to handle SIGINT correctly
 if (process.platform === "win32") {
@@ -17,7 +17,7 @@ if (process.platform === "win32") {
 }
 
 // generate app id
-let systemData = generate();
+let systemData = appId();
 
 // Export new app and pass .system info to it
 module.exports = new System(systemData);

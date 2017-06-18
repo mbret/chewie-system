@@ -30,14 +30,10 @@ export class Bootstrap {
                 return Promise
                     .resolve()
                     .then(() => self.system.persistenceService.initialize())
+                    .then(() => self.system.apiServer.initialize())
                     .then(() => {
-                        // On complete mode we need to start the shared server api
-                        // if (self.system.config.role !== "client") {
-                            return self.system.apiServer.initialize()
-                        // }
-                    })
-                    .then(() => {
-                        let token = null;//"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEiLCJyb2xlIjpudWxsLCJ0eXBlIjoiYXBwIiwiaWF0IjoxNDk0MDc3Mzc1LCJleHAiOjE0OTQwODA5NzV9.0QKBxQEajf7HvJ9N7ogpV6g0B4jMzEzOLb8rYN9S-oE";
+                        // @todo
+                        let token = null;
                         let warningApi = setTimeout(function() {
                             self.system.logger.warn("The api seems to be unreachable or taking unusually long time to respond. Please " +
                                 "verify that the remote api is running correctly before starting the system");
