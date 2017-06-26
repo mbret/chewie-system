@@ -41,3 +41,16 @@ module.exports = function(chewie, done) {
 //     //     }
 //     // }
 // },
+// "hooks": {
+//   "client-web-server": false,
+//     "scenarios": false,
+//     "plugins": false
+// }
+// "alwaysSynchronizePlugins": true,
+//   "pluginsLocalRepositoryDir": "./../plugins",
+//   "sharedServerApi": {
+//   "auth": {
+//     "jwtSecret": "foo",
+//       "secretPassword": "foo"
+//   }
+// }

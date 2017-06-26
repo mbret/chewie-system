@@ -5,7 +5,7 @@ let jwt = require('jsonwebtoken');
 import * as nodeValidator from "validator";
 const expressJwt = require('express-jwt');
 
-module.exports = function(server, router) {
+module.exports = function (server, router) {
 
     let validator: any = nodeValidator; // workaround typescript because of redefinition
     let userService = server.services.usersService;
@@ -32,22 +32,23 @@ module.exports = function(server, router) {
     /**
      * Return user + jwt token
      */
-    router.post('/auth/signin', function(req, res){
+    router.post('/auth/signin', function (req, res) {
 
         let username = req.body.username;
         let appName = req.body.appName;
+        let password = req.body.password;
         let secretPassword = req.body.secretPassword;
         let search: any = {};
 
         // detect secret password
         // only app are allowed to signin without username
-        if (secretPassword === server.system.config.sharedServerApi.auth.secretPassword) {
-            if(!appName || validator.isEmpty(appName)) {
-                return res.badRequest({data: {errors: { appName: "required" }}});
+        if (!password && secretPassword === server.system.config.sharedServerApi.auth.secretPassword) {
+            if (!appName || validator.isEmpty(appName)) {
+                return res.badRequest({data: {errors: {appName: "required"}}});
             }
 
-            let payload = { id: appName, role: null, type: "app" };
-            let token = jwt.sign(payload, server.system.config.sharedServerApi.auth.jwtSecret, { expiresIn: server.system.config.sharedServerApi.auth.expiresIn });
+            let payload = {id: appName, role: null, type: "app"};
+            let token = jwt.sign(payload, server.system.config.sharedServerApi.auth.jwtSecret, {expiresIn: server.system.config.sharedServerApi.auth.expiresIn});
             return res.json({
                 data: null,
                 token: token
@@ -55,34 +56,32 @@ module.exports = function(server, router) {
         }
         // User context
         else {
-            if(!username || !validator.isUsername(username)) {
-                return res.badRequest({data: {errors: { username: "required" }}});
+            if (!username || !validator.isUsername(username)) {
+                return res.badRequest({data: {errors: {username: "required"}}});
             }
 
-            return res.unauthorized();
+            search.username = username;
 
-            // search.username = username;
-            //
-            // UserDao
-            //     .findOne({where: search})
-            //     .then(function(user){
-            //         if(!user){
-            //             return res.badRequest();
-            //         }
-            //         let payload = { id: user.id, role: user.role };
-            //         let token = jwt.sign(payload, server.system.config.sharedServerApi.auth.jwtSecret, { expiresIn: server.system.config.sharedServerApi.auth.expiresIn });
-            //         return res.json({
-            //             data: userService.formatUser(user.toJSON()),
-            //             token: token
-            //         });
-            //     })
-            //     .catch(res.serverError);
+            UserDao
+                .findOne({where: search})
+                .then(function(user){
+                    if(!user){
+                        return res.badRequest();
+                    }
+                    let payload = { id: user.id, role: user.role };
+                    let token = jwt.sign(payload, server.system.config.auth.jwtSecret, { expiresIn: server.system.config.auth.expiresIn, header: {foo: 'sdf'} });
+                    return res.json({
+                        data: userService.formatUser(user.toJSON()),
+                        token: token
+                    });
+                })
+                .catch(res.serverError);
         }
     });
 
-    router.get('/auth/signout', function(req, res){
-        server.userAuthentication.logout(function(err){
-            if(err){
+    router.get('/auth/signout', function (req, res) {
+        server.userAuthentication.logout(function (err) {
+            if (err) {
                 return res.status(500).send(err.stack);
             }
 

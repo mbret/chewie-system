@@ -114,7 +114,6 @@ function loadConfigFiles(dir) {
                         if (stat.isFile()) {
                             config = _.merge({}, config, require(filePath));
                         }
-                        console.log(filePath);
                         return resolve();
                     })
                 }));

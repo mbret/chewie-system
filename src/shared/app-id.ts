@@ -3,7 +3,7 @@ let jsonfile = require('jsonfile');
 let path = require("path");
 let uuid = require("uuid");
 
-export function generate() {
+export function appId() {
     let file = path.join(process.cwd(), ".system");
     let obj = null;
     try {

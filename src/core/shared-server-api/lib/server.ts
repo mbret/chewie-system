@@ -6,12 +6,12 @@ let https = require('https');
 let http = require("http");
 import * as fs from "fs-extra";
 import * as _ from "lodash";
-let path        = require('path');
+let path = require('path');
 import * as Services from "./services";
 import {System} from "../../../system";
 const express = require("express");
-let bodyParser  = require("body-parser");
-let requireAll  = require('my-buddy-lib').requireAll;
+let bodyParser = require("body-parser");
+let requireAll = require('my-buddy-lib').requireAll;
 import * as Sequelize from "sequelize";
 let async = require("async");
 let validator = require("validator");
@@ -21,7 +21,7 @@ import {debug} from "../../../shared/debug";
 const logNamespace = "shared-server-api";
 let ensureFile = Bluebird.promisify(fs.ensureFile);
 let debugDefault = debug(logNamespace);
-import { EventEmitter }  from "events";
+import {EventEmitter}  from "events";
 const jwt = require('express-jwt');
 import customResponses from "./middlewares/custom-responses";
 import httpLogger from "./middlewares/http-logger";
@@ -58,13 +58,13 @@ export default class SharedServerApiHook extends EventEmitter {
         this.config = this.system.config.sharedServerApi;
         // user did not defined storage
         if (!_.get(this.config, "sharedDatabase.connexion.storage")) {
-            this.config.sharedDatabase.connexion.storage =  path.join(system.config.systemAppDataPath, "storage/shared-database.db");
+            this.config.sharedDatabase.connexion.storage = path.join(system.config.systemAppDataPath, "storage/shared-database.db");
         }
         // runtime config
         this.config.storageDir = path.dirname(this.config.sharedDatabase.connexion.storage);
 
         // Include all services
-        _.forEach(Services, function(module, key) {
+        _.forEach(Services, function (module, key) {
             self.services[key.charAt(0).toLowerCase() + key.slice(1)] = new module(self);
         });
 
@@ -76,30 +76,26 @@ export default class SharedServerApiHook extends EventEmitter {
         let self = this;
 
         return Promise.resolve()
-            // first we ensure storage file exist
-            .then(function() {
+        // first we ensure storage file exist
+            .then(function () {
                 return ensureFile(self.config.sharedDatabase.connexion.storage);
             })
             // then we run migration (from database creation to last update)
-            .then(function() {
+            .then(function () {
                 return self.runMigration();
             })
             // then configure orm that is used across the app
-            .then(function() {
+            .then(function () {
                 return self.configureOrm();
             })
             // app.use(..)
-            .then(function() {
+            .then(function () {
                 return self.configureMiddleware(app);
             })
             // start the server
-            .then(function() {
-                // check secret password
-                let password = self.system.config.sharedServerApi.auth.secretPassword;
-                if (typeof password !== "string" || password.length < 1) {
-                    throw new Error(`Please set the secret password with 'sharedServerApi.auth.secretPassword'`)
-                }
-                return self.startServer().then(function(){
+            .then(function () {
+                self.checkRequiredConfig();
+                return self.startServer().then(function () {
                     self.services.eventsWatcher.watch();
                     debugDefault('Initialized');
                     return Promise.resolve();
@@ -115,12 +111,12 @@ export default class SharedServerApiHook extends EventEmitter {
         errResponse.data = {};
 
         // Handle Error object
-        if(err instanceof Error) {
+        if (err instanceof Error) {
             let error: any = err; // workaround for 'code' property
             errResponse = _.merge(errResponse, {message: error.message, data: {stack: error.stack, code: error.code}});
         }
 
-        if(_.isString(err)) {
+        if (_.isString(err)) {
             errResponse.message = err;
         }
 
@@ -145,9 +141,9 @@ export default class SharedServerApiHook extends EventEmitter {
         this.io = io(self.server, {});
         require('./socket')(self, this.io);
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             self.server
-                .on('error', function(error){
+                .on('error', function (error) {
                     if (error.syscall !== 'listen') {
                         throw error;
                     }
@@ -162,7 +158,7 @@ export default class SharedServerApiHook extends EventEmitter {
                     }
                     return reject(error);
                 })
-                .on('listening', function(){
+                .on('listening', function () {
                     self.localAddress = 'https://localhost:' + self.server.address().port;
                     self.logger.info(`The API is available at ${self.localAddress} or ${self.system.config.sharedApiUrl} for remote access`);
                     return resolve();
@@ -185,10 +181,10 @@ export default class SharedServerApiHook extends EventEmitter {
         });
         dbMigrateInstance.silence(!server.config.sharedDatabase.migrationLogs);
         return dbMigrateInstance.up()
-            .then(function() {
+            .then(function () {
                 debugDefault("Database migration executed with success");
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 server.logger.error("Database migration failed: ", err.message);
                 throw err;
             });
@@ -220,11 +216,11 @@ export default class SharedServerApiHook extends EventEmitter {
         server.orm.models.SystemConfig = require(modelsPath + '/system-config').define(server.orm.sequelize, server);
         server.orm.models.User.hasMany(server.orm.models.Task);
 
-        server.orm.models.Plugins.hook('afterUpdate', function(plugin, options){
+        server.orm.models.Plugins.hook('afterUpdate', function (plugin, options) {
             server.emit('orm:plugins:updated', plugin);
         });
 
-        server.orm.models.User.hook('afterUpdate', function(user, options){
+        server.orm.models.User.hook('afterUpdate', function (user, options) {
             server.emit('orm:user:updated', user);
         });
 
@@ -251,7 +247,7 @@ export default class SharedServerApiHook extends EventEmitter {
         requireAll({
             dirname: __dirname + '/controllers',
             recursive: true,
-            resolve: function(controller){
+            resolve: function (controller) {
                 controller(server, router);
             }
         });
@@ -264,12 +260,12 @@ export default class SharedServerApiHook extends EventEmitter {
         app.use(router);
 
         // Handle 404
-        app.use(function(req, res, next) {
+        app.use(function (req, res, next) {
             res.notFound();
         });
 
         // Error handler
-        app.use(function(err, req, res, next) {
+        app.use(function (err, req, res, next) {
             if (err.name === 'UnauthorizedError') {
                 return res.unauthorized();
             }
@@ -278,14 +274,26 @@ export default class SharedServerApiHook extends EventEmitter {
         });
 
         // extend validator module with some custom test
-        validator.isModuleId = function(value) {
+        validator.isModuleId = function (value) {
             return this.matches(value, /\w+:\w+/);
         };
 
-        validator.isUsername = function(value) {
+        validator.isUsername = function (value) {
             return this.isAlpha(value);
         };
 
         return Promise.resolve();
+    }
+
+    protected checkRequiredConfig() {
+        // check secret password
+        let password = this.system.config.auth.secretPassword;
+        if (typeof password !== "string" || password.length < 1) {
+            throw new Error(`Please set the secret password with 'sharedServerApi.auth.secretPassword'`)
+        }
+        let jwtSecret = this.system.config.auth.jwtSecret;
+        if (typeof jwtSecret !== "string" || jwtSecret.length < 1) {
+            throw new Error(`Please set the secret jwt with 'sharedServerApi.auth.jwtSecret'`)
+        }
     }
 }

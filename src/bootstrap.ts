@@ -83,6 +83,10 @@ export class Bootstrap {
 
     /**
      * @private
+     * Lookup:
+     * {
+     *   modulePath: foo
+     * }
      */
     protected loadHooks() {
         let self = this;

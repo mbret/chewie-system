@@ -1,18 +1,9 @@
 {
-    "bootstrap": "./.user.bootstrap.js",
-    "alwaysSynchronizePlugins": true,
-    "systemTmpDir": "./.chewie/.tmp",
-    "systemAppDataPath": "./.chewie",
-    "pluginsLocalRepositoryDir": "./../plugins",
-    "sharedServerApi": {
-        "auth": {
-            "jwtSecret": "foo",
-            "secretPassword": "foo"
-        }
-    },
-    "hooks": {
-        "client-web-server": false,
-        "scenarios": false,
-        "plugins": false
-    }
+  "bootstrap": "./.user.bootstrap.js",
+  "systemTmpDir": "./.chewie/.tmp",
+  "systemAppDataPath": "./.chewie",
+  "auth": {
+    "jwtSecret": "foo",
+    "secretPassword": "foo"
+  }
 }

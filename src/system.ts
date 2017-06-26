@@ -9,6 +9,7 @@ import path = require('path');
 let queue = require('queue');
 let packageInfo = require(__dirname + '/../package.json');
 import ip  = require('ip');
+import {appId} from "./shared/app-id";
 import {EventEmitter}  from "events";
 import * as ServerCommunication from "./core/server-communication/index";
 import {ScenarioReader} from "./core/scenario/scenario-reader";
@@ -66,8 +67,9 @@ export class System extends EventEmitter {
     /**
      * System constructor
      */
-    constructor(info) {
+    constructor() {
         super();
+        let info = appId();
         this.id = info.id;
         this.name = info.name;
         this.shuttingDown = false;

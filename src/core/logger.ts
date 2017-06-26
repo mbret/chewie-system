@@ -70,7 +70,7 @@ export class LoggerBuilder {
 
     // https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json
     private stylize(prepend, msg, level) {
-        prepend = ("❤ " + prepend).padEnd(25) + ' ';
+        prepend = _.padEnd("❤ " + prepend, 25) + ' ';
         let rx = /{:stack(.*)\/:stack}/g;
         let stack = rx.exec(msg);
         if (stack) {

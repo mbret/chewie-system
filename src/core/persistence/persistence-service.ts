@@ -56,7 +56,6 @@ export default class PersistenceService extends EventEmitter {
             self.once('db:error', reject);
             self.once('db:ready', function() {
                 this.entries = this.db.getCollection('entries');
-                console.log(`Persistence initialized`);
                 resolve();
             })
         });

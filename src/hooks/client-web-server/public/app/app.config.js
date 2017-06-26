@@ -36,22 +36,6 @@
         });
     }
 
-    function configState($stateProvider, $urlRouterProvider) {
-        $urlRouterProvider
-            .when('', '/dashboard/home');
-
-        $stateProvider
-            .state('chewie', {
-                abstract: true,
-                templateUrl: '/app/app.html'
-            })
-            .state('speech', {
-                url: '/speech',
-                controller: 'SpeechController',
-                templateUrl: '/app/components/speech/speech.html'
-            });
-    }
-
     function configAuth(OAuthProvider, authenticationServiceProvider, _, jwtOptionsProvider, $httpProvider) {
         OAuthProvider.configure({
             baseUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -120,7 +104,6 @@
             trigger: 'TriggeredTask'
         })
         .config(configMisc)
-        .config(configState)
         .config(configAuth)
         .config(configToastr)
         .config(configLog)
